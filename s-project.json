@@ -1,9 +1,9 @@
 {
-  "name": "maas-backend",
+  "name": "MaaS",
   "version": "0.0.1",
   "profile": "serverless-v0.4.2",
   "location": "https://github.com/maasglobal/serverless-backend/",
-  "author": "Sami Pippuri, Lauri Svan",
+  "author": "Sami Pippuri, Lauri Svan, Kenneth Falck",
   "description": "MaaS serverless infrastructure",
   "custom": {},
   "plugins": [

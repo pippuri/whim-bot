@@ -1,5 +1,5 @@
 {
   "region": "eu-west-1",
-  "resourcesStackName": "maas-backend-prod-r",
-  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/maas-backend-prod-r-IamRoleLambda-1SVX470EWU8I2"
+  "resourcesStackName": "MaaS-prod-r",
+  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/MaaS-prod-r-IamRoleLambda-BB5ITGWXDIH5"
 }

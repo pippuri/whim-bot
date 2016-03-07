@@ -27,7 +27,7 @@
     "IamPolicyLambda": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "dev-sc5-serverless-boilerplate-lambda",
+        "PolicyName": "dev-MaaS-lambda",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [

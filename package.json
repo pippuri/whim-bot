@@ -13,12 +13,18 @@
       "name": "Lauri Svan",
       "email": "lauri.svan@sc5.io",
       "url": "https://github.com/laurisvan"
+    },
+    {
+      "name": "Kenneth Falck",
+      "email": "kennu@sc5.io",
+      "url": "https://github.com/kennu"
     }
   ],
   "bugs": {
     "url": "https://github.com/maasglobal/maas-backend/issues"
   },
   "dependencies": {
+    "bluebird": "^3.3.3",
     "serverless-cors-plugin": "^0.3.1",
     "serverless-helpers-js": "^0.1.0",
     "serverless-optimizer-plugin": "^1.1.0",
@@ -30,7 +36,7 @@
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",
   "license": "MIT",
-  "name": "sc5-serverless-boilerplate",
+  "name": "MaaS",
   "optionalDependencies": {},
   "private": false,
   "repository": {
