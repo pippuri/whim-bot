@@ -1,0 +1,42 @@
+{
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/sc5-serverless-boilerplate-0.0.5.tgz_1457013990650_0.77550138393417"
+  },
+  "author": {
+    "name": "Sami Pippuri",
+    "email": "sami.pippuri@maas.fi",
+    "url": "https://github.com/pippuri"
+  },
+  "contributors": [
+    {
+      "name": "Lauri Svan",
+      "email": "lauri.svan@sc5.io",
+      "url": "https://github.com/laurisvan"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/maasglobal/maas-backend/issues"
+  },
+  "dependencies": {
+    "serverless-cors-plugin": "^0.3.1",
+    "serverless-helpers-js": "^0.1.0",
+    "serverless-optimizer-plugin": "^1.1.0",
+    "serverless-plugin-swagger-export": "^0.1.5"
+  },
+  "description": "A Serverless Project Template.",
+  "devDependencies": {
+    "aws-sdk": "^2.2.39"
+  },
+  "homepage": "https://github.com/maasglobal/maas-backend#readme",
+  "license": "MIT",
+  "name": "sc5-serverless-boilerplate",
+  "optionalDependencies": {},
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maasglobal/maas-backend.git"
+  },
+  "scripts": {},
+  "version": "0.0.1"
+}

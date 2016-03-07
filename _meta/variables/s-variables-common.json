@@ -1,0 +1,6 @@
+{
+  "project": "sc5-serverless-boilerplate",
+  "projectBucket": "serverless.eu-west-1.maas-backend",
+  "domain": "maas-backend",
+  "notificationEmail": "sami.pippuri@maas.fi"
+}
