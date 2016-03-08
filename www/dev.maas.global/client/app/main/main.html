@@ -29,12 +29,12 @@
           </thead>
           <tbody>
             <tr ng-repeat="trip in group.trips">
-              <td>{{trip.depart*1000|date:'HH:mm'}} - {{trip.arrive*1000|date:'HH:mm'}}</td>
-              <td>{{trip.moneyCost}}€</td>
+              <td>{{trip.depart*1000|date}}<br>{{trip.depart*1000|date:'HH:mm'}} - {{trip.arrive*1000|date:'HH:mm'}}</td>
+              <td>{{trip.moneyCost}}<span ng-show="trip.moneyCost">€</span></td>
               <td>
                 <div ng-repeat="segment in trip.segments">
                   {{segment.startTime*1000|date:'HH:mm'}} - {{segment.endTime*1000|date:'HH:mm'}}
-                  {{main.expandSegmentTemplate(segment)}}
+                  {{main.expandSegmentTemplate(segment)}} <span ng-show="segment.serviceName" class="label label-default">{{segment.serviceName}}</span>
                 </div>
               </td>
             </tr>

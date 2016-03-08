@@ -14,7 +14,7 @@ function getTripGoRoutes(from, to) {
       from: from,
       to: to,
       arriveBefore: '0',
-      departAfter: Math.floor(Date.now()),
+      departAfter: Math.floor(Date.now()/1000),
       wp: '(1.0,1.0,1.0,1.0)',
       unit: 'metric',
       vehiclesFlag: '00010',
