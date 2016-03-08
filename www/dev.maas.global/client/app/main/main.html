@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <form ng-submit="main.findRoute(main.from, main.to)">
+        <fieldset class="form-group">
+          <label for="from">Starting point</label>
+          <input type="text" class="form-control" id="from" placeholder="Enter latitude,longitude" ng-model="main.from">
+        </fieldset>
+        <fieldset class="form-group">
+          <label for="to">Destination</label>
+          <input type="text" class="form-control" id="to" placeholder="Enter latitude,longitude" ng-model="main.to">
+        </fieldset>
+        <button type="submit" class="btn btn-primary">Find Routes</button>
+      </form>
+    </div>
+  </div>
+  <div class="row" ng-show="main.routes">
+    <div class="col-lg-12">
+      <h3 class="page-header">Available Routes</h3>
+      <div ng-repeat="group in main.routes.groups">
+        <h6>Frequency {{group.frequency}}</h6>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Cost</th>
+              <th>Segments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr ng-repeat="trip in group.trips">
+              <td>{{trip.depart*1000|date:'HH:mm'}} - {{trip.arrive*1000|date:'HH:mm'}}</td>
+              <td>{{trip.moneyCost}}€</td>
+              <td>
+                <div ng-repeat="segment in trip.segments">
+                  {{segment.startTime*1000|date:'HH:mm'}} - {{segment.endTime*1000|date:'HH:mm'}}
+                  {{main.expandSegmentTemplate(segment)}}
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
