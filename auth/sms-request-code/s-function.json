@@ -1,8 +1,8 @@
 {
-  "name": "sms-login",
+  "name": "sms-request-code",
   "customName": false,
   "customRole": false,
-  "handler": "sms-login/handler.handler",
+  "handler": "sms-request-code/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {

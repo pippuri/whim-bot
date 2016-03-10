@@ -18,7 +18,7 @@ function smsRequestCode(phone, provider) {
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
     Payload: JSON.stringify({
       phone: phone,
-      message: 'Your login verification code is ' + verificationCode + '.'
+      message: 'Your MaaS login verification code is ' + verificationCode + '.'
     })
   })
   .then(function (response) {
