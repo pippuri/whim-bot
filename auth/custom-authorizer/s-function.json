@@ -1,0 +1,15 @@
+{
+  "name": "custom-authorizer",
+  "customName": false,
+  "customRole": false,
+  "handler": "custom-authorizer/handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "endpoints": [
+  ],
+  "events": []
+}

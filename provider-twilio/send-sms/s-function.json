@@ -1,0 +1,15 @@
+{
+  "name": "send-sms",
+  "customName": false,
+  "customRole": false,
+  "handler": "send-sms/handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "endpoints": [
+  ],
+  "events": []
+}
