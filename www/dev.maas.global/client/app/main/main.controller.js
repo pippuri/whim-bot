@@ -8,12 +8,14 @@ class MainController {
     this.$http = $http;
     this.from = '60.185034,24.9147957';
     this.to = '60.1883726,24.9574861';
+    this.providers = ['tripgo', 'here'];
+    this.provider = 'tripgo';
     this.routes = null;
     this.segmentTemplates = {};
   }
 
   findRoute(from, to) {
-    this.$http.get('https://api.dev.maas.global/routes/find?from=(' + from + ')&to=' + to)
+    this.$http.get('https://api.dev.maas.global/routes?from=' + from + '&to=' + to + '&provider=' + this.provider)
     .then((response) => {
       this.routes = response.data;
       this.routes.segmentTemplates.map((template) => {

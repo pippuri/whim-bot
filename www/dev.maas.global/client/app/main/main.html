@@ -3,6 +3,10 @@
     <div class="col-lg-12">
       <form ng-submit="main.findRoute(main.from, main.to)">
         <fieldset class="form-group">
+          <label for="provider">Provider</label>
+          <select class="form-control" id="provider" ng-model="main.provider" ng-options="provider for provider in main.providers"></select>
+        </fieldset>
+        <fieldset class="form-group">
           <label for="from">Starting point</label>
           <input type="text" class="form-control" id="from" placeholder="Enter latitude,longitude" ng-model="main.from">
         </fieldset>

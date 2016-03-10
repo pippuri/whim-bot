@@ -3,7 +3,6 @@ var request = require('request-promise');
 
 var TRIPGO_SOUTH_FINLAND_ROUTING_URL = 'https://hadron-fi-southfinland.tripgo.skedgo.com/satapp/routing.json';
 
-// Get regions from TripGo
 function getTripGoRoutes(from, to) {
   return request.get(TRIPGO_SOUTH_FINLAND_ROUTING_URL, {
     json: true,
@@ -11,8 +10,8 @@ function getTripGoRoutes(from, to) {
       'X-TripGo-Key': process.env.TRIPGO_API_KEY
     },
     qs: {
-      from: from,
-      to: to,
+      from: '(' + from + ')',
+      to: '(' + to + ')',
       arriveBefore: '0',
       departAfter: Math.floor(Date.now()/1000),
       wp: '(1.0,1.0,1.0,1.0)',

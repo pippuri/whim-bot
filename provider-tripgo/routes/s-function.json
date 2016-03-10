@@ -1,9 +1,9 @@
 {
-  "name": "regions",
+  "name": "routes",
   "customName": false,
   "customRole": false,
-  "handler": "regions/handler.handler",
-  "timeout": 6,
+  "handler": "routes/handler.handler",
+  "timeout": 30,
   "memorySize": 1024,
   "custom": {
     "excludePatterns": [],
@@ -15,14 +15,17 @@
   },
   "endpoints": [
     {
-      "path": "routes/regions",
+      "path": "providers/tripgo/routes",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.querystring.from": "method.request.querystring.from",
+        "integration.request.querystring.to": "method.request.querystring.to"
+      },
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\"}"
       },
       "responses": {
         "^400.*": {

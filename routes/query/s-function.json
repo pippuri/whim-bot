@@ -1,9 +1,9 @@
 {
-  "name": "find",
+  "name": "query",
   "customName": false,
   "customRole": false,
-  "handler": "find/handler.handler",
-  "timeout": 6,
+  "handler": "query/handler.handler",
+  "timeout": 30,
   "memorySize": 1024,
   "custom": {
     "excludePatterns": [],
@@ -15,17 +15,18 @@
   },
   "endpoints": [
     {
-      "path": "routes/find",
+      "path": "routes",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
       "apiKeyRequired": false,
       "requestParameters": {
+        "integration.request.querystring.provider": "method.request.querystring.provider",
         "integration.request.querystring.from": "method.request.querystring.from",
         "integration.request.querystring.to": "method.request.querystring.to"
       },
       "requestTemplates": {
-        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\"}"
+        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"provider\":\"$input.params('provider')\"}"
       },
       "responses": {
         "^400.*": {
