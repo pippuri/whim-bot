@@ -11,6 +11,7 @@ function smsRequestCode(phone, provider) {
     provider = 'twilio';
   }
   var verificationCode = 1000 + Math.floor(Math.random() * 9000);
+  var verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
   var functionName = 'MaaS-provider-' + provider + '-send-sms';
   return lambda.invokePromise({
     FunctionName: functionName,
@@ -18,7 +19,7 @@ function smsRequestCode(phone, provider) {
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
     Payload: JSON.stringify({
       phone: phone,
-      message: 'Your MaaS login verification code is ' + verificationCode + '.'
+      message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink
     })
   })
   .then(function (response) {

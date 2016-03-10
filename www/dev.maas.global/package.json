@@ -96,7 +96,8 @@
     "start": "node server",
     "test": "grunt test",
     "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update",
-    "deploy": "aws --profile maas s3 sync dist/client/ s3://dev.maas.global/"
+    "deploy": "aws --profile maas s3 sync dist/client/ s3://dev.maas.global/ && npm run deploy:stubs",
+    "deploy:stubs": "aws --profile maas s3 cp dist/client/index.html s3://dev.maas.global/login"
   },
   "private": true
 }
