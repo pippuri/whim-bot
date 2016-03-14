@@ -37,7 +37,6 @@
               <td>{{trip.moneyCost}}<span ng-show="trip.moneyCost">€</span></td>
               <td>
                 <div ng-repeat="segment in trip.segments">
-                  {{segment.startTime*1000|date:'HH:mm'}} - {{segment.endTime*1000|date:'HH:mm'}}
                   {{main.expandSegmentTemplate(segment)}} <span ng-show="segment.serviceName" class="label label-default">{{segment.serviceName}}</span>
                 </div>
               </td>
