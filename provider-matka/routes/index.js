@@ -1,6 +1,9 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
 var proj4 = require('proj4');
+var xml2js = require('xml2js');
+
+Promise.promisifyAll(xml2js);
 
 proj4.defs("EPSG:2393","+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=3500000 +y_0=0 +ellps=intl +towgs84=-96.062,-82.428,-121.753,4.801,0.345,-1.376,1.496 +units=m +no_defs");
 
@@ -27,9 +30,7 @@ function getMatkaRoutes(from, to) {
     }
   })
   .then(function (response) {
-    return {
-      xml: response
-    };
+    return xml2js.parseStringAsync(response);
   });
 }
 

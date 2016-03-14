@@ -55,12 +55,11 @@
         "default": {
           "statusCode": "200",
           "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'",
-            "method.response.header.Content-Type": "'text/xml'"
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
           },
           "responseModels": {},
           "responseTemplates": {
-            "application/json": "$input.path('$.xml')"
+            "application/json": ""
           }
         }
       }
