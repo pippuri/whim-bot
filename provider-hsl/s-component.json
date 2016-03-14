@@ -1,0 +1,5 @@
+{
+  "name": "provider-hsl",
+  "runtime": "nodejs",
+  "custom": {}
+}
