@@ -20,7 +20,7 @@ function getTripGoRoutes(from, to) {
     v: '11',
     from: '(' + from + ')',
     to: '(' + to + ')',
-    departAfter: Math.floor(Date.now()/1000)+3600*10,
+    departAfter: Math.floor(Date.now()/1000),
     arriveBefore: '0',
     modes: TRIPGO_MODES.join(','), // modes to use in routing, separated by commas (get from regions API)
     avoid: '', // public transport modes to avoid, separated by commas
