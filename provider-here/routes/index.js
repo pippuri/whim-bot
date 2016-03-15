@@ -1,9 +1,10 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
+var adapter = require('./adapter');
 
 var HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
 
-function getHereRoutes(from, to) {
+function getHereRoutes(from, to, format) {
   return request.get(HERE_ROUTE_URL, {
     json: true,
     headers: {
@@ -17,11 +18,18 @@ function getHereRoutes(from, to) {
       mode: 'fastest;publicTransport',
       combineChange: 'true'
     }
+  })
+  .then(function (result) {
+    if (format == 'original') {
+      return result;
+    } else {
+      return adapter(result);
+    }
   });
 }
 
 module.exports.respond = function (event, callback) {
-  getHereRoutes(event.from, event.to)
+  getHereRoutes(event.from, event.to, event.format)
   .then(function (response) {
     callback(null, response);
   })

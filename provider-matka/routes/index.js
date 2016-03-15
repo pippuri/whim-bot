@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 var proj4 = require('proj4');
 var xml2js = require('xml2js');
+var adapter = require('./adapter');
 
 Promise.promisifyAll(xml2js);
 
@@ -20,7 +21,7 @@ function convertWGS84ToKKJ3(coords) {
   return to;
 }
 
-function getMatkaRoutes(from, to) {
+function getMatkaRoutes(from, to, format) {
   return request.get(MATKA_BASE_URL, {
     qs: {
       a: convertWGS84ToKKJ3(from),
@@ -30,12 +31,20 @@ function getMatkaRoutes(from, to) {
     }
   })
   .then(function (response) {
-    return xml2js.parseStringAsync(response);
+    return xml2js.parseStringAsync(response, {explicitChildren:true, preserveChildrenOrder:true});
+  })
+  .then(function (result) {
+    console.log('Format:', format);
+    if (format == 'original') {
+      return result;
+    } else {
+      return adapter(result);
+    }
   });
 }
 
 module.exports.respond = function (event, callback) {
-  getMatkaRoutes(event.from, event.to)
+  getMatkaRoutes(event.from, event.to, event.format)
   .then(function (response) {
     callback(null, response);
   })
