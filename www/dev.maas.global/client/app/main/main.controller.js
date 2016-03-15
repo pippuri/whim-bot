@@ -13,10 +13,12 @@ class MainController {
     this.provider = 'tripgo';
     this.routes = null;
     this.segmentTemplates = {};
+    this.directUrl = '';
   }
 
   findRoute(from, to) {
-    this.$http.get('https://api.dev.maas.global/routes?from=' + from + '&to=' + to + '&provider=' + this.provider)
+    this.directUrl = 'https://api.dev.maas.global/routes?from=' + from + '&to=' + to + '&provider=' + this.provider;
+    this.$http.get(this.directUrl)
     .then((response) => {
       this.routes = response.data;
       this.routes.segmentTemplates.map((template) => {
