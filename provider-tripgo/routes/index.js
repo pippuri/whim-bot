@@ -1,5 +1,6 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
+var adapter = require('./adapter');
 
 var TRIPGO_SOUTH_FINLAND_ROUTING_URL = 'https://hadron-fi-southfinland.tripgo.skedgo.com/satapp/routing.json';
 
@@ -15,7 +16,7 @@ var TRIPGO_MODES = [
 
 // Docs: http://planck.buzzhives.com/swagger/index.html#!/Routing/get_routing_json
 
-function getTripGoRoutes(from, to) {
+function getTripGoRoutes(from, to, format) {
   var qs = {
     v: '11',
     from: '(' + from + ')',
@@ -30,18 +31,25 @@ function getTripGoRoutes(from, to) {
     wp: '(1, 1, 1, 1)', // weights for price, environmental impact, duration, and convenience between 0.1..2.0
     ir: 'true' // interregional results
   };
-  console.log(qs);
+  //console.log(qs);
   return request.get(TRIPGO_SOUTH_FINLAND_ROUTING_URL, {
     json: true,
     headers: {
       'X-TripGo-Key': process.env.TRIPGO_API_KEY
     },
     qs: qs
+  })
+  .then(function (result) {
+    if (format == 'original') {
+      return result;
+    } else {
+      return adapter(result);
+    }
   });
 }
 
 module.exports.respond = function (event, callback) {
-  getTripGoRoutes(event.from, event.to)
+  getTripGoRoutes(event.from, event.to, event.format)
   .then(function (response) {
     callback(null, response);
   })
