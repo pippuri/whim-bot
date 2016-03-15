@@ -1,28 +1,28 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
-var xml2js = require('xml2js');
-
-Promise.promisifyAll(xml2js);
+var adapter = require('./adapter');
 
 var DIGITRANSIT_HSL_URL = 'http://beta.digitransit.fi/otp/routers/hsl/plan';
 
-function getDigitransitRoutes(from, to) {
+function getDigitransitRoutes(from, to, format) {
   return request.get(DIGITRANSIT_HSL_URL, {
     json: true,
     qs: {
       fromPlace: from,
       toPlace: to
     }
+  })
+  .then(function (result) {
+    if (format == 'original') {
+      return result;
+    } else {
+      return adapter(result);
+    }
   });
-  /*
-  .then(function (response) {
-    return xml2js.parseStringAsync(response);
-  });
-  */
 }
 
 module.exports.respond = function (event, callback) {
-  getDigitransitRoutes(event.from, event.to)
+  getDigitransitRoutes(event.from, event.to, event.format)
   .then(function (response) {
     callback(null, response);
   })

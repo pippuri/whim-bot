@@ -22,10 +22,11 @@
       "apiKeyRequired": false,
       "requestParameters": {
         "integration.request.querystring.from": "method.request.querystring.from",
-        "integration.request.querystring.to": "method.request.querystring.to"
+        "integration.request.querystring.to": "method.request.querystring.to",
+        "integration.request.querystring.format": "method.request.querystring.format"
       },
       "requestTemplates": {
-        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\"}"
+        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"format\":\"$input.params('format')\"}"
       },
       "responses": {
         "^400.*": {
