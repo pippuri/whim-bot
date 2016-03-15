@@ -8,6 +8,10 @@ class NavbarController {
       'state': 'main'
     },
     {
+      'title': 'Signup',
+      'state': 'signup'
+    },
+    {
       'title': 'Login',
       'state': 'login'
     }
