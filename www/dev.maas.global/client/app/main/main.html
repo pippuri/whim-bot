@@ -21,29 +21,24 @@
   <div class="row" ng-show="main.routes">
     <div class="col-lg-12">
       <h3 class="page-header">Available Routes</h3>
-      <div ng-repeat="group in main.routes.groups">
-        <h6>Frequency {{group.frequency}}</h6>
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Time</th>
-              <th>Cost</th>
-              <th>Segments</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr ng-repeat="trip in group.trips">
-              <td>{{trip.depart*1000|date}}<br>{{trip.depart*1000|date:'HH:mm'}} - {{trip.arrive*1000|date:'HH:mm'}}</td>
-              <td>{{trip.moneyCost}}<span ng-show="trip.moneyCost">€</span></td>
-              <td>
-                <div ng-repeat="segment in trip.segments">
-                  {{main.expandSegmentTemplate(segment)}} <span ng-show="segment.serviceName" class="label label-default">{{segment.serviceName}}</span>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Legs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="itinerary in main.routes.plan.itineraries">
+            <td>{{itinerary.startTime|date}}<br>{{itinerary.startTime|date:'HH:mm'}} - {{itinerary.endTime|date:'HH:mm'}}</td>
+            <td>
+              <div ng-repeat="leg in itinerary.legs">
+                {{leg.startTime|date:'HH:mm'}}-{{leg.endTime|date:'HH:mm'}} {{leg.mode}} {{leg.route}} {{leg.from.name}} - {{leg.to.name}}
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

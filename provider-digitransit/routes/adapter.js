@@ -47,10 +47,14 @@ function convertItinerary(itinerary) {
   };
 }
 
+function compareItinerary(a, b) {
+  return a.startTime - b.startTime;
+}
+
 module.exports = function (original) {
   return Promise.resolve({
     plan: {
-      itineraries: original.plan.itineraries.map(convertItinerary)
+      itineraries: original.plan.itineraries.map(convertItinerary).sort(compareItinerary)
     }
     // excluded: requestParameters, debugOutput
   });

@@ -53,6 +53,10 @@ function convertItinerary(trip, original, templates) {
   };
 }
 
+function compareItinerary(a, b) {
+  return a.startTime - b.startTime;
+}
+
 module.exports = function (original) {
   var allTrips = [];
   // Build template hashmap
@@ -68,7 +72,7 @@ module.exports = function (original) {
     plan: {
       itineraries: allTrips.map(function (trip) {
         return convertItinerary(trip, original, templates);
-      })
+      }).sort(compareItinerary)
     }
   });
 };

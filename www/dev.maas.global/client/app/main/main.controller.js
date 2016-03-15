@@ -9,7 +9,7 @@ class MainController {
     this.$filter = $filter;
     this.from = '60.185034,24.9147957';
     this.to = '60.1883726,24.9574861';
-    this.providers = ['tripgo', 'here'];
+    this.providers = ['tripgo', 'digitransit', 'here', 'hsl', 'matka'];
     this.provider = 'tripgo';
     this.routes = null;
     this.segmentTemplates = {};
