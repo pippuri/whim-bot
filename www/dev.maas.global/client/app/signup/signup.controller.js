@@ -12,7 +12,7 @@ class SignupController {
 
   signup(phone) {
     console.log('Signing up as', phone);
-    this.$http.get('https://api.dev.maas.global/auth/sms-request-code', {query:{phone:this.phone}})
+    this.$http.get('https://api.dev.maas.global/auth/sms-request-code', {params:{phone:phone}})
     .then((response) => {
       // Go to sign up view
       this.$state.go('login', {phone:this.phone});
