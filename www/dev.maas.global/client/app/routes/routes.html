@@ -1,0 +1,38 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <div>
+        <a class="pull-left" ng-href="/">&laquo; Back</a>
+        <a class="pull-right" target="_blank" href="{{routes.directUrl}}">View JSON</a>
+      </div>
+      <div class="">
+        <br>
+      </div>
+      <div class="" ng-show="routes.routes.plan.itineraries.length==0">
+        <br>
+        No results.
+      </div>
+      <div class="row" ng-repeat="itinerary in routes.routes.plan.itineraries">
+        <div class="col-lg-12">
+          <div>
+            <h4>{{itinerary.startTime|date:'MMM dd'}} {{itinerary.startTime|date:'HH:mm'}} - {{itinerary.endTime|date:'HH:mm'}}</h4>
+          </div>
+          <div class="row" ng-repeat="leg in itinerary.legs">
+            <div class="col-xs-2">
+                {{leg.startTime|date:'HH:mm'}}
+            </div>
+            <div class="col-xs-10">
+              <div ng-show="leg.from.name || leg.to.name">
+                {{leg.mode}} {{leg.route}}
+                {{leg.from.name}} - {{leg.to.name}}
+              </div>
+            </div>
+          </div>
+          <div style="padding:4px 0 8px 0">
+            <button class="btn btn-primary" style="width:100%">Start Route</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

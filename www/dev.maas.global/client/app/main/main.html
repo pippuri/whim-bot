@@ -7,41 +7,32 @@
           <select class="form-control" id="provider" ng-model="main.provider" ng-options="provider for provider in main.providers"></select>
         </fieldset>
         <fieldset class="form-group">
-          <label for="from">Starting point</label>
-          <input type="text" class="form-control" id="from" placeholder="Enter latitude,longitude" ng-model="main.from">
+          <div class="input-group">
+            <div class="input-group-addon">From</div>
+            <input type="text" class="form-control" id="from" placeholder="Enter latitude,longitude" ng-model="main.from">
+            <span class="input-group-btn">
+              <button class="btn btn-danger" type="button" ng-click="main.setFrom()">Set</button>
+            </span>
+          </div>
         </fieldset>
         <fieldset class="form-group">
-          <label for="to">Destination</label>
-          <input type="text" class="form-control" id="to" placeholder="Enter latitude,longitude" ng-model="main.to">
+          <div class="input-group">
+            <div class="input-group-addon">To</div>
+            <input type="text" class="form-control" id="to" placeholder="Enter latitude,longitude" ng-model="main.to">
+          </div>
         </fieldset>
-        <button type="submit" class="btn btn-primary">Find Routes</button>
+        <button type="submit" style="width:100%" class="btn btn-primary">Find Routes</button>
       </form>
     </div>
   </div>
-  <div class="row" ng-show="main.routes">
+  <br>
+  <div class="row">
     <div class="col-lg-12">
-      <h3 class="page-header">Available Routes</h3>
-      <p>
-        Open JSON in new window: <a target="_blank" href="{{main.directUrl}}">{{main.directUrl}}</a>
-      </p>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Time</th>
-            <th>Legs</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr ng-repeat="itinerary in main.routes.plan.itineraries">
-            <td>{{itinerary.startTime|date}}<br>{{itinerary.startTime|date:'HH:mm'}} - {{itinerary.endTime|date:'HH:mm'}}</td>
-            <td>
-              <div ng-repeat="leg in itinerary.legs">
-                {{leg.startTime|date:'HH:mm'}}-{{leg.endTime|date:'HH:mm'}} {{leg.mode}} {{leg.route}} {{leg.from.name}} - {{leg.to.name}}
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ui-gmap-google-map center="main.map.center" zoom="main.map.zoom" events="{center_changed:main.centerChanged}">
+        <ui-gmap-marker idKey="'from'" coords="main.fromCoords"></ui-gmap-marker>
+        <ui-gmap-marker idKey="'to'" coords="main.toCoords"></ui-gmap-marker>
+        <ui-gmap-polyline path="[main.fromCoords,main.toCoords]"></ui-gmap-polyline>
+      </ui-gmap-google-map>
     </div>
   </div>
 </div>

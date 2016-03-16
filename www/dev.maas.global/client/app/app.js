@@ -6,11 +6,19 @@ angular.module('devMaasGlobalApp', [
   'ngResource',
   'ngSanitize',
   'ui.router',
-  'ui.bootstrap'
+  'ui.bootstrap',
+  'geolocation',
+  'uiGmapgoogle-maps'
 ])
-  .config(function($urlRouterProvider, $locationProvider) {
-    $urlRouterProvider
-      .otherwise('/');
+.config(function($urlRouterProvider, $locationProvider) {
+  $urlRouterProvider
+    .otherwise('/');
 
-    $locationProvider.html5Mode(true);
-  });
+  $locationProvider.html5Mode(true);
+})
+.config(function(uiGmapGoogleMapApiProvider) {
+    uiGmapGoogleMapApiProvider.configure({
+        key: 'AIzaSyAMTPIzTnSl0pTpZgYL7fwGBoiXW9CUxTQ',
+        libraries: ''//'weather,geometry,visualization'
+    });
+});
