@@ -67,6 +67,10 @@ function getRoutes(provider, from, to) {
     } else if (payload.errorMessage) {
       return Promise.reject(new Error(payload.errorMessage));
     } else {
+      // Add some debug info to response
+      payload.maas = {
+        provider: provider + subProvider
+      };
       return payload;
     }
   });

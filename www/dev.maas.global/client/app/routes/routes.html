@@ -5,8 +5,9 @@
         <a class="pull-left" ng-href="/">&laquo; Back</a>
         <a class="pull-right" target="_blank" href="{{routes.directUrl}}">View JSON</a>
       </div>
-      <div class="">
-        <br>
+      <div class="page-header">
+        <h1 ng-show="routes.routes">Results from {{routes.routes.maas.provider}}</h1>
+        <h1 ng-hide="routes.routes">Loading...</h1>
       </div>
       <div class="" ng-show="routes.routes.plan.itineraries.length==0">
         <br>
