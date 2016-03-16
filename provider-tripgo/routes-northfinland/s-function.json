@@ -1,8 +1,8 @@
 {
-  "name": "routes",
+  "name": "routes-northfinland",
   "customName": false,
   "customRole": false,
-  "handler": "routes/handler.handler",
+  "handler": "routes-northfinland/handler.handler",
   "timeout": 30,
   "memorySize": 1024,
   "custom": {
@@ -15,7 +15,7 @@
   },
   "endpoints": [
     {
-      "path": "providers/tripgo/routes",
+      "path": "providers/tripgo/routes-northfinland",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
