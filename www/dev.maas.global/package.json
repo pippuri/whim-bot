@@ -97,7 +97,7 @@
     "test": "grunt test",
     "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update",
     "deploy": "aws --profile maas s3 sync dist/client/ s3://dev.maas.global/ && npm run deploy:stubs",
-    "deploy:stubs": "for path in /login /signup; do aws --profile maas s3 cp dist/client/index.html s3://dev.maas.global$path; done"
+    "deploy:stubs": "for path in /login /signup /routes; do aws --profile maas s3 cp dist/client/index.html s3://dev.maas.global$path; done"
   },
   "private": true
 }
