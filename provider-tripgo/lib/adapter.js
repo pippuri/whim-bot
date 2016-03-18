@@ -53,6 +53,25 @@ function convertItinerary(trip, original, templates) {
   };
 }
 
+function convertPlanFrom(original) {
+  var from = undefined;
+  if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
+    var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
+    console.log('Finding hashcode', hashCode);
+    (original.segmentTemplates || []).map(function (segmentTemplate) {
+      if (segmentTemplate.hashCode == hashCode) {
+        // Found the starting point
+        from = {
+          name: segmentTemplate.from.address,
+          lon: segmentTemplate.from.lng,
+          lat: segmentTemplate.from.lat
+        };
+      }
+    });
+  }
+  return from;
+}
+
 function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
@@ -70,6 +89,7 @@ module.exports = function (original) {
   });
   return Promise.resolve({
     plan: {
+      from: convertPlanFrom(original),
       itineraries: allTrips.map(function (trip) {
         return convertItinerary(trip, original, templates);
       }).sort(compareItinerary)

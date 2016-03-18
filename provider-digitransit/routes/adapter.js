@@ -47,6 +47,15 @@ function convertItinerary(itinerary) {
   };
 }
 
+function convertPlanFrom(from) {
+  if (!from) return undefined;
+  return {
+    name: from.name,
+    lon: from.lon,
+    lat: from.lat
+  };
+}
+
 function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
@@ -54,6 +63,7 @@ function compareItinerary(a, b) {
 module.exports = function (original) {
   return Promise.resolve({
     plan: {
+      from: convertPlanFrom(original.plan.from),
       itineraries: original.plan.itineraries.map(convertItinerary).sort(compareItinerary)
     }
     // excluded: requestParameters, debugOutput
