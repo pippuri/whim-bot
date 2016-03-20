@@ -1,0 +1,42 @@
+{
+  "name": "query",
+  "customName": false,
+  "customRole": false,
+  "handler": "query/handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "endpoints": [
+    {
+      "path": "locations",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "none",
+      "apiKeyRequired": false,
+      "requestParameters": {
+        "integration.request.querystring.name": "method.request.querystring.name",
+        "integration.request.querystring.count": "method.request.querystring.count"
+      },
+      "requestTemplates": {
+        "application/json": "{\"name\":\"$input.params('name')\", \"count\":\"$input.params('count')\"}"
+      },
+      "responses": {
+        "400": {
+          "statusCode": "400"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {},
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": []
+}

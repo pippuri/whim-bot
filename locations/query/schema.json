@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "$async": true,
+  "id": "https://api.dev.maas.global/v1/locations",
+  "description": "Lambda input schema for geolocations.",
+  "definitions": {
+    "location-core": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "minLength": 3, "maxLength": 128 },
+        "count": { "type": "integer", "minimum": 0, "maximum": 100, "default": 5 }
+      },
+      "required": [ "name" ]
+    }
+  },
+  "anyOf": [
+    {
+      "$ref": "#/definitions/location-core",
+      "lat": { "type": "number", "minimum": -90, "maximum": 90 },
+      "lon": { "type": "number", "minimum": -180, "maximum": 180 },
+      "required": [ "lat", "lon" ],
+      "inject": { "radius": 50 }
+    },
+    {
+      "$ref": "#/definitions/location-core",
+      "country": { "type": "string", "minLength": 3, "maxLength": 128 },
+      "city": { "type": "string", "minLength": 3, "maxLength": 128 },
+      "required": [ "country" ]
+    },
+    {
+      "$ref": "#/definitions/location-core"
+    }
+  ]
+}
