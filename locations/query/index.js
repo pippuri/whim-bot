@@ -2,9 +2,11 @@ var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 var AJV = require('ajv');
 
-// Determine the schema to export
+// Input schema
 var schema = require('./schema.json');
+var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
 var validate;
+Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 // Initialization work
 (function init() {
@@ -35,39 +37,16 @@ var validate;
   Promise.promisifyAll(lambda, { suffix: 'Promise' });
 })();
 
-function getLocation(input) {
-  var locations = [{
-      name: "Kamppi",
-      address: "Urho Kekkosen katu 1",
-      zipCode: "00100",
-      city: "Helsinki",
-      country: "Finland",
-      lat: 60.1685348,
-      lon: 24.9304942
-    },
-    {
-      name: "Kamppi",
-      address: "Tennispalatsinaukio 1",
-      zipCode: "00100",
-      city: "Helsinki",
-      country: "Finland",
-      lat: 60.168,
-      lon: 24.93
-    },
-    {
-      name: "Kampin kingit",
-      address: "Urho Kekkosen katu 7B",
-      zipCode: "00100",
-      city: "Helsinki",
-      country: "Finland",
-      lat: 60.168,
-      lon: 24.930
-    }];
+function delegate(event) {
+  var name = 'MaaS-provider-here-locations';
+  // Replace local stage name with dev (no 'local' in AWS side);
+  var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
+  console.log('Invoking adapter', name);
 
-
-  return Promise.resolve({
-    locations: locations,
-    query: input
+  return lambda.invokePromise({
+    FunctionName: name,
+    Qualifier: stage,
+    Payload: JSON.stringify(event)
   });
 }
 
@@ -75,13 +54,14 @@ module.exports.respond = function (event, callback) {
   // Validate & set defaults
   validate(event)
     .then(function valid() {
-      return getLocation(event);
+      return delegate(event);
     })
     .then(function(results) {
+      console.log(results);
       callback(null, results);
     })
     .catch(function (err) {
-      console.warn('Validation errors:', err.errors);
+      console.warn('Error:', err.errors);
 
       // TODO Process the error
       callback(err);
