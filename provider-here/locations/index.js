@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
-var HERE_ROUTE_URL = 'https://geocoder.api.here.com/6.2/search.json';
+var ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
 
 function adapt(input) {
   // Customise query by the hints given
@@ -29,7 +29,7 @@ function adapt(input) {
       throw new Error('Location hint not given');
   }
 
-  return request.get(HERE_ROUTE_URL, {
+  return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
     qs: query
@@ -54,7 +54,6 @@ function parseResults(response) {
 
   view.forEach(function(item) {
     var results = item.Result;
-    console.log(JSON.stringify(item, null, 2));
 
     results.forEach(function(result) {
       var item = result.Location;
