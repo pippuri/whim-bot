@@ -1,0 +1,13 @@
+{
+  "name": "locations",
+  "customName": false,
+  "customRole": false,
+  "handler": "locations/handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "events": []
+}
