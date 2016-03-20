@@ -38,7 +38,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 })();
 
 function delegate(event) {
-  var name = 'MaaS-provider-here-locations';
+  var name = 'MaaS-provider-nominatim-locations';
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
   console.log('Invoking adapter', name);
