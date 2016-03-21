@@ -11,7 +11,9 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 // Initialization work
 (function init() {
   // Initialise AJV with the option to use defaults supplied in the schema
-  var ajv = AJV({ inject: true, async: true });
+  // Note: Types must be coerced as current API Gateway request templates pass them
+  // as strings
+  var ajv = AJV({ inject: true, coerceTypes: true });
 
   // Add a new handler
   ajv.addKeyword('inject', { 
@@ -41,7 +43,8 @@ function delegate(event) {
   var name = 'MaaS-provider-nominatim-locations';
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
-  console.log('Invoking adapter', name);
+  console.log('Invoking adapter', name, "with input",
+    JSON.stringify(event, null, 2));
 
   return lambda.invokePromise({
     FunctionName: name,
@@ -52,9 +55,18 @@ function delegate(event) {
 
 module.exports.respond = function (event, callback) {
   // Validate & set defaults
-  validate(event)
+  var promise = new Promise(function(resolve, reject) {
+      var valid = validate(event.query);
+      console.log(event);
+
+      if (!valid) {
+        return reject(new Error(JSON.stringify(validate.errors)));
+      }
+
+      return resolve(valid);
+    })
     .then(function valid() {
-      return delegate(event);
+      return delegate(event.query);
     })
     .then(function(results) {
       console.log(results);

@@ -17,11 +17,9 @@
       "authorizationType": "none",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.querystring.name": "method.request.querystring.name",
-        "integration.request.querystring.count": "method.request.querystring.count"
       },
       "requestTemplates": {
-        "application/json": "{\"name\":\"$input.params('name')\", \"count\":\"$input.params('count')\"}"
+        "application/json": "{\"body\": $input.json('$'),\n \"headers\": {\n #foreach($header in $input.params().header.keySet())\n \"$header\": \"$util.escapeJavaScript($input.params().header.get($header))\" #if($foreach.hasNext),#end\n \n #end\n },\n \"method\": \"$context.httpMethod\",\n \"params\": {\n #foreach($param in $input.params().path.keySet())\n \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n \n #end\n },\n \"query\": {\n #foreach($queryParam in $input.params().querystring.keySet())\n \"$queryParam\": \"$util.escapeJavaScript($input.params().querystring.get($queryParam))\" #if($foreach.hasNext),#end\n \n #end\n } \n}"
       },
       "responses": {
         "400": {
