@@ -76,6 +76,8 @@ function parseResults(response) {
 }
 
 module.exports.respond = function (event, callback) {
+  console.log(event);
+
   adapt(event)
   .then(function(response) {
     callback(null, response);

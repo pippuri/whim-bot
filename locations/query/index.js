@@ -40,16 +40,32 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 })();
 
 function delegate(event) {
-  var name = 'MaaS-provider-nominatim-locations';
+  var provider = 'MaaS-provider-nominatim-locations';
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
-  console.log('Invoking adapter', name, "with input",
-    JSON.stringify(event, null, 2));
+
+  //console.log('Invoking provider', provider, "with input",
+  //  JSON.stringify(event, null, 2));
 
   return lambda.invokePromise({
-    FunctionName: name,
+    FunctionName: provider,
     Qualifier: stage,
     Payload: JSON.stringify(event)
+  })
+  .then(function (response) {
+    var payload = JSON.parse(response.Payload);
+
+    if (payload.error) {
+      return Promise.reject(new Error(payload.error));
+    }
+
+    if (payload.errorMessage) {
+      return Promise.reject(new Error(payload.errorMessage));
+    }
+
+    // Add some debug info to response
+    payload.provider = provider;
+    return payload;
   });
 }
 
@@ -57,7 +73,8 @@ module.exports.respond = function (event, callback) {
   // Validate & set defaults
   var promise = new Promise(function(resolve, reject) {
       var valid = validate(event.query);
-      console.log(event);
+      
+      //console.log(event);
 
       if (!valid) {
         return reject(new Error(JSON.stringify(validate.errors)));
@@ -69,7 +86,6 @@ module.exports.respond = function (event, callback) {
       return delegate(event.query);
     })
     .then(function(results) {
-      console.log(results);
       callback(null, results);
     })
     .catch(function (err) {

@@ -22,18 +22,20 @@ function adapt(input) {
       // for conversion rule
       var latRadians = input.lat * Math.PI / 180;
       var lonRadians = input.lon * Math.PI / 180;
-      var left = input.lat - input.radius / 111.320 * Math.cos(latRadians);
-      var top = input.lon - input.radius / 110.574;
-      var right = input.lat + input.radius / 111.320 * Math.cos(latRadians);
-      var bottom = input.lon + input.radius / 110.574;
+      var left = input.lon - input.radius / 111.320 * Math.cos(latRadians);
+      var top = input.lat + input.radius / 110.574;
+      var right = input.lon + input.radius / 111.320 * Math.cos(latRadians);
+      var bottom = input.lat - input.radius / 110.574;
 
-      query.viewbox = [ left, top, right, bottom ].join(',')
+      query.viewbox = [ left, top, right, bottom ].join(',');
+      // Force the boundaries
+      //query.bounded = 1;
       break;
     case 'country':
-      query.country = input.country;
       if (typeof input.city !== 'undefined') {
-        query.city = input.city;
+        query.q += ' ' + input.city;
       }
+      query.q += ' ' + input.country;
       break;
     case 'none':
       break;
