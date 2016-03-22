@@ -71,8 +71,8 @@ function parseResults(response) {
 
     var location = {
       name: item.display_name,
-      lat: item.lat,
-      lon: item.lon,
+      lat: Number(item.lat),
+      lon: Number(item.lon),
       zipCode: item.address.postcode,
       city: item.address.city,
       country: item.address.country,
