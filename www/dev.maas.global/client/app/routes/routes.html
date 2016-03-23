@@ -2,12 +2,12 @@
   <div class="row">
     <div class="col-lg-12">
       <div>
-        <a class="pull-left" ng-href="/">&laquo; Back</a>
+        <a class="pull-left" ng-href="/?from={{routes.from}}&amp;to={{routes.to}}&amp;provider={{routes.provider}}">&laquo; Back to map view</a>
         <a class="pull-right" target="_blank" href="{{routes.directUrl}}">View JSON</a>
       </div>
       <div class="page-header">
-        <h1 ng-show="routes.routes">Results from {{routes.routes.maas.provider}}</h1>
-        <h1 ng-hide="routes.routes">Loading...</h1>
+        <h1 ng-show="routes.routes || routes.error">Results from {{routes.routes.maas.provider}}</h1>
+        <h1 ng-hide="routes.routes || routes.error">Loading...</h1>
       </div>
       <div class="" ng-show="routes.routes.plan.itineraries.length==0">
         <br>
@@ -15,6 +15,9 @@
       </div>
       <div class="alert alert-success" ng-show="routes.routes.plan.from">
         From: {{routes.routes.plan.from.name}} ({{routes.routes.plan.from.lat}},{{routes.routes.plan.from.lon}})
+      </div>
+      <div class="alert alert-danger" ng-show="routes.error">
+        {{routes.error}}
       </div>
       <div class="row" ng-repeat="itinerary in routes.routes.plan.itineraries">
         <div class="col-lg-12">

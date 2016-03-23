@@ -4,41 +4,45 @@
 
 class MainController {
 
-  constructor($http, $filter, $state, geolocation) {
+  constructor($http, $filter, $state, $stateParams, $timeout, geolocation) {
     this.$http = $http;
     this.$filter = $filter;
     this.$state = $state;
-    this.from = '0,0';
-    this.fromCoords = {latitude: 0, longitude: 0};
-    this.to = '60.1851607,24.9160174';
-    this.toCoords = {latitude:60.1851607, longitude:24.9160174};
+    this.from = $stateParams.from || '0,0';
+    this.to = $stateParams.to || '60.1851607,24.9160174';
+    this.fromCoords = this.parseCoords(this.from);
+    this.toCoords = this.parseCoords(this.to);
     this.providers = ['tripgo', 'digitransit', 'here', 'hsl', 'matka'];
-    this.provider = 'tripgo';
+    this.provider = $stateParams.provider || 'tripgo';
     this.map = {
-      center: {
-        latitude: 0,
-        longitude: 0
-      },
+      center: this.toCoords,
       zoom: 15
     };
-    geolocation.getLocation()
-    .then((data) => {
-      this.from = '' + data.coords.latitude + ',' + data.coords.longitude;
-      this.fromCoords = {
-        latitude: data.coords.latitude,
-        longitude: data.coords.longitude
-      };
-      this.map.center = {
-        latitude: data.coords.latitude,
-        longitude: data.coords.longitude
-      };
-    });
+    if (!$stateParams.from) {
+      geolocation.getLocation()
+      .then((data) => {
+        this.from = '' + data.coords.latitude + ',' + data.coords.longitude;
+        this.fromCoords = {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude
+        };
+        this.map.center = {
+          latitude: data.coords.latitude,
+          longitude: data.coords.longitude
+        };
+      });
+    }
 
     this.centerChanged = () => {
       this.setTo();
     }
   }
-  
+
+  parseCoords(str) {
+    var coords = str.split(',');
+    return {latitude:coords[0], longitude:coords[1]};
+  }
+
   setFrom() {
     this.from = '' + this.map.center.latitude + ',' + this.map.center.longitude;
     this.fromCoords = {
@@ -54,7 +58,6 @@ class MainController {
       longitude: this.map.center.longitude
     };
   }
-
 
   findRoute(from, to) {
     this.$state.go('routes', {from:from, to:to, provider:this.provider});

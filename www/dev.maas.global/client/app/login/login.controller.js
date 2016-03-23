@@ -4,15 +4,16 @@
 
 class LoginController {
 
-  constructor($http, $stateParams) {
+  constructor($http, $stateParams, API_BASE_URL) {
     this.$http = $http;
     this.phone = $stateParams.phone;
     this.code = $stateParams.code;
+    this.API_BASE_URL = API_BASE_URL;
   }
 
   login(phone, code) {
     console.log('Logging in as', phone, code);
-    this.$http.get('https://api.dev.maas.global/auth/sms-login', {params:{phone:this.phone}})
+    this.$http.get(this.API_BASE_URL + '/auth/sms-login', {params:{phone:this.phone}})
     .then((response) => {
       console.log('Login response:', response);
     });
