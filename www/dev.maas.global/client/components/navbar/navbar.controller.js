@@ -8,18 +8,6 @@ class NavbarController {
       'state': 'main'
     },
     {
-      'title': 'Signup',
-      'state': 'signup'
-    },
-    {
-      'title': 'Login',
-      'state': 'login'
-    },
-    {
-      'title': 'Profile',
-      'state': 'profile'
-    },
-    {
       'title': 'MQTT',
       'state': 'mqtt'
     }
@@ -28,7 +16,12 @@ class NavbarController {
   isCollapsed = true;
   //end-non-standard
 
-  constructor() {
+  constructor($localStorage) {
+    this.$localStorage = $localStorage;
+  }
+
+  isLoggedIn() {
+    return !!this.$localStorage.idToken;
   }
 }
 
