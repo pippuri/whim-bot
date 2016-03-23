@@ -39,6 +39,13 @@
                 "logs:PutLogEvents"
               ],
               "Resource": "arn:aws:logs:eu-west-1:*:*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "lambda:InvokeFunction"
+              ],
+              "Resource": "*"
             }
           ]
         },
