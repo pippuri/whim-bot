@@ -14,6 +14,10 @@ class NavbarController {
     {
       'title': 'Login',
       'state': 'login'
+    },
+    {
+      'title': 'Profile',
+      'state': 'profile'
     }
   ];
 

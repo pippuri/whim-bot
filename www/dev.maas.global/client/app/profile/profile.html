@@ -1,0 +1,17 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">User Profile</h1>
+      <div class="well">
+        Principal Id: {{profile.profile.principalId}}<br>
+        Registered phone number: {{profile.profile.phone}}<br>
+        ID token: <input type="text" ng-model="profile.idToken"><br>
+      </div>
+      <pre>{{profile.profile|json}}
+      </pre>
+      <div class="alert alert-danger" ng-show="profile.error">
+        {{profile.error}}
+      </div>
+    </div>
+  </div>
+</div>

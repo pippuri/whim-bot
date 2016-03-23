@@ -5,6 +5,7 @@ angular.module('devMaasGlobalApp', [
   'ngCookies',
   'ngResource',
   'ngSanitize',
+  'ngStorage',
   'ui.router',
   'ui.bootstrap',
   'geolocation',

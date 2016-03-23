@@ -4,8 +4,9 @@
 
 class LoginController {
 
-  constructor($http, $stateParams, API_BASE_URL) {
+  constructor($http, $stateParams, $localStorage, API_BASE_URL) {
     this.$http = $http;
+    this.$localStorage = $localStorage;
     this.phone = $stateParams.phone;
     this.code = $stateParams.code;
     this.API_BASE_URL = API_BASE_URL;
@@ -17,6 +18,7 @@ class LoginController {
     .then((response) => {
       console.log('Login response:', response);
       this.token = response.data;
+      this.$localStorage.idToken = response.data.id_token;
     })
     .then(null, (err) => {
       this.error = err.data.errorMessage || JSON.stringify(err.data);
