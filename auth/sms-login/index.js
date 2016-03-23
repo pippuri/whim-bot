@@ -91,11 +91,35 @@ function createUserThing(principalId) {
     }
   })
   .then(function (response) {
+    console.log('CreateThing response:', response);
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
       principal: principalId,
       thingName: thingName
     });
+  })
+  .then(function (response) {
+    console.log('AttachThingPrincipal response:', response);
+    // Attach the cognito policy to the default policy
+    return iot.attachPrincipalPolicyAsync({
+      policyName: 'DefaultCognitoPolicy',
+      principal: principalId
+    });
+  })
+  .then(function (response) {
+    console.log('AttachPrincipalPolicy response:', response);
+    return iot.listPrincipalPoliciesAsync({
+      principal: principalId
+    });
+  })
+  .then(function (response) {
+    console.log('Attached policies:', response);
+    return iot.listPrincipalThingsAsync({
+      principal: principalId
+    });
+  })
+  .then(function (response) {
+    console.log('Attached things:', response);
   });
 }
 

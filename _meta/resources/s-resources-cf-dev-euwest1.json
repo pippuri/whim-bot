@@ -46,7 +46,8 @@
                 "cognito-sync:ListRecords",
                 "cognito-sync:UpdateRecords",
                 "cognito-identity:GetId",
-                "cognito-identity:GetOpenIdTokenForDeveloperIdentity"
+                "cognito-identity:GetOpenIdTokenForDeveloperIdentity",
+                "cognito-identity:DescribeIdentity"
               ],
               "Resource": "*"
             },
@@ -57,8 +58,10 @@
                 "iot:DescribeThing",
                 "iot:AttachThingPrincipal",
                 "iot:DetachThingPrincipal",
+                "iot:ListPrincipalThings",
                 "iot:AttachPrincipalPolicy",
-                "iot:DetachPrincipalPolicy"
+                "iot:DetachPrincipalPolicy",
+                "iot:ListPrincipalPolicies"
               ],
               "Resource": "*"
             },
