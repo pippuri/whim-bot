@@ -12,6 +12,13 @@
         </fieldset>
         <button type="submit" class="btn btn-primary">Sign in</button>
       </form>
+      <br>
+      <div class="alert alert-success" ng-show="login.token">
+        {{login.token|json}}
+      </div>
+      <div class="alert alert-danger" ng-show="login.error">
+        {{login.error}}
+      </div>
     </div>
   </div>
 </div>

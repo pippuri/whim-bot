@@ -13,9 +13,13 @@ class LoginController {
 
   login(phone, code) {
     console.log('Logging in as', phone, code);
-    this.$http.get(this.API_BASE_URL + '/auth/sms-login', {params:{phone:this.phone}})
+    this.$http.get(this.API_BASE_URL + '/auth/sms-login', {params:{phone:this.phone, code:this.code}})
     .then((response) => {
       console.log('Login response:', response);
+      this.token = response.data;
+    })
+    .then(null, (err) => {
+      this.error = err.data.errorMessage || JSON.stringify(err.data);
     });
   }
 }
