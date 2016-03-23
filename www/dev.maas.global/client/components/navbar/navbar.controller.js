@@ -18,6 +18,10 @@ class NavbarController {
     {
       'title': 'Profile',
       'state': 'profile'
+    },
+    {
+      'title': 'MQTT',
+      'state': 'mqtt'
     }
   ];
 

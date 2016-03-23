@@ -7,8 +7,7 @@
         Registered phone number: {{profile.profile.phone}}<br>
         ID token: <input type="text" ng-model="profile.idToken"><br>
       </div>
-      <pre>{{profile.profile|json}}
-      </pre>
+      <pre>{{profile.profile|json}}</pre>
       <div class="alert alert-danger" ng-show="profile.error">
         {{profile.error}}
       </div>

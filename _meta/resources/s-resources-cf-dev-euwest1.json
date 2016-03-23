@@ -53,6 +53,18 @@
             {
               "Effect": "Allow",
               "Action": [
+                "iot:CreateThing",
+                "iot:DescribeThing",
+                "iot:AttachThingPrincipal",
+                "iot:DetachThingPrincipal",
+                "iot:AttachPrincipalPolicy",
+                "iot:DetachPrincipalPolicy"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "lambda:InvokeFunction"
               ],
               "Resource": "*"

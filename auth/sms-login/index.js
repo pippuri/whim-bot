@@ -5,9 +5,11 @@ var jwt = require('jsonwebtoken');
 
 var cognitoIdentity = new AWS.CognitoIdentity({region:process.env.AWS_REGION});
 var cognitoSync = new AWS.CognitoSync({region:process.env.AWS_REGION});
+var iot = new AWS.Iot({region:process.env.AWS_REGION});
 
 Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
+Promise.promisifyAll(iot);
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -75,6 +77,29 @@ function updateCognitoProfile(principalId, profile) {
 }
 
 /**
+ * Create (if it doesn't exist yet) an IoT Thing for the user
+ */
+function createUserThing(principalId) {
+  var thingName = principalId.replace(/:/, '-');
+  console.log('Creating user thing', principalId, thingName);
+  return iot.createThingAsync({
+    thingName: thingName,
+    attributePayload: {
+      attributes: {
+        // Up to three attributes can be attached here if needed
+      }
+    }
+  })
+  .then(function (response) {
+    // Attach the cognito identity to the thing
+    return iot.attachThingPrincipalAsync({
+      principal: principalId,
+      thingName: thingName
+    });
+  });
+}
+
+/**
  * Login using a verification code sent by SMS.
  */
 function smsLogin(phone, code) {
@@ -99,6 +124,9 @@ function smsLogin(phone, code) {
       phone: phone,
       verificationCode: code
     });
+  })
+  .then(function () {
+    return createUserThing(principalId);
   })
   .then(function () {
     // Create a signed JSON web token
