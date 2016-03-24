@@ -46,7 +46,7 @@ function getMqttCredentials(principalId) {
   })
   .then(function (response) {
     response.IotEndpoint = process.env.IOT_ENDPOINT;
-    response.ThingName = principalId.replace(/:/g, '-'));
+    response.ThingName = principalId.replace(/:/g, '-');
     return response;
   });
 }
