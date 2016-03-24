@@ -53,6 +53,9 @@
           {{msg.msg}}
         </div>
       </div>
+      <div class="alert alert-info" ng-show="activeroute.info">
+        {{activeroute.info.time|date:'HH:mm'}} {{activeroute.info.text}}
+      </div>
     </div>
   </div>
 </div>

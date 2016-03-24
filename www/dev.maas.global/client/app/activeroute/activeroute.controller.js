@@ -16,6 +16,7 @@ class ActiveRouteController {
     this.currentLeg = null;
     this.nextLeg = null;
     this.messageLog = [];
+    this.locationUpdateCount = 0;
     this.options = {
       regionName: 'eu-west-1',
       topicFilter: '',
@@ -118,6 +119,11 @@ class ActiveRouteController {
     message.destinationName = this.shadowUpdateTopic;
     console.log('Updating thing shadow:', this.shadowUpdateTopic, msg);
     this.client.send(message);
+    this.locationUpdateCount += 1;
+    this.info = {
+      time: Date.now(),
+      text: 'ThingShadow[' + this.locationUpdateCount + '] ' + latitude + ',' + longitude
+    };
   }
 
   decodePath(legGeometry) {
@@ -194,8 +200,8 @@ class ActiveRouteController {
     this.messageLog.push({msg:'Subscribing to topic ' + this.options.topicFilter});
     this.connected = true;
     this.client.subscribe(this.options.topicFilter);
-    this.$scope.$apply();
     this.updateThingShadowLocation(this.$geolocation.position.coords.latitude, this.$geolocation.position.coords.longitude);
+    this.$scope.$apply();
   }
 
   onFailure(err) {
