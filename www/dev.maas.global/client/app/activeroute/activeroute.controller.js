@@ -11,6 +11,7 @@ class ActiveRouteController {
     this.$timeout = $timeout;
     this.$localStorage = $localStorage;
     this.$geolocation = $geolocation;
+    this.currentCoords = {};
     this.API_BASE_URL = API_BASE_URL;
     this.itinerary = null;
     this.currentLeg = null;
@@ -39,6 +40,10 @@ class ActiveRouteController {
         latitude: data.coords.latitude,
         longitude: data.coords.longitude
       };
+      this.currentCoords = {
+        latitude: data.coords.latitude,
+        longitude: data.coords.longitude
+      };
     });
     $geolocation.watchPosition({
       enableHighAccuracy: true
@@ -55,6 +60,10 @@ class ActiveRouteController {
             longitude: newValue.longitude
           };
         }
+        this.currentCoords = {
+          latitude: newValue.latitude,
+          longitude: newValue.longitude
+        };
         if (this.client && this.connected && this.shadowUpdateTopic) {
           this.updateThingShadowLocation(newValue.latitude, newValue.longitude);
         }

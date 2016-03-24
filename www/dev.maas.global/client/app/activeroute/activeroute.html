@@ -8,7 +8,7 @@
   <div class="row">
     <div class="col-lg-12">
       <ui-gmap-google-map center="activeroute.map.center" zoom="activeroute.map.zoom">
-        <ui-gmap-circle center="activeroute.$geolocation.position.coords" radius="20" stroke="{color:'#0000ff'}"></ui-gmap-circle>
+        <ui-gmap-circle center="activeroute.currentCoords" radius="20" stroke="{color:'#0000ff'}"></ui-gmap-circle>
         <ui-gmap-marker idKey="'leg' + leg.startTime" ng-repeat="leg in activeroute.itinerary.legs" coords="leg.toCoords"></ui-gmap-marker>
         <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="leg.decodedPath" path="leg.decodedPath"></ui-gmap-polyline>
         <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="!leg.decodedPath" path="[leg.fromCoords,leg.toCoords]"></ui-gmap-polyline>
