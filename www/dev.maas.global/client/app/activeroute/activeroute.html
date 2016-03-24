@@ -18,7 +18,7 @@
   </div>
   <div class="row">
     <div class="col-lg-12">
-      <table class="table">
+      <table class="table" style="max-width:100%">
         <thead>
           <tr>
             <th>State</th>
@@ -28,21 +28,20 @@
         <tbody>
           <tr ng-repeat="leg in activeroute.itinerary.legs">
             <td>
-              <span ng-show="leg == activeroute.currentLeg">Current</span>
+              <span ng-show="leg == activeroute.currentLeg">Curr</span>
               <span ng-show="leg == activeroute.nextLeg">Next</span>
             </td>
             <td>
               {{leg.startTime|date:'HH:mm'}} - {{leg.endTime|date:'HH:mm'}}
               {{leg.mode}}
-              <span ng-show="leg.from">from {{leg.from}}</span>
-              <span ng-show="leg.to">to {{leg.to}}</span>
+              <span ng-show="leg.from">from {{leg.from.name}}</span>
+              <span ng-show="leg.to">to {{leg.to.name}}</span>
             </td>
           </tr>
         </tbody>
       </table>
       <div ng-show="activeroute.itinerary">
         <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Abort Route</button></p>
-        <br>
       </div>
     </div>
   </div>
