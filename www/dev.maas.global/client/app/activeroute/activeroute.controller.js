@@ -17,6 +17,8 @@ class ActiveRouteController {
     this.nextLeg = null;
     this.messageLog = [];
     this.locationUpdateCount = 0;
+    this.lastUpdatedLatitude = 0;
+    this.lastUpdatedLongitude = 0;
     this.options = {
       regionName: 'eu-west-1',
       topicFilter: '',
@@ -105,6 +107,12 @@ class ActiveRouteController {
 
   updateThingShadowLocation(latitude, longitude) {
     // Publish location to Thing Shadow
+    if (!(latitude != this.lastUpdatedLatitude || longitude != this.lastUpdatedLongitude)) {
+      // No change
+      return;
+    }
+    this.lastUpdatedLatitude = latitude;
+    this.lastUpdatedLongitude = longitude;
     var msg = JSON.stringify({
       state: {
         reported: {
