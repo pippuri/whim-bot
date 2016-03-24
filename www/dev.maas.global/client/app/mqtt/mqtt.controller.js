@@ -17,7 +17,7 @@ class MqttController {
       topicFilter: '',
       accessKey: '', // fill in later
       secretKey: '', // fill in later
-      endpoint: 'a3lehuix0sl1ku.iot.eu-west-1.amazonaws.com',
+      endpoint: '', // fill in later
       clientId: null // fill in later
     };
 
@@ -28,6 +28,7 @@ class MqttController {
     })
     .then((response) => {
       var cleanId = response.data.IdentityId.replace(/:/g, '-');
+      this.options.endpoint = response.data.IotEndpoint;
       this.options.clientId = 'maas-client-' + response.data.IdentityId + '-' + Date.now();
       this.options.topicFilter = 'maas/id/' + response.data.IdentityId + '/#';
       this.options.accessKey = response.data.Credentials.AccessKeyId;

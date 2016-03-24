@@ -16,9 +16,10 @@
         </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <li ng-hide="nav.isLoggedIn()"><a ui-sref="login">Login</a></li>
-        <li ng-show="nav.isLoggedIn()"><a ui-sref="profile">Profile</a></li>
-        <li ng-show="nav.isLoggedIn()"><a ui-sref="logout">Logout</a></li>
+        <li ng-hide="nav.isLoggedIn()"><a href ui-sref="signup">Sign Up</a></li>
+        <li ng-hide="nav.isLoggedIn()"><a href ui-sref="login">Login</a></li>
+        <li ng-show="nav.isLoggedIn()"><a href ui-sref="profile">Profile</a></li>
+        <li ng-show="nav.isLoggedIn()"><a href ng-click="nav.logout()">Logout</a></li>
       </ul>
     </div>
   </div>

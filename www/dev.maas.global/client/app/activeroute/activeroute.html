@@ -1,0 +1,34 @@
+<div class="container">
+  <div class="row">
+    <div class="col-lg-12">
+      <h1 class="page-header">Active Route</h1>
+      <div class="alert alert-danger" ng-show="activeroute.error">{{activeroute.error}}</div>
+      <div ng-show="activeroute.itinerary">
+        <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Abort Route</button></p>
+        <br>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>State</th>
+            <th>Leg</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="leg in activeroute.itinerary.legs">
+            <td>
+              <span ng-show="leg == activeroute.currentLeg">Current</span>
+              <span ng-show="leg == activeroute.nextLeg">Next</span>
+            </td>
+            <td>
+              {{leg.startTime|date:'HH:mm'}} - {{leg.endTime|date:'HH:mm'}}
+              {{leg.mode}}
+              <span ng-show="leg.from.name">from {{leg.from.name}}</span>
+              <span ng-show="leg.to.name">to {{leg.to.name}}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

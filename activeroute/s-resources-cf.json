@@ -1,0 +1,13 @@
+{
+  "LambdaIamPolicyStatements": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "iot:UpdateThingShadow",
+        "iot:GetThingShadow",
+        "iot:DeleteThingShadow"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

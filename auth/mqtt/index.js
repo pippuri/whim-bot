@@ -43,6 +43,10 @@ function getMqttCredentials(principalId) {
         'cognito-identity.amazonaws.com': response.Token
       }
     });
+  })
+  .then(function (response) {
+    response.IotEndpoint = process.env.IOT_ENDPOINT;
+    return response;
   });
 }
 

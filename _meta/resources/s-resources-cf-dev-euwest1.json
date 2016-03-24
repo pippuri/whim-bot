@@ -43,6 +43,15 @@
             {
               "Effect": "Allow",
               "Action": [
+                "iot:UpdateThingShadow",
+                "iot:GetThingShadow",
+                "iot:DeleteThingShadow"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "cognito-sync:ListRecords",
                 "cognito-sync:UpdateRecords",
                 "cognito-identity:GetId",

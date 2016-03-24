@@ -23,6 +23,10 @@ class NavbarController {
   isLoggedIn() {
     return !!this.$localStorage.idToken;
   }
+
+  logout() {
+    delete this.$localStorage.idToken;
+  }
 }
 
 angular.module('devMaasGlobalApp')
