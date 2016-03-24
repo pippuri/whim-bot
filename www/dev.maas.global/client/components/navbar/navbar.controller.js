@@ -8,6 +8,10 @@ class NavbarController {
       'state': 'main'
     },
     {
+      'title': 'Active Route',
+      'state': 'activeroute'
+    },
+    {
       'title': 'MQTT',
       'state': 'mqtt'
     }

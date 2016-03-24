@@ -3,10 +3,21 @@
     <div class="col-lg-12">
       <h1 class="page-header">Active Route</h1>
       <div class="alert alert-danger" ng-show="activeroute.error">{{activeroute.error}}</div>
-      <div ng-show="activeroute.itinerary">
-        <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Abort Route</button></p>
-        <br>
-      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <ui-gmap-google-map center="activeroute.map.center" zoom="activeroute.map.zoom">
+        <ui-gmap-circle center="activeroute.$geolocation.position.coords" radius="20" stroke="{color:'#0000ff'}"></ui-gmap-circle>
+        <ui-gmap-marker idKey="'leg' + leg.startTime" ng-repeat="leg in activeroute.itinerary.legs" coords="leg.toCoords"></ui-gmap-marker>
+        <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="leg.decodedPath" path="leg.decodedPath"></ui-gmap-polyline>
+        <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="!leg.decodedPath" path="[leg.fromCoords,leg.toCoords]"></ui-gmap-polyline>
+      </ui-gmap-google-map>
+      <input type="checkbox" ng-model="activeroute.map.tracking"> Tracking
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-lg-12">
       <table class="table">
         <thead>
           <tr>
@@ -23,12 +34,16 @@
             <td>
               {{leg.startTime|date:'HH:mm'}} - {{leg.endTime|date:'HH:mm'}}
               {{leg.mode}}
-              <span ng-show="leg.from.name">from {{leg.from.name}}</span>
-              <span ng-show="leg.to.name">to {{leg.to.name}}</span>
+              <span ng-show="leg.from">from {{leg.from}}</span>
+              <span ng-show="leg.to">to {{leg.to}}</span>
             </td>
           </tr>
         </tbody>
       </table>
+      <div ng-show="activeroute.itinerary">
+        <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Abort Route</button></p>
+        <br>
+      </div>
     </div>
   </div>
 </div>

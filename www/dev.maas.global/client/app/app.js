@@ -6,9 +6,9 @@ angular.module('devMaasGlobalApp', [
   'ngResource',
   'ngSanitize',
   'ngStorage',
+  'ngGeolocation',
   'ui.router',
   'ui.bootstrap',
-  'geolocation',
   'uiGmapgoogle-maps'
 ])
 .config(function($urlRouterProvider, $locationProvider) {
@@ -21,6 +21,6 @@ angular.module('devMaasGlobalApp', [
 .config(function(uiGmapGoogleMapApiProvider) {
     uiGmapGoogleMapApiProvider.configure({
         key: 'AIzaSyAMTPIzTnSl0pTpZgYL7fwGBoiXW9CUxTQ',
-        libraries: ''//'weather,geometry,visualization'
+        libraries: 'geometry'//'weather,geometry,visualization'
     });
 });

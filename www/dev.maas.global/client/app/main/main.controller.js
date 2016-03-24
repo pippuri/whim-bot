@@ -4,7 +4,7 @@
 
 class MainController {
 
-  constructor($http, $filter, $state, $stateParams, $timeout, geolocation) {
+  constructor($http, $filter, $state, $stateParams, $timeout, $geolocation) {
     this.$http = $http;
     this.$filter = $filter;
     this.$state = $state;
@@ -19,7 +19,7 @@ class MainController {
       zoom: 15
     };
     if (!$stateParams.from || !$stateParams.to) {
-      geolocation.getLocation()
+      $geolocation.getCurrentPosition()
       .then((data) => {
         if (!$stateParams.from) {
           this.from = '' + data.coords.latitude + ',' + data.coords.longitude;
