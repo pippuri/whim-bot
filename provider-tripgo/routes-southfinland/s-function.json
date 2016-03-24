@@ -23,10 +23,12 @@
       "requestParameters": {
         "integration.request.querystring.from": "method.request.querystring.from",
         "integration.request.querystring.to": "method.request.querystring.to",
+        "integration.request.querystring.leaveAt": "method.request.querystring.leaveAt",
+        "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy",
         "integration.request.querystring.format": "method.request.querystring.format"
       },
       "requestTemplates": {
-        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"format\":\"$input.params('format')\"}"
+        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"format\":\"$input.params('format')\"}"
       },
       "responses": {
         "^400.*": {
