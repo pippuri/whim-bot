@@ -304,7 +304,7 @@ var Messaging = (function (global) {
                 if (this.payloadMessage.duplicate) first |= 0x08;
                 first = first |= (this.payloadMessage.qos << 1);
                 if (this.payloadMessage.retained) first |= 0x01;
-                destinationNameLength = UTF8Length(this.payloadMessage.destinationName);
+                var destinationNameLength = UTF8Length(this.payloadMessage.destinationName);
                 remLength += destinationNameLength + 2;
                 var payloadBytes = this.payloadMessage.payloadBytes;
                 remLength += payloadBytes.byteLength;
@@ -856,7 +856,7 @@ var Messaging = (function (global) {
         if (!this.connected)
             throw new Error(format(ERROR.INVALID_STATE, ["not connected"]));
 
-        wireMessage = new WireMessage(MESSAGE_TYPE.PUBLISH);
+        var wireMessage = new WireMessage(MESSAGE_TYPE.PUBLISH);
         wireMessage.payloadMessage = message;
 
         if (message.qos > 0)
@@ -872,7 +872,7 @@ var Messaging = (function (global) {
         if (!this.socket)
             throw new Error(format(ERROR.INVALID_STATE, ["not connecting or connected"]));
 
-        wireMessage = new WireMessage(MESSAGE_TYPE.DISCONNECT);
+        var wireMessage = new WireMessage(MESSAGE_TYPE.DISCONNECT);
 
         // Run the disconnected call back as soon as the message has been sent,
         // in case of a failure later on in the disconnect processing.

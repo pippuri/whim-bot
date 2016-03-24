@@ -29,7 +29,7 @@ class MqttController {
     .then((response) => {
       var cleanId = response.data.IdentityId.replace(/:/g, '-');
       this.options.endpoint = response.data.IotEndpoint;
-      this.options.clientId = 'maas-client-' + response.data.IdentityId + '-' + Date.now();
+      this.options.clientId = 'maas-client-' + response.data.IdentityId + '-m' + Date.now();
       this.options.topicFilter = 'maas/id/' + response.data.IdentityId + '/#';
       this.options.accessKey = response.data.Credentials.AccessKeyId;
       this.options.secretKey = response.data.Credentials.SecretKey;
@@ -43,6 +43,15 @@ class MqttController {
     })
     .then(null, (err) => {
       this.error = err.data && err.data.errorMessage || err;
+    });
+
+    $scope.$on('$destroy', () => {
+      console.log('DESTROY');
+      if (this.client && this.connected) {
+        var client = this.client;
+        this.client = null;
+        client.disconnect();
+      }
     });
   }
 
