@@ -9,7 +9,7 @@
         <fieldset class="form-group">
           <div class="input-group">
             <div class="input-group-addon">From</div>
-            <input type="text" class="form-control" id="from" placeholder="Enter latitude,longitude" ng-model="main.from">
+            <input type="text" class="form-control" id="from" placeholder="Enter origin" autocomplete="off" ng-model="main.from" typeahead="location for location in main.getLocations($viewValue)" typeahead-wait-ms="600" typeahead-min-length="3">
             <span class="input-group-btn">
               <button class="btn btn-danger" type="button" ng-click="main.setFrom()">Set</button>
             </span>
@@ -18,7 +18,7 @@
         <fieldset class="form-group">
           <div class="input-group">
             <div class="input-group-addon">To</div>
-            <input type="text" class="form-control" id="to" placeholder="Enter latitude,longitude" ng-model="main.to">
+            <input type="text" class="form-control" id="to" placeholder="Enter destination" autocomplete="off" ng-model="main.to" typeahead="location for location in main.getLocations($viewValue)" typeahead-wait-ms="600" typeahead-min-length="3">
           </div>
         </fieldset>
         <button type="submit" style="width:100%" class="btn btn-primary">Find Routes</button>
