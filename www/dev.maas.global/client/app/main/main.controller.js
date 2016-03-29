@@ -12,10 +12,6 @@ class MainController {
     this.to = $stateParams.to || '0,0';
     this.fromCoords = this.parseCoords(this.from);
     this.toCoords = this.parseCoords(this.to);
-    // this.from = null;
-    // this.to = null;
-    // this.fromCoords = null;
-    // this.toCoords = null;
     this.API_BASE_URL = API_BASE_URL;
     this.locations = {};
     this.providers = ['tripgo', 'digitransit', 'here', 'hsl', 'matka'];
@@ -81,7 +77,7 @@ class MainController {
       .then((response) => {
         console.log(response);
 
-        // Parse names to simple array
+        // Parse names to simple array and store small buffer for lat,lon fetch
         if(typeof response.data.locations !== 'undefined') {
           return response.data.locations.map((location) => {
             this.locations[location.name] = {
