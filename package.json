@@ -46,5 +46,5 @@
     "url": "git+https://github.com/maasglobal/maas-backend.git"
   },
   "scripts": {},
-  "version": "0.0.1"
+  "version": "0.1.0"
 }
