@@ -4,7 +4,7 @@
 
 class MainController {
 
-  constructor($http, $filter, $state, $stateParams, $timeout, $geolocation) {
+  constructor($http, $filter, $state, $stateParams, $timeout, $geolocation, API_BASE_URL) {
     this.$http = $http;
     this.$filter = $filter;
     this.$state = $state;
@@ -12,6 +12,8 @@ class MainController {
     this.to = $stateParams.to || '0,0';
     this.fromCoords = this.parseCoords(this.from);
     this.toCoords = this.parseCoords(this.to);
+    this.API_BASE_URL = API_BASE_URL;
+    this.locations = {};
     this.providers = ['tripgo', 'digitransit', 'here', 'hsl', 'matka'];
     this.provider = $stateParams.provider || 'tripgo';
     this.map = {
@@ -68,7 +70,44 @@ class MainController {
     };
   }
 
+  getLocations(val) {
+    console.log('getLocations');
+    this.directUrl = this.API_BASE_URL + '/locations/query?name=' + val;
+    return this.$http.get(this.directUrl)
+      .then((response) => {
+        console.log(response);
+
+        // Parse names to simple array and store small buffer for lat,lon fetch
+        if(typeof response.data.locations !== 'undefined') {
+          return response.data.locations.map((location) => {
+            this.locations[location.name] = {
+              lat: location.lat,
+              lon: location.lon
+            };
+
+            return location.name;
+          });
+        } else {
+          return this.locations = {};
+        }
+      })
+      .then(null, (err) => {
+        console.log('Error:', err);
+        this.error = err.data.errorMessage || JSON.stringify(err.data);
+      })
+  }
+
   findRoute(from, to) {
+
+    // If is specified in locations (typeahead populated), get coords from there
+    if(typeof this.locations[from] !== 'undefined') {
+      from = this.locations[from].lat + "," + this.locations[from].lon;
+    }
+
+    if(typeof this.locations[to] !== 'undefined') {
+      to = this.locations[to].lat + "," + this.locations[to].lon;
+    }
+
     this.$state.go('routes', {from:from, to:to, provider:this.provider});
   }
 }
