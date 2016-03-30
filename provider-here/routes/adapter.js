@@ -26,7 +26,7 @@ function convertFrom(from) {
 
 }
 
-function convertTo(to, data) {
+function convertTo(data) {
 
     var position = constructTo.shift();
 
@@ -87,9 +87,6 @@ function createEncodedPolyline(points) {
 
     });
 
-    //close polyline
-    //encoded_point += encodePoint(plat, plon, points[0][0], points[0][1]);
-
     return encoded_point;
 
 }
@@ -149,14 +146,13 @@ function convertLeg(leg, data, route, startTime) {
         }
     }
 
-
     return {
 
         startTime: nextStartTime,
         endTime: nextEndTime,
         mode: convertMode(data),
         from: convertFrom(data),
-        to: convertTo(leg, data),
+        to: convertTo(data),
         legGeometry: legGeometry(data),
         route: undefined,
         routeShortName: undefined,
