@@ -73,8 +73,10 @@ module.exports.respond = function (event, callback) {
   // Validate & set defaults
   var promise = new Promise(function(resolve, reject) {
       var valid = validate(event.query);
+      console.log('Validation done', event.query);
 
       if (!valid) {
+        console.log('errors', event.query, validate.errors); 
         return reject(new Error(JSON.stringify(validate.errors)));
       }
 
