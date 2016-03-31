@@ -1,0 +1,13 @@
+{
+  "name": "autocomplete",
+  "customName": false,
+  "customRole": false,
+  "handler": "autocomplete/handler.handler",
+  "timeout": 30,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "events": []
+}
