@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
-var ENDPOINT_URL = 'https://places.demo.api.here.com/places/v1/suggest?at=60.1754%2C24.7336&q=Kamp&app_id=DemoAppId01082013GAL&app_code=AJKnXv84fjrb0KIHawS0Tg';
+var ENDPOINT_URL = 'https://places.demo.api.here.com/places/v1/suggest';
 
 function adapt(input) {
   // Customise query by the hints given
@@ -53,14 +53,11 @@ function parseResults(response) {
  */
 function slice(numItems) {
   return function(locations) {
-    console.log('Slice', numItems, 'items');
     return Promise.resolve(locations.slice(0, numItems));
   };
 }
 
 module.exports.respond = function (event, callback) {
-  console.log(event);
-
   adapt(event)
   .then(function(response) {
     callback(null, response);
