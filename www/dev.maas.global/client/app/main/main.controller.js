@@ -91,7 +91,7 @@ class MainController {
           return this.locations = {};
         }
       })
-      .then(null, (err) => {
+      .catch((err) => {
         console.log('Error:', err);
         this.error = err.data.errorMessage || JSON.stringify(err.data);
       })

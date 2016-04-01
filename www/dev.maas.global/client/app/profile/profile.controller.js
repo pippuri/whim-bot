@@ -17,7 +17,7 @@ class ProfileController {
     .then((response) => {
       this.profile = response.data;
     })
-    .then(null, (err) => {
+    .catch((err) => {
       this.error = err.data && err.data.errorMessage || err;
     });
   }

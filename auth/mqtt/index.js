@@ -56,7 +56,7 @@ module.exports.respond = function (event, callback) {
   .then(function (response) {
     callback(null, response);
   })
-  .then(null, function (err) {
+  .catch(function (err) {
     callback(err);
   });
 };

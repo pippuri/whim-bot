@@ -20,7 +20,7 @@ class LoginController {
       this.token = response.data;
       this.$localStorage.idToken = response.data.id_token;
     })
-    .then(null, (err) => {
+    .catch((err) => {
       this.error = err.data.errorMessage || JSON.stringify(err.data);
     });
   }

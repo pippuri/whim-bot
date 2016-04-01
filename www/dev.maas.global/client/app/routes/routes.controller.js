@@ -30,7 +30,7 @@ class RoutesController {
         });
       }
     })
-    .then(null, (err) => {
+    .catch((err) => {
       this.error = err.data.errorMessage || JSON.stringify(err.data);
     });
   }
@@ -51,7 +51,7 @@ class RoutesController {
       console.log('Activation response:', response);
       this.$state.go('activeroute');
     })
-    .then(null, (err) => {
+    .catch((err) => {
       console.log('Activation error:', err);
       this.error = err.data.errorMessage || JSON.stringify(err.data);
     });
