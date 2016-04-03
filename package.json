@@ -32,7 +32,9 @@
     "serverless-plugin-autoinstall": "^0.1.1",
     "serverless-plugin-autoprune": "^0.1.1",
     "serverless-plugin-revision": "^0.2.2",
-    "serverless-plugin-swagger-export": "^0.1.5"
+    "serverless-plugin-swagger-export": "^0.1.5",
+    "serverless-test-plugin": "^0.1.5",
+    "serverless-plugin-revision": "^0.2.2"
   },
   "description": "A Serverless Project Template.",
   "devDependencies": {
