@@ -9,15 +9,16 @@ used as a starting point for the project.
 
 ### Configure Credentials
 
-1. Go to https://console.aws.amazon.com/iam/home#users
+1. Go to https://maasfi.signin.aws.amazon.com/console
 2. Log in with your temporary password
 3. Change your password to something secure
-4. Click on your user name (not the checkbox) in the user account listing
-5. Select your user account
-6. Delete any exsiting access keys
-7. Click *Create Access Key*
-8. Add the access key to a new maas section in your `~/.aws/credentials` file (see example below)
-9. Secure your credentials with `chmod og-rwx ~/.aws/credentials`
+4. Go to https://console.aws.amazon.com/iam/home#users
+5. Click on your user name (not the checkbox) in the user account listing
+6. Select your user account
+7. Delete any existing access keys
+8. Click *Create Access Key*
+9. Add the access key to a new maas section in your `~/.aws/credentials` file (see example below)
+10. Secure your credentials with `chmod og-rwx ~/.aws/credentials`
 
 Example:
 ```
@@ -34,10 +35,18 @@ aws_secret_access_key = <your_fresh_secret>
 region=eu-west-1
 ```
 
+### Install Node.js
+```
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+grep -q -F .bashrc .bash_profile || echo 'source .bashrc' >> ~/.bash_profile
+nvm install v4
+nvm alias default v4
+```
+
 ### Install Serverless
 
 ```
-npm install -g serverless
+npm install -g serverless@0.4.0
 ```
 
 ### Downloading Backend Code
@@ -46,7 +55,7 @@ npm install -g serverless
 2. Click on the *Fork* button
 3. Select your personal user account (if prompted)
 4. Wait for the forking to happen
-5. Autehnticate your workstation by adding an SSH key at https://github.com/settings/keys
+5. Authenticate your workstation by adding an SSH key at https://github.com/settings/keys
 4. Create a clone on your local workstation (see example below)
 
 ```
@@ -70,8 +79,8 @@ The rest of the documentation will assume that you have this setup.
 
 ```
 cd maas-backend # unless you are already there
-AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
 npm install
+AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
 for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 ```
 
