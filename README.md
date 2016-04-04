@@ -46,7 +46,7 @@ nvm alias default v4
 ### Install Serverless
 
 ```
-npm install -g serverless
+npm install -g serverless@0.4.0
 ```
 
 ### Downloading Backend Code
