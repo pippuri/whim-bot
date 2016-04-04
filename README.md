@@ -35,6 +35,14 @@ aws_secret_access_key = <your_fresh_secret>
 region=eu-west-1
 ```
 
+### Install Node.js
+```
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
+grep -q -F .bashrc .bash_profile || echo 'source .bashrc' >> ~/.bash_profile
+nvm install v4
+nvm alias default v4
+```
+
 ### Install Serverless
 
 ```
