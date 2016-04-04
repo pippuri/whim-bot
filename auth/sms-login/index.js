@@ -164,7 +164,9 @@ function smsLogin(phone, code) {
     }, process.env.JWT_SECRET);
     return {
       id_token: token,
-      cognito_token: cognitoToken
+      cognito_token: cognitoToken,
+      cognito_pool: process.env.COGNITO_POOL_ID,
+      cognito_provider: 'cognito-identity.amazonaws.com'
     };
   });
 }
