@@ -41,7 +41,7 @@ class MqttController {
       this.client.onMessageArrived = this.onMessageArrived.bind(this);
       this.client.connect({onSuccess:this.onConnect.bind(this), onFailure:this.onFailure.bind(this), useSSL:true, path:SigV4Utils.signedMqttPath(this.options)});
     })
-    .then(null, (err) => {
+    .catch((err) => {
       this.error = err.data && err.data.errorMessage || err;
     });
 
