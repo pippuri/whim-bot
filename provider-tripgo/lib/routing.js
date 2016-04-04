@@ -19,13 +19,11 @@ var TRIPGO_TAXI_MODES = [
 
 // Docs: http://planck.buzzhives.com/swagger/index.html#!/Routing/get_routing_json
 
-function getTripGoRoutes(baseUrl, from, to, modes) {
+function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   var qs = {
     v: '11',
     from: '(' + from + ')',
     to: '(' + to + ')',
-    departAfter: Math.floor(Date.now()/1000),
-    arriveBefore: '0',
     avoid: '', // public transport modes to avoid, separated by commas
     tt: '3', // preferred transfer time in minutes
     ws: '1', // walking speed (0=slow 1=medium 2=fast)
@@ -34,6 +32,15 @@ function getTripGoRoutes(baseUrl, from, to, modes) {
     ir: 'true', // interregional results
     modes: modes // modes to use in routing, as an array
   };
+  if (leaveAt && arriveBy) {
+    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
+  } else if (leaveAt) {
+    qs['departAfter'] = Math.floor(parseInt(leaveAt, 10) / 1000);
+  } else if (arriveBy) {
+    qs['arriveBefore'] = Math.floor(parseInt(arriveBy, 10) / 1000);
+  } else {
+    qs['departAfter'] = Math.floor(Date.now() / 1000);
+  }
   console.log(qs);
   return request.get(baseUrl, {
     json: true,
@@ -52,10 +59,10 @@ function getTripGoRoutes(baseUrl, from, to, modes) {
   });
 }
 
-function getCombinedTripGoRoutes(baseUrl, from, to, format) {
+function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
   return Promise.all([
-    getTripGoRoutes(baseUrl, from, to, TRIPGO_PUBLIC_MODES),
-    getTripGoRoutes(baseUrl, from, to, TRIPGO_TAXI_MODES)
+    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
+    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES)
   ])
   .then(function (results) {
     //console.log('Full results:', JSON.stringify(results, null, 2));

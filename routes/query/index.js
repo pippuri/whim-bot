@@ -44,7 +44,7 @@ function chooseProviderByRegion(provider, from) {
   return subProvider;
 }
 
-function getRoutes(provider, from, to) {
+function getRoutes(provider, from, to, leaveAt, arriveBy) {
   if (!provider) {
     provider = 'tripgo';
   }
@@ -57,7 +57,9 @@ function getRoutes(provider, from, to) {
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
     Payload: JSON.stringify({
       from: from,
-      to: to
+      to: to,
+      leaveAt: leaveAt,
+      arriveBy: arriveBy
     })
   })
   .then(function (response) {
@@ -77,7 +79,7 @@ function getRoutes(provider, from, to) {
 }
 
 module.exports.respond = function (event, callback) {
-  getRoutes(event.provider, event.from, event.to)
+  getRoutes(event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
   .then(function (response) {
     callback(null, response);
   })
