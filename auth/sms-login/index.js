@@ -25,7 +25,10 @@ function getCognitoDeveloperIdentity(plainPhone) {
   console.log('Getting cognito developer identity with', JSON.stringify(options, null, 2));
   return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options)
   .then(function (response) {
-    return response.IdentityId;
+    return {
+      identityId: response.IdentityId,
+      cognitoToken: response.Token
+    };
   });
 }
 
@@ -127,6 +130,7 @@ function createUserThing(principalId) {
  * Login using a verification code sent by SMS.
  */
 function smsLogin(phone, code) {
+  var cognitoToken;
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
@@ -142,8 +146,9 @@ function smsLogin(phone, code) {
   }
   var principalId;
   return getCognitoDeveloperIdentity(plainPhone)
-  .then(function (identityId) {
-    principalId = identityId;
+  .then(function (response) {
+    principalId = response.identityId;
+    cognitoToken = response.cognitoToken;
     return updateCognitoProfile(principalId, {
       phone: phone,
       verificationCode: code
@@ -158,7 +163,8 @@ function smsLogin(phone, code) {
       id: principalId
     }, process.env.JWT_SECRET);
     return {
-      id_token: token
+      id_token: token,
+      cognito_token: cognitoToken
     };
   });
 }
