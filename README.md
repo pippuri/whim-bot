@@ -165,7 +165,18 @@ master branch.
 git push origin <local_branch_name>
 ```
 
-### Deploying
+### Deploying To Dev
 
-*This chapter remains to be written.*
+You can init deploying a component (e.g. provider-tripgo ) to development environment as follows.
+After you init the process you need to select the endpoints and functions you wish to deploy.
+
+```
+cd <component_folder>
+AWS_PROFILE=maas sls dash deploy -s dev
+```
+
+Note that *dash deploy* doesn't currently deploy CORS headers as expected, so in case you made
+changes that require new CORS headers to be rolled out you need to call `sls endpoint deploy --all`
+in the project root directory. This will deploy all endpoints. There is no way to do this only
+for the endpoints of a single component.
 
