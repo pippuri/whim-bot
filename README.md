@@ -79,8 +79,8 @@ The rest of the documentation will assume that you have this setup.
 
 ```
 cd maas-backend # unless you are already there
-AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
 npm install
+AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
 for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 ```
 
