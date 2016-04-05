@@ -113,6 +113,8 @@ with the branch.
 ```
 git checkout master
 git pull upstream master
+npm install
+for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 git checkout -b <local_branch_name>
 ```
 
@@ -134,6 +136,8 @@ Use imperative in commit messages. This makes them short. For example
 ```
 git checkout master
 git pull upstream master
+npm install
+for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 git checkout <your_branch>
 git rebase master
 git push origin <your_branch> -f
@@ -182,6 +186,7 @@ After you init the process you need to select the endpoints and functions you wi
 
 ```
 cd <component_folder>
+npm install
 AWS_PROFILE=maas sls dash deploy -s dev
 ```
 
