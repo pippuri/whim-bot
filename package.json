@@ -38,7 +38,9 @@
   },
   "description": "A Serverless Project Template.",
   "devDependencies": {
-    "aws-sdk": "^2.2.39"
+    "aws-sdk": "^2.2.39",
+    "chai": "^3.5.0",
+    "moment": "^2.12.0"
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",
   "license": "MIT",
