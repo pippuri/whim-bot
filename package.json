@@ -31,6 +31,7 @@
     "serverless-optimizer-plugin": "^1.1.0",
     "serverless-plugin-autoinstall": "^0.1.1",
     "serverless-plugin-autoprune": "^0.1.1",
+    "serverless-plugin-revision": "^0.2.2",
     "serverless-plugin-swagger-export": "^0.1.5"
   },
   "description": "A Serverless Project Template.",
