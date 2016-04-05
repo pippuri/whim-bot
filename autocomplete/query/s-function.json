@@ -15,7 +15,7 @@
   },
   "endpoints": [
     {
-      "path": "locations/query",
+      "path": "autocomplete",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
