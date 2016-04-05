@@ -41,6 +41,7 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | b
 grep -q -F .bashrc .bash_profile || echo 'source .bashrc' >> ~/.bash_profile
 nvm install v4
 nvm alias default v4
+npm install npm -g
 ```
 
 ### Install Serverless
