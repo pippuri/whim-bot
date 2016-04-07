@@ -41,7 +41,6 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   } else {
     qs['departAfter'] = Math.floor(Date.now() / 1000);
   }
-  console.log(qs);
   return request.get(baseUrl, {
     json: true,
     headers: {
@@ -65,8 +64,6 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES)
   ])
   .then(function (results) {
-    //console.log('Full results:', JSON.stringify(results, null, 2));
-    console.log('Results', results[0].groups.length, results[1].groups.length);
     var response = results[0];
     if (results[1] && results[1].groups) {
       results[1].groups.map(function (group) {
@@ -78,7 +75,6 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
         response.segmentTemplates.push(segmentTemplate);
       });
     }
-    console.log('Final Results', response.groups.length, format);
     if (format == 'original') {
       return response;
     } else {
