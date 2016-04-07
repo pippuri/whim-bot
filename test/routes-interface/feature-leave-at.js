@@ -39,6 +39,16 @@ module.exports = function(handler) {
     it('response should have route', function () {
       expect(response.plan.itineraries.length).to.not.be.empty;
     });
+    it('response itineries should have startTime', function () {
+      response.plan.itineraries.forEach(function(i) {
+          expect(i.startTime).to.be.a('number');
+      });
+    });
+    it('response itineries should have endTime', function () {
+      response.plan.itineraries.forEach(function(i) {
+          expect(i.endTime).to.be.a('number');
+      });
+    });
     it('response route suggestions should be max ' + early_margin + ' minutes early', function () {
       response.plan.itineraries.forEach(function(i) {
           var early_ms = (leaveAt - parseInt(i.startTime, 10));
