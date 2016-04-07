@@ -35,12 +35,12 @@ function getCognitoDeveloperIdentity(plainPhone) {
 /**
  * Create or update Amazon Cognito profile dataset.
  */
-function updateCognitoProfile(principalId, profile) {
+function updateCognitoProfile(identityId, profile) {
   var syncSessionToken;
   var patches = [];
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
-    IdentityId: principalId,
+    IdentityId: identityId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
   })
   .then(function (response) {
@@ -70,7 +70,7 @@ function updateCognitoProfile(principalId, profile) {
     if (patches.length > 0) {
       return cognitoSync.updateRecordsAsync({
         IdentityPoolId: process.env.COGNITO_POOL_ID,
-        IdentityId: principalId,
+        IdentityId: identityId,
         DatasetName: process.env.COGNITO_PROFILE_DATASET,
         SyncSessionToken: syncSessionToken,
         RecordPatches: patches
@@ -82,9 +82,9 @@ function updateCognitoProfile(principalId, profile) {
 /**
  * Create (if it doesn't exist yet) an IoT Thing for the user
  */
-function createUserThing(principalId) {
-  var thingName = principalId.replace(/:/, '-');
-  console.log('Creating user thing', principalId, thingName);
+function createUserThing(identityId) {
+  var thingName = identityId.replace(/:/, '-');
+  console.log('Creating user thing', identityId, thingName);
   return iot.createThingAsync({
     thingName: thingName,
     attributePayload: {
@@ -97,7 +97,7 @@ function createUserThing(principalId) {
     console.log('CreateThing response:', response);
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
-      principal: principalId,
+      principal: identityId,
       thingName: thingName
     });
   })
@@ -106,19 +106,19 @@ function createUserThing(principalId) {
     // Attach the cognito policy to the default policy
     return iot.attachPrincipalPolicyAsync({
       policyName: 'DefaultCognitoPolicy',
-      principal: principalId
+      principal: identityId
     });
   })
   .then(function (response) {
     console.log('AttachPrincipalPolicy response:', response);
     return iot.listPrincipalPoliciesAsync({
-      principal: principalId
+      principal: identityId
     });
   })
   .then(function (response) {
     console.log('Attached policies:', response);
     return iot.listPrincipalThingsAsync({
-      principal: principalId
+      principal: identityId
     });
   })
   .then(function (response) {
@@ -144,26 +144,27 @@ function smsLogin(phone, code) {
   if (correctCode !== code) {
     return Promise.reject(new Error('401 Unauthorized'));
   }
-  var principalId;
+  var identityId;
   return getCognitoDeveloperIdentity(plainPhone)
   .then(function (response) {
-    principalId = response.identityId;
+    identityId = response.identityId;
     cognitoToken = response.cognitoToken;
-    return updateCognitoProfile(principalId, {
+    return updateCognitoProfile(identityId, {
       phone: phone,
       verificationCode: code
     });
   })
   .then(function () {
-    return createUserThing(principalId);
+    return createUserThing(identityId);
   })
   .then(function () {
     // Create a signed JSON web token
     var token = jwt.sign({
-      id: principalId
+      id: identityId
     }, process.env.JWT_SECRET);
     return {
       id_token: token,
+      cognito_id: identityId,
       cognito_token: cognitoToken,
       cognito_pool: process.env.COGNITO_POOL_ID,
       cognito_provider: 'cognito-identity.amazonaws.com'
