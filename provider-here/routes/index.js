@@ -45,7 +45,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
 }
 
 module.exports.respond = function (event, callback) {
-  getHereRoutes(event.from, event.to, event.leavetAt, event.arriveBy, event.format)
+  getHereRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
   .then(function (response) {
     callback(null, response);
   })
