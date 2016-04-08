@@ -36,18 +36,17 @@ module.exports = function(handler) {
     it('should get response', function () {
       expect(response).to.be.an('object');
     });
+    it('response should be valid', function () {
+      var ajvFactory = require('ajv');
+      var schema = require('./schema.json');
+      var ajv = ajvFactory();
+      var validate = ajv.compile(schema);
+      var valid = validate(response);
+      var validation_error = valid ? null : JSON.stringify(validate.errors);
+      expect(validation_error).to.be.null;
+    });
     it('response should have route', function () {
       expect(response.plan.itineraries.length).to.not.be.empty;
-    });
-    it('response itineries should have startTime', function () {
-      response.plan.itineraries.forEach(function(i) {
-          expect(i.startTime).to.be.a('number');
-      });
-    });
-    it('response itineries should have endTime', function () {
-      response.plan.itineraries.forEach(function(i) {
-          expect(i.endTime).to.be.a('number');
-      });
     });
     it('response route suggestions should be max ' + late_margin + ' minutes late', function () {
       response.plan.itineraries.forEach(function(i) {
