@@ -5,9 +5,9 @@ var testMissingTo = require('./error-missing-to.js');
 
 describe('routes endpoint', function() {
 
-    var handler = require('../../../routes/query/handler.js').handler;
-    testMissingFrom(handler);
-    testMissingTo(handler);
-    testLeaveAndArrive(handler);
+    var lambda = require('../../../routes/query/handler.js');
+    testMissingFrom(lambda);
+    testMissingTo(lambda);
+    testLeaveAndArrive(lambda);
 
 });

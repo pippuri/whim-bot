@@ -1,8 +1,9 @@
 
+var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
 
-module.exports = function(handler) {
+module.exports = function(lambda) {
 
   describe('request without "from"', function() {
 
@@ -15,12 +16,10 @@ module.exports = function(handler) {
     var response;
 
     before(function(done) {
-      handler(event, {
-        done: function(e, r) {
-          error = e;
-          response = r;
+      wrap(lambda).run(event, function(err, data) {
+          error = err;
+          response = data;
           done();
-        }
       });
     });
 

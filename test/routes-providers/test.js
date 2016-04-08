@@ -6,34 +6,34 @@ describe('routes provider', function() {
 
   describe('TripGo (Middle Finland)', function() {
     this.timeout(20000)
-    var handler = require('../../provider-tripgo/routes-middlefinland/handler.js').handler;
-    testLeaveAt(handler);
-    testArriveBy(handler);
+    var lambda = require('../../provider-tripgo/routes-middlefinland/handler.js');
+    testLeaveAt(lambda);
+    testArriveBy(lambda);
   });
 
   describe('TripGo (North Finland)', function() {
     this.timeout(20000)
-    var handler = require('../../provider-tripgo/routes-northfinland/handler.js').handler;
-    testLeaveAt(handler);
-    testArriveBy(handler);
+    var lambda = require('../../provider-tripgo/routes-northfinland/handler.js');
+    testLeaveAt(lambda);
+    testArriveBy(lambda);
   });
 
   describe('TripGo (South Finland)', function() {
     this.timeout(20000)
-    var handler = require('../../provider-tripgo/routes-middlefinland/handler.js').handler;
-    testLeaveAt(handler);
-    testArriveBy(handler);
+    var lambda = require('../../provider-tripgo/routes-middlefinland/handler.js');
+    testLeaveAt(lambda);
+    testArriveBy(lambda);
   });
 
   describe('Digitransit', function() {
-    var handler = require('../../provider-digitransit/routes/handler.js').handler;
-    testLeaveAt(handler);
-    testArriveBy(handler);
+    var lambda = require('../../provider-digitransit/routes/handler.js');
+    testLeaveAt(lambda);
+    testArriveBy(lambda);
   });
 
   describe('Here', function() {
-    var handler = require('../../provider-here/routes/handler.js').handler;
-    testLeaveAt(handler);
+    var lambda = require('../../provider-here/routes/handler.js');
+    testLeaveAt(lambda);
   });
 
 });
