@@ -79,7 +79,7 @@ module.exports = function (original) {
   var allTrips = [];
   // Build template hashmap
   var templates = {};
-  (original.segmentTemplates || []).map(function (template) {
+  (original.segmentTemplates || []).map(function (template) {
     templates[template.hashCode] = template;
   });
   // Combine groups
