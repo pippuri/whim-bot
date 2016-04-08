@@ -51,6 +51,8 @@
     "type": "git",
     "url": "git+https://github.com/maasglobal/maas-backend.git"
   },
-  "scripts": {},
+  "scripts": {
+    "test": "mocha"
+  },
   "version": "0.1.0"
 }
