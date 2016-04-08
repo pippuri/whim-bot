@@ -32,11 +32,11 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
     ir: 'true', // interregional results
     modes: modes // modes to use in routing, as an array
   };
-  if (leaveAt && arriveBy) {
+  if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
-  } else if (leaveAt) {
+  } else if (leaveAt) {
     qs['departAfter'] = Math.floor(parseInt(leaveAt, 10) / 1000);
-  } else if (arriveBy) {
+  } else if (arriveBy) {
     qs['arriveBefore'] = Math.floor(parseInt(arriveBy, 10) / 1000);
   } else {
     qs['departAfter'] = Math.floor(Date.now() / 1000);

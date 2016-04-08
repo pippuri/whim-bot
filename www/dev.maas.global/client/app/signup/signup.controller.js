@@ -4,7 +4,7 @@
 
 class SignupController {
 
-  constructor($http, $stateParams, $state, API_BASE_URL) {
+  constructor($http, $stateParams, $state, API_BASE_URL) {
     this.$http = $http;
     this.$state = $state;
     this.phone = $stateParams.phone;
