@@ -79,11 +79,19 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
 }
 
 module.exports.respond = function (event, callback) {
-  getRoutes(event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
-  .then(function (response) {
-    callback(null, response);
-  })
-  .catch(function (err) {
-    callback(err);
-  });
+  if (!event.from) {
+    callback(new Error('Missing "from" argument.'));
+  } else if (!event.to) {
+    callback(new Error('Missing "to" argument.'));
+  } else if (event.leaveAt && event.arriveBy) {
+    callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
+  } else {
+    getRoutes(event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
+    .then(function (response) {
+      callback(null, response);
+    })
+    .catch(function (err) {
+      callback(err);
+    });
+  }
 };
