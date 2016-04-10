@@ -95,12 +95,12 @@ npm install -g mocha
 You can then run the tests by simply commanding `mocha`.
 
 The tests are named with sentenses. You can leave tests out by defining any
-part of the sentence that matches the tests you wnat to run. See examples
+part of the sentence that matches the tests you want to run. See examples
 below.
 ```
-mocha -g Tripgo
+mocha -g TripGo
 mocha -g leaveAt
-mocha -g "Tripgo \(South Finland\) leaveAt request response"
+mocha -g "TripGo \(South Finland\) leaveAt request response"
 ```
 
 ### Running a Serverless Function Locally

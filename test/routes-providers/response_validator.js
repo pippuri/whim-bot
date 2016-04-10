@@ -1,6 +1,6 @@
 var ajvFactory = require('ajv');
 
-var schema = require('./schema.json');
+var schema = require('./response_schema.json');
 
 module.exports = function(response) {
   var ajv = ajvFactory();

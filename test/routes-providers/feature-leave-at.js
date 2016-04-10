@@ -2,7 +2,7 @@
 var expect = require('chai').expect;
 var moment = require('moment');
 
-var validator = require('./validator');
+var validator = require('./response_validator');
 
 module.exports = function(handler) {
 
