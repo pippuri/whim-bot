@@ -15,7 +15,6 @@ class ActiveRouteController {
     this.API_BASE_URL = API_BASE_URL;
     this.itinerary = null;
     this.currentLeg = null;
-    this.nextLeg = null;
     this.messageLog = [];
     this.locationUpdateCount = 0;
     this.lastUpdatedLatitude = 0;
@@ -78,7 +77,7 @@ class ActiveRouteController {
       }
     });
 
-    this.$http.get(this.API_BASE_URL + '/routes/active', {
+    this.$http.get(this.API_BASE_URL + '/tracking/active-route', {
       headers: {
         Authorization: 'Bearer ' + this.$localStorage.idToken
       }
@@ -90,14 +89,16 @@ class ActiveRouteController {
         leg.fromCoords = leg.from ? {
           latitude: leg.from.lat,
           longitude: leg.from.lon
-        } : {};
+        } : null;
         leg.toCoords = leg.to ? {
           latitude: leg.to.lat,
           longitude: leg.to.lon
-        } : {};
+        } : null;
         leg.decodedPath = this.decodePath(leg.legGeometry);
+        if (leg.legId == this.itinerary.activeLeg.legId) {
+          this.currentLeg = leg;
+        }
       });
-      this.updateLegs();
       this.startMqtt();
     })
     .catch((err) => {
@@ -149,24 +150,26 @@ class ActiveRouteController {
     return points;
   }
 
-  updateLegs() {
-    if (!this.itinerary || !this.itinerary.legs) {
-      this.currentLeg = null;
-      this.nextLeg = null;
-    }
-    var now = Date.now();
-    this.itinerary.legs.map((leg) => {
-      if (!this.currentLeg & leg.startTime <= now && now < leg.endTime) {
-        this.currentLeg = leg;
+  setActiveLeg(leg) {
+    this.$http.put(this.API_BASE_URL + '/tracking/active-route/active-leg', {
+      legId: leg.legId,
+      timestamp: Date.now()
+    }, {
+      headers: {
+        Authorization: 'Bearer ' + this.$localStorage.idToken
       }
-      if (!this.nextLeg & leg.startTime >= now) {
-        this.nextLeg = leg;
-      }
+    })
+    .then(response => {
+      this.itinerary.legs.map(leg => {
+        if (leg.legId == response.data.activeRoute.activeLeg.legId) {
+          this.currentLeg = leg;
+        }
+      });
     });
   }
 
   destroyActiveRoute() {
-    this.$http.delete(this.API_BASE_URL + '/routes/active', {
+    this.$http.delete(this.API_BASE_URL + '/tracking/active-route', {
       headers: {
         Authorization: 'Bearer ' + this.$localStorage.idToken
       }

@@ -1,7 +1,7 @@
 <div class="container">
   <div class="row">
     <div class="col-lg-12">
-      <h1 class="page-header">Active Route</h1>
+      <h1 class="page-header">Active Route {{activeroute.itinerary.routeId}}</h1>
       <div class="alert alert-danger" ng-show="activeroute.error">{{activeroute.error}}</div>
     </div>
   </div>
@@ -11,7 +11,7 @@
         <ui-gmap-circle center="activeroute.currentCoords" radius="20" stroke="{color:'#0000ff'}"></ui-gmap-circle>
         <ui-gmap-marker idKey="'leg' + leg.startTime" ng-repeat="leg in activeroute.itinerary.legs" coords="leg.toCoords"></ui-gmap-marker>
         <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="leg.decodedPath" path="leg.decodedPath"></ui-gmap-polyline>
-        <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="!leg.decodedPath" path="[leg.fromCoords,leg.toCoords]"></ui-gmap-polyline>
+        <ui-gmap-polyline ng-repeat="leg in activeroute.itinerary.legs" ng-if="!leg.decodedPath && leg.fromCoords && leg.toCoords" path="[leg.fromCoords,leg.toCoords]"></ui-gmap-polyline>
       </ui-gmap-google-map>
       <input type="checkbox" ng-model="activeroute.map.tracking"> Tracking
     </div>
@@ -21,15 +21,15 @@
       <table class="table" style="max-width:100%">
         <thead>
           <tr>
-            <th>State</th>
+            <th>Current</th>
             <th>Leg</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="leg in activeroute.itinerary.legs">
             <td>
-              <span ng-show="leg == activeroute.currentLeg">Curr</span>
-              <span ng-show="leg == activeroute.nextLeg">Next</span>
+              <span ng-show="leg == activeroute.currentLeg"><span class="label label-success">Active</span></span>
+              <span ng-hide="leg == activeroute.currentLeg"><button class="btn btn-xs btn-default" ng-click="activeroute.setActiveLeg(leg)">Activate</button></span>
             </td>
             <td>
               {{leg.startTime|date:'HH:mm'}} - {{leg.endTime|date:'HH:mm'}}
@@ -41,7 +41,7 @@
         </tbody>
       </table>
       <div ng-show="activeroute.itinerary">
-        <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Abort Route</button></p>
+        <p><button class="btn btn-danger" ng-click="activeroute.destroyActiveRoute()">Cancel Route</button></p>
       </div>
     </div>
   </div>

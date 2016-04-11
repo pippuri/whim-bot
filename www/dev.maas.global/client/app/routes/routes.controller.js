@@ -40,9 +40,15 @@ class RoutesController {
       alert('Please login first');
       return;
     }
-    var original = JSON.parse(itinerary.originalJson);
-    console.log('Activating route itinerary', original);
-    return this.$http.put(this.API_BASE_URL + '/routes/active', original, {
+    var now = Date.now();
+    var originalItinerary = JSON.parse(itinerary.originalJson);
+    originalItinerary.activeLeg = {
+      legId: originalItinerary.legs[0] && originalItinerary.legs[0].legId || null,
+      timestamp: now
+    };
+    originalItinerary.timestamp = now;
+    console.log('Activating route itinerary', originalItinerary);
+    return this.$http.put(this.API_BASE_URL + '/tracking/active-route', originalItinerary, {
       headers: {
         Authorization: 'Bearer ' + this.$localStorage.idToken
       }
