@@ -15,6 +15,49 @@
   },
   "endpoints": [
     {
+      "swaggerExport": {
+        "summary": "Set active route leg",
+        "description": "Sets the currently active route leg. A route must already have been activated earlier, and the leg must be a leg in that route.",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "legId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route leg"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when leg was activated (JavaScript timestamp)"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "legId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route leg"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when leg was activated (JavaScript timestamp)"
+                }
+              }
+            }
+          }
+        }
+      },
       "path": "tracking/active-route/active-leg",
       "method": "PUT",
       "type": "AWS",

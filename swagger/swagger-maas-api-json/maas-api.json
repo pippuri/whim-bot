@@ -4,13 +4,19 @@
     "version": "0.1.0",
     "description": "MaaS serverless infrastructure"
   },
-  "host": "localhost",
+  "host": "api.dev.maas.global",
   "basePath": "/",
   "schemes": [
-    "http"
+    "https"
   ],
   "tags": [],
-  "securityDefinitions": {},
+  "securityDefinitions": {
+    "Bearer": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
   "paths": {
     "/": {
       "get": {
@@ -281,67 +287,326 @@
     "/tracking/active-route": {
       "delete": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Cancel active route",
+        "description": "Cancels any currently active route and route leg.",
         "operationId": "delete-tracking-active-route",
         "produces": [
           "application/json"
         ],
-        "security": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {}
+            }
+          }
+        }
       },
       "get": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Get active route",
+        "description": "Gets the currently active route. The response includes both the active route and the active route leg.",
         "operationId": "get-tracking-active-route",
         "produces": [
           "application/json"
         ],
-        "security": [],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when route was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          }
+        }
       },
       "put": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Set active route",
+        "description": "Sets the currently active route. There can only be one active route per user.",
         "operationId": "put-tracking-active-route",
         "produces": [
           "application/json"
         ],
-        "security": [],
-        "parameters": [],
-        "responses": {}
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when route was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when leg was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {}
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/tracking/active-route/active-leg": {
       "put": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Set active route leg",
+        "description": "Sets the currently active route leg. A route must already have been activated earlier, and the leg must be a leg in that route.",
         "operationId": "put-tracking-active-route-active-leg",
         "produces": [
           "application/json"
         ],
-        "security": [],
-        "parameters": [],
-        "responses": {}
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "legId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route leg"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when leg was activated (JavaScript timestamp)"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "legId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route leg"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when leg was activated (JavaScript timestamp)"
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/tracking/user-location": {
       "put": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Update user location",
+        "description": "Updates user's current location (latitude and longitude).",
         "operationId": "put-tracking-user-location",
         "produces": [
           "application/json"
         ],
-        "security": [],
-        "parameters": [],
-        "responses": {}
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "description": "Location latitude"
+                },
+                "lon": {
+                  "type": "number",
+                  "description": "Location longitude"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Location timestamp"
+                },
+                "legId": {
+                  "type": "number",
+                  "description": "Active leg identifier"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "description": "Location latitude"
+                },
+                "lon": {
+                  "type": "number",
+                  "description": "Location longitude"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Location timestamp"
+                },
+                "legId": {
+                  "type": "number",
+                  "description": "Active leg identifier"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },

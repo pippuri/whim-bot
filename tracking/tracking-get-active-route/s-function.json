@@ -15,6 +15,60 @@
   },
   "endpoints": [
     {
+      "swaggerExport": {
+        "summary": "Get active route",
+        "description": "Gets the currently active route. The response includes both the active route and the active route leg.",
+        "security": [{"Bearer":[]}],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when route was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "path": "tracking/active-route",
       "method": "GET",
       "type": "AWS",

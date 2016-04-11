@@ -15,6 +15,21 @@
   },
   "endpoints": [
     {
+      "swaggerExport": {
+        "summary": "Cancel active route",
+        "description": "Cancels any currently active route and route leg.",
+        "security": [{"Bearer":[]}],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+              }
+            }
+          }
+        }
+      },
       "path": "tracking/active-route",
       "method": "DELETE",
       "type": "AWS",

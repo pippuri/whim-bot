@@ -15,6 +15,65 @@
   },
   "endpoints": [
     {
+      "swaggerExport": {
+        "summary": "Update user location",
+        "description": "Updates user's current location (latitude and longitude).",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "description": "Location latitude"
+                },
+                "lon": {
+                  "type": "number",
+                  "description": "Location longitude"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Location timestamp"
+                },
+                "legId": {
+                  "type": "number",
+                  "description": "Active leg identifier"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "lat": {
+                  "type": "number",
+                  "description": "Location latitude"
+                },
+                "lon": {
+                  "type": "number",
+                  "description": "Location longitude"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Location timestamp"
+                },
+                "legId": {
+                  "type": "number",
+                  "description": "Active leg identifier"
+                }
+              }
+            }
+          }
+        }
+      },
       "path": "tracking/user-location",
       "method": "PUT",
       "type": "AWS",

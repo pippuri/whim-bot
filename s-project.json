@@ -14,5 +14,18 @@
     "serverless-plugin-autoinstall",
     "serverless-plugin-revision",
     "serverless-test-plugin"
-  ]
+  ],
+  "swaggerExport": {
+    "host": "api.dev.maas.global",
+    "schemes": [
+      "https"
+    ],
+    "securityDefinitions": {
+      "Bearer": {
+        "type": "apiKey",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  }
 }

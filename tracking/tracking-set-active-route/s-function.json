@@ -15,6 +15,111 @@
   },
   "endpoints": [
     {
+      "swaggerExport": {
+        "summary": "Set active route",
+        "description": "Sets the currently active route. There can only be one active route per user.",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when route was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "routeId": {
+                  "type": "string",
+                  "description": "Identifier of currently active route"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when route was activated (JavaScript timestamp)"
+                },
+                "activeLeg": {
+                  "type": "object",
+                  "description": "Currently active route leg",
+                  "properties": {
+                    "legId": {
+                      "type": "string",
+                      "description": "Identifier of currently active route leg"
+                    },
+                    "timestamp": {
+                      "type": "number",
+                      "description": "Time when leg was activated (JavaScript timestamp)"
+                    }
+                  }
+                },
+                "startTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "endTime": {
+                  "type": "number",
+                  "description": "Route start time"
+                },
+                "legs": {
+                  "type": "array",
+                  "description": "List of route legs in time order",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
       "path": "tracking/active-route",
       "method": "PUT",
       "type": "AWS",
