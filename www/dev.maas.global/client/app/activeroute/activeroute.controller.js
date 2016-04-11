@@ -161,7 +161,7 @@ class ActiveRouteController {
     })
     .then(response => {
       this.itinerary.legs.map(leg => {
-        if (leg.legId == response.data.activeRoute.activeLeg.legId) {
+        if (leg.legId == response.data.legId) {
           this.currentLeg = leg;
         }
       });

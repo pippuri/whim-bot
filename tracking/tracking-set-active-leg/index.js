@@ -31,7 +31,7 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
-    return payload.state.reported.activeRoute.activeLeg;
+    return payload.state.reported.activeRoute && payload.state.reported.activeRoute.activeLeg || null;
   });
 }
 
