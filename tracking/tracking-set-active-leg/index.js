@@ -10,7 +10,7 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
     state: {
       reported: {
         activeRoute: {
-          leg: {
+          activeLeg: {
             legId: legId,
             timestamp: timestamp
           }
@@ -22,11 +22,15 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
   return iotData.updateThingShadowAsync({
     thingName: thingName,
     payload: payload
+  })
+  .then(function (response) {
+    var payload = JSON.parse(response.payload);
+    return payload.state.reported;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRoute(''+event.principalId, event.legId, event.timestamp)
+  setActiveRouteLeg(''+event.principalId, event.legId, event.timestamp)
   .then(function (response) {
     callback(null, response);
   })
