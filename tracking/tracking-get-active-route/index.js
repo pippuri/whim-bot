@@ -11,8 +11,8 @@ function getActiveRoute(principalId) {
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
-    if (payload && payload.state && payload.state.reported && payload.state.reported.itinerary) {
-      return payload.state.reported.itinerary;
+    if (payload && payload.state && payload.state.reported && payload.state.reported.activeRoute) {
+      return payload.state.reported.activeRoute;
     } else {
       return Promise.reject(new Error('404 No Active Route'));
     }

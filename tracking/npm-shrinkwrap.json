@@ -1,0 +1,22 @@
+{
+  "version": "0.0.1",
+  "dependencies": {
+    "bluebird": {
+      "version": "3.3.4",
+      "from": "bluebird@>=3.3.4 <4.0.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.3.4.tgz"
+    },
+    "serverless-helpers-js": {
+      "version": "0.1.0",
+      "from": "serverless-helpers-js@>=0.1.0 <0.2.0",
+      "resolved": "https://registry.npmjs.org/serverless-helpers-js/-/serverless-helpers-js-0.1.0.tgz",
+      "dependencies": {
+        "dotenv": {
+          "version": "1.2.0",
+          "from": "dotenv@>=1.2.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/dotenv/-/dotenv-1.2.0.tgz"
+        }
+      }
+    }
+  }
+}

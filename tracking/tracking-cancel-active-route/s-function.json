@@ -1,8 +1,8 @@
 {
-  "name": "update",
+  "name": "tracking-cancel-active-route",
   "customName": false,
   "customRole": false,
-  "handler": "update/handler.handler",
+  "handler": "tracking-cancel-active-route/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -15,15 +15,15 @@
   },
   "endpoints": [
     {
-      "path": "routes/active",
-      "method": "PUT",
+      "path": "tracking/active-route",
+      "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerId": "r94b5z",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"principalId\":\"$context.authorizer.principalId\", \"itinerary\":$input.json('$')}"
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {

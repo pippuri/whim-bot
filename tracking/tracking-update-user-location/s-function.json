@@ -1,8 +1,8 @@
 {
-  "name": "get",
+  "name": "tracking-update-user-location",
   "customName": false,
   "customRole": false,
-  "handler": "get/handler.handler",
+  "handler": "tracking-update-user-location/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -15,15 +15,15 @@
   },
   "endpoints": [
     {
-      "path": "routes/active",
-      "method": "GET",
+      "path": "tracking/user-location",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerId": "r94b5z",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"principalId\":\"$context.authorizer.principalId\"}"
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"lat\":$input.json('$.lat'),\"lon\":$input.json('$.lon'),\"timestamp\":$input.json('$.timestamp')}"
       },
       "responses": {
         "^400.*": {

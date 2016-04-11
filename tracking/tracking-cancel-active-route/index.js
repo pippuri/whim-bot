@@ -11,7 +11,7 @@ function destroyActiveRoute(principalId) {
     payload: JSON.stringify({
       state: {
         reported: {
-          itinerary: null
+          activeRoute: null
         }
       }
     })

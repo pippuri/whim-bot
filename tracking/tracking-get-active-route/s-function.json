@@ -1,8 +1,8 @@
 {
-  "name": "destroy",
+  "name": "tracking-get-active-route",
   "customName": false,
   "customRole": false,
-  "handler": "destroy/handler.handler",
+  "handler": "tracking-get-active-route/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -15,8 +15,8 @@
   },
   "endpoints": [
     {
-      "path": "routes/active",
-      "method": "DELETE",
+      "path": "tracking/active-route",
+      "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerId": "r94b5z",
