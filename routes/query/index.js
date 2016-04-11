@@ -1,4 +1,5 @@
 var Promise = require('bluebird');
+var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
 Promise.promisifyAll(lambda, {suffix:'Promise'});
@@ -44,6 +45,35 @@ function chooseProviderByRegion(provider, from) {
   return subProvider;
 }
 
+// Generate a unique route identifier by hashing the JSON
+function generateRouteId(itinerary) {
+  var hash = crypto.createHash('sha1');
+  hash.update(JSON.stringify(itinerary));
+  return hash.digest('hex');
+}
+
+// Generate a unique leg identifier by hashing the JSON
+function generateLegId(leg) {
+  var hash = crypto.createHash('sha1');
+  hash.update(JSON.stringify(leg));
+  return hash.digest('hex');
+}
+
+// Add route and leg identifiers to itineraries that don't yet have them
+// Identifiers may already have been added by individual providers
+function addRouteAndLegIdentifiers(itineraries) {
+  itineraries.map(function (itinerary) {
+    if (!itinerary.routeId) {
+      itinerary.routeId = generateRouteId(itinerary);
+    }
+    (itinerary.legs || []).map(function (leg) {
+      if (!leg.legId) {
+        leg.legId = generateLegId(leg);
+      }
+    })
+  });
+}
+
 function getRoutes(provider, from, to, leaveAt, arriveBy) {
   if (!provider) {
     provider = 'tripgo';
@@ -69,6 +99,8 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
     } else if (payload.errorMessage) {
       return Promise.reject(new Error(payload.errorMessage));
     } else {
+      // Add any missing route and leg identifiers to response
+      addRouteAndLegIdentifiers(payload.plan.itineraries || []);
       // Add some debug info to response
       payload.maas = {
         provider: provider + subProvider
