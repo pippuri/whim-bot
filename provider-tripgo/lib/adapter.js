@@ -57,7 +57,6 @@ function convertPlanFrom(original) {
   var from = undefined;
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
-    console.log('Finding hashcode', hashCode);
     (original.segmentTemplates || []).map(function (segmentTemplate) {
       if (segmentTemplate.hashCode == hashCode) {
         // Found the starting point
@@ -80,7 +79,7 @@ module.exports = function (original) {
   var allTrips = [];
   // Build template hashmap
   var templates = {};
-  (original.segmentTemplates || []).map(function (template) {
+  (original.segmentTemplates || []).map(function (template) {
     templates[template.hashCode] = template;
   });
   // Combine groups

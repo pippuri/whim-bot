@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.dev.maas.global/v1/provider/routes",
+  "description": "Maas.fi routes provider response schema",
+  "type": "object",
+  "properties": {
+    "plan": {
+      "type": "object",
+      "properties": {
+        "itineraries": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "startTime": {"type": "number"},
+              "endTime": {"type": "number"}
+            },
+            "required": ["startTime", "endTime"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -41,6 +41,7 @@ curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | b
 grep -q -F .bashrc .bash_profile || echo 'source .bashrc' >> ~/.bash_profile
 nvm install v4
 nvm alias default v4
+npm install npm -g
 ```
 
 ### Install Serverless
@@ -86,7 +87,21 @@ for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 
 ### Running Tests
 
-*Currently we have no tests*
+To run the tests you need to first install mocha
+```
+npm install -g mocha
+```
+
+You can then run the tests by simply commanding `mocha`.
+
+The tests are named with sentenses. You can leave tests out by defining any
+part of the sentence that matches the tests you want to run. See examples
+below.
+```
+mocha -g TripGo
+mocha -g leaveAt
+mocha -g "TripGo \(South Finland\) leaveAt request response"
+```
 
 ### Running a Serverless Function Locally
 
@@ -112,6 +127,8 @@ with the branch.
 ```
 git checkout master
 git pull upstream master
+npm install
+for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 git checkout -b <local_branch_name>
 ```
 
@@ -133,6 +150,8 @@ Use imperative in commit messages. This makes them short. For example
 ```
 git checkout master
 git pull upstream master
+npm install
+for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
 git checkout <your_branch>
 git rebase master
 git push origin <your_branch> -f
@@ -181,6 +200,7 @@ After you init the process you need to select the endpoints and functions you wi
 
 ```
 cd <component_folder>
+npm install
 AWS_PROFILE=maas sls dash deploy -s dev
 ```
 

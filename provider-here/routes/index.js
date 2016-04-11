@@ -17,11 +17,11 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     maneuverAttributes: 'shape,roadName,nextRoadName'
   }
 
-  if (leaveAt && arriveBy) {
+  if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
-  } else if (leaveAt) {
+  } else if (leaveAt) {
     qs['departure'] = (new Date(parseInt(leaveAt, 10))).toISOString();
-  } else if (arriveBy) {
+  } else if (arriveBy) {
     // "Note: Specifying arrival time is not supported for the estimated Public
     // Transport routing. Requesting will result in an error response."
     // https://developer.here.com/rest-apis/documentation/routing/topics/public-transport-routing-modes.html
@@ -45,7 +45,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
 }
 
 module.exports.respond = function (event, callback) {
-  getHereRoutes(event.from, event.to, event.leavetAt, event.arriveBy, event.format)
+  getHereRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
   .then(function (response) {
     callback(null, response);
   })

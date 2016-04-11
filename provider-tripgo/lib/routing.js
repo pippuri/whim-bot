@@ -32,16 +32,15 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
     ir: 'true', // interregional results
     modes: modes // modes to use in routing, as an array
   };
-  if (leaveAt && arriveBy) {
+  if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
-  } else if (leaveAt) {
+  } else if (leaveAt) {
     qs['departAfter'] = Math.floor(parseInt(leaveAt, 10) / 1000);
-  } else if (arriveBy) {
+  } else if (arriveBy) {
     qs['arriveBefore'] = Math.floor(parseInt(arriveBy, 10) / 1000);
   } else {
     qs['departAfter'] = Math.floor(Date.now() / 1000);
   }
-  console.log(qs);
   return request.get(baseUrl, {
     json: true,
     headers: {
@@ -65,8 +64,6 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES)
   ])
   .then(function (results) {
-    //console.log('Full results:', JSON.stringify(results, null, 2));
-    console.log('Results', results[0].groups.length, results[1].groups.length);
     var response = results[0];
     if (results[1] && results[1].groups) {
       results[1].groups.map(function (group) {
@@ -78,7 +75,6 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
         response.segmentTemplates.push(segmentTemplate);
       });
     }
-    console.log('Final Results', response.groups.length, format);
     if (format == 'original') {
       return response;
     } else {

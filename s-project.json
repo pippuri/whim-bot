@@ -11,6 +11,8 @@
     "serverless-optimizer-plugin",
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
-    "serverless-plugin-autoinstall"
+    "serverless-plugin-autoinstall",
+    "serverless-plugin-revision",
+    "serverless-test-plugin"
   ]
 }

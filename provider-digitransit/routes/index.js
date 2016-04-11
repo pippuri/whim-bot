@@ -31,13 +31,13 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
     toPlace: to
   }
 
-  if (leaveAt && arriveBy) {
+  if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
-  } else if (leaveAt) {
+  } else if (leaveAt) {
     qs['arriveBy'] = false;
     qs['date'] = getOTPDate(parseInt(leaveAt, 10))
     qs['time'] = getOTPTime(parseInt(leaveAt, 10))
-  } else if (arriveBy) {
+  } else if (arriveBy) {
     qs['arriveBy'] = true;
     qs['date'] = getOTPDate(parseInt(arriveBy, 10))
     qs['time'] = getOTPTime(parseInt(arriveBy, 10))

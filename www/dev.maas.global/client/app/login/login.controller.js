@@ -4,7 +4,7 @@
 
 class LoginController {
 
-  constructor($http, $stateParams, $localStorage, API_BASE_URL) {
+  constructor($http, $stateParams, $localStorage, API_BASE_URL) {
     this.$http = $http;
     this.$localStorage = $localStorage;
     this.phone = $stateParams.phone;

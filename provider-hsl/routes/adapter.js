@@ -24,7 +24,7 @@ function convertMode(type) {
     case 'walk':
       return 'WALK';
     default:
-      return (type || '').toUpperCase();
+      return (type || '').toUpperCase();
   }
 }
 

@@ -135,19 +135,18 @@ function convertLeg(leg, data, route, startTime) {
 function convertItinerary(route) {
   var startTime = new Date(route.summary.departure);
   var result = [];
+  var res = '';
+  var legs = route.leg.map(function (leg) {
+    leg.maneuver.forEach(function (data, index) {
+      result.push(convertLeg(leg, data, route, startTime.getTime()));
+    });
+    res = result;
+  });
   
   return {
     startTime: startTime.getTime(),
     endTime: startTime.getTime() + route.summary.travelTime,
-    legs: route.leg.map(function (leg) {
-      leg.maneuver.forEach(function (data, index) {
-        result.push(convertLeg(leg, data, route, startTime.getTime()));
-      });
-      
-      return {
-        maneuver: result
-      };
-    })
+    legs: res
   };
 }
 
