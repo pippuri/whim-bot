@@ -1,0 +1,349 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.1.0",
+    "description": "MaaS serverless infrastructure"
+  },
+  "host": "localhost",
+  "basePath": "/",
+  "schemes": [
+    "http"
+  ],
+  "tags": [],
+  "securityDefinitions": {},
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-auth-me",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/auth/mqtt": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-auth-mqtt",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/auth/sms-login": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-auth-sms-login",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/auth/sms-request-code": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-auth-sms-request-code",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/autocomplete": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-autocomplete",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/locations": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-locations",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/locations/query": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-locations-query",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/digitransit/routes": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-digitransit-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/here/routes": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-here-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/hsl/routes": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-hsl-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/matka/routes": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-matka-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/tripgo/regions": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-tripgo-regions",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/tripgo/routes-middlefinland": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-tripgo-routes-middlefinland",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/tripgo/routes-northfinland": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-tripgo-routes-northfinland",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/tripgo/routes-southfinland": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-tripgo-routes-southfinland",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/twilio/receive-sms": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-twilio-receive-sms",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/routes": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/swagger/maas-api-json": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-swagger-maas-api-json",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/tracking/active-route": {
+      "delete": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "delete-tracking-active-route",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      },
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-tracking-active-route",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      },
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-tracking-active-route",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/tracking/active-route/active-leg": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-tracking-active-route-active-leg",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/tracking/user-location": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-tracking-user-location",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    }
+  },
+  "definitions": {}
+}

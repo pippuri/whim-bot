@@ -53,7 +53,9 @@
     "url": "git+https://github.com/maasglobal/maas-backend.git"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json",
+    "deploy:docs": "aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/"
   },
   "version": "0.1.0"
 }
