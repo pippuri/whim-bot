@@ -54,7 +54,7 @@ function convertItinerary(trip, original, templates) {
 }
 
 function convertPlanFrom(original) {
-  var from = undefined;
+  var from;
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(function (segmentTemplate) {

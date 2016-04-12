@@ -22,8 +22,8 @@ var providerRegions = {
 };
 
 function isInsideRegion(coords, area) {
-  return (area[0] <= coords[0] && coords[0] <= area[2]
-   && area[1] <= coords[1] && coords[1] <= area[3]);
+  return (area[0] <= coords[0] && coords[0] <= area[2] &&
+    area[1] <= coords[1] && coords[1] <= area[3]);
 }
 
 function chooseProviderByRegion(provider, from) {

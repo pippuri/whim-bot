@@ -29,7 +29,7 @@ function convertLeg(leg) {
       points: leg.legGeometry.points,
       length: leg.legGeometry.length,
     } : undefined,
-    route: leg.route != '' ? leg.route : undefined,
+    route: leg.route !== '' ? leg.route : undefined,
     routeShortName: leg.routeShortName,
     routeLongName: leg.routeLongName,
     agencyId: leg.agencyId,

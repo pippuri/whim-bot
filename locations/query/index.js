@@ -21,7 +21,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
       if (!this._opts.inject) return function () { return true; };
 
       return function (data, dataPath, parentData, parentDataProperty) {
-        for (key in schema) {
+        for (var key in schema) {
           if (typeof data[key] === 'undefined') {
             data[key] = schema[key];
           }
