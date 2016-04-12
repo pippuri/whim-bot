@@ -1,18 +1,17 @@
-var autocomplete_google = require('./feature-google.js');
-var autocomplete_here = require('./feature-here.js');
+var autocomplete = require('./feature-query.js');
 
-describe('Autocomplete provider',function(){
+describe('autocomplete provider',function(){
 
   describe('Google' , function(){
       this.timeout(20000);
       var lambda = require('../../provider-google/autocomplete/handler.js');
-      autocomplete_google(lambda);
+      autocomplete(lambda);
   });
 
   describe('HERE', function () {
-    this.timeout(2000);
+    this.timeout(20000);
     var lambda = require('../../provider-here/autocomplete/handler.js');
-    autocomplete_here(lambda);
+    autocomplete(lambda);
   });
 
 

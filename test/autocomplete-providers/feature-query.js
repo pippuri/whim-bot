@@ -1,6 +1,8 @@
 var expect = require('chai').expect;
 var wrap = require('lambda-wrapper').wrap;
 
+var validator = require('./response_validator');
+
 module.exports = function(lambda){
 
   describe('autocomplete',function(){
@@ -28,17 +30,10 @@ module.exports = function(lambda){
     it('request should be successful' , function(){
       expect(error).to.be.null;
     });
-    it('should contain autocomplete list', function(){
-      expect(event).to.have.property('name').to.be.a('string');
-    });
-    it('response should have suggestions',function(){
-      expect(response.suggestions).to.be.an('array');
-    });
-    it('response should have query object',function(){
-      expect(response.query).to.be.an('object');
-    });
-    it('response query shoud contain api key',function(){
-      expect(response.query['key']).to.not.be.undefined;
+  
+    it('should give a valid response', function () {
+      var validation_error = validator(response);
+      expect(validation_error).to.be.null;
     });
 
   });
