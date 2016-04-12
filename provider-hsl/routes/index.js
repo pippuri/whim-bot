@@ -3,7 +3,7 @@ var request = require('request-promise');
 var proj4 = require('proj4');
 var adapter = require('./adapter');
 
-proj4.defs("EPSG:2392", "+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +units=m +no_defs");
+proj4.defs('EPSG:2392', '+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +units=m +no_defs');
 
 var HSL_BASE_URL = 'http://api.reittiopas.fi/hsl/prod/';
 
@@ -26,8 +26,8 @@ function getHslRoutes(from, to, format) {
       from: convertWGS84ToKKJ2(from),
       to: convertWGS84ToKKJ2(to),
       user: process.env.HSL_USERTOKEN,
-      pass: process.env.HSL_PASSPHRASE
-    }
+      pass: process.env.HSL_PASSPHRASE,
+    },
   })
   .then(function (result) {
     if (format == 'original') {

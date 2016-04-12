@@ -13,7 +13,7 @@ function convertFromTo(from) {
     stopId: undefined,
     stopCode: undefined,
     lon: from.mappedPosition.longitude,
-    lat: from.mappedPosition.latitude
+    lat: from.mappedPosition.latitude,
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
@@ -29,7 +29,7 @@ function convertLeg(leg, route) {
     route: undefined,
     routeShortName: undefined,
     routeLongName: undefined,
-    agencyId: undefined
+    agencyId: undefined,
   };
 }
 
@@ -39,14 +39,14 @@ function convertItinerary(route) {
     endTime: undefined,
     legs: route.leg.map(function (leg) {
       return convertLeg(leg, route);
-    })
+    }),
   };
 }
 
 module.exports = function (original) {
   return Promise.resolve({
     plan: {
-      itineraries: original.response.route.map(convertItinerary)
-    }
+      itineraries: original.response.route.map(convertItinerary),
+    },
   });
 };

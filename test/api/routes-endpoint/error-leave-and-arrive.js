@@ -3,25 +3,25 @@ var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
 
-module.exports = function(lambda) {
+module.exports = function (lambda) {
 
-  describe('request with both "leaveAt" and "arriveBy"', function() {
+  describe('request with both "leaveAt" and "arriveBy"', function () {
 
     var event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
       leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
-      arriveBy: '' + moment().isoWeekday(8).hour(21).valueOf() // Monday one week forward around nine
-    }
+      arriveBy: '' + moment().isoWeekday(8).hour(21).valueOf(), // Monday one week forward around nine
+    };
 
     var error;
     var response;
 
-    before(function(done) {
-      wrap(lambda).run(event, function(err, data) {
-          error = err;
-          response = data;
-          done();
+    before(function (done) {
+      wrap(lambda).run(event, function (err, data) {
+        error = err;
+        response = data;
+        done();
       });
     });
 
@@ -36,4 +36,4 @@ module.exports = function(lambda) {
     });
 
   });
-}
+};

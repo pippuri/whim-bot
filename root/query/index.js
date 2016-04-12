@@ -4,7 +4,7 @@ var Promise = require('bluebird');
 function getApiVersion() {
   return Promise.resolve({
     region: process.env.AWS_REGION,
-    stage: process.env.SERVERLESS_STAGE
+    stage: process.env.SERVERLESS_STAGE,
   });
 }
 

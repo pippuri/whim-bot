@@ -32,7 +32,7 @@ function getMqttCredentials(principalId) {
     return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
       IdentityId: principalId,
-      Logins: logins
+      Logins: logins,
     });
   })
   .then(function (response) {
@@ -40,8 +40,8 @@ function getMqttCredentials(principalId) {
     return cognitoIdentity.getCredentialsForIdentityAsync({
       IdentityId: principalId,
       Logins: {
-        'cognito-identity.amazonaws.com': response.Token
-      }
+        'cognito-identity.amazonaws.com': response.Token,
+      },
     });
   })
   .then(function (response) {
@@ -52,7 +52,7 @@ function getMqttCredentials(principalId) {
 }
 
 module.exports.respond = function (event, callback) {
-  getMqttCredentials(''+event.principalId)
+  getMqttCredentials('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })

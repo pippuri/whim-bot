@@ -12,17 +12,17 @@ function sendSmsMessage(phone, message) {
     form: {
       From: process.env.TWILIO_FROM_NUMBER,
       To: phone,
-      Body: message
+      Body: message,
     },
     auth: {
       user: process.env.TWILIO_ACCOUNT_SID,
       pass: process.env.TWILIO_ACCOUNT_TOKEN,
-      sendImmediately: true
-    }
+      sendImmediately: true,
+    },
   })
   .then(function (response) {
     return {
-      response: response
+      response: response,
     };
   });
 }

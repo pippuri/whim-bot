@@ -1,5 +1,5 @@
 
-describe('API', function() {
+describe('API', function () {
   require('./routes-endpoint/test.js');
 });
 

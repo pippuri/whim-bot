@@ -7,13 +7,13 @@ var ENDPOINT_URL = 'http://nominatim.openstreetmap.org/search';
 function adapt(input) {
   // Customise query by the hints given
   var query = {
-      format: 'json',
-      addressdetails: 1,
-      limit: input.count,
-      q: input.name,
+    format: 'json',
+    addressdetails: 1,
+    limit: input.count,
+    q: input.name,
   };
 
-  switch(input.hint) {
+  switch (input.hint) {
     case 'latlon':
       // In absence of full circle, use bounding box. Use
       // http://stackoverflow.com/questions/1253499/simple-calculations-for-working-with-lat-lon-km-distance
@@ -27,7 +27,7 @@ function adapt(input) {
       var right = input.lon + input.radius / 111.320 * Math.cos(latRadians);
       var bottom = input.lat - input.radius / 110.574;
 
-      query.viewbox = [ left, top, right, bottom ].join(',');
+      query.viewbox = [left, top, right, bottom].join(',');
       // Force the boundaries
       //query.bounded = 1;
       break;
@@ -46,13 +46,13 @@ function adapt(input) {
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
-    qs: query
+    qs: query,
   })
   .then(parseResults)
   .then(function (locations) {
     return {
       locations: locations,
-      query: query
+      query: query,
     };
   });
 }
@@ -66,7 +66,7 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  response.forEach(function(item) {
+  response.forEach(function (item) {
     console.log(item);
 
     var location = {
@@ -76,7 +76,7 @@ function parseResults(response) {
       zipCode: item.address.postcode,
       city: item.address.city,
       country: item.address.country,
-      address: item.address.construction
+      address: item.address.construction,
     };
 
     locations.push(location);
@@ -87,10 +87,10 @@ function parseResults(response) {
 
 module.exports.respond = function (event, callback) {
   adapt(event)
-  .then(function(response) {
+  .then(function (response) {
     callback(null, response);
   })
-  .catch(function(err) {
+  .catch(function (err) {
     callback(err);
   });
 };

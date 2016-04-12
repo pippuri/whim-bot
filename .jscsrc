@@ -1,0 +1,14 @@
+{
+  "preset": "airbnb",
+
+  "requireSpacesInsideObjectBrackets": null,
+  "requireSpaceAfterLineComment": null,
+  "requirePaddingNewLinesBeforeLineComments": null,
+  "requirePaddingNewLinesAfterBlocks": null,
+  "requireCamelCaseOrUpperCaseIdentifiers": null,
+  "disallowSpacesInsideParentheses": null,
+  "disallowEmptyBlocks": null,
+  "maximumLineLength": null,
+  "requireShorthandArrowFunctions": null,
+
+}

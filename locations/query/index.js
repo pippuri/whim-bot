@@ -16,11 +16,11 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   var ajv = AJV({ inject: true, coerceTypes: true });
 
   // Add a new handler
-  ajv.addKeyword('inject', { 
-    compile: function(schema) {
-      if (!this._opts.inject) return function() { return true; }
+  ajv.addKeyword('inject', {
+    compile: function (schema) {
+      if (!this._opts.inject) return function () { return true; };
 
-      return function(data, dataPath, parentData, parentDataProperty) {
+      return function (data, dataPath, parentData, parentDataProperty) {
         for (key in schema) {
           if (typeof data[key] === 'undefined') {
             data[key] = schema[key];
@@ -28,7 +28,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
         }
         return true;
       };
-    }
+    },
   });
 
   // Compile schema
@@ -50,7 +50,7 @@ function delegate(event) {
   return lambda.invokePromise({
     FunctionName: provider,
     Qualifier: stage,
-    Payload: JSON.stringify(event)
+    Payload: JSON.stringify(event),
   })
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
@@ -71,7 +71,7 @@ function delegate(event) {
 
 module.exports.respond = function (event, callback) {
   // Validate & set defaults
-  var promise = new Promise(function(resolve, reject) {
+  var promise = new Promise(function (resolve, reject) {
       var valid = validate(event.query);
 
       if (!valid) {
@@ -83,7 +83,7 @@ module.exports.respond = function (event, callback) {
     .then(function valid() {
       return delegate(event.query);
     })
-    .then(function(results) {
+    .then(function (results) {
       callback(null, results);
     })
     .catch(function (err) {

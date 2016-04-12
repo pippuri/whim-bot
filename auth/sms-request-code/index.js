@@ -20,7 +20,7 @@ function smsRequestCode(phone, provider) {
   var salt = '' + (100 + Math.floor(Math.random() * 900));
   shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
   var hash = shasum.digest('hex');
-  var verificationCode = salt + '' + (100+parseInt(hash.slice(0, 3), 16));
+  var verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
   var verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
   var functionName = 'MaaS-provider-' + provider + '-send-sms';
   console.log('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
@@ -30,19 +30,19 @@ function smsRequestCode(phone, provider) {
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
     Payload: JSON.stringify({
       phone: phone,
-      message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink
-    })
+      message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink,
+    }),
   })
   .then(function (response) {
     return Promise.resolve({
       message: 'Verification code sent to ' + phone,
-      response: JSON.parse(response.Payload)
+      response: JSON.parse(response.Payload),
     });
   });
 }
 
 module.exports.respond = function (event, callback) {
-  smsRequestCode(''+event.phone, ''+event.provider)
+  smsRequestCode('' + event.phone, '' + event.provider)
   .then(function (response) {
     callback(null, response);
   })

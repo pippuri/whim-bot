@@ -13,20 +13,20 @@ function setActiveRoute(principalId, legId, lat, lon, timestamp) {
           legId: legId,
           lat: lat,
           lon: lon,
-          timestamp: timestamp
-        }
-      }
-    }
+          timestamp: timestamp,
+        },
+      },
+    },
   });
   console.log('Thing shadow payload:', payload);
   return iotData.updateThingShadowAsync({
     thingName: thingName,
-    payload: payload
+    payload: payload,
   });
 }
 
 module.exports.respond = function (event, callback) {
-  updateUserLocation(''+event.principalId, ''+event.legId, event.lat, event.lon, event.timestamp)
+  updateUserLocation('' + event.principalId, '' + event.legId, event.lat, event.lon, event.timestamp)
   .then(function (response) {
     callback(null, response);
   })

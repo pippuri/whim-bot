@@ -3,23 +3,23 @@ var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
 
-module.exports = function(lambda) {
+module.exports = function (lambda) {
 
-  describe('request without "from"', function() {
+  describe('request without "from"', function () {
 
     var event = {
       to: '60.170779,24.7721584', // Gallows Bird Pub
-      leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf() // Monday one week forward around five
-    }
+      leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
+    };
 
     var error;
     var response;
 
-    before(function(done) {
-      wrap(lambda).run(event, function(err, data) {
-          error = err;
-          response = data;
-          done();
+    before(function (done) {
+      wrap(lambda).run(event, function (err, data) {
+        error = err;
+        response = data;
+        done();
       });
     });
 
@@ -34,4 +34,4 @@ module.exports = function(lambda) {
     });
 
   });
-}
+};

@@ -1,15 +1,15 @@
-"use strict";
+'use strict';
 /**
  * Routing results adapter from Here to MaaS. Returns promise for JSON object.
  */
 var Promise = require('bluebird');
-var nextStartTime = 0,
-  nextEndTime = 0;
+var nextStartTime = 0;
+var nextEndTime = 0;
 var constructTo = [];
 
 function convertMode(data) {
   //strip out html tag from instruction
-  return (data.instruction).replace(/(<([^>]+)>)/ig, "");
+  return (data.instruction).replace(/(<([^>]+)>)/ig, '');
 }
 
 function convertFrom(from) {
@@ -18,7 +18,7 @@ function convertFrom(from) {
     stopId: undefined,
     stopCode: undefined,
     lon: from.position.longitude,
-    lat: from.position.latitude
+    lat: from.position.latitude,
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
@@ -30,23 +30,23 @@ function convertTo(data) {
     stopId: undefined,
     stopCode: undefined,
     lon: position.longitude,
-    lat: position.latitude
+    lat: position.latitude,
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
 
 function legGeometry(data) {
   return {
-    points: convertToLegGeometry(data.shape)
-  }
+    points: convertToLegGeometry(data.shape),
+  };
 }
 
 function convertToLegGeometry(shapes) {
-  // Output: [[12.12,34.23],[11.12,33.23],...] 
+  // Output: [[12.12,34.23],[11.12,33.23],...]
   var points = shapes.map(function (val) {
-    return JSON.parse("[" + val + "]");
+    return JSON.parse('[' + val + ']');
   });
-  
+
   return createEncodedPolyline(points);
 }
 
@@ -57,7 +57,7 @@ function createEncodedPolyline(points) {
   var plat = 0;
   var plon = 0;
 
-  var encoded_point = "";
+  var encoded_point = '';
 
   points.forEach(function (val, key) {
     var lat = val[0];
@@ -68,7 +68,7 @@ function createEncodedPolyline(points) {
     plat = lat;
     plon = lon;
   });
-  
+
   return encoded_point;
 }
 
@@ -89,19 +89,19 @@ function encodeSignedValue(num) {
   if (num < 0) {
     sgn_num = ~(sgn_num);
   }
-  
+
   return (encodeNumber(sgn_num));
 }
 
 function encodeNumber(num) {
-  var encodeString = "";
+  var encodeString = '';
   while (num >= 0x20) {
     encodeString += (String.fromCharCode((0x20 | (num & 0x1f)) + 63));
     num >>= 5;
   }
-  
+
   encodeString += (String.fromCharCode(num + 63));
-    
+
   return encodeString;
 }
 //--------------------------------------------------------------------------------
@@ -117,7 +117,7 @@ function convertLeg(leg, data, route, startTime) {
       constructTo.push(leg.maneuver[i].position);
     }
   }
-  
+
   return {
     startTime: nextStartTime,
     endTime: nextEndTime,
@@ -128,7 +128,7 @@ function convertLeg(leg, data, route, startTime) {
     route: undefined,
     routeShortName: undefined,
     routeLongName: undefined,
-    agencyId: undefined
+    agencyId: undefined,
   };
 }
 
@@ -142,11 +142,11 @@ function convertItinerary(route) {
     });
     res = result;
   });
-  
+
   return {
     startTime: startTime.getTime(),
     endTime: startTime.getTime() + route.summary.travelTime,
-    legs: res
+    legs: res,
   };
 }
 
@@ -154,12 +154,12 @@ function convertPlanFrom(original) {
   var from;
 
   if (original.response && original.response.route[0] && original.response.route[0].waypoint[0]) {
-    var lon = (original.response.route[0].waypoint[0].originalPosition['longitude']).toFixed(5);
-    var lat = (original.response.route[0].waypoint[0].originalPosition['latitude']).toFixed(5);
+    var lon = (original.response.route[0].waypoint[0].originalPosition.longitude).toFixed(5);
+    var lat = (original.response.route[0].waypoint[0].originalPosition.latitude).toFixed(5);
     from = {
       lon: lon,
-      lat: lat
-    }
+      lat: lat,
+    };
     return from;
   }
 }
@@ -168,7 +168,7 @@ module.exports = function (original) {
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
-      itineraries: original.response.route.map(convertItinerary)
-    }
+      itineraries: original.response.route.map(convertItinerary),
+    },
   });
 };

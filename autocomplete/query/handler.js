@@ -14,9 +14,9 @@ var ServerlessHelpers = require('serverless-helpers-js').loadEnv();
 var lib = require('./index.js');
 
 // Lambda Handler
-module.exports.handler = function(event, context) {
+module.exports.handler = function (event, context) {
 
-  lib.respond(event, function(error, response) {
+  lib.respond(event, function (error, response) {
     return context.done(error, response);
   });
 };

@@ -12,7 +12,7 @@ function getMe(principalId) {
   })
   .then(function (response) {
     var user = {
-      principalId: principalId
+      principalId: principalId,
     };
     response.Records.map(function (record) {
       user[record.Key] = record.Value;
@@ -22,7 +22,7 @@ function getMe(principalId) {
 }
 
 module.exports.respond = function (event, callback) {
-  getMe(''+event.principalId)
+  getMe('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })

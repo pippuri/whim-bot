@@ -8,17 +8,17 @@ var providerRegions = {
   tripgo: [
     {
       area:[59.74, 22.65, 61.99, 30.24],
-      subProvider: '-southfinland'
+      subProvider: '-southfinland',
     },
     {
       area: [59.74, 19.31, 64.12, 29.93],
-      subProvider: '-middlefinland'
+      subProvider: '-middlefinland',
     },
     {
       area: [61.72, 20, 70.36, 32.08],
-      subProvider: '-northfinland'
-    }
-  ]
+      subProvider: '-northfinland',
+    },
+  ],
 };
 
 function isInsideRegion(coords, area) {
@@ -70,7 +70,7 @@ function addRouteAndLegIdentifiers(itineraries) {
       if (!leg.legId) {
         leg.legId = generateLegId(leg);
       }
-    })
+    });
   });
 }
 
@@ -89,8 +89,8 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
       from: from,
       to: to,
       leaveAt: leaveAt,
-      arriveBy: arriveBy
-    })
+      arriveBy: arriveBy,
+    }),
   })
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
@@ -103,7 +103,7 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
       addRouteAndLegIdentifiers(payload.plan.itineraries || []);
       // Add some debug info to response
       payload.maas = {
-        provider: provider + subProvider
+        provider: provider + subProvider,
       };
       return payload;
     }

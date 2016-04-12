@@ -18,16 +18,16 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
         activeRoute: {
           activeLeg: {
             legId: legId,
-            timestamp: timestamp
-          }
-        }
-      }
-    }
+            timestamp: timestamp,
+          },
+        },
+      },
+    },
   });
   console.log('Thing shadow payload:', payload);
   return iotData.updateThingShadowAsync({
     thingName: thingName,
-    payload: payload
+    payload: payload,
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
@@ -36,7 +36,7 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRouteLeg(''+event.principalId, event.legId, event.timestamp)
+  setActiveRouteLeg('' + event.principalId, event.legId, event.timestamp)
   .then(function (response) {
     callback(null, response);
   })

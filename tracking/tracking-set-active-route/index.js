@@ -28,14 +28,14 @@ function setActiveRoute(principalId, activeRoute) {
   var payload = JSON.stringify({
     state: {
       reported: {
-        activeRoute: activeRoute
-      }
-    }
+        activeRoute: activeRoute,
+      },
+    },
   });
   console.log('Thing shadow payload:', payload);
   return iotData.updateThingShadowAsync({
     thingName: thingName,
-    payload: payload
+    payload: payload,
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
@@ -44,7 +44,7 @@ function setActiveRoute(principalId, activeRoute) {
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRoute(''+event.principalId, event.activeRoute)
+  setActiveRoute('' + event.principalId, event.activeRoute)
   .then(function (response) {
     callback(null, response);
   })

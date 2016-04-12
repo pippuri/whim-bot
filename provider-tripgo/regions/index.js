@@ -8,8 +8,8 @@ function getTripGoRegions() {
   return request.get(TRIPGO_REGIONS_URL, {
     json: true,
     headers: {
-      'X-TripGo-Key': process.env.TRIPGO_API_KEY
-    }
+      'X-TripGo-Key': process.env.TRIPGO_API_KEY,
+    },
   });
 }
 

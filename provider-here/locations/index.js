@@ -7,15 +7,15 @@ var ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
 function adapt(input) {
   // Customise query by the hints given
   var query = {
-      app_id: process.env.HERE_APP_ID,
-      app_code: process.env.HERE_APP_CODE,
-      searchtext: input.name,
-      maxresults: input.count
+    app_id: process.env.HERE_APP_ID,
+    app_code: process.env.HERE_APP_CODE,
+    searchtext: input.name,
+    maxresults: input.count,
   };
 
-  switch(input.hint) {
-    case 'latlon': 
-      query.prox = [ input.lat, input.lon, input.radius * 1000 ].join(',')
+  switch (input.hint) {
+    case 'latlon':
+      query.prox = [input.lat, input.lon, input.radius * 1000].join(',');
       break;
     case 'country':
       query.country = input.country;
@@ -32,13 +32,13 @@ function adapt(input) {
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
-    qs: query
+    qs: query,
   })
   .then(parseResults)
   .then(function (locations) {
     return {
       locations: locations,
-      query: query
+      query: query,
     };
   });
 }
@@ -52,10 +52,10 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  view.forEach(function(item) {
+  view.forEach(function (item) {
     var results = item.Result;
 
-    results.forEach(function(result) {
+    results.forEach(function (result) {
       var item = result.Location;
 
       var location = {
@@ -65,7 +65,7 @@ function parseResults(response) {
         zipCode: item.Address.PostalCode,
         city: item.Address.City,
         country: item.Address.Country,
-        address: item.Address.Street
+        address: item.Address.Street,
       };
 
       locations.push(location);
@@ -79,10 +79,10 @@ module.exports.respond = function (event, callback) {
   console.log(event);
 
   adapt(event)
-  .then(function(response) {
+  .then(function (response) {
     callback(null, response);
   })
-  .catch(function(err) {
+  .catch(function (err) {
     callback(err);
   });
 };

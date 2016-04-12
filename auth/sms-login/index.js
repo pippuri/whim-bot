@@ -20,14 +20,14 @@ function getCognitoDeveloperIdentity(plainPhone) {
   logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + plainPhone;
   var options = {
     IdentityPoolId: process.env.COGNITO_POOL_ID,
-    Logins: logins
+    Logins: logins,
   };
   console.log('Getting cognito developer identity with', JSON.stringify(options, null, 2));
   return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options)
   .then(function (response) {
     return {
       identityId: response.IdentityId,
-      cognitoToken: response.Token
+      cognitoToken: response.Token,
     };
   });
 }
@@ -55,7 +55,7 @@ function updateCognitoProfile(identityId, profile) {
       if (typeof profile[key] == 'object') {
         newValue = JSON.stringify(profile[key]);
       } else {
-        newValue = ''+profile[key];
+        newValue = '' + profile[key];
       }
       // Check if changed
       if (!oldRecord || newValue != oldRecord.Value) {
@@ -63,7 +63,7 @@ function updateCognitoProfile(identityId, profile) {
           Op: 'replace',
           Key: key,
           Value: newValue,
-          SyncCount: oldRecord ? oldRecord.SyncCount : 0
+          SyncCount: oldRecord ? oldRecord.SyncCount : 0,
         });
       }
     });
@@ -73,7 +73,7 @@ function updateCognitoProfile(identityId, profile) {
         IdentityId: identityId,
         DatasetName: process.env.COGNITO_PROFILE_DATASET,
         SyncSessionToken: syncSessionToken,
-        RecordPatches: patches
+        RecordPatches: patches,
       });
     }
   });
@@ -90,15 +90,15 @@ function createUserThing(identityId) {
     attributePayload: {
       attributes: {
         // Up to three attributes can be attached here if needed
-      }
-    }
+      },
+    },
   })
   .then(function (response) {
     console.log('CreateThing response:', response);
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
       principal: identityId,
-      thingName: thingName
+      thingName: thingName,
     });
   })
   .then(function (response) {
@@ -106,19 +106,19 @@ function createUserThing(identityId) {
     // Attach the cognito policy to the default policy
     return iot.attachPrincipalPolicyAsync({
       policyName: 'DefaultCognitoPolicy',
-      principal: identityId
+      principal: identityId,
     });
   })
   .then(function (response) {
     console.log('AttachPrincipalPolicy response:', response);
     return iot.listPrincipalPoliciesAsync({
-      principal: identityId
+      principal: identityId,
     });
   })
   .then(function (response) {
     console.log('Attached policies:', response);
     return iot.listPrincipalThingsAsync({
-      principal: identityId
+      principal: identityId,
     });
   })
   .then(function (response) {
@@ -139,7 +139,7 @@ function smsLogin(phone, code) {
   var salt = code.slice(0, 3);
   shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
   var hash = shasum.digest('hex');
-  var correctCode = salt + '' + (100+parseInt(hash.slice(0, 3), 16));
+  var correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
   console.log('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
     return Promise.reject(new Error('401 Unauthorized'));
@@ -151,7 +151,7 @@ function smsLogin(phone, code) {
     cognitoToken = response.cognitoToken;
     return updateCognitoProfile(identityId, {
       phone: phone,
-      verificationCode: code
+      verificationCode: code,
     });
   })
   .then(function () {
@@ -160,20 +160,20 @@ function smsLogin(phone, code) {
   .then(function () {
     // Create a signed JSON web token
     var token = jwt.sign({
-      id: identityId
+      id: identityId,
     }, process.env.JWT_SECRET);
     return {
       id_token: token,
       cognito_id: identityId,
       cognito_token: cognitoToken,
       cognito_pool: process.env.COGNITO_POOL_ID,
-      cognito_provider: 'cognito-identity.amazonaws.com'
+      cognito_provider: 'cognito-identity.amazonaws.com',
     };
   });
 }
 
 module.exports.respond = function (event, callback) {
-  smsLogin(''+event.phone, ''+event.code)
+  smsLogin('' + event.phone, '' + event.code)
   .then(function (response) {
     callback(null, response);
   })

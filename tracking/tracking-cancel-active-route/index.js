@@ -11,15 +11,15 @@ function destroyActiveRoute(principalId) {
     payload: JSON.stringify({
       state: {
         reported: {
-          activeRoute: null
-        }
-      }
-    })
+          activeRoute: null,
+        },
+      },
+    }),
   });
 }
 
 module.exports.respond = function (event, callback) {
-  destroyActiveRoute(''+event.principalId)
+  destroyActiveRoute('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })
