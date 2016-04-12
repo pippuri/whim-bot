@@ -34,7 +34,7 @@
       "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
-      "authorizerId": "r94b5z",
+      "authorizerId": "${authorizerId}",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
