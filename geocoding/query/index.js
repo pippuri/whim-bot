@@ -73,7 +73,6 @@ module.exports.respond = function (event, callback) {
   // Validate & set defaults
   var promise = new Promise(function(resolve, reject) {
       var valid = validate(event.query);
-      console.log('Validation done', event.query);
 
       if (!valid) {
         console.log('errors', event.query, validate.errors); 
@@ -86,6 +85,8 @@ module.exports.respond = function (event, callback) {
       return delegate(event.query);
     })
     .then(function(results) {
+      // Replace the delegate query info with our own query
+      results.query = event.query; 
       callback(null, results);
     })
     .catch(function (err) {

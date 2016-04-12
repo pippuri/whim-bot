@@ -12,6 +12,8 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
+    "ajv": "^3.8.10",
+    "bluebird": "^3.3.4",
     "serverless-helpers-js": "~0.1.0"
   }
 }
