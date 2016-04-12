@@ -4,6 +4,7 @@ var install = require('gulp-install');
 var exec = require('child_process').exec;
 var jscs = require('gulp-jscs');
 var mocha = require('gulp-mocha');
+var jsonlint = require('gulp-jsonlint');
 
 // the two dependency retrievers fail if combined to one
 
@@ -33,7 +34,14 @@ gulp.task('mocha', function () {
     .pipe(mocha());
 });
 
-gulp.task('test', ['jscs', 'mocha']);
+gulp.task('jsonlint', function () {
+  return gulp.src(['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'])
+    .pipe(jsonlint())
+    .pipe(jsonlint.reporter())
+    .pipe(jsonlint.failOnError());
+});
+
+gulp.task('test', ['jscs', 'mocha', 'jsonlint']);
 
 gulp.task('default');
 
