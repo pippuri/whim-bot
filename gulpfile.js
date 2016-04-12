@@ -4,11 +4,13 @@ var install = require("gulp-install");
 var mocha = require('gulp-mocha');
 var exec = require('child_process').exec;
 
+// the two dependency retrievers fail if combined to one
 gulp.task('get-main-deps-async', function() {
   gulp.src(['package.json'])
     .pipe(install());
 });
 
+// the two dependency retrievers fail if combined to one
 gulp.task('get-component-deps-async', function() {
   gulp.src(['*/package.json'])
     .pipe(install());
@@ -16,6 +18,7 @@ gulp.task('get-component-deps-async', function() {
 
 gulp.task('get-deps-async', ['get-main-deps-async', 'get-component-deps-async']);
 
+// gulp-install does not block as expected, so we need to do it ourselves through exec
 gulp.task('get-deps', function(callback) {
   exec('gulp get-deps-async', function (err, stdout, stderr) {
     console.log(stdout);
