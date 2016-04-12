@@ -5,7 +5,7 @@ var validator = require('./response_validator');
 
 module.exports = function(lambda){
 
-  describe('autocomplete',function(){
+  describe('autocomplete request',function(){
 
     var event = {
       "hint": "latlon",
@@ -27,11 +27,11 @@ module.exports = function(lambda){
       });
     });
 
-    it('request should be successful' , function(){
+    it('should be successful' , function(){
       expect(error).to.be.null;
     });
   
-    it('should give a valid response', function () {
+    it('should trigger a valid response', function () {
       var validation_error = validator(response);
       expect(validation_error).to.be.null;
     });
