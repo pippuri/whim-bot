@@ -40,6 +40,9 @@
     "ajv": "^3.8.8",
     "aws-sdk": "^2.2.39",
     "chai": "^3.5.0",
+    "gulp": "^3.9.1",
+    "gulp-install": "^0.6.0",
+    "gulp-mocha": "^2.2.0",
     "lambda-wrapper": "0.0.5",
     "moment": "^2.12.0"
   },
@@ -53,7 +56,7 @@
     "url": "git+https://github.com/maasglobal/maas-backend.git"
   },
   "scripts": {
-    "test": "mocha",
+    "test": "gulp test",
     "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json",
     "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger/swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/"
   },
