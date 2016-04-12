@@ -37,12 +37,11 @@ function adapt(input) {
       break;
     case 'country':
       // Not implemented
-      Promise.reject(new Error("Country hint not implemented."));
-      break;
+      return Promise.reject(new Error("Country hint not implemented."));
     case 'none':
-      break;
+      return Promise.reject(new Error("'none' not supported for HERE."));
     default:
-      throw new Error('Location hint not given');
+      return Promise.reject(new Error('Location hint not given'));
   }
 
   return request.get(ENDPOINT_URL, {
@@ -51,11 +50,12 @@ function adapt(input) {
     qs: query
   })
   .then(parseResults)
-  .then(function (features) {
-    return {
-      features: features,
-      query: query
-    };
+  .then(function (response) {
+    // Inject query to the response
+    // Note: This is a bit unsafe, since we're actually modifying
+    // the call parameter. Should be ok in this case, though.
+    response.query = query;
+    return response;
   });
 }
 
@@ -79,7 +79,7 @@ function parseResults(response) {
       },
       geometry: {
         type: 'Point',
-        coordinates: [52.5031395, 13.3906403]
+        coordinates: item.position
       }
     };
 
@@ -92,9 +92,9 @@ function parseResults(response) {
 module.exports.respond = function (event, callback) {
   adapt(event)
   .then(function(response) {
-    callback(null, response);
+    return callback(null, response);
   })
   .catch(function(err) {
-    callback(err);
+    return callback(err);
   });
 };

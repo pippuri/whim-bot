@@ -1,0 +1,29 @@
+[
+  {
+    "input": {
+      "hint": "latlon",
+      "name": "Kamppi Bus Station",
+      "count": 5,
+      "lat": 60.1675800,
+      "lon": 24.9302260,
+      "radius": 5
+    },
+    "pass": true
+  },
+  {
+    "input": {
+      "hint": "latlon",
+      "name": "Pohjoiskaari 29",
+      "lat": 60.1675800,
+      "lon": 24.9302260
+    },
+    "pass": true
+  },
+  {
+    "input": {
+      "hint": "none",
+      "name": "Pohjoiskaari 29"
+    },
+    "pass": false
+  }
+]
