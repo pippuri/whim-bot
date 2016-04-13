@@ -12,7 +12,7 @@
   "unused": "vars",
 
 //  "strict": "implied",
-//  "maxdepth": 4,
+  "maxdepth": 2,
 
   "expr": true // support chai expects
 }
