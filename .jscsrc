@@ -1,14 +1,23 @@
 {
   "preset": "airbnb",
 
+  "disallowSpacesInsideParentheses": null,
+  "disallowEmptyBlocks": null,
+  "maximumLineLength": null,
+
   "requireSpacesInsideObjectBrackets": null,
   "requireSpaceAfterLineComment": null,
   "requirePaddingNewLinesBeforeLineComments": null,
   "requirePaddingNewLinesAfterBlocks": null,
   "requireCamelCaseOrUpperCaseIdentifiers": null,
-  "disallowSpacesInsideParentheses": null,
-  "disallowEmptyBlocks": null,
-  "maximumLineLength": null,
-  "requireShorthandArrowFunctions": null,
+
+  "validateIndentation": 2,
+
+  "excludeFiles": [
+    "**/node_modules/**",
+    "_meta",
+    "www"
+  ],
+  maxErrors: 1000
 
 }
