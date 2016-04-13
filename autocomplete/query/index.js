@@ -26,6 +26,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
             data[key] = schema[key];
           }
         }
+
         return true;
       };
     },

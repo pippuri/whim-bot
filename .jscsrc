@@ -7,7 +7,6 @@
 
   "requireSpacesInsideObjectBrackets": null,
   "requirePaddingNewLinesBeforeLineComments": null,
-  "requirePaddingNewLinesAfterBlocks": null,
 
   "validateIndentation": 2,
   "requireCapitalizedConstructorsNew": true,

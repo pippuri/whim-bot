@@ -36,12 +36,15 @@ function chooseProviderByRegion(provider, from) {
       if (!subProvider && isInsideRegion(coords, region.area)) {
         subProvider = region.subProvider;
       }
+
     });
+
     if (!subProvider) {
       // Could not find a subprovider in the configured regions
       throw new Error('No provider found for region');
     }
   }
+
   return subProvider;
 }
 
@@ -66,6 +69,7 @@ function addRouteAndLegIdentifiers(itineraries) {
     if (!itinerary.routeId) {
       itinerary.routeId = generateRouteId(itinerary);
     }
+
     (itinerary.legs || []).map(function (leg) {
       if (!leg.legId) {
         leg.legId = generateLegId(leg);
@@ -78,6 +82,7 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
   if (!provider) {
     provider = 'tripgo';
   }
+
   var subProvider = chooseProviderByRegion(provider, from);
   var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
   console.log('Invoking router', functionName);
@@ -107,6 +112,7 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
       };
       return payload;
     }
+
   });
 }
 
@@ -126,4 +132,5 @@ module.exports.respond = function (event, callback) {
       callback(err);
     });
   }
+
 };

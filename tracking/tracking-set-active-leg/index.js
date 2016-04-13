@@ -8,9 +8,11 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
   if (!legId) {
     return Promise.reject(new Error('400 legId is required'));
   }
+
   if (!timestamp) {
     return Promise.reject(new Error('400 timestamp is required'));
   }
+
   var thingName = principalId.replace(/:/, '-');
   var payload = JSON.stringify({
     state: {

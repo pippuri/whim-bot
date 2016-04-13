@@ -49,6 +49,7 @@ function updateCognitoProfile(identityId, profile) {
     response.Records.map(function (record) {
       oldRecords[record.Key] = record;
     });
+
     Object.keys(profile).map(function (key) {
       var oldRecord = oldRecords[key];
       var newValue;
@@ -57,6 +58,7 @@ function updateCognitoProfile(identityId, profile) {
       } else {
         newValue = '' + profile[key];
       }
+
       // Check if changed
       if (!oldRecord || newValue !== oldRecord.Value) {
         patches.push({
@@ -66,7 +68,9 @@ function updateCognitoProfile(identityId, profile) {
           SyncCount: oldRecord ? oldRecord.SyncCount : 0,
         });
       }
+
     });
+
     if (patches.length > 0) {
       return cognitoSync.updateRecordsAsync({
         IdentityPoolId: process.env.COGNITO_POOL_ID,
@@ -76,6 +80,7 @@ function updateCognitoProfile(identityId, profile) {
         RecordPatches: patches,
       });
     }
+
   });
 }
 
@@ -135,6 +140,7 @@ function smsLogin(phone, code) {
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
   }
+
   var shasum = crypto.createHash('sha1');
   var salt = code.slice(0, 3);
   shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
@@ -144,6 +150,7 @@ function smsLogin(phone, code) {
   if (correctCode !== code) {
     return Promise.reject(new Error('401 Unauthorized'));
   }
+
   var identityId;
   return getCognitoDeveloperIdentity(plainPhone)
   .then(function (response) {

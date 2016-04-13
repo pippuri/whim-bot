@@ -26,9 +26,11 @@ module.exports = function (lambda) {
     it('should raise an error', function () {
       expect(error).not.to.be.null;
     });
+
     it('should provide the expected error message', function () {
       expect(error.message).to.equal('Missing "to" argument.');
     });
+
     it('should not return a response', function () {
       expect(response).to.be.undefined;
     });

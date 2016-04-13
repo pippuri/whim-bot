@@ -64,6 +64,7 @@ module.exports = function (original) {
   if (typeof original.plan === typeof undefined) {
     return Promise.reject(new Error('No Digitransit plan received for these parameters'));
   }
+
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original.plan.from),

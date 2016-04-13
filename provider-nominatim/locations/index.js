@@ -63,6 +63,7 @@ function adapt(input) {
       if (typeof input.city !== 'undefined') {
         query.q += ' ' + input.city;
       }
+
       query.q += ' ' + input.country;
       break;
     case 'none':

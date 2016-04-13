@@ -85,6 +85,7 @@ module.exports = function (original) {
       allRoutes.push(route);
     });
   });
+
   return Promise.resolve({
     plan: {
       itineraries: allRoutes.map(convertItinerary),

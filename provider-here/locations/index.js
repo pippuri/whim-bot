@@ -54,6 +54,7 @@ function adapt(input) {
       if (typeof input.city !== 'undefined') {
         query.city = input.city;
       }
+
       break;
     case 'none':
       break;

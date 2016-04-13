@@ -13,6 +13,7 @@ function convertAgencyId(serviceOperator) {
   } else {
     return undefined;
   }
+
 }
 
 function convertFromTo(from) {
@@ -66,8 +67,10 @@ function convertPlanFrom(original) {
           lat: segmentTemplate.from.lat,
         };
       }
+
     });
   }
+
   return from;
 }
 
@@ -86,6 +89,7 @@ module.exports = function (original) {
   original.groups.map(function (group) {
     allTrips = allTrips.concat(group.trips);
   });
+
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),

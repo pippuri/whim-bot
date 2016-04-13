@@ -31,6 +31,7 @@ module.exports = function (lambda) {
     it('should succeed without errors', function () {
       expect(error).to.be.null;
     });
+
     it('should trigger a valid response', function () {
       var validationError = validator(response);
       expect(validationError).to.be.null;
@@ -39,6 +40,7 @@ module.exports = function (lambda) {
     it('response should have route', function () {
       expect(response.plan.itineraries.length).to.not.be.empty;
     });
+
     it('response route suggestions should be max ' + lateMargin + ' minutes late', function () {
       response.plan.itineraries.forEach(function (i) {
         var lateMillis = (parseInt(i.endTime, 10) - parseInt(event.arriveBy));

@@ -119,6 +119,7 @@ function convertLeg(leg, data, route, startTime) {
     if (i === leg.maneuver.length - 1) {
       constructTo.push(leg.maneuver[i].position);
     }
+
   }
 
   return {
@@ -143,6 +144,7 @@ function convertItinerary(route) {
     leg.maneuver.forEach(function (data, index) {
       result.push(convertLeg(leg, data, route, startTime.getTime()));
     });
+
     res = result;
   });
 
@@ -165,6 +167,7 @@ function convertPlanFrom(original) {
     };
     return from;
   }
+
 }
 
 module.exports = function (original) {

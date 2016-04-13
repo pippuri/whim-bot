@@ -11,6 +11,7 @@ function customAuthorize(event) {
     // Invalid authorization
     return Promise.reject('Unauthorized');
   }
+
   var token = m[1];
   var user;
 

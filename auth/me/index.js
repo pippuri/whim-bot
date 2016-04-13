@@ -17,6 +17,7 @@ function getMe(principalId) {
     response.Records.map(function (record) {
       user[record.Key] = record.Value;
     });
+
     return user;
   });
 }

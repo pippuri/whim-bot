@@ -41,6 +41,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   } else {
     qs.departAfter = Math.floor(Date.now() / 1000);
   }
+
   return request.get(baseUrl, {
     json: true,
     headers: {
@@ -70,16 +71,19 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
         response.groups.push(group);
       });
     }
+
     if (results[1] && results[1].segmentTemplates) {
       results[1].segmentTemplates.map(function (segmentTemplate) {
         response.segmentTemplates.push(segmentTemplate);
       });
     }
+
     if (format === 'original') {
       return response;
     } else {
       return adapter(response);
     }
+
   });
 }
 

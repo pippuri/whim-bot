@@ -11,11 +11,13 @@ function smsRequestCode(phone, provider) {
   if (!provider || provider === 'undefined') {
     provider = 'twilio';
   }
+
   // Clean up phone number to only contain digits
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
   }
+
   var shasum = crypto.createHash('sha1');
   var salt = '' + (100 + Math.floor(Math.random() * 900));
   shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
