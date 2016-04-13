@@ -7,7 +7,7 @@ var TAXI_API_URL = '';
 
 function cancelOrder(orderId) {
 
-  request.delete(TAXI_API_URL + '/order/' + orderId + '/cancel')
+  request.del(TAXI_API_URL + '/order/' + orderId + '/cancel')
     .then(function (response) {
       console.log(response);
       return Promise.resolve(response);
