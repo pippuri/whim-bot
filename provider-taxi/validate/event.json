@@ -1,0 +1,32 @@
+{
+  "locations": [
+    {
+      "address": {
+        "street_address": "Kamppi",
+        "city": "Helsinki"
+      },
+      "type": "pickup",
+      "at": "",
+      "passenger_count": 1,
+      "contacts": [
+        {
+          "phone_number": "+37256282689",
+          "name": "Karl",
+          "provider_order_id": "MaaS-10001",
+          "passenger_count": 1
+        }
+      ]
+    },
+    {
+      "address": {
+        "street_address": "Nuuksio",
+        "city": "Espoo"
+      },
+      "type": "destination",
+      "drop_off": ["MaaS-10001"],
+      "passenger_count": 1
+    }
+  ],
+  "prepaid": true,
+  "vehicle_type": "car"
+}
