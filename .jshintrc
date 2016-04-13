@@ -4,7 +4,7 @@
 
   "eqeqeq": true,
   "forin": true,
-//  "freeze": true,
+  "freeze": true,
 //  "latedef": true,
 //  "noarg": true,
 //  "nonbsp": true,
