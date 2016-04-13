@@ -6,7 +6,7 @@
   "forin": true,
   "freeze": true,
   "latedef": true,
-//  "noarg": true,
+  "noarg": true,
 //  "nonbsp": true,
 //  "undef": true,
 //  "unused": true,
