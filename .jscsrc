@@ -5,8 +5,6 @@
   "disallowEmptyBlocks": null,
   "maximumLineLength": null,
 
-  "requireSpacesInsideObjectBrackets": null,
-
   "validateIndentation": 2,
   "requireCapitalizedConstructorsNew": true,
 

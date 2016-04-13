@@ -32,7 +32,7 @@ function getMatkaRoutes(from, to, format) {
     },
   })
   .then(function (response) {
-    return xml2js.parseStringAsync(response, {explicitChildren:true, preserveChildrenOrder:true});
+    return xml2js.parseStringAsync(response, { explicitChildren:true, preserveChildrenOrder:true });
   })
   .then(function (result) {
     console.log('Format:', format);

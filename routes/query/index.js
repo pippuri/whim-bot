@@ -1,8 +1,8 @@
 var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
-Promise.promisifyAll(lambda, {suffix:'Promise'});
+var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
+Promise.promisifyAll(lambda, { suffix:'Promise' });
 
 var providerRegions = {
   tripgo: [

@@ -4,7 +4,7 @@ var ajvFactory = require('ajv');
 
 // Input schema
 var schema = require('./schema.json');
-var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
+var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
 var validate;
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 

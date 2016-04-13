@@ -3,9 +3,9 @@ var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
 
-var cognitoIdentity = new AWS.CognitoIdentity({region:process.env.AWS_REGION});
-var cognitoSync = new AWS.CognitoSync({region:process.env.AWS_REGION});
-var iot = new AWS.Iot({region:process.env.AWS_REGION});
+var cognitoIdentity = new AWS.CognitoIdentity({ region:process.env.AWS_REGION });
+var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
+var iot = new AWS.Iot({ region:process.env.AWS_REGION });
 
 Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
