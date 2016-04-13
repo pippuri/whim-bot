@@ -6,7 +6,6 @@
   "maximumLineLength": null,
 
   "requireSpacesInsideObjectBrackets": null,
-  "requireSpaceAfterLineComment": null,
   "requirePaddingNewLinesBeforeLineComments": null,
   "requirePaddingNewLinesAfterBlocks": null,
 
