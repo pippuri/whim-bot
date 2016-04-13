@@ -3,7 +3,7 @@
 
   "disallowSpacesInsideParentheses": null,
   "disallowEmptyBlocks": null,
-  "maximumLineLength": null,
+  "maximumLineLength": 256,
 
   "validateIndentation": 2,
   "requireCapitalizedConstructorsNew": true,
