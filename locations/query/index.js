@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
-var AJV = require('ajv');
+var ajvFactory = require('ajv');
 
 // Input schema
 var schema = require('./schema.json');
@@ -13,7 +13,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
-  var ajv = AJV({ inject: true, coerceTypes: true });
+  var ajv = ajvFactory({ inject: true, coerceTypes: true });
 
   // Add a new handler
   ajv.addKeyword('inject', {

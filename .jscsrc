@@ -9,7 +9,9 @@
   "requireSpaceAfterLineComment": null,
   "requirePaddingNewLinesBeforeLineComments": null,
   "requirePaddingNewLinesAfterBlocks": null,
+
   "validateIndentation": 2,
+  "requireCapitalizedConstructorsNew": true,
 
   "excludeFiles": [
     "**/node_modules/**",

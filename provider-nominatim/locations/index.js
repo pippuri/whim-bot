@@ -18,8 +18,8 @@ function parseResults(response) {
 
     var location = {
       name: item.display_name,
-      lat: Number(item.lat),
-      lon: Number(item.lon),
+      lat: parseInt(item.lat, 10),
+      lon: parseInt(item.lon, 10),
       zipCode: item.address.postcode,
       city: item.address.city,
       country: item.address.country,
