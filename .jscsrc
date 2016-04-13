@@ -9,8 +9,6 @@
   "requireSpaceAfterLineComment": null,
   "requirePaddingNewLinesBeforeLineComments": null,
   "requirePaddingNewLinesAfterBlocks": null,
-  "requireCamelCaseOrUpperCaseIdentifiers": null,
-
   "validateIndentation": 2,
 
   "excludeFiles": [

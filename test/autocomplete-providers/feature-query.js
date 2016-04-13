@@ -32,8 +32,8 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', function () {
-      var validation_error = validator(response);
-      expect(validation_error).to.be.null;
+      var validationError = validator(response);
+      expect(validationError).to.be.null;
     });
 
   });

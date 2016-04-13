@@ -9,7 +9,7 @@ module.exports = function (lambda) {
 
   describe('arriveBy request', function () {
 
-    var late_margin = 58; // minutes (< 60 to make sure we catch time zone problems)
+    var lateMargin = 58; // minutes (< 60 to make sure we catch time zone problems)
 
     var event = {
       from: '60.1684126,24.9316739', // SC5 Office
@@ -32,19 +32,19 @@ module.exports = function (lambda) {
       expect(error).to.be.null;
     });
     it('should trigger a valid response', function () {
-      var validation_error = validator(response);
-      expect(validation_error).to.be.null;
+      var validationError = validator(response);
+      expect(validationError).to.be.null;
     });
 
     it('response should have route', function () {
       expect(response.plan.itineraries.length).to.not.be.empty;
     });
-    it('response route suggestions should be max ' + late_margin + ' minutes late', function () {
+    it('response route suggestions should be max ' + lateMargin + ' minutes late', function () {
       response.plan.itineraries.forEach(function (i) {
-        var late_ms = (parseInt(i.endTime, 10) - parseInt(event.arriveBy));
-        var late_s = late_ms / 1000;
-        var late_m = Math.floor(late_s / 60);
-        expect(late_m).to.be.below(late_margin);
+        var lateMillis = (parseInt(i.endTime, 10) - parseInt(event.arriveBy));
+        var lateSeconds = lateMillis / 1000;
+        var lateMinutes = Math.floor(lateSeconds / 60);
+        expect(lateMinutes).to.be.below(lateMargin);
       });
     });
 
