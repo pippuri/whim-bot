@@ -5,7 +5,7 @@ var exec = require('child_process').exec;
 var jsonlint = require('gulp-jsonlint');
 var jshint = require('gulp-jshint');
 var jscs = require('gulp-jscs');
-var mocha = require('gulp-mocha');
+var gmocha = require('gulp-mocha');
 
 // the two dependency retrievers fail if combined to one
 
@@ -46,7 +46,7 @@ gulp.task('jscs', function () {
 
 gulp.task('mocha', function () {
   return gulp.src('test/test.js', { read: false })
-    .pipe(mocha());
+    .pipe(gmocha());
 });
 
 gulp.task('test', ['jsonlint', 'jshint', 'jscs', 'mocha']);
