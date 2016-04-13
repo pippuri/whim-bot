@@ -8,7 +8,7 @@
   "latedef": true,
   "noarg": true,
   "nonbsp": true,
-//  "undef": true,
+  "undef": true,
   "unused": "vars",
 
 //  "strict": "implied",
