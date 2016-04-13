@@ -1,4 +1,3 @@
-'use strict';
 
 // Require Serverless ENV vars
 var ServerlessHelpers = require('serverless-helpers-js');
