@@ -36,7 +36,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     qs: qs,
   })
   .then(function (result) {
-    if (format == 'original') {
+    if (format === 'original') {
       return result;
     } else {
       return adapter(result);

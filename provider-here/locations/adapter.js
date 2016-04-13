@@ -4,7 +4,7 @@
 var Promise = require('bluebird');
 
 function convertMode(mode) {
-  return mode == 'publicTransport' ? 'PUBLIC' : undefined;
+  return mode === 'publicTransport' ? 'PUBLIC' : undefined;
 }
 
 function convertFromTo(from) {

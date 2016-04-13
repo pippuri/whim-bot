@@ -21,7 +21,7 @@ function getMqttCredentials(principalId) {
     var plainPhone = '';
     response.Records.map(function (record) {
       console.log('Considering', record);
-      if (record.Key == 'phone') {
+      if (record.Key === 'phone') {
         plainPhone = record.Value.replace(/[^\d]/g, '');
       }
     });

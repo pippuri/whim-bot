@@ -8,7 +8,7 @@ Promise.promisifyAll(lambda, {suffix:'Promise'});
  * Request a login verification code by SMS.
  */
 function smsRequestCode(phone, provider) {
-  if (!provider || provider == 'undefined') {
+  if (!provider || provider === 'undefined') {
     provider = 'twilio';
   }
   // Clean up phone number to only contain digits

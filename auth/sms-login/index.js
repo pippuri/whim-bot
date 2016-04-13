@@ -52,13 +52,13 @@ function updateCognitoProfile(identityId, profile) {
     Object.keys(profile).map(function (key) {
       var oldRecord = oldRecords[key];
       var newValue;
-      if (typeof profile[key] == 'object') {
+      if (typeof profile[key] === 'object') {
         newValue = JSON.stringify(profile[key]);
       } else {
         newValue = '' + profile[key];
       }
       // Check if changed
-      if (!oldRecord || newValue != oldRecord.Value) {
+      if (!oldRecord || newValue !== oldRecord.Value) {
         patches.push({
           Op: 'replace',
           Key: key,

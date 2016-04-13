@@ -75,7 +75,7 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
         response.segmentTemplates.push(segmentTemplate);
       });
     }
-    if (format == 'original') {
+    if (format === 'original') {
       return response;
     } else {
       return adapter(response);

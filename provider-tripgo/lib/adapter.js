@@ -8,7 +8,7 @@ function convertMode(mode) {
 }
 
 function convertAgencyId(serviceOperator) {
-  if (serviceOperator == 'Helsingin seudun liikenne') {
+  if (serviceOperator === 'Helsingin seudun liikenne') {
     return 'HSL';
   } else {
     return undefined;
@@ -58,7 +58,7 @@ function convertPlanFrom(original) {
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(function (segmentTemplate) {
-      if (segmentTemplate.hashCode == hashCode) {
+      if (segmentTemplate.hashCode === hashCode) {
         // Found the starting point
         from = {
           name: segmentTemplate.from.address,

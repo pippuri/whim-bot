@@ -2,7 +2,7 @@
   "node": true,
   "mocha": true,
 
-//  "eqeqeq": true,
+  "eqeqeq": true,
 //  "forin": true,
 //  "freeze": true,
 //  "latedef": true,
