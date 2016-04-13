@@ -22,6 +22,36 @@ var util = require('util');
 
 var ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
 
+function parseResults(response) {
+  var result = {
+    type: 'FeatureCollection',
+    features: [],
+  };
+  var items = response.results.items;
+
+  if (!util.isArray(items)) {
+    var error = new Error('Invalid response from HERE - invalid format.');
+    return Promise.reject(error);
+  }
+
+  items.forEach(function (item) {
+    var feature = {
+      type: 'Feature',
+      properties: {
+        name: item.title,
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: item.position,
+      },
+    };
+
+    result.features.push(feature);
+  });
+
+  return Promise.resolve(result);
+}
+
 function adapt(input) {
   // Customise query by the hints given
   var query = {
@@ -57,36 +87,6 @@ function adapt(input) {
     response.query = query;
     return response;
   });
-}
-
-function parseResults(response) {
-  var result = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-  var items = response.results.items;
-
-  if (!util.isArray(items)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
-    return Promise.reject(error);
-  }
-
-  items.forEach(function (item) {
-    var feature = {
-      type: 'Feature',
-      properties: {
-        name: item.title,
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: item.position,
-      },
-    };
-
-    result.features.push(feature);
-  });
-
-  return Promise.resolve(result);
 }
 
 module.exports.respond = function (event, callback) {

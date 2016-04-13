@@ -35,22 +35,41 @@ function convertTo(data) {
   };
 }
 
-function legGeometry(data) {
-  return {
-    points: convertToLegGeometry(data.shape),
-  };
-}
-
-function convertToLegGeometry(shapes) {
-  // Output: [[12.12,34.23],[11.12,33.23],...]
-  var points = shapes.map(function (val) {
-    return JSON.parse('[' + val + ']');
-  });
-
-  return createEncodedPolyline(points);
-}
-
 // https://developers.google.com/maps/documentation/utilities/polylinealgorithm#example
+
+function encodeNumber(num) {
+  var encodeString = '';
+  while (num >= 0x20) {
+    encodeString += (String.fromCharCode((0x20 | (num & 0x1f)) + 63));
+    num >>= 5;
+  }
+
+  encodeString += (String.fromCharCode(num + 63));
+
+  return encodeString;
+}
+
+function encodeSignedValue(num) {
+  var sgn_num = num << 1;
+  if (num < 0) {
+    sgn_num = ~(sgn_num);
+  }
+
+  return (encodeNumber(sgn_num));
+}
+
+function encodePoint(plat, plon, lat, lon) {
+  var platE5 = Math.round(plat * 1e5);
+  var plonE5 = Math.round(plon * 1e5);
+  var latE5 = Math.round(lat * 1e5);
+  var lonE5 = Math.round(lon * 1e5);
+
+  var dLon = lonE5 - plonE5;
+  var dLat = latE5 - platE5;
+
+  return encodeSignedValue(dLat) + encodeSignedValue(dLon);
+}
+
 function createEncodedPolyline(points) {
   var i = 0;
 
@@ -72,39 +91,22 @@ function createEncodedPolyline(points) {
   return encoded_point;
 }
 
-function encodePoint(plat, plon, lat, lon) {
-  var platE5 = Math.round(plat * 1e5);
-  var plonE5 = Math.round(plon * 1e5);
-  var latE5 = Math.round(lat * 1e5);
-  var lonE5 = Math.round(lon * 1e5);
-
-  var dLon = lonE5 - plonE5;
-  var dLat = latE5 - platE5;
-
-  return encodeSignedValue(dLat) + encodeSignedValue(dLon);
-}
-
-function encodeSignedValue(num) {
-  var sgn_num = num << 1;
-  if (num < 0) {
-    sgn_num = ~(sgn_num);
-  }
-
-  return (encodeNumber(sgn_num));
-}
-
-function encodeNumber(num) {
-  var encodeString = '';
-  while (num >= 0x20) {
-    encodeString += (String.fromCharCode((0x20 | (num & 0x1f)) + 63));
-    num >>= 5;
-  }
-
-  encodeString += (String.fromCharCode(num + 63));
-
-  return encodeString;
-}
 //--------------------------------------------------------------------------------
+
+function convertToLegGeometry(shapes) {
+  // Output: [[12.12,34.23],[11.12,33.23],...]
+  var points = shapes.map(function (val) {
+    return JSON.parse('[' + val + ']');
+  });
+
+  return createEncodedPolyline(points);
+}
+
+function legGeometry(data) {
+  return {
+    points: convertToLegGeometry(data.shape),
+  };
+}
 
 function convertLeg(leg, data, route, startTime) {
   nextStartTime = (nextEndTime === 0 ? nextEndTime + startTime : nextEndTime);

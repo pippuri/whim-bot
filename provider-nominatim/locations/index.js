@@ -4,6 +4,34 @@ var util = require('util');
 
 var ENDPOINT_URL = 'http://nominatim.openstreetmap.org/search';
 
+function parseResults(response) {
+  console.log(response);
+  var locations = [];
+
+  if (!util.isArray(response)) {
+    var error = new Error('Invalid response from HERE - invalid format.');
+    return Promise.reject(error);
+  }
+
+  response.forEach(function (item) {
+    console.log(item);
+
+    var location = {
+      name: item.display_name,
+      lat: Number(item.lat),
+      lon: Number(item.lon),
+      zipCode: item.address.postcode,
+      city: item.address.city,
+      country: item.address.country,
+      address: item.address.construction,
+    };
+
+    locations.push(location);
+  });
+
+  return Promise.resolve(locations);
+}
+
 function adapt(input) {
   // Customise query by the hints given
   var query = {
@@ -55,34 +83,6 @@ function adapt(input) {
       query: query,
     };
   });
-}
-
-function parseResults(response) {
-  console.log(response);
-  var locations = [];
-
-  if (!util.isArray(response)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
-    return Promise.reject(error);
-  }
-
-  response.forEach(function (item) {
-    console.log(item);
-
-    var location = {
-      name: item.display_name,
-      lat: Number(item.lat),
-      lon: Number(item.lon),
-      zipCode: item.address.postcode,
-      city: item.address.city,
-      country: item.address.country,
-      address: item.address.construction,
-    };
-
-    locations.push(location);
-  });
-
-  return Promise.resolve(locations);
 }
 
 module.exports.respond = function (event, callback) {

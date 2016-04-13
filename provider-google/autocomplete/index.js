@@ -4,6 +4,30 @@ var util = require('util');
 
 var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
 
+function parseResults(response) {
+  var suggestions;
+
+  if (!util.isArray(response.predictions)) {
+    var error = new Error('Invalid response from Google - invalid format.');
+    return Promise.reject(error);
+  }
+
+  suggestions = response.predictions.map(function (item) {
+    return item.description;
+  });
+
+  return Promise.resolve(suggestions);
+}
+
+/**
+ * Return the N first items
+ */
+function slice(numItems) {
+  return function (locations) {
+    return Promise.resolve(locations.slice(0, numItems));
+  };
+}
+
 function adapt(input) {
   // Customise query by the hints given
   var query = {
@@ -36,30 +60,6 @@ function adapt(input) {
       query: query,
     };
   });
-}
-
-function parseResults(response) {
-  var suggestions;
-
-  if (!util.isArray(response.predictions)) {
-    var error = new Error('Invalid response from Google - invalid format.');
-    return Promise.reject(error);
-  }
-
-  suggestions = response.predictions.map(function (item) {
-    return item.description;
-  });
-
-  return Promise.resolve(suggestions);
-}
-
-/**
- * Return the N first items
- */
-function slice(numItems) {
-  return function (locations) {
-    return Promise.resolve(locations.slice(0, numItems));
-  };
 }
 
 module.exports.respond = function (event, callback) {

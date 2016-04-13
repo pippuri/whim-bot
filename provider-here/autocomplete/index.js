@@ -4,6 +4,26 @@ var util = require('util');
 
 var ENDPOINT_URL = 'https://places.demo.api.here.com/places/v1/suggest';
 
+function parseResults(response) {
+  var suggestions = response.suggestions;
+
+  if (!util.isArray(suggestions)) {
+    var error = new Error('Invalid response from HERE - invalid format.');
+    return Promise.reject(error);
+  }
+
+  return Promise.resolve(suggestions);
+}
+
+/**
+ * Return the N first items
+ */
+function slice(numItems) {
+  return function (locations) {
+    return Promise.resolve(locations.slice(0, numItems));
+  };
+}
+
 function adapt(input) {
   // Customise query by the hints given
   var query = {
@@ -35,26 +55,6 @@ function adapt(input) {
       query: query,
     };
   });
-}
-
-function parseResults(response) {
-  var suggestions = response.suggestions;
-
-  if (!util.isArray(suggestions)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
-    return Promise.reject(error);
-  }
-
-  return Promise.resolve(suggestions);
-}
-
-/**
- * Return the N first items
- */
-function slice(numItems) {
-  return function (locations) {
-    return Promise.resolve(locations.slice(0, numItems));
-  };
 }
 
 module.exports.respond = function (event, callback) {
