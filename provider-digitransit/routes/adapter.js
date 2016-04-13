@@ -14,6 +14,7 @@ function convertFromTo(from) {
     stopCode: from.stopCode,
     lon: from.lon,
     lat: from.lat,
+
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
@@ -33,6 +34,7 @@ function convertLeg(leg) {
     routeShortName: leg.routeShortName,
     routeLongName: leg.routeLongName,
     agencyId: leg.agencyId,
+
     // excluded: distance, duration, departureDelay, arrivalDelay, realTime, pathway, agencyUrl, agencyName, agencyTimeZoneOffset,
     // routeType, routeId, interlineWithPreviousLeg, headsign, agencyId, tripId, serviceDate, rentedBike, transitLeg, steps
   };
@@ -43,6 +45,7 @@ function convertItinerary(itinerary) {
     startTime: itinerary.startTime,
     endTime: itinerary.endTime,
     legs: itinerary.legs.map(convertLeg),
+
     // excluded: duration, walkTime, transitTime, waitingTime, walkDistance, walkLimitExceeded, elevationLost, elevationGained, transfers, tooSloped
   };
 }
@@ -70,6 +73,7 @@ module.exports = function (original) {
       from: convertPlanFrom(original.plan.from),
       itineraries: original.plan.itineraries.map(convertItinerary).sort(compareItinerary),
     },
+
     // excluded: requestParameters, debugOutput
   });
 };

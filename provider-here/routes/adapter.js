@@ -8,6 +8,7 @@ var nextEndTime = 0;
 var constructTo = [];
 
 function convertMode(data) {
+
   //strip out html tag from instruction
   return (data.instruction).replace(/(<([^>]+)>)/ig, '');
 }
@@ -19,6 +20,7 @@ function convertFrom(from) {
     stopCode: undefined,
     lon: from.position.longitude,
     lat: from.position.latitude,
+
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
@@ -31,6 +33,7 @@ function convertTo(data) {
     stopCode: undefined,
     lon: position.longitude,
     lat: position.latitude,
+
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }
@@ -95,6 +98,7 @@ function createEncodedPolyline(points) {
 //--------------------------------------------------------------------------------
 
 function convertToLegGeometry(shapes) {
+
   // Output: [[12.12,34.23],[11.12,33.23],...]
   var points = shapes.map(function (val) {
     return JSON.parse('[' + val + ']');

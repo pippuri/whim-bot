@@ -10,6 +10,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 // Initialization work
 (function init() {
+
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
@@ -42,6 +43,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 function delegate(event) {
   var provider = 'MaaS-provider-here-autocomplete';
+
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
 
@@ -71,6 +73,7 @@ function delegate(event) {
 }
 
 module.exports.respond = function (event, callback) {
+
   // Validate & set defaults
   new Promise(function (resolve, reject) {
       var valid = validate(event.query);

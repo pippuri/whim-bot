@@ -60,6 +60,7 @@ function convertPlanFrom(original) {
     var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(function (segmentTemplate) {
       if (segmentTemplate.hashCode === hashCode) {
+
         // Found the starting point
         from = {
           name: segmentTemplate.from.address,
@@ -80,11 +81,13 @@ function compareItinerary(a, b) {
 
 module.exports = function (original) {
   var allTrips = [];
+
   // Build template hashmap
   var templates = {};
   (original.segmentTemplates || []).map(function (template) {
     templates[template.hashCode] = template;
   });
+
   // Combine groups
   original.groups.map(function (group) {
     allTrips = allTrips.concat(group.trips);

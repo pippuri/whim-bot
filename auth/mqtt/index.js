@@ -7,9 +7,11 @@ Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
 
 function getMqttCredentials(principalId) {
+
   // var token = ''; - not in use
   return Promise.resolve()
   .then(function () {
+
     // Get identity login token
     return cognitoSync.listRecordsAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
@@ -25,6 +27,7 @@ function getMqttCredentials(principalId) {
         plainPhone = record.Value.replace(/[^\d]/g, '');
       }
     });
+
     // Get cognito token
     var logins = {};
     logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + plainPhone;
@@ -36,6 +39,7 @@ function getMqttCredentials(principalId) {
     });
   })
   .then(function (response) {
+
     // Get credentials using the token
     return cognitoIdentity.getCredentialsForIdentityAsync({
       IdentityId: principalId,

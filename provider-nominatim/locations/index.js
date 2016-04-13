@@ -33,6 +33,7 @@ function parseResults(response) {
 }
 
 function adapt(input) {
+
   // Customise query by the hints given
   var query = {
     format: 'json',
@@ -43,12 +44,14 @@ function adapt(input) {
 
   switch (input.hint) {
     case 'latlon':
+
       // In absence of full circle, use bounding box. Use
       // http://stackoverflow.com/questions/1253499/simple-calculations-for-working-with-lat-lon-km-distance
       // Latitude: 1 deg = 110.574 km
       // Longitude: 1 deg = 111.320*cos(latitude) km
       // for conversion rule
       var latRadians = input.lat * Math.PI / 180;
+
       // var lonRadians = input.lon * Math.PI / 180; - not in use
       var left = input.lon - input.radius / 111.320 * Math.cos(latRadians);
       var top = input.lat + input.radius / 110.574;
@@ -56,6 +59,7 @@ function adapt(input) {
       var bottom = input.lat - input.radius / 110.574;
 
       query.viewbox = [left, top, right, bottom].join(',');
+
       // Force the boundaries
       //query.bounded = 1;
       break;

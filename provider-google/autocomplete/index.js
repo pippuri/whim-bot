@@ -29,6 +29,7 @@ function slice(numItems) {
 }
 
 function adapt(input) {
+
   // Customise query by the hints given
   var query = {
     key: process.env.GOOGLE_API_KEY,
@@ -39,6 +40,7 @@ function adapt(input) {
   switch (input.hint) {
     case 'latlon':
       query.location = [input.lat, input.lon].join(',');
+
       // radius = input.radius * 1000; - not in use
       break;
     case 'none':

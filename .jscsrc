@@ -6,7 +6,6 @@
   "maximumLineLength": null,
 
   "requireSpacesInsideObjectBrackets": null,
-  "requirePaddingNewLinesBeforeLineComments": null,
 
   "validateIndentation": 2,
   "requireCapitalizedConstructorsNew": true,

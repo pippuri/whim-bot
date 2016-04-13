@@ -4,6 +4,7 @@ var adapter = require('./adapter');
 
 var TRIPGO_PUBLIC_MODES = [
   'pt_pub',
+
   //'ps_tax',
   //'me_car',
   //'me_car-s_Ekorent',

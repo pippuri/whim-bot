@@ -31,6 +31,7 @@ function chooseProviderByRegion(provider, from) {
   var regions = providerRegions[provider];
   if (regions) {
     var coords = from.split(',').map(parseFloat);
+
     // Look for a sub-provider by matching region
     regions.map(function (region) {
       if (!subProvider && isInsideRegion(coords, region.area)) {
@@ -40,6 +41,7 @@ function chooseProviderByRegion(provider, from) {
     });
 
     if (!subProvider) {
+
       // Could not find a subprovider in the configured regions
       throw new Error('No provider found for region');
     }
@@ -104,8 +106,10 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
     } else if (payload.errorMessage) {
       return Promise.reject(new Error(payload.errorMessage));
     } else {
+
       // Add any missing route and leg identifiers to response
       addRouteAndLegIdentifiers(payload.plan.itineraries || []);
+
       // Add some debug info to response
       payload.maas = {
         provider: provider + subProvider,

@@ -14,6 +14,7 @@ function convertFromTo(from) {
     stopCode: undefined,
     lon: from.mappedPosition.longitude,
     lat: from.mappedPosition.latitude,
+
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
 }

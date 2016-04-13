@@ -13,6 +13,7 @@ function convertWGS84ToKKJ2(coords) {
   var from = coords.split(',').reverse().map(parseFloat);
   var to = proj4('WGS84', 'EPSG:2392', from);
   to = to.map(Math.floor).join(',');
+
   //console.log('Converted from', from, 'to', to);
   return to;
 }

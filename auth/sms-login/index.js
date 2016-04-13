@@ -15,6 +15,7 @@ Promise.promisifyAll(iot);
  * Create or retrieve Amazon Cognito identity.
  */
 function getCognitoDeveloperIdentity(plainPhone) {
+
   // Use sha1 hash of subscriberId because it may contain spaces, which are not allowed in Cognito
   var logins = {};
   logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + plainPhone;
@@ -94,12 +95,14 @@ function createUserThing(identityId) {
     thingName: thingName,
     attributePayload: {
       attributes: {
+
         // Up to three attributes can be attached here if needed
       },
     },
   })
   .then(function (response) {
     console.log('CreateThing response:', response);
+
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
       principal: identityId,
@@ -108,6 +111,7 @@ function createUserThing(identityId) {
   })
   .then(function (response) {
     console.log('AttachThingPrincipal response:', response);
+
     // Attach the cognito policy to the default policy
     return iot.attachPrincipalPolicyAsync({
       policyName: 'DefaultCognitoPolicy',
@@ -165,6 +169,7 @@ function smsLogin(phone, code) {
     return createUserThing(identityId);
   })
   .then(function () {
+
     // Create a signed JSON web token
     var token = jwt.sign({
       id: identityId,

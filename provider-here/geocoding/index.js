@@ -53,6 +53,7 @@ function parseResults(response) {
 }
 
 function adapt(input) {
+
   // Customise query by the hints given
   var query = {
     app_id: process.env.HERE_APP_ID,
@@ -66,6 +67,7 @@ function adapt(input) {
       query.at = [input.lat, input.lon].join(',');
       break;
     case 'country':
+
       // Not implemented
       return Promise.reject(new Error('Country hint not implemented.'));
     case 'none':
@@ -81,6 +83,7 @@ function adapt(input) {
   })
   .then(parseResults)
   .then(function (response) {
+
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
     // the call parameter. Should be ok in this case, though.

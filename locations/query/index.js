@@ -42,6 +42,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 function delegate(event) {
   var provider = 'MaaS-provider-nominatim-locations';
+
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
 
@@ -71,6 +72,7 @@ function delegate(event) {
 }
 
 module.exports.respond = function (event, callback) {
+
   // Validate & set defaults
   new Promise(function (resolve, reject) {
       var valid = validate(event.query);
