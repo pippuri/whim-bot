@@ -71,7 +71,6 @@ function encodePoint(plat, plon, lat, lon) {
 }
 
 function createEncodedPolyline(points) {
-  var i = 0;
 
   var plat = 0;
   var plon = 0;
@@ -138,7 +137,7 @@ function convertItinerary(route) {
   var startTime = new Date(route.summary.departure);
   var result = [];
   var res = '';
-  var legs = route.leg.map(function (leg) {
+  route.leg.map(function (leg) {
     leg.maneuver.forEach(function (data, index) {
       result.push(convertLeg(leg, data, route, startTime.getTime()));
     });

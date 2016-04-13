@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var routing = require('../lib/routing');
 
 var BASE_URL = 'https://hadron-fi-middlefinland.tripgo.skedgo.com/satapp/routing.json';

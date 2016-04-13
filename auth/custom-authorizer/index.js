@@ -1,5 +1,4 @@
 var Promise = require('bluebird');
-var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
 
 // This is the main custom authorizer that can be attached to any API

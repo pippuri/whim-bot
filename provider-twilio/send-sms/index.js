@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var request = require('request-promise');
 
 var TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';

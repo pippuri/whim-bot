@@ -49,7 +49,7 @@ function adapt(input) {
       // Longitude: 1 deg = 111.320*cos(latitude) km
       // for conversion rule
       var latRadians = input.lat * Math.PI / 180;
-      var lonRadians = input.lon * Math.PI / 180;
+      // var lonRadians = input.lon * Math.PI / 180; - not in use
       var left = input.lon - input.radius / 111.320 * Math.cos(latRadians);
       var top = input.lat + input.radius / 110.574;
       var right = input.lon + input.radius / 111.320 * Math.cos(latRadians);

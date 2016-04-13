@@ -8,7 +8,8 @@
  */
 
 // Require Serverless ENV vars
-var ServerlessHelpers = require('serverless-helpers-js').loadEnv();
+var ServerlessHelpers = require('serverless-helpers-js');
+ServerlessHelpers.loadEnv();
 
 // Require Logic
 var lib = require('./index');

@@ -71,7 +71,7 @@ function delegate(event) {
 
 module.exports.respond = function (event, callback) {
   // Validate & set defaults
-  var promise = new Promise(function (resolve, reject) {
+  new Promise(function (resolve, reject) {
       var valid = validate(event.query);
       console.log('Validation done', event.query);
 

@@ -29,7 +29,8 @@ module.exports = function (lambda, schema, fixture) {
 
     it('should trigger a valid response', function () {
       var valid = ajv.validate(schema, response);
-      expect(ajv.errors).to.be.null;
+      var validation_error = valid ? null : JSON.stringify(ajv.errors);
+      expect(validation_error).to.be.null;
     });
   });
 

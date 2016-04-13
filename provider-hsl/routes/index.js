@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var request = require('request-promise');
 var proj4 = require('proj4');
 var adapter = require('./adapter');

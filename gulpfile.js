@@ -1,7 +1,6 @@
 
 var gulp = require('gulp');
 var install = require('gulp-install');
-var exec = require('child_process').exec;
 var jsonlint = require('gulp-jsonlint');
 var jshint = require('gulp-jshint');
 var jscs = require('gulp-jscs');

@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var request = require('request-promise');
 
 var TRIPGO_REGIONS_URL = 'https://tripgo.skedgo.com/satapp/regions.json';

@@ -1,5 +1,4 @@
 var Promise = require('bluebird');
-var AWS = require('aws-sdk');
 
 /**
  * Handle an imcoming SMS message received at Twilio.

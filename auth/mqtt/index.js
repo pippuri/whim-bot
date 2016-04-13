@@ -7,7 +7,7 @@ Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
 
 function getMqttCredentials(principalId) {
-  var token = '';
+  // var token = ''; - not in use
   return Promise.resolve()
   .then(function () {
     // Get identity login token
