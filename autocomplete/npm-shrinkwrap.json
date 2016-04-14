@@ -3,7 +3,7 @@
   "dependencies": {
     "ajv": {
       "version": "3.8.10",
-      "from": "ajv@>=3.8.5 <4.0.0",
+      "from": "ajv@>=3.8.7 <4.0.0",
       "resolved": "http://registry.npmjs.org/ajv/-/ajv-3.8.10.tgz",
       "dependencies": {
         "co": {

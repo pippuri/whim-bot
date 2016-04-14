@@ -7,10 +7,10 @@
   "timeout": 10,
   "memorySize": 1024,
   "custom": {
-    "excludePatterns": [],
-    "envVars": []
+    "excludePatterns": []
   },
   "endpoints": [
   ],
-  "events": []
+  "events": [],
+  "environment": "$${environment}"
 }

@@ -5,6 +5,7 @@ function getApiVersion() {
   return Promise.resolve({
     region: process.env.AWS_REGION,
     stage: process.env.SERVERLESS_STAGE,
+    time: Date.now()
   });
 }
 
