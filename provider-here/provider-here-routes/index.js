@@ -45,11 +45,19 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
 }
 
 module.exports.respond = function (event, callback) {
-  getHereRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
-  .then(function (response) {
-    callback(null, response);
-  })
-  .catch(function (err) {
-    callback(err);
-  });
+
+  if (typeof process.env.HERE_APP_ID === typeof undefined) {
+    callback(new Error('Missing HERE_APP_ID'));
+  } else if (typeof process.env.HERE_APP_CODE === typeof undefined) {
+    callback(new Error('Missing HERE_APP_CODE'));
+  } else {
+    getHereRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
+    .then(function (response) {
+      callback(null, response);
+    })
+    .catch(function (err) {
+      callback(err);
+    });
+  }
+
 };
