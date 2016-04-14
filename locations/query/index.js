@@ -1,10 +1,10 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
-var AJV = require('ajv');
+var ajvFactory = require('ajv');
 
 // Input schema
 var schema = require('./schema.json');
-var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
+var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
 var validate;
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
@@ -13,22 +13,23 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
-  var ajv = AJV({ inject: true, coerceTypes: true });
+  var ajv = ajvFactory({ inject: true, coerceTypes: true });
 
   // Add a new handler
-  ajv.addKeyword('inject', { 
-    compile: function(schema) {
-      if (!this._opts.inject) return function() { return true; }
+  ajv.addKeyword('inject', {
+    compile: function (schema) {
+      if (!this._opts.inject) return function () { return true; };
 
-      return function(data, dataPath, parentData, parentDataProperty) {
-        for (key in schema) {
+      return function (data, dataPath, parentData, parentDataProperty) {
+        for (var key in schema) {
           if (typeof data[key] === 'undefined') {
             data[key] = schema[key];
           }
         }
+
         return true;
       };
-    }
+    },
   });
 
   // Compile schema
@@ -41,6 +42,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 function delegate(event) {
   var provider = 'MaaS-provider-nominatim-locations';
+
   // Replace local stage name with dev (no 'local' in AWS side);
   var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
 
@@ -50,7 +52,7 @@ function delegate(event) {
   return lambda.invokePromise({
     FunctionName: provider,
     Qualifier: stage,
-    Payload: JSON.stringify(event)
+    Payload: JSON.stringify(event),
   })
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
@@ -70,8 +72,9 @@ function delegate(event) {
 }
 
 module.exports.respond = function (event, callback) {
+
   // Validate & set defaults
-  var promise = new Promise(function(resolve, reject) {
+  new Promise(function (resolve, reject) {
       var valid = validate(event.query);
 
       if (!valid) {
@@ -83,7 +86,7 @@ module.exports.respond = function (event, callback) {
     .then(function valid() {
       return delegate(event.query);
     })
-    .then(function(results) {
+    .then(function (results) {
       callback(null, results);
     })
     .catch(function (err) {

@@ -14,34 +14,34 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     waypoint1: 'geo!' + to,
     mode: 'fastest;publicTransport',
     combineChange: 'true',
-    maneuverAttributes: 'shape,roadName,nextRoadName'
-  }
+    maneuverAttributes: 'shape,roadName,nextRoadName',
+  };
 
   if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
-    qs['departure'] = (new Date(parseInt(leaveAt, 10))).toISOString();
+    qs.departure = (new Date(parseInt(leaveAt, 10))).toISOString();
   } else if (arriveBy) {
     // "Note: Specifying arrival time is not supported for the estimated Public
     // Transport routing. Requesting will result in an error response."
     // https://developer.here.com/rest-apis/documentation/routing/topics/public-transport-routing-modes.html
     return Promise.reject(new Error('Here API does not support arriveBy for public transportation.'));
   } else {
-    qs['departure'] = 'now';
+    qs.departure = 'now';
   }
 
   return request.get(HERE_ROUTE_URL, {
     json: true,
     headers: {},
-    qs: qs
+    qs: qs,
   })
   .then(function (result) {
-    if (format == 'original') {
+    if (format === 'original') {
       return result;
     } else {
       return adapter(result);
     }
-  })
+  });
 }
 
 module.exports.respond = function (event, callback) {

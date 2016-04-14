@@ -3,18 +3,19 @@ var request = require('request-promise');
 var adapter = require('./adapter');
 
 var TRIPGO_PUBLIC_MODES = [
-  "pt_pub"
-  //"ps_tax",
-  //"me_car",
-  //"me_car-s_Ekorent",
-  //"me_mot",
-  //"cy_bic",
-  //"wa_wal",
+  'pt_pub',
+
+  //'ps_tax',
+  //'me_car',
+  //'me_car-s_Ekorent',
+  //'me_mot',
+  //'cy_bic',
+  //'wa_wal',
 ];
 
 var TRIPGO_TAXI_MODES = [
-  "pt_pub",
-  "ps_tax"
+  'pt_pub',
+  'ps_tax',
 ];
 
 // Docs: http://planck.buzzhives.com/swagger/index.html#!/Routing/get_routing_json
@@ -30,24 +31,25 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
     cs: '1', // cycling speed (0=slow 1=medium 2=fast)
     wp: '(1, 1, 1, 1)', // weights for price, environmental impact, duration, and convenience between 0.1..2.0
     ir: 'true', // interregional results
-    modes: modes // modes to use in routing, as an array
+    modes: modes, // modes to use in routing, as an array
   };
   if (leaveAt && arriveBy) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
-    qs['departAfter'] = Math.floor(parseInt(leaveAt, 10) / 1000);
+    qs.departAfter = Math.floor(parseInt(leaveAt, 10) / 1000);
   } else if (arriveBy) {
-    qs['arriveBefore'] = Math.floor(parseInt(arriveBy, 10) / 1000);
+    qs.arriveBefore = Math.floor(parseInt(arriveBy, 10) / 1000);
   } else {
-    qs['departAfter'] = Math.floor(Date.now() / 1000);
+    qs.departAfter = Math.floor(Date.now() / 1000);
   }
+
   return request.get(baseUrl, {
     json: true,
     headers: {
-      'X-TripGo-Key': process.env.TRIPGO_API_KEY
+      'X-TripGo-Key': process.env.TRIPGO_API_KEY,
     },
     qs: qs,
-    useQuerystring: true
+    useQuerystring: true,
   })
   .then(function (result) {
     if (result.error) {
@@ -61,7 +63,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
 function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
   return Promise.all([
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
-    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES)
+    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
   ])
   .then(function (results) {
     var response = results[0];
@@ -70,16 +72,19 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
         response.groups.push(group);
       });
     }
+
     if (results[1] && results[1].segmentTemplates) {
       results[1].segmentTemplates.map(function (segmentTemplate) {
         response.segmentTemplates.push(segmentTemplate);
       });
     }
-    if (format == 'original') {
+
+    if (format === 'original') {
       return response;
     } else {
       return adapter(response);
     }
+
   });
 }
 

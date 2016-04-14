@@ -8,11 +8,12 @@ function convertMode(mode) {
 }
 
 function convertAgencyId(serviceOperator) {
-  if (serviceOperator == 'Helsingin seudun liikenne') {
+  if (serviceOperator === 'Helsingin seudun liikenne') {
     return 'HSL';
   } else {
     return undefined;
   }
+
 }
 
 function convertFromTo(from) {
@@ -21,53 +22,56 @@ function convertFromTo(from) {
     name: from.address,
     stopCode: from.stopCode,
     lon: from.lng,
-    lat: from.lat
+    lat: from.lat,
   };
 }
 
 function convertLeg(segment, original, templates) {
   var template = templates[segment.segmentTemplateHashCode] || {};
   return {
-    startTime: segment.startTime*1000,
-    endTime: segment.endTime*1000,
+    startTime: segment.startTime * 1000,
+    endTime: segment.endTime * 1000,
     mode: convertMode(template.modeInfo && template.modeInfo.localIcon),
     from: convertFromTo(template.from),
     to: convertFromTo(template.to),
     legGeometry: template.streets && template.streets[0] ? {
-      points: template.streets[0].encodedWaypoints
+      points: template.streets[0].encodedWaypoints,
     } : undefined,
     route: segment.serviceNumber,
     routeShortName: segment.serviceNumber,
     routeLongName: segment.serviceName,
-    agencyId: convertAgencyId(template.serviceOperator)
+    agencyId: convertAgencyId(template.serviceOperator),
   };
 }
 
 function convertItinerary(trip, original, templates) {
   return {
-    startTime: trip.depart*1000,
-    endTime: trip.arrive*1000,
+    startTime: trip.depart * 1000,
+    endTime: trip.arrive * 1000,
     legs: trip.segments.map(function (segment) {
       return convertLeg(segment, original, templates);
-    })
+    }),
   };
 }
 
 function convertPlanFrom(original) {
-  var from = undefined;
+  var from;
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(function (segmentTemplate) {
-      if (segmentTemplate.hashCode == hashCode) {
+      if (segmentTemplate.hashCode === hashCode) {
+
         // Found the starting point
         from = {
           name: segmentTemplate.from.address,
           lon: segmentTemplate.from.lng,
-          lat: segmentTemplate.from.lat
+          lat: segmentTemplate.from.lat,
         };
       }
+
     });
   }
+
   return from;
 }
 
@@ -77,21 +81,24 @@ function compareItinerary(a, b) {
 
 module.exports = function (original) {
   var allTrips = [];
+
   // Build template hashmap
   var templates = {};
   (original.segmentTemplates || []).map(function (template) {
     templates[template.hashCode] = template;
   });
+
   // Combine groups
   original.groups.map(function (group) {
     allTrips = allTrips.concat(group.trips);
   });
+
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
       itineraries: allTrips.map(function (trip) {
         return convertItinerary(trip, original, templates);
-      }).sort(compareItinerary)
-    }
+      }).sort(compareItinerary),
+    },
   });
 };

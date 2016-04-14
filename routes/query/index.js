@@ -1,29 +1,29 @@
 var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({region:process.env.AWS_REGION});
-Promise.promisifyAll(lambda, {suffix:'Promise'});
+var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
+Promise.promisifyAll(lambda, { suffix:'Promise' });
 
 var providerRegions = {
   tripgo: [
     {
       area:[59.74, 22.65, 61.99, 30.24],
-      subProvider: '-southfinland'
+      subProvider: '-southfinland',
     },
     {
       area: [59.74, 19.31, 64.12, 29.93],
-      subProvider: '-middlefinland'
+      subProvider: '-middlefinland',
     },
     {
       area: [61.72, 20, 70.36, 32.08],
-      subProvider: '-northfinland'
-    }
-  ]
+      subProvider: '-northfinland',
+    },
+  ],
 };
 
 function isInsideRegion(coords, area) {
-  return (area[0] <= coords[0] && coords[0] <= area[2]
-   && area[1] <= coords[1] && coords[1] <= area[3]);
+  return (area[0] <= coords[0] && coords[0] <= area[2] &&
+    area[1] <= coords[1] && coords[1] <= area[3]);
 }
 
 function chooseProviderByRegion(provider, from) {
@@ -31,17 +31,22 @@ function chooseProviderByRegion(provider, from) {
   var regions = providerRegions[provider];
   if (regions) {
     var coords = from.split(',').map(parseFloat);
+
     // Look for a sub-provider by matching region
     regions.map(function (region) {
       if (!subProvider && isInsideRegion(coords, region.area)) {
         subProvider = region.subProvider;
       }
+
     });
+
     if (!subProvider) {
+
       // Could not find a subprovider in the configured regions
       throw new Error('No provider found for region');
     }
   }
+
   return subProvider;
 }
 
@@ -66,11 +71,12 @@ function addRouteAndLegIdentifiers(itineraries) {
     if (!itinerary.routeId) {
       itinerary.routeId = generateRouteId(itinerary);
     }
+
     (itinerary.legs || []).map(function (leg) {
       if (!leg.legId) {
         leg.legId = generateLegId(leg);
       }
-    })
+    });
   });
 }
 
@@ -78,6 +84,7 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
   if (!provider) {
     provider = 'tripgo';
   }
+
   var subProvider = chooseProviderByRegion(provider, from);
   var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
   console.log('Invoking router', functionName);
@@ -89,8 +96,8 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
       from: from,
       to: to,
       leaveAt: leaveAt,
-      arriveBy: arriveBy
-    })
+      arriveBy: arriveBy,
+    }),
   })
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
@@ -99,14 +106,17 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
     } else if (payload.errorMessage) {
       return Promise.reject(new Error(payload.errorMessage));
     } else {
+
       // Add any missing route and leg identifiers to response
       addRouteAndLegIdentifiers(payload.plan.itineraries || []);
+
       // Add some debug info to response
       payload.maas = {
-        provider: provider + subProvider
+        provider: provider + subProvider,
       };
       return payload;
     }
+
   });
 }
 
@@ -126,4 +136,5 @@ module.exports.respond = function (event, callback) {
       callback(err);
     });
   }
+
 };

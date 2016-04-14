@@ -1,0 +1,18 @@
+{
+  "node": true,
+  "mocha": true,
+
+  "eqeqeq": true,
+  "forin": true,
+  "freeze": true,
+  "latedef": true,
+  "noarg": true,
+  "nonbsp": true,
+  "undef": true,
+  "unused": "vars",
+
+  "strict": "implied",
+  "maxdepth": 2,
+
+  "expr": true // support chai expects
+}

@@ -1,7 +1,7 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
-var cognitoSync = new AWS.CognitoSync({region:process.env.AWS_REGION});
+var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
 Promise.promisifyAll(cognitoSync);
 
 function getMe(principalId) {
@@ -12,17 +12,18 @@ function getMe(principalId) {
   })
   .then(function (response) {
     var user = {
-      principalId: principalId
+      principalId: principalId,
     };
     response.Records.map(function (record) {
       user[record.Key] = record.Value;
     });
+
     return user;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  getMe(''+event.principalId)
+  getMe('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })

@@ -1,15 +1,15 @@
-'use strict';
 
 // Require Serverless ENV vars
-var ServerlessHelpers = require('serverless-helpers-js').loadEnv();
+var ServerlessHelpers = require('serverless-helpers-js');
+ServerlessHelpers.loadEnv();
 
 // Require Logic
 var lib = require('./index.js');
 
 // Lambda Handler
-module.exports.handler = function(event, context) {
+module.exports.handler = function (event, context) {
 
-  lib.respond(event, function(error, response) {
+  lib.respond(event, function (error, response) {
     return context.done(error, response);
   });
 };

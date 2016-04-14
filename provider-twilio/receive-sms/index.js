@@ -1,5 +1,4 @@
 var Promise = require('bluebird');
-var AWS = require('aws-sdk');
 
 /**
  * Handle an imcoming SMS message received at Twilio.
@@ -7,7 +6,7 @@ var AWS = require('aws-sdk');
 function receiveSmsMessage(event) {
   console.log('Received SMS message:', event);
   return Promise.resolve({
-    message: 'Got your message!'
+    message: 'Got your message!',
   });
 }
 
