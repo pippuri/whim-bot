@@ -6,6 +6,10 @@
   "handler": "auth-custom-authorizer/handler.handler",
   "timeout": 10,
   "memorySize": 1024,
+  "authorizer": {
+    "type": "TOKEN",
+    "identitySource": "method.request.header.Authorization"
+  },
   "custom": {
     "excludePatterns": []
   },

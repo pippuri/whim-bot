@@ -73,7 +73,7 @@
       "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
-      "authorizerId": "${authorizerId}",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
