@@ -9,14 +9,19 @@ function orderTaxi(order) {
 
   request.post(TAXI_API_URL + '/order', {
     body: order,
+    simple: false,
+    resolveWithFullResponse: true,
     json: true
   })
     .then(function (response) {
       console.log(response);
+      console.log(response.statusCode);
+
       return Promise.resolve(response);
     })
     .catch(function (err) {
       console.log(JSON.stringify(err));
+      console.log(err.statusCode);
       return Promise.reject(err);
     })
 
