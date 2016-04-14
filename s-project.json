@@ -5,13 +5,19 @@
   "location": "https://github.com/maasglobal/serverless-backend/",
   "author": "Sami Pippuri, Lauri Svan, Kenneth Falck",
   "description": "MaaS serverless infrastructure",
-  "custom": {},
+  "custom": {
+    "meta": {
+      "name": "maas-serverless",
+      "region": "eu-west-1"
+    }
+  },
   "plugins": [
     "serverless-cors-plugin",
     "serverless-optimizer-plugin",
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
-    "serverless-plugin-autoinstall"
+    "serverless-plugin-autoinstall",
+    "serverless-meta-sync"
   ],
   "swaggerExport": {
     "host": "api.dev.maas.global",

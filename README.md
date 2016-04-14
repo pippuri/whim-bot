@@ -47,7 +47,7 @@ npm install npm -g
 ### Install Serverless
 
 ```
-npm install -g serverless@0.4.0
+npm install -g serverless
 ```
 
 ### Downloading Backend Code
@@ -81,7 +81,10 @@ The rest of the documentation will assume that you have this setup.
 ```
 cd maas-backend # unless you are already there
 npm install
-AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
+echo '{}' > _meta/variables/s-variables-dev.json
+echo '{}' > _meta/variables/s-variables-prod.json
+sls meta sync -s dev
+sls meta sync -s prod
 gulp get-deps
 ```
 

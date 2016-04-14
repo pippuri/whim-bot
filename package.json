@@ -26,6 +26,7 @@
   "dependencies": {
     "bluebird": "^3.3.3",
     "serverless-cors-plugin": "^0.4.1",
+    "serverless-meta-sync": "^0.1.0",
     "serverless-optimizer-plugin": "^2.5.1",
     "serverless-plugin-autoinstall": "^0.5.2",
     "serverless-plugin-autoprune": "^0.5.3",
