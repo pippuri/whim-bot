@@ -4,7 +4,7 @@ var AWS = require('aws-sdk');
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-function setActiveRoute(principalId, legId, lat, lon, timestamp) {
+function updateUserLocation(principalId, legId, lat, lon, timestamp) {
   var thingName = principalId.replace(/:/, '-');
   var payload = JSON.stringify({
     state: {
