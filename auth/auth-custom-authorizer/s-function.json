@@ -1,0 +1,16 @@
+{
+  "name": "auth-custom-authorizer",
+  "runtime": "nodejs",
+  "customName": false,
+  "customRole": false,
+  "handler": "auth-custom-authorizer/handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "endpoints": [
+  ],
+  "events": []
+}

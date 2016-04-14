@@ -1,10 +1,10 @@
 {
-  "name": "swagger-maas-api-json",
+  "name": "provider-tripgo-routes-northfinland",
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "swagger-maas-api-json/handler.handler",
-  "timeout": 6,
+  "handler": "provider-tripgo-routes-northfinland/handler.handler",
+  "timeout": 30,
   "memorySize": 1024,
   "custom": {
     "excludePatterns": [],
@@ -16,14 +16,20 @@
   },
   "endpoints": [
     {
-      "path": "swagger/maas-api-json",
+      "path": "providers/tripgo/routes-northfinland",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.querystring.from": "method.request.querystring.from",
+        "integration.request.querystring.to": "method.request.querystring.to",
+        "integration.request.querystring.leaveAt": "method.request.querystring.leaveAt",
+        "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy",
+        "integration.request.querystring.format": "method.request.querystring.format"
+      },
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"format\":\"$input.params('format')\"}"
       },
       "responses": {
         "^400.*": {

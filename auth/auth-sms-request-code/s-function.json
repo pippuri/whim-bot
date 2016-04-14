@@ -1,9 +1,9 @@
 {
-  "name": "swagger-maas-api-json",
+  "name": "auth-sms-request-code",
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "swagger-maas-api-json/handler.handler",
+  "handler": "auth-sms-request-code/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -16,14 +16,16 @@
   },
   "endpoints": [
     {
-      "path": "swagger/maas-api-json",
+      "path": "auth/sms-request-code",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.querystring.phone": "method.request.querystring.phone"
+      },
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"phone\":\"$input.params('phone')\"}"
       },
       "responses": {
         "^400.*": {

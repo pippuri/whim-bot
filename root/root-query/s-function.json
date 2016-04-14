@@ -1,9 +1,9 @@
 {
-  "name": "swagger-maas-api-json",
+  "name": "query",
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "swagger-maas-api-json/handler.handler",
+  "handler": "query/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -16,7 +16,7 @@
   },
   "endpoints": [
     {
-      "path": "swagger/maas-api-json",
+      "path": "/",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",

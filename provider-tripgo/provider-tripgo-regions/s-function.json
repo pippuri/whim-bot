@@ -1,10 +1,10 @@
 {
-  "name": "swagger-maas-api-json",
+  "name": "provider-tripgo-regions",
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "swagger-maas-api-json/handler.handler",
-  "timeout": 6,
+  "handler": "provider-tripgo-regions/handler.handler",
+  "timeout": 30,
   "memorySize": 1024,
   "custom": {
     "excludePatterns": [],
@@ -16,7 +16,7 @@
   },
   "endpoints": [
     {
-      "path": "swagger/maas-api-json",
+      "path": "providers/tripgo/regions",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",

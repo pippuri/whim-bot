@@ -1,9 +1,9 @@
 {
-  "name": "swagger-maas-api-json",
+  "name": "auth-mqtt",
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "swagger-maas-api-json/handler.handler",
+  "handler": "auth-mqtt/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {
@@ -16,14 +16,15 @@
   },
   "endpoints": [
     {
-      "path": "swagger/maas-api-json",
+      "path": "auth/mqtt",
       "method": "GET",
       "type": "AWS",
-      "authorizationType": "none",
+      "authorizationType": "CUSTOM",
+      "authorizerId": "${authorizerId}",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {

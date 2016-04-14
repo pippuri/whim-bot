@@ -25,15 +25,11 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
-    "serverless": "kennu/serverless",
-    "serverless-cors-plugin": "^0.3.1",
-    "serverless-helpers-js": "^0.1.0",
-    "serverless-optimizer-plugin": "^1.1.0",
-    "serverless-plugin-autoinstall": "^0.1.1",
-    "serverless-plugin-autoprune": "^0.1.1",
-    "serverless-plugin-revision": "^0.2.2",
-    "serverless-plugin-swagger-export": "^0.1.5",
-    "serverless-test-plugin": "^0.1.5"
+    "serverless-cors-plugin": "^0.4.1",
+    "serverless-optimizer-plugin": "^2.5.1",
+    "serverless-plugin-autoinstall": "^0.5.2",
+    "serverless-plugin-autoprune": "^0.5.3",
+    "serverless-plugin-swagger-export": "^0.5.0"
   },
   "description": "A Serverless Project Template.",
   "devDependencies": {

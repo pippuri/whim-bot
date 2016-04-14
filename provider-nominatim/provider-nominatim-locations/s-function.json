@@ -1,0 +1,14 @@
+{
+  "name": "provider-nominatim-locations",
+  "runtime": "nodejs",
+  "customName": false,
+  "customRole": false,
+  "handler": "provider-nominatim-locations/handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "envVars": []
+  },
+  "events": []
+}

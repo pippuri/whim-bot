@@ -1,5 +1,6 @@
 {
   "name": "tracking-set-active-leg",
+  "runtime": "nodejs",
   "customName": false,
   "customRole": false,
   "handler": "tracking-set-active-leg/handler.handler",

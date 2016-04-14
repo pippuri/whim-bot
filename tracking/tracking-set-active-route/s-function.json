@@ -1,5 +1,6 @@
 {
   "name": "tracking-set-active-route",
+  "runtime": "nodejs",
   "customName": false,
   "customRole": false,
   "handler": "tracking-set-active-route/handler.handler",

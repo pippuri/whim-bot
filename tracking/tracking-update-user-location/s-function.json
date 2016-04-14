@@ -1,5 +1,6 @@
 {
   "name": "tracking-update-user-location",
+  "runtime": "nodejs",
   "customName": false,
   "customRole": false,
   "handler": "tracking-update-user-location/handler.handler",

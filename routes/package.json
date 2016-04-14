@@ -13,7 +13,6 @@
   "devDependencies": {},
   "dependencies": {
     "bluebird": "^3.3.3",
-    "request-promise": "^2.0.1",
-    "serverless-helpers-js": "~0.1.0"
+    "request-promise": "^2.0.1"
   }
 }
