@@ -48,6 +48,8 @@ gulp.task('mocha', function () {
     .pipe(gmocha());
 });
 
+gulp.task('validate', ['jsonlint', 'jshint', 'jscs']);
+
 gulp.task('test', ['jsonlint', 'jshint', 'jscs', 'mocha']);
 
 gulp.task('default');
