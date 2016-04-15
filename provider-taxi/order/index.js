@@ -3,15 +3,18 @@ var request = require('request-promise');
 var ec = require('../ec'); // TODO: Error handling based on codes
 
 
-var TAXI_API_URL = '';
+// var TAXI_API_URL = '';
+var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxiapi/taiste/createorder/';
 
 function orderTaxi(order) {
 
-  request.post(TAXI_API_URL + '/order', {
+  return request.post(TAXI_API_URL + '/order', {
     body: order,
-    simple: false,
-    resolveWithFullResponse: true,
-    json: true
+    json: true,
+    auth: {
+      user: 'taisteTaxiApiUser105',
+      pass: 'Kaithah5'
+    }
   })
     .then(function (response) {
       console.log(response);

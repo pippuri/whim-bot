@@ -3,11 +3,17 @@ var request = require('request-promise');
 var ec = require('../ec'); // TODO: Error handling based on codes
 
 
-var TAXI_API_URL = '';
+// var TAXI_API_URL = '';
+var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxiapi/taiste/cancelorder/';
 
 function cancelOrder(orderId) {
 
-  request.del(TAXI_API_URL + '/order/' + orderId + '/cancel')
+  return request.del(TAXI_API_URL + orderId, {
+      auth: {
+        user: 'taisteTaxiApiUser105',
+        pass: 'Kaithah5'
+      }
+  })
     .then(function (response) {
       console.log(response);
       return Promise.resolve(response);
