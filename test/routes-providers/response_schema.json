@@ -13,9 +13,10 @@
             "type": "object",
             "properties": {
               "startTime": {"type": "number","minimum": 946684800000},
-              "endTime": {"type": "number","minimum": 946684800000}
+              "endTime": {"type": "number","minimum": 946684800000},
+              "legs": {"type": "array"}
             },
-            "required": ["startTime", "endTime"]
+            "required": ["startTime", "endTime", "legs"]
           }
         }
       }
