@@ -1,0 +1,16 @@
+{
+  "name": "provider-twilio-send-sms",
+  "runtime": "nodejs",
+  "customName": false,
+  "customRole": false,
+  "handler": "provider-twilio-send-sms/handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [
+  ],
+  "events": [],
+  "environment": "$${environment}"
+}

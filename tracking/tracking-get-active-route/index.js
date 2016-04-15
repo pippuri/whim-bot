@@ -1,13 +1,13 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
-var iotData = new AWS.IotData({region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT});
+var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 function getActiveRoute(principalId) {
   var thingName = principalId.replace(/:/, '-');
   return iotData.getThingShadowAsync({
-    thingName: thingName
+    thingName: thingName,
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
@@ -20,7 +20,7 @@ function getActiveRoute(principalId) {
 }
 
 module.exports.respond = function (event, callback) {
-  getActiveRoute(''+event.principalId)
+  getActiveRoute('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })

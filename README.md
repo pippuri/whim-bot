@@ -47,7 +47,7 @@ npm install npm -g
 ### Install Serverless
 
 ```
-npm install -g serverless@0.4.0
+npm install -g serverless
 ```
 
 ### Downloading Backend Code
@@ -81,8 +81,11 @@ The rest of the documentation will assume that you have this setup.
 ```
 cd maas-backend # unless you are already there
 npm install
-AWS_PROFILE=maas sls env list -s dev | grep -v -e ^$ -e ^Serverless: > .env
-for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
+echo '{}' > _meta/variables/s-variables-dev.json
+echo '{}' > _meta/variables/s-variables-prod.json
+sls meta sync -s dev
+sls meta sync -s prod
+gulp get-deps
 ```
 
 ### Running Tests
@@ -127,8 +130,7 @@ with the branch.
 ```
 git checkout master
 git pull upstream master
-npm install
-for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
+gulp get-deps
 git checkout -b <local_branch_name>
 ```
 
@@ -150,8 +152,7 @@ Use imperative in commit messages. This makes them short. For example
 ```
 git checkout master
 git pull upstream master
-npm install
-for d in `ls */package.json|cut -d \/ -f 1` ; do (cd "$d" && npm install); done
+gulp get-deps
 git checkout <your_branch>
 git rebase master
 git push origin <your_branch> -f
@@ -177,6 +178,7 @@ git reset --hard HEAD^
 ...
 git reset --hard HEAD^
 git pull upstream master
+gulp get-deps
 ```
 
 Note that you need to call `git reset --hard HEAD^` once for each local commit.

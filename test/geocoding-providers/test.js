@@ -1,9 +1,9 @@
 var testQuery = require('./feature-query');
 
-describe('geocoding provider', function() {
-  describe('HERE', function() {
-    var lambda = require('../../provider-here/geocoding/handler.js');
-    var schema = require('../../geocoding/query/response-schema.json');
+describe('geocoding provider', function () {
+  describe('HERE', function () {
+    var lambda = require('../../provider-here/provider-here-geocoding/handler.js');
+    var schema = require('../../geocoding/geocoding-query/response-schema.json');
     var fixture = require('./fixture.json');
 
     this.timeout(20000);

@@ -1,0 +1,14 @@
+{
+  "name": "provider-google-autocomplete",
+  "runtime": "nodejs",
+  "customName": false,
+  "customRole": false,
+  "handler": "provider-google-autocomplete/handler.handler",
+  "timeout": 30,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": []
+  },
+  "events": [],
+  "environment": "$${environment}"
+}
