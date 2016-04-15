@@ -115,7 +115,7 @@ function legGeometry(data) {
 
 function convertLeg(leg, data, route, startTime) {
   nextStartTime = (nextEndTime === 0 ? nextEndTime + startTime : nextEndTime);
-  nextEndTime = nextStartTime + (data.travelTime*1000);
+  nextEndTime = nextStartTime + (data.travelTime * 1000);
 
   //creates "To" node from "From" node by establishing the initial element for "To" - to be the next element of "From" node
   for (var i = 1; i < leg.maneuver.length; i++) {
@@ -154,8 +154,8 @@ function convertItinerary(route) {
 
   return {
     startTime: startTime.getTime(),
-    endTime: startTime.getTime() + (route.summary.travelTime*1000),
-    legs: res
+    endTime: startTime.getTime() + (route.summary.travelTime * 1000),
+    legs: res,
   };
 }
 
