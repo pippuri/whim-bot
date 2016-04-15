@@ -93,11 +93,17 @@ function adapt(input) {
 }
 
 module.exports.respond = function (event, callback) {
-  adapt(event)
-  .then(function (response) {
-    return callback(null, response);
-  })
-  .catch(function (err) {
-    return callback(err);
-  });
+  if (typeof process.env.HERE_APP_ID === typeof undefined) {
+    callback(new Error('Missing HERE_APP_ID'));
+  } else if (typeof process.env.HERE_APP_CODE === typeof undefined) {
+    callback(new Error('Missing HERE_APP_CODE'));
+  } else {
+    adapt(event)
+    .then(function (response) {
+      return callback(null, response);
+    })
+    .catch(function (err) {
+      return callback(err);
+    });
+  }
 };
