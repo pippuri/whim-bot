@@ -4,7 +4,7 @@ var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 function orderTaxi(order) {
 
-  return request.post(TAXI_API_URL + '/order/', {
+  return request.post(ec.TAXI_API_URL + '/order/', {
     pfx: ec.PFX,
     passphrase: ec.PASSPHRASE,
     rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
