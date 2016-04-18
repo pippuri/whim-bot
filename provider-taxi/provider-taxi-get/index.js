@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
-var ec = require('../ec'); // TODO: Error handling based on codes
+var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 
 // var TAXI_API_URL = '';

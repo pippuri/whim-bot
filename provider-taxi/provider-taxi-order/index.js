@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
-var ec = require('../ec'); // TODO: Error handling based on codes
+var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 
 // var TAXI_API_URL = '';
@@ -8,7 +8,7 @@ var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxia
 
 function orderTaxi(order) {
 
-  return request.post(TAXI_API_URL + '/order', {
+  return request.post(TAXI_API_URL, {
     body: order,
     json: true,
     auth: {
