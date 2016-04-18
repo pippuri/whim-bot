@@ -17,7 +17,8 @@
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
     "serverless-plugin-autoinstall",
-    "serverless-meta-sync"
+    "serverless-meta-sync",
+    "serverless-plugin-revision"
   ],
   "swaggerExport": {
     "host": "api.dev.maas.global",
