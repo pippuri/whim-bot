@@ -100,6 +100,8 @@ class ActiveRouteController {
         }
       });
       this.startMqtt();
+      //Saves profile's active route to cognito
+      this.setActiveRouteInCognito(response.data);
     })
     .catch((err) => {
       this.error = err.data && err.data.errorMessage || JSON.stringify(err);
@@ -213,6 +215,21 @@ class ActiveRouteController {
     });
   }
 
+  setActiveRouteInCognito(data){
+    this.$http.get(this.API_BASE_URL + '/profile/active-route',
+      {
+        active_route: data
+      },
+      {
+      headers: {
+        Authorization: 'Bearer ' + this.$localStorage.idToken }
+    })
+    .then(response => {
+       console.log("Active route successfully fetched from cognito: ");
+       console.log(response);
+    });
+  }
+
   onConnect() {
     this.messageLog.push({msg:'Connected to MQTT service.'});
     console.log('CONNECTED');
@@ -254,6 +271,8 @@ class ActiveRouteController {
     this.messageLog.push({msg:'[' + message.destinationName + '] ' + message.payloadString});
     this.$scope.$apply();
   }
+
+
 }
 
 angular.module('devMaasGlobalApp')
