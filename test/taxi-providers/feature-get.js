@@ -5,14 +5,14 @@ module.exports = function () {
   var lambda = require('../../provider-taxi/provider-taxi-get/handler.js');
 
   describe('get order status request', function () {
-    var event = {
-      id: 134
-    };
-    
     var error;
     var response;
     
     before(function (done) {
+      var event = {
+        id: process.env.TAXI_ORDER_ID
+      };
+      
       wrap(lambda).run(event, function (err, data) {
         error = err;
         response = data;

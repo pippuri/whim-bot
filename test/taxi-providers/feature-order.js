@@ -47,6 +47,7 @@ module.exports = function() {
       wrap(lambda).run(event, function (err, data) {
         error = err;
         response = data;
+        process.env.TAXI_ORDER_ID = response.order_id;
         done();
       });
     });
