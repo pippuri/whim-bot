@@ -2,44 +2,22 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
-
-// var TAXI_API_URL = '';
-var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxiapi/taiste/orderstatus/';
-
 function getOrder(orderId) {
 
-  return request.get(TAXI_API_URL + orderId, {
+  return request.get(ec.TAXI_API_URL + '/orders/' + orderId, {
+    pfx: ec.PFX,
+    passphrase: ec.PASSPHRASE,
+    rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
     resolveWithFullResponse: true,
-    json: true,
-    auth: {
-      user: 'taisteTaxiApiUser105',
-      pass: 'Kaithah5'
-    }
+    json: true
   })
     .then(function (response) {
-
-      if(!(/^2[0-9]{2}$/.test('' + response.statusCode))) {
-        // Not a 2xx response. Problems.
-        console.log("HTTP failed response -- code", response.statusCode);
-        console.log(JSON.stringify(response));
-
-        return Promise.reject(response);
-      } else {
-        console.log("All good -- code", response.statusCode);
-        console.log(JSON.stringify(response));
-
-        if(response.body.statuses.length > 1) {
-          return {
-            response: response.body.statuses
-          }
-        } else {
-          return {
-            response: response.body.statuses[0]
-          };
-        }
+      return {
+        response: response.body.statuses
       }
     })
     .catch(function (err) {
+      // Timeout etc.. Think of a good way to handle
       console.log(JSON.stringify(err));
       return Promise.reject(err);
     })

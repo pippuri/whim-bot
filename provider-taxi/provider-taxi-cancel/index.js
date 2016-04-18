@@ -2,25 +2,26 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
-
-// var TAXI_API_URL = '';
-var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxiapi/taiste/cancelorder/';
-
 function cancelOrder(orderId) {
 
-  return request.del(TAXI_API_URL + orderId, {
-      auth: {
-        user: 'taisteTaxiApiUser105',
-        pass: 'Kaithah5'
-      }
+  return request.del(ec.TAXI_API_URL + '/order/' + orderId + '/cancel', {
+      pfx: ec.PFX,
+      passphrase: ec.PASSPHRASE,
+      rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
+      resolveWithFullResponse: true,
+      json: true
   })
     .then(function (response) {
-      console.log(response);
-      return Promise.resolve(response);
+      return {
+        cancelled: true
+      }
     })
     .catch(function (err) {
-      console.log(JSON.stringify(err));
-      return Promise.reject(err);
+      return {
+        cancelled: false,
+        code: err.error.code,
+        cause: err.error.localized_description
+      }
     })
 
 }

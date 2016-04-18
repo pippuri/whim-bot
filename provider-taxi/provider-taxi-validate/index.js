@@ -1,39 +1,38 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
-
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
-
-
-// var TAXI_API_URL = 'https://maas.valopilkkupalvelu.fi';
-var TAXI_API_URL = 'http://api.infotripla.fi/InfotriplaMaasWebService/maas/taxiapi/taiste/validateorder/';
 
 function validateOrder(order) {
 
-  return request.post(TAXI_API_URL, {
+  return request.post(ec.TAXI_API_URL + '/order/validate/', {
+      pfx: ec.PFX,
+      passphrase: ec.PASSPHRASE,
+      rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
+      resolveWithFullResponse: true,
       body: order,
-      json: true,
-      auth: {
-        user: 'taisteTaxiApiUser105',
-        pass: 'Kaithah5'
-      }
+      json: true
     }) 
     .then(function (response) {
-      console.log("Got response");
-      console.log(response);
+      if(response.statusCode == 200) {
+        return {
+          validated: true
+        }
+      }
+
       return response;
     })
     .catch(function (err) {
-      console.log("Got error");
-      console.log(JSON.stringify(err));
-      console.log(JSON.stringify(err.message));
-
-      return Promise.reject(err);
+      return {
+        validated: false,
+        code: err.error.code,
+        cause: err.error.localized_description
+      };
     })
 
 }
 
 module.exports.respond = function(event, callback) {
-  validateOrder(event.id)
+  validateOrder(event)
     .then(function (response) {
       callback(null, response);
     })

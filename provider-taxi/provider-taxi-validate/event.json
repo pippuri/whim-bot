@@ -2,31 +2,33 @@
   "locations": [
     {
       "address": {
-        "street_address": "Kamppi",
-        "city": "Helsinki"
+        "city": "Turku",
+        "street_address": "Ratapihankatu 6"
       },
       "type": "pickup",
-      "at": "",
       "passenger_count": 1,
+      "at": "2016-04-18T16:30:00+03:00",
       "contacts": [
         {
-          "phone_number": "+37256282689",
-          "name": "Karl",
           "provider_order_id": "MaaS-10001",
+          "name": "Karl",
+          "telephone": "+37256282689",
           "passenger_count": 1
         }
       ]
     },
     {
       "address": {
-        "street_address": "Nuuksio",
-        "city": "Espoo"
+        "city": "Turku",
+        "street_address": "Arvinkatu 8"
       },
       "type": "destination",
-      "drop_off": ["MaaS-10001"],
+      "drop_off": [
+        "MaaS-10001"
+      ],
       "passenger_count": 1
     }
   ],
-  "prepaid": true,
-  "vehicle_type": "car"
+  "submitted": "2016-04-18T10:12:51+03:00",
+  "prepaid": true
 }
