@@ -6,7 +6,7 @@ module.exports = function () {
   
   describe('cancel order request', function () {
     var event = {
-      id: 6
+      id: 134
     };
     
     var error;

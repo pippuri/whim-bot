@@ -6,7 +6,7 @@ module.exports = function () {
 
   describe('get order status request', function () {
     var event = {
-      id: 6
+      id: 134
     };
     
     var error;

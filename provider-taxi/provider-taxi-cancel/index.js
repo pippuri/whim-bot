@@ -4,7 +4,7 @@ var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 function cancelOrder(orderId) {
 
-  return request.del(ec.TAXI_API_URL + '/order/' + orderId + '/cancel', {
+  return request.del(ec.TAXI_API_URL + '/order/' + orderId + '/cancel/', {
       pfx: ec.PFX,
       passphrase: ec.PASSPHRASE,
       rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
