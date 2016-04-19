@@ -1,5 +1,6 @@
 var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
+var moment = require('moment');
 
 module.exports = function() {
   var lambda = require('../../provider-taxi/provider-taxi-validate/handler.js');
@@ -14,7 +15,7 @@ module.exports = function() {
           },
           "type": "pickup",
           "passenger_count": 1,
-          "at": "2016-04-18T16:30:00+03:00",
+          "at": moment().add(6, 'hours').format(),
           "contacts": [
             {
               "provider_order_id": "MaaS-10001",
@@ -36,7 +37,7 @@ module.exports = function() {
           "passenger_count": 1
         }
       ],
-      "submitted": "2016-04-18T10:12:51+03:00",
+      "submitted": moment().format(),
       "prepaid": true
     };
 
