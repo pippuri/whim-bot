@@ -2,43 +2,43 @@ var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
 
-module.exports = function() {
+module.exports = function () {
   var lambda = require('../../provider-taxi/provider-taxi-order/handler.js');
 
   describe('new order request', function () {
     var event = {
-      "locations": [
+      locations: [
         {
-          "address": {
-            "city": "Turku",
-            "street_address": "Ratapihankatu 6"
+          address: {
+            city: 'Turku',
+            street_address: 'Ratapihankatu 6',
           },
-          "type": "pickup",
-          "passenger_count": 1,
-          "at": moment().add(6, 'hours').format(),
-          "contacts": [
+          type: 'pickup',
+          passenger_count: 1,
+          at: moment().add(6, 'hours').format(),
+          contacts: [
             {
-              "provider_order_id": "MaaS-10001",
-              "name": "Karl",
-              "telephone": "+37256282689",
-              "passenger_count": 1
-            }
-          ]
+              provider_order_id: 'MaaS-10001',
+              name: 'Karl',
+              telephone: '+37256282689',
+              passenger_count: 1,
+            },
+          ],
         },
         {
-          "address": {
-            "city": "Turku",
-            "street_address": "Arvinkatu 8"
+          address: {
+            city: 'Turku',
+            street_address: 'Arvinkatu 8',
           },
-          "type": "destination",
-          "drop_off": [
-            "MaaS-10001"
+          type: 'destination',
+          drop_off: [
+            'MaaS-10001',
           ],
-          "passenger_count": 1
-        }
+          passenger_count: 1,
+        },
       ],
-      "submitted": moment().format(),
-      "prepaid": true
+      submitted: moment().format(),
+      prepaid: true,
     };
 
     var error;
@@ -61,5 +61,5 @@ module.exports = function() {
       expect(response.order_id).to.not.be.undefined;
     });
 
-  })
+  });
 };

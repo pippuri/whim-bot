@@ -1,4 +1,3 @@
-var Promise = require('bluebird');
 var request = require('request-promise');
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
@@ -10,13 +9,13 @@ function validateOrder(order) {
       rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
       resolveWithFullResponse: true,
       body: order,
-      json: true
-    }) 
+      json: true,
+    })
     .then(function (response) {
-      if(response.statusCode == 200) {
+      if (response.statusCode === 200) {
         return {
-          validated: true
-        }
+          validated: true,
+        };
       }
 
       return response;
@@ -25,13 +24,13 @@ function validateOrder(order) {
       return {
         validated: false,
         code: err.error.code,
-        cause: err.error.localized_description
+        cause: err.error.localized_description,
       };
-    })
+    });
 
 }
 
-module.exports.respond = function(event, callback) {
+module.exports.respond = function (event, callback) {
   validateOrder(event)
     .then(function (response) {
       callback(null, response);

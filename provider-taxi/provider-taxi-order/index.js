@@ -10,36 +10,36 @@ function orderTaxi(order) {
     rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
     resolveWithFullResponse: true,
     body: order,
-    json: true
+    json: true,
   })
     .then(function (response) {
-      if(response.statusCode == 202) { // Order accepted
+      if (response.statusCode === 202) { // Order accepted
         return {
           success: true,
-          order_id: response.body.id
+          order_id: response.body.id,
         };
       }
-      
+
       return Promise.resolve(response);
     })
     .catch(function (err) {
-      if(err.statusCode == 400) { // Some parameters do not match, response payload is different
+      if (err.statusCode === 400) { // Some parameters do not match, response payload is different
         return {
           success: false,
-          errors: err.error.errors
-        }
+          errors: err.error.errors,
+        };
       } else {
         return {
           success: false,
           code: err.error.code,
-          cause: err.error.localized_description
-        }
+          cause: err.error.localized_description,
+        };
       }
-    })
+    });
 
 }
 
-module.exports.respond = function(event, callback) {
+module.exports.respond = function (event, callback) {
   orderTaxi(event)
     .then(function (response) {
       callback(null, response);

@@ -9,22 +9,22 @@ function getOrder(orderId) {
     passphrase: ec.PASSPHRASE,
     rejectUnauthorized: false, // FIXME: Figure out issue and remove line -- RequestError: Error: unable to verify the first certificate
     resolveWithFullResponse: true,
-    json: true
+    json: true,
   })
     .then(function (response) {
       return {
-        response: response.body.statuses
-      }
+        response: response.body.statuses,
+      };
     })
     .catch(function (err) {
       // Timeout etc.. Think of a good way to handle
       console.log(JSON.stringify(err));
       return Promise.reject(err);
-    })
+    });
 
 }
 
-module.exports.respond = function(event, callback) {
+module.exports.respond = function (event, callback) {
   getOrder(event.id)
     .then(function (response) {
       callback(null, response);

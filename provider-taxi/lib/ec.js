@@ -1,6 +1,6 @@
-var fs = require('fs'),
-  path = require('path'),
-  pfxFile = path.resolve(__dirname, 'maas_maasfinland.p12');
+var fs = require('fs');
+var path = require('path');
+var pfxFile = path.resolve(__dirname, 'maas_maasfinland.p12');
 
 module.exports = Object.freeze({
   TAXI_API_URL: 'https://maas.valopilkkupalvelu.fi',
@@ -32,6 +32,6 @@ module.exports = Object.freeze({
     VEHICLE_TYPE_SELECTION_NOT_ALLOWED: 304,
     INVALID_VEHICLE_TYPE: 305,
     MISSING_PROVIDER_ORDER_ID: 306,
-    MISSING_PHONE_NUMBER: 307
-  }
+    MISSING_PHONE_NUMBER: 307,
+  },
 });
