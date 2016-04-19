@@ -5,6 +5,9 @@
 class ActiveRouteController {
 
   constructor($scope, $http, $state, $timeout, $localStorage, $geolocation, API_BASE_URL) {
+
+    this.identityId = '';
+
     this.$scope = $scope;
     this.$http = $http;
     this.$state = $state;
@@ -216,16 +219,17 @@ class ActiveRouteController {
   }
 
   setActiveRouteInCognito(data){
-    this.$http.get(this.API_BASE_URL + '/profile/active-route',
+    this.$http.put(this.API_BASE_URL + '/profile/active-route',
       {
-        active_route: data
+        timestamp: Date.now(),
+        active_route: JSON.stringify(data)
       },
       {
       headers: {
         Authorization: 'Bearer ' + this.$localStorage.idToken }
     })
     .then(response => {
-       console.log("Active route successfully fetched from cognito: ");
+       console.log("Active route successfully written into cognito: ");
        console.log(response);
     });
   }

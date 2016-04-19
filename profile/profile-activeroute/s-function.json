@@ -17,16 +17,14 @@
   "endpoints": [
     {
       "path": "profile/active-route",
-      "method": "GET",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.querystring.active_route": "method.request.querystring.active_route"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"principalId\":\"$context.authorizer.principalId\",\"active_route\":\"$input.json('$.active_route')\"}"
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\",\"timestamp\":$input.json('$.timestamp'),\"active_route\":\"$input.json('$.active_route')\"}"
       },
       "responses": {
         "^400.*": {
