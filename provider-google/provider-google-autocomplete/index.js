@@ -40,8 +40,7 @@ function adapt(input) {
   switch (input.hint) {
     case 'latlon':
       query.location = [input.lat, input.lon].join(',');
-
-      // radius = input.radius * 1000; - not in use
+      query.radius = input.radius * 1000;
       break;
     case 'none':
       break;
