@@ -18,7 +18,6 @@ function getOrder(orderId) {
     })
     .catch(function (err) {
       // Timeout etc.. Think of a good way to handle
-      console.log(JSON.stringify(err));
       return Promise.reject(err);
     });
 
