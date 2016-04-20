@@ -25,7 +25,7 @@ function savesUserActiveRoute(principalId, timestamp, activeroute) {
     var activeroutes = {
       timestamp: timestamp,
       activeroute: activeroute,
-    }
+    };
 
     Object.keys(activeroutes).map(function (key) {
       var oldRecord = oldRecords[key];
@@ -61,7 +61,7 @@ function savesUserActiveRoute(principalId, timestamp, activeroute) {
   });
 }
 
-module.exports.respond = function(event, callback){
+module.exports.respond = function (event, callback) {
   savesUserActiveRoute('' + event.principalId, event.timestamp, event.active_route)
   .then(function (response) {
     callback(null, response);
