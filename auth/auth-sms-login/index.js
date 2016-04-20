@@ -88,21 +88,38 @@ function updateCognitoProfile(identityId, profile) {
 /**
  * Create (if it doesn't exist yet) an IoT Thing for the user
  */
-function createUserThing(identityId) {
+function createUserThing(identityId, plainPhone, isSimulationUser) {
   var thingName = identityId.replace(/:/, '-');
   console.log('Creating user thing', identityId, thingName);
   return iot.createThingAsync({
     thingName: thingName,
     attributePayload: {
       attributes: {
-
-        // Up to three attributes can be attached here if needed
-      },
-    },
+        // Up to three attributes can be attached here
+        phone: plainPhone,
+        type: isSimulationUser ? 'simulation' : 'user'
+      }
+    }
+  })
+  .then(null, function (err) {
+    // Ignore already exists errors
+    if (err.code == 'ResourceAlreadyExistsException') {
+      return iot.updateThingAsync({
+        thingName: thingName,
+        attributePayload: {
+          attributes: {
+            // Up to three attributes can be attached here
+            phone: plainPhone,
+            type: isSimulationUser ? 'simulation' : 'user'
+          },
+        },
+      });
+    } else {
+      console.log('ERROR:', err.code, err);
+      return Promise.reject(err);
+    }
   })
   .then(function (response) {
-    console.log('CreateThing response:', response);
-
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
       principal: identityId,
@@ -139,23 +156,35 @@ function createUserThing(identityId) {
  * Login using a verification code sent by SMS.
  */
 function smsLogin(phone, code) {
+  var identityId;
   var cognitoToken;
+  var correctCode;
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
   }
 
-  var shasum = crypto.createHash('sha1');
-  var salt = code.slice(0, 3);
-  shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-  var hash = shasum.digest('hex');
-  var correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
+  // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
+  var isSimulationUser = process.env.SERVERLESS_STAGE == 'dev' && plainPhone.match(/^292/);
+
+  if (isSimulationUser) {
+    // Simulation users accept login with code 292
+    console.log('User is a simulation user');
+    correctCode = '292';
+  } else {
+    // Real users must have a real code from Twilio
+    var shasum = crypto.createHash('sha1');
+    var salt = code.slice(0, 3);
+    shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
+    var hash = shasum.digest('hex');
+    correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
+  }
+
   console.log('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
     return Promise.reject(new Error('401 Unauthorized'));
   }
 
-  var identityId;
   return getCognitoDeveloperIdentity(plainPhone)
   .then(function (response) {
     identityId = response.identityId;
@@ -166,7 +195,7 @@ function smsLogin(phone, code) {
     });
   })
   .then(function () {
-    return createUserThing(identityId);
+    return createUserThing(identityId, plainPhone, isSimulationUser);
   })
   .then(function () {
 

@@ -55,6 +55,7 @@
               "Effect": "Allow",
               "Action": [
                 "iot:CreateThing",
+                "iot:UpdateThing",
                 "iot:DescribeThing",
                 "iot:AttachThingPrincipal",
                 "iot:DetachThingPrincipal",
