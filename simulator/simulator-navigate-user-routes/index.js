@@ -9,7 +9,7 @@ Promise.promisifyAll(iotData);
 
 // Simulate this user range
 var START_USER = 29210000;
-var END_USER = 29210001;
+var END_USER = 29210009;
 
 function loginSimulatedUser(phone) {
   return request({
