@@ -78,15 +78,14 @@ class MonitorController {
   }
 
   updateMarkers() {
-    var userMarkers = [];
+    this.userMarkers.length = 0;
     Object.keys(this.users).map(key => {
       var user = this.users[key];
       if (!this.soloUser || this.soloUser == key) {
         this.generateGeometry(user, !!this.soloUser);
-        userMarkers.push(user);
+        this.userMarkers.push(user);
       }
     });
-    this.userMarkers = userMarkers;
   }
 
   refreshState() {
