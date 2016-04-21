@@ -54,6 +54,23 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
       headers: {
         Authorization: 'Bearer ' + idToken
       }
+    })
+    .then(() => {
+      if (nextLeg.from) {
+        return request({
+          method: 'PUT',
+          url: 'https://api.dev.maas.global/tracking/user-location',
+          json: {
+            legId: nextLeg.legId,
+            lat: nextLeg.from.lat,
+            lon: nextLeg.from.lon,
+            timestamp: Date.now()
+          },
+          headers: {
+            Authorization: 'Bearer ' + idToken
+          }
+        });
+      }
     });
   } else {
     console.log('No more legs left. Route completed!');

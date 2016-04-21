@@ -57,6 +57,7 @@
                 "iot:CreateThing",
                 "iot:UpdateThing",
                 "iot:DescribeThing",
+                "iot:ListThings",
                 "iot:AttachThingPrincipal",
                 "iot:DetachThingPrincipal",
                 "iot:ListPrincipalThings",

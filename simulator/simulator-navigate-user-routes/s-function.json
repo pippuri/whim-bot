@@ -4,7 +4,7 @@
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
-  "handler": "handler.handler",
+  "handler": "simulator-navigate-user-routes/handler.handler",
   "timeout": 300,
   "memorySize": 1024,
   "authorizer": {},

@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('request-promise');
 
 // Create random routes within this area
-var area = [60.1454104, 24.697979, 60.4546686,25.2032076];
+var area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
 
 function startRandomRoute(identityId, idToken) {
   var from = {
@@ -29,7 +29,7 @@ function startRandomRoute(identityId, idToken) {
       var activeRoute;
       var now = Date.now();
       response.plan.itineraries.map(route => {
-        if (!activeRoute && route.startTime >= now) {
+        if (!activeRoute && route.startTime >= now && route.legs && route.legs.length > 0 && route.legs[0].from && route.legs[0].from.lat && route.legs[0].from.lon) {
           activeRoute = route;
         }
       });
@@ -53,6 +53,22 @@ function activateRoute(identityId, idToken, activeRoute) {
     headers: {
       Authorization: 'Bearer ' + idToken
     }
+  })
+  .then(() => {
+    // Set location to beginning of leg
+    return request({
+      method: 'PUT',
+      url: 'https://api.dev.maas.global/tracking/user-location',
+      json: {
+        legId: activeRoute.legs[0].legId,
+        lat: activeRoute.legs[0].from.lat,
+        lon: activeRoute.legs[0].from.lon,
+        timestamp: Date.now()
+      },
+      headers: {
+        Authorization: 'Bearer ' + idToken
+      }
+    });
   });
 }
 
