@@ -97,20 +97,20 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       attributes: {
         // Up to three attributes can be attached here
         phone: plainPhone,
-        type: isSimulationUser ? 'simulation' : 'user'
-      }
-    }
+        type: isSimulationUser ? 'simulation' : 'user',
+      },
+    },
   })
   .then(null, function (err) {
     // Ignore already exists errors
-    if (err.code == 'ResourceAlreadyExistsException') {
+    if (err.code === 'ResourceAlreadyExistsException') {
       return iot.updateThingAsync({
         thingName: thingName,
         attributePayload: {
           attributes: {
             // Up to three attributes can be attached here
             phone: plainPhone,
-            type: isSimulationUser ? 'simulation' : 'user'
+            type: isSimulationUser ? 'simulation' : 'user',
           },
         },
       });
@@ -165,7 +165,7 @@ function smsLogin(phone, code) {
   }
 
   // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
-  var isSimulationUser = process.env.SERVERLESS_STAGE == 'dev' && plainPhone.match(/^292/);
+  var isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
 
   if (isSimulationUser) {
     // Simulation users accept login with code 292

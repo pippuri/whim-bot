@@ -17,9 +17,9 @@ function loginSimulatedUser(phone) {
     url: 'https://api.dev.maas.global/auth/sms-login',
     qs: {
       phone: phone,
-      code: '292'
+      code: '292',
     },
-    json: true
+    json: true,
   });
 }
 
@@ -45,7 +45,7 @@ function simulateUser(phone) {
     state = payload.state.reported || {};
   })
   .then(null, function (err) {
-    if (err.code == 'ResourceNotFoundException') {
+    if (err.code === 'ResourceNotFoundException') {
       console.log('Note: Thing', thingName, 'does not have a thing shadow yet');
       state = {};
     } else {
@@ -55,7 +55,7 @@ function simulateUser(phone) {
   .then(function () {
     if (state.activeRoute) {
       // Route is active, continue it.
-      return routeNavigator.continueExistingRoute(identityId, idToken, state.activeRoute)
+      return routeNavigator.continueExistingRoute(identityId, idToken, state.activeRoute);
     } else {
       // No route is active, start one.
       return routeRandomizer.startRandomRoute(identityId, idToken);
@@ -68,11 +68,11 @@ function simulateUserRoutes() {
     if (phone > END_USER) {
       return Promise.resolve();
     }
+
     return simulateUser(phone)
-    .then(() => {
-      return simulateNext(phone+1);
-    });
+    .then(() => simulateNext(phone + 1));
   }
+
   return simulateNext(START_USER);
 }
 
