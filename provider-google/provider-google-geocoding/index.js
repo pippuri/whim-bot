@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
@@ -12,7 +12,7 @@ function parseResults(response) {
   var items = response;
   if (!util.isArray(items.results)) {
     var error = new Error('Invalid response from Google - invalid format.');
-    return Promise.reject(error);
+    return BBPromise.reject(error);
   }
 
   items.results.forEach(function (item) {
@@ -30,7 +30,7 @@ function parseResults(response) {
     result.features.push(feature);
   });
 
-  return Promise.resolve(result);
+  return BBPromise.resolve(result);
 }
 
 function adapt(input) {
@@ -45,7 +45,7 @@ function adapt(input) {
       query.component = 'country:' + input.country;
       break;
     case 'none':
-      return Promise.reject(new Error("'none' not supported for Google Geocoding."));
+      return BBPromise.reject(new Error("'none' not supported for Google Geocoding."));
     default:
       throw new Error('Location hint not given');
   }

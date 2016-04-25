@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var jwt = require('jsonwebtoken');
 
 // This is the main custom authorizer that can be attached to any API
@@ -9,7 +9,7 @@ function customAuthorize(event) {
   var m = ('' + event.authorizationToken).match(/^Bearer +([^ ]+)$/);
   if (!m) {
     // Invalid authorization
-    return Promise.reject('Unauthorized');
+    return BBPromise.reject('Unauthorized');
   }
 
   var token = m[1];
@@ -20,12 +20,12 @@ function customAuthorize(event) {
   } catch (err) {
     // Invalid authorization
     console.log('Error verifying JWT token:', err);
-    return Promise.reject('Unauthorized');
+    return BBPromise.reject('Unauthorized');
   }
 
   console.log('Token contents:', user);
 
-  return Promise.resolve()
+  return BBPromise.resolve()
   .then(function () {
     return {
       principalId: user.id,

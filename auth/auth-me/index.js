@@ -1,8 +1,8 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
-Promise.promisifyAll(cognitoSync);
+BBPromise.promisifyAll(cognitoSync);
 
 function getMe(principalId) {
   return cognitoSync.listRecordsAsync({

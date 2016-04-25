@@ -1,8 +1,8 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
+BBPromise.promisifyAll(iotData);
 
 function updateUserLocation(principalId, legId, lat, lon, timestamp) {
   var thingName = principalId.replace(/:/, '-');

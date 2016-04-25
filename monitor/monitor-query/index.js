@@ -1,11 +1,11 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var iot = new AWS.Iot({ region:process.env.AWS_REGION });
-Promise.promisifyAll(iot);
+BBPromise.promisifyAll(iot);
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
+BBPromise.promisifyAll(iotData);
 
 function getMonitorState() {
 
@@ -14,7 +14,7 @@ function getMonitorState() {
   return iot.listThingsAsync({
   })
   .then(response => {
-    var promise = Promise.resolve();
+    var promise = BBPromise.resolve();
 
     // Consider only things that have a phone number configured (users or simulated users)
     // var users = response.things.filter(thing => !!thing.attributes.phone); - not in use

@@ -2,7 +2,7 @@
 /**
  * Routing results adapter from Here to MaaS. Returns promise for JSON object.
  */
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var nextStartTime = 0;
 var nextEndTime = 0;
 var constructTo = [];
@@ -175,7 +175,7 @@ function convertPlanFrom(original) {
 }
 
 module.exports = function (original) {
-  return Promise.resolve({
+  return BBPromise.resolve({
     plan: {
       from: convertPlanFrom(original),
       itineraries: original.response.route.map(convertItinerary),
