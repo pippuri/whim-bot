@@ -63,6 +63,7 @@ npm install -g serverless
 git clone git@github.com:<your_user_account>/maas-backend.git
 cd maas-backend
 git remote add upstream git@github.com:maasglobal/maas-backend.git
+git pull upstream master
 ```
 
 Now running `git remote -v` should produce the following output:
