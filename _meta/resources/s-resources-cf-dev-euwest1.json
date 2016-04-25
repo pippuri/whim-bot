@@ -43,15 +43,6 @@
             {
               "Effect": "Allow",
               "Action": [
-                "iot:UpdateThingShadow",
-                "iot:GetThingShadow",
-                "iot:DeleteThingShadow"
-              ],
-              "Resource": "*"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
                 "cognito-sync:ListRecords",
                 "cognito-sync:UpdateRecords",
                 "cognito-identity:GetId",
@@ -64,7 +55,9 @@
               "Effect": "Allow",
               "Action": [
                 "iot:CreateThing",
+                "iot:UpdateThing",
                 "iot:DescribeThing",
+                "iot:ListThings",
                 "iot:AttachThingPrincipal",
                 "iot:DetachThingPrincipal",
                 "iot:ListPrincipalThings",
@@ -78,6 +71,15 @@
               "Effect": "Allow",
               "Action": [
                 "lambda:InvokeFunction"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iot:UpdateThingShadow",
+                "iot:GetThingShadow",
+                "iot:DeleteThingShadow"
               ],
               "Resource": "*"
             }

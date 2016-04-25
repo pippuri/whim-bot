@@ -97,10 +97,10 @@
     "test": "grunt test",
     "update-webdriver": "node node_modules/grunt-protractor-runner/node_modules/protractor/bin/webdriver-manager update",
     "deploy": "grunt build && aws --profile maas s3 sync dist/client/ s3://dev.maas.global/ && npm run deploy:stubs && npm run deploy:wellknown",
-    "deploy:stubs": "for path in /login /signup /routes /activeroute /mqtt; do aws --profile maas s3 cp dist/client/index.html s3://dev.maas.global$path; done",
+    "deploy:stubs": "for path in /login /signup /routes /activeroute /mqtt /monitor; do aws --profile maas s3 cp dist/client/index.html s3://dev.maas.global$path; done",
     "deploy:wellknown": "for path in /.well-known/apple-app-site-association; do aws --profile maas s3 cp dist/client$path s3://dev.maas.global$path --content-type application/json; done",
     "deploy:prod": "grunt build && aws --profile maas s3 sync dist/client/ s3://prod.maas.global/ && npm run deploy:prod:stubs && npm run deploy:prod:wellknown",
-    "deploy:prod:stubs": "for path in /login /signup /routes /activeroute /mqtt; do aws --profile maas s3 cp dist/client/index.html s3://prod.maas.global$path; done",
+    "deploy:prod:stubs": "for path in /login /signup /routes /activeroute /mqtt /monitor; do aws --profile maas s3 cp dist/client/index.html s3://prod.maas.global$path; done",
     "deploy:prod:wellknown": "for path in /.well-known/apple-app-site-association; do aws --profile maas s3 cp dist/client$path s3://prod.maas.global$path --content-type application/json; done"
   },
   "private": true
