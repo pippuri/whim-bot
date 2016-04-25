@@ -1,26 +1,29 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var iot = new AWS.Iot({ region:process.env.AWS_REGION });
-Promise.promisifyAll(iot);
+BBPromise.promisifyAll(iot);
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
+BBPromise.promisifyAll(iotData);
 
 function getMonitorState() {
+
   // Retrieve as many things as we can
   var userState = {};
   return iot.listThingsAsync({
   })
   .then(response => {
-    var promise = Promise.resolve();
+    var promise = BBPromise.resolve();
+
     // Consider only things that have a phone number configured (users or simulated users)
-    var users = response.things.filter(thing => !!thing.attributes.phone);
+    // var users = response.things.filter(thing => !!thing.attributes.phone); - not in use
+
     // Load state from thing shadows
     response.things.map(thing => {
-      promise = promise.then(() => {
-        return iotData.getThingShadowAsync({
-          thingName: thing.thingName
+      promise = promise.then(() => (
+        iotData.getThingShadowAsync({
+          thingName: thing.thingName,
         })
         .then(response => {
           if (response.payload) {
@@ -29,21 +32,22 @@ function getMonitorState() {
               userState[thing.thingName] = {
                 state: payload.state.reported,
                 phone: thing.attributes.phone,
-                type: thing.attributes.type
+                type: thing.attributes.type,
               };
             }
+
           }
+
         })
         .then(null, err => {
+
           // No shadow for this thing.
         })
-      });
+      ));
     });
     return promise;
   })
-  .then(() => {
-    return userState;
-  });
+  .then(() =>  userState);
 }
 
 module.exports.respond = function (event, callback) {

@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
@@ -7,9 +7,9 @@ var cognitoIdentity = new AWS.CognitoIdentity({ region:process.env.AWS_REGION })
 var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
 var iot = new AWS.Iot({ region:process.env.AWS_REGION });
 
-Promise.promisifyAll(cognitoIdentity);
-Promise.promisifyAll(cognitoSync);
-Promise.promisifyAll(iot);
+BBPromise.promisifyAll(cognitoIdentity);
+BBPromise.promisifyAll(cognitoSync);
+BBPromise.promisifyAll(iot);
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -97,26 +97,26 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       attributes: {
         // Up to three attributes can be attached here
         phone: plainPhone,
-        type: isSimulationUser ? 'simulation' : 'user'
-      }
-    }
+        type: isSimulationUser ? 'simulation' : 'user',
+      },
+    },
   })
   .then(null, function (err) {
     // Ignore already exists errors
-    if (err.code == 'ResourceAlreadyExistsException') {
+    if (err.code === 'ResourceAlreadyExistsException') {
       return iot.updateThingAsync({
         thingName: thingName,
         attributePayload: {
           attributes: {
             // Up to three attributes can be attached here
             phone: plainPhone,
-            type: isSimulationUser ? 'simulation' : 'user'
+            type: isSimulationUser ? 'simulation' : 'user',
           },
         },
       });
     } else {
       console.log('ERROR:', err.code, err);
-      return Promise.reject(err);
+      return BBPromise.reject(err);
     }
   })
   .then(function (response) {
@@ -161,11 +161,11 @@ function smsLogin(phone, code) {
   var correctCode;
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new Error('Invalid phone number'));
+    return BBPromise.reject(new Error('Invalid phone number'));
   }
 
   // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
-  var isSimulationUser = process.env.SERVERLESS_STAGE == 'dev' && plainPhone.match(/^292/);
+  var isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
 
   if (isSimulationUser) {
     // Simulation users accept login with code 292
@@ -182,7 +182,7 @@ function smsLogin(phone, code) {
 
   console.log('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
-    return Promise.reject(new Error('401 Unauthorized'));
+    return BBPromise.reject(new Error('401 Unauthorized'));
   }
 
   return getCognitoDeveloperIdentity(plainPhone)

@@ -9,6 +9,7 @@ describe('geocoding provider', function () {
     this.timeout(20000);
     testQuery(lambda, schema, fixture);
   });
+
   describe('GOOGLE', function () {
     var lambda = require('../../provider-google/provider-google-geocoding/handler.js');
     var schema = require('../../geocoding/geocoding-query/response-schema.json');

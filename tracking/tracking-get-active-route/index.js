@@ -1,8 +1,8 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
+BBPromise.promisifyAll(iotData);
 
 function getActiveRoute(principalId) {
   var thingName = principalId.replace(/:/, '-');
@@ -14,7 +14,7 @@ function getActiveRoute(principalId) {
     if (payload && payload.state && payload.state.reported && payload.state.reported.activeRoute) {
       return payload.state.reported.activeRoute;
     } else {
-      return Promise.reject(new Error('404 No Active Route'));
+      return BBPromise.reject(new Error('404 No Active Route'));
     }
   });
 }

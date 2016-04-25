@@ -16,7 +16,7 @@
  * @see https://en.wikipedia.org/wiki/GeoJSON
  */
 
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
@@ -31,7 +31,7 @@ function parseResults(response) {
 
   if (!util.isArray(items)) {
     var error = new Error('Invalid response from HERE - invalid format.');
-    return Promise.reject(error);
+    return BBPromise.reject(error);
   }
 
   items.forEach(function (item) {
@@ -49,7 +49,7 @@ function parseResults(response) {
     result.features.push(feature);
   });
 
-  return Promise.resolve(result);
+  return BBPromise.resolve(result);
 }
 
 function adapt(input) {
@@ -69,11 +69,11 @@ function adapt(input) {
     case 'country':
 
       // Not implemented
-      return Promise.reject(new Error('Country hint not implemented.'));
+      return BBPromise.reject(new Error('Country hint not implemented.'));
     case 'none':
-      return Promise.reject(new Error("'none' not supported for HERE."));
+      return BBPromise.reject(new Error("'none' not supported for HERE."));
     default:
-      return Promise.reject(new Error('Location hint not given'));
+      return BBPromise.reject(new Error('Location hint not given'));
   }
 
   return request.get(ENDPOINT_URL, {

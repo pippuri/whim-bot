@@ -1,7 +1,7 @@
 /**
  * Routing results adapter from Here to MaaS. Returns promise for JSON object.
  */
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 
 function convertMode(mode) {
   return mode === 'publicTransport' ? 'PUBLIC' : undefined;
@@ -45,7 +45,7 @@ function convertItinerary(route) {
 }
 
 module.exports = function (original) {
-  return Promise.resolve({
+  return BBPromise.resolve({
     plan: {
       itineraries: original.response.route.map(convertItinerary),
     },

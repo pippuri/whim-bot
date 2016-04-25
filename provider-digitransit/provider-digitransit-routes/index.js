@@ -1,4 +1,4 @@
-var Promise = require('bluebird');
+var BBPromise = require('bluebird');
 var request = require('request-promise');
 var adapter = require('./adapter');
 
@@ -32,7 +32,7 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
   };
 
   if (leaveAt && arriveBy) {
-    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return BBPromise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
     qs.arriveBy = false;
     qs.date = getOTPDate(parseInt(leaveAt, 10));
