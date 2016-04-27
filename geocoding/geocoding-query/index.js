@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 var ajvFactory = require('ajv');
 
@@ -6,7 +6,7 @@ var ajvFactory = require('ajv');
 var schema = require('./schema.json');
 var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
 var validate;
-BBPromise.promisifyAll(lambda, { suffix: 'BBPromise' });
+Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 // Initialization work
 (function init() {
@@ -38,7 +38,7 @@ BBPromise.promisifyAll(lambda, { suffix: 'BBPromise' });
 
   // Promisify Lambda helpers
   var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
-  BBPromise.promisifyAll(lambda, { suffix: 'BBPromise' });
+  Promise.promisifyAll(lambda, { suffix: 'Promise' });
 })();
 
 function delegate(event) {
@@ -50,7 +50,7 @@ function delegate(event) {
   //console.log('Invoking provider', provider, "with input",
   //  JSON.stringify(event, null, 2));
 
-  return lambda.invokeBBPromise({
+  return lambda.invokePromise({
     FunctionName: provider,
     Qualifier: stage,
     Payload: JSON.stringify(event),
@@ -59,11 +59,11 @@ function delegate(event) {
     var payload = JSON.parse(response.Payload);
 
     if (payload.error) {
-      return BBPromise.reject(new Error(payload.error));
+      return Promise.reject(new Error(payload.error));
     }
 
     if (payload.errorMessage) {
-      return BBPromise.reject(new Error(payload.errorMessage));
+      return Promise.reject(new Error(payload.errorMessage));
     }
 
     // Add some debug info to response
@@ -75,7 +75,7 @@ function delegate(event) {
 module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
-  new BBPromise(function (resolve, reject) {
+  new Promise(function (resolve, reject) {
       var valid = validate(event.query);
 
       if (!valid) {

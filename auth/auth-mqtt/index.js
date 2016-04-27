@@ -1,15 +1,15 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var cognitoIdentity = new AWS.CognitoIdentity();
 var cognitoSync = new AWS.CognitoSync();
-BBPromise.promisifyAll(cognitoIdentity);
-BBPromise.promisifyAll(cognitoSync);
+Promise.promisifyAll(cognitoIdentity);
+Promise.promisifyAll(cognitoSync);
 
 function getMqttCredentials(principalId) {
 
   // var token = ''; - not in use
-  return BBPromise.resolve()
+  return Promise.resolve()
   .then(function () {
 
     // Get identity login token

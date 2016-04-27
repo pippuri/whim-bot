@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var request = require('request-promise');
 var adapter = require('./adapter');
 
@@ -34,7 +34,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
     modes: modes, // modes to use in routing, as an array
   };
   if (leaveAt && arriveBy) {
-    return BBPromise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
     qs.departAfter = Math.floor(parseInt(leaveAt, 10) / 1000);
   } else if (arriveBy) {
@@ -53,7 +53,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   })
   .then(function (result) {
     if (result.error) {
-      return BBPromise.reject(new Error(result.error));
+      return Promise.reject(new Error(result.error));
     } else {
       return result;
     }
@@ -61,7 +61,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
 }
 
 function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
-  return BBPromise.all([
+  return Promise.all([
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
   ])

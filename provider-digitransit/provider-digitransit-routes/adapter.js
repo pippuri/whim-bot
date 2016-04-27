@@ -1,7 +1,7 @@
 /**
  * Routing results adapter from Digitransit to MaaS. Returns promise for JSON object.
  */
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 
 function convertMode(mode) {
   return mode;
@@ -65,10 +65,10 @@ function compareItinerary(a, b) {
 
 module.exports = function (original) {
   if (typeof original.plan === typeof undefined) {
-    return BBPromise.reject(new Error('No Digitransit plan received for these parameters'));
+    return Promise.reject(new Error('No Digitransit plan received for these parameters'));
   }
 
-  return BBPromise.resolve({
+  return Promise.resolve({
     plan: {
       from: convertPlanFrom(original.plan.from),
       itineraries: original.plan.itineraries.map(convertItinerary).sort(compareItinerary),

@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
@@ -9,10 +9,10 @@ function parseResults(response) {
 
   if (!util.isArray(suggestions)) {
     var error = new Error('Invalid response from HERE - invalid format.');
-    return BBPromise.reject(error);
+    return Promise.reject(error);
   }
 
-  return BBPromise.resolve(suggestions);
+  return Promise.resolve(suggestions);
 }
 
 /**
@@ -20,7 +20,7 @@ function parseResults(response) {
  */
 function slice(numItems) {
   return function (locations) {
-    return BBPromise.resolve(locations.slice(0, numItems));
+    return Promise.resolve(locations.slice(0, numItems));
   };
 }
 

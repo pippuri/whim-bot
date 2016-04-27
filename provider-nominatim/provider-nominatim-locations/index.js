@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var request = require('request-promise');
 var util = require('util');
 
@@ -10,7 +10,7 @@ function parseResults(response) {
 
   if (!util.isArray(response)) {
     var error = new Error('Invalid response from HERE - invalid format.');
-    return BBPromise.reject(error);
+    return Promise.reject(error);
   }
 
   response.forEach(function (item) {
@@ -29,7 +29,7 @@ function parseResults(response) {
     locations.push(location);
   });
 
-  return BBPromise.resolve(locations);
+  return Promise.resolve(locations);
 }
 
 function adapt(input) {

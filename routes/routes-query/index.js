@@ -1,8 +1,8 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
-BBPromise.promisifyAll(lambda, { suffix:'BBPromise' });
+Promise.promisifyAll(lambda, { suffix:'Promise' });
 
 var providerRegions = {
   tripgo: [
@@ -88,7 +88,7 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
   var subProvider = chooseProviderByRegion(provider, from);
   var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
   console.log('Invoking router', functionName);
-  return lambda.invokeBBPromise({
+  return lambda.invokePromise({
     FunctionName: functionName,
     Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
@@ -102,9 +102,9 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
     if (payload.error) {
-      return BBPromise.reject(new Error(payload.error));
+      return Promise.reject(new Error(payload.error));
     } else if (payload.errorMessage) {
-      return BBPromise.reject(new Error(payload.errorMessage));
+      return Promise.reject(new Error(payload.errorMessage));
     } else {
 
       // Add any missing route and leg identifiers to response

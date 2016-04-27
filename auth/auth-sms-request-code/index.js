@@ -1,8 +1,8 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
-BBPromise.promisifyAll(lambda, { suffix:'BBPromise' });
+Promise.promisifyAll(lambda, { suffix:'Promise' });
 
 /**
  * Request a login verification code by SMS.
@@ -15,7 +15,7 @@ function smsRequestCode(phone, provider) {
   // Clean up phone number to only contain digits
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return BBPromise.reject(new Error('Invalid phone number'));
+    return Promise.reject(new Error('Invalid phone number'));
   }
 
   var shasum = crypto.createHash('sha1');
@@ -26,7 +26,7 @@ function smsRequestCode(phone, provider) {
   var verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
   var functionName = 'MaaS-provider-' + provider + '-send-sms';
   console.log('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
-  return lambda.invokeBBPromise({
+  return lambda.invokePromise({
     FunctionName: functionName,
     Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
@@ -36,7 +36,7 @@ function smsRequestCode(phone, provider) {
     }),
   })
   .then(function (response) {
-    return BBPromise.resolve({
+    return Promise.resolve({
       message: 'Verification code sent to ' + phone,
       response: JSON.parse(response.Payload),
     });
