@@ -83,9 +83,15 @@ The rest of the documentation will assume that you have this setup.
 cd maas-backend # unless you are already there
 npm install
 echo '{}' > _meta/variables/s-variables-dev.json
+AWS_PROFILE=maas sls meta sync -s dev
+```
+Select "Apply these changes to the local version" at the prompt.
+```
 echo '{}' > _meta/variables/s-variables-prod.json
-sls meta sync -s dev
-sls meta sync -s prod
+AWS_PROFILE=maas sls meta sync -s prod
+```
+Select "Apply these changes to the local version" at the prompt.
+```
 gulp get-deps
 ```
 
