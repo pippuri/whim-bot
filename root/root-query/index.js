@@ -1,8 +1,8 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 
 // Respond with a API version info at root
 function getApiVersion() {
-  return BBPromise.resolve({
+  return Promise.resolve({
     region: process.env.AWS_REGION,
     stage: process.env.SERVERLESS_STAGE,
     time: Date.now(),

@@ -1,11 +1,11 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 
 /**
  * Handle an imcoming SMS message received at Twilio.
  */
 function receiveSmsMessage(event) {
   console.log('Received SMS message:', event);
-  return BBPromise.resolve({
+  return Promise.resolve({
     message: 'Got your message!',
   });
 }

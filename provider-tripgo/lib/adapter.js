@@ -1,7 +1,7 @@
 /**
  * Routing results adapter from TripGo to MaaS. Returns promise for JSON object.
  */
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 
 function convertMode(mode) {
   return mode ? mode.toUpperCase() : undefined;
@@ -93,7 +93,7 @@ module.exports = function (original) {
     allTrips = allTrips.concat(group.trips);
   });
 
-  return BBPromise.resolve({
+  return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
       itineraries: allTrips.map(function (trip) {

@@ -1,32 +1,32 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-BBPromise.promisifyAll(iotData);
+Promise.promisifyAll(iotData);
 
 function setActiveRoute(principalId, activeRoute) {
   if (!activeRoute.routeId) {
-    return BBPromise.reject(new Error('400 routeId is required'));
+    return Promise.reject(new Error('400 routeId is required'));
   }
 
   if (!activeRoute.timestamp) {
-    return BBPromise.reject(new Error('400 timestamp is required'));
+    return Promise.reject(new Error('400 timestamp is required'));
   }
 
   if (!activeRoute.legs) {
-    return BBPromise.reject(new Error('400 legs are required'));
+    return Promise.reject(new Error('400 legs are required'));
   }
 
   if (!activeRoute.activeLeg) {
-    return BBPromise.reject(new Error('400 activeLeg is required'));
+    return Promise.reject(new Error('400 activeLeg is required'));
   }
 
   if (!activeRoute.activeLeg.legId) {
-    return BBPromise.reject(new Error('400 activeLeg.legId is required'));
+    return Promise.reject(new Error('400 activeLeg.legId is required'));
   }
 
   if (!activeRoute.activeLeg.timestamp) {
-    return BBPromise.reject(new Error('400 activeLeg.timestamp is required'));
+    return Promise.reject(new Error('400 activeLeg.timestamp is required'));
   }
 
   console.log('Activating user', principalId, 'route', activeRoute);

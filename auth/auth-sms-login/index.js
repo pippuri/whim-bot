@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
@@ -7,9 +7,9 @@ var cognitoIdentity = new AWS.CognitoIdentity({ region:process.env.AWS_REGION })
 var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
 var iot = new AWS.Iot({ region:process.env.AWS_REGION });
 
-BBPromise.promisifyAll(cognitoIdentity);
-BBPromise.promisifyAll(cognitoSync);
-BBPromise.promisifyAll(iot);
+Promise.promisifyAll(cognitoIdentity);
+Promise.promisifyAll(cognitoSync);
+Promise.promisifyAll(iot);
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -116,7 +116,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       });
     } else {
       console.log('ERROR:', err.code, err);
-      return BBPromise.reject(err);
+      return Promise.reject(err);
     }
   })
   .then(function (response) {
@@ -161,7 +161,7 @@ function smsLogin(phone, code) {
   var correctCode;
   var plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return BBPromise.reject(new Error('Invalid phone number'));
+    return Promise.reject(new Error('Invalid phone number'));
   }
 
   // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
@@ -182,7 +182,7 @@ function smsLogin(phone, code) {
 
   console.log('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
-    return BBPromise.reject(new Error('401 Unauthorized'));
+    return Promise.reject(new Error('401 Unauthorized'));
   }
 
   return getCognitoDeveloperIdentity(plainPhone)

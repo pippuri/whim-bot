@@ -1,4 +1,4 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var request = require('request-promise');
 var adapter = require('./adapter');
 
@@ -18,14 +18,14 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
   };
 
   if (leaveAt && arriveBy) {
-    return BBPromise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
     qs.departure = (new Date(parseInt(leaveAt, 10))).toISOString();
   } else if (arriveBy) {
     // "Note: Specifying arrival time is not supported for the estimated Public
     // Transport routing. Requesting will result in an error response."
     // https://developer.here.com/rest-apis/documentation/routing/topics/public-transport-routing-modes.html
-    return BBPromise.reject(new Error('Here API does not support arriveBy for public transportation.'));
+    return Promise.reject(new Error('Here API does not support arriveBy for public transportation.'));
   } else {
     qs.departure = 'now';
   }

@@ -1,11 +1,11 @@
-var BBPromise = require('bluebird');
+var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 var request = require('request-promise');
 var routeRandomizer = require('./route-randomizer');
 var routeNavigator = require('./route-navigator');
 
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
-BBPromise.promisifyAll(iotData);
+Promise.promisifyAll(iotData);
 
 // Simulate this user range
 var START_USER = 29210000;
@@ -49,7 +49,7 @@ function simulateUser(phone) {
       console.log('Note: Thing', thingName, 'does not have a thing shadow yet');
       state = {};
     } else {
-      return BBPromise.reject(err);
+      return Promise.reject(err);
     }
   })
   .then(function () {
@@ -66,7 +66,7 @@ function simulateUser(phone) {
 function simulateUserRoutes() {
   function simulateNext(phone) {
     if (phone > END_USER) {
-      return BBPromise.resolve();
+      return Promise.resolve();
     }
 
     return simulateUser(phone)

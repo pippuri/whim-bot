@@ -1,6 +1,8 @@
 {
   "esversion": 6,
 
+  "predef": [ "-Promise" ],
+
   "node": true,
   "mocha": true,
 
