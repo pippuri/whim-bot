@@ -6,21 +6,33 @@ var jshint = require('gulp-jshint');
 var jscs = require('gulp-jscs');
 var gmocha = require('gulp-mocha');
 
-// the two dependency retrievers fail if combined to one
+// We can not properly use wildcards until https://github.com/slushjs/gulp-install/issues/38 is fixed
 
-gulp.task('get-main-deps', function () {
-  gulp.src(['package.json'])
-    .pipe(install());
-});
+// jscs:disable requirePaddingNewLinesAfterBlocks
 
-// the two dependency retrievers fail if combined to one
+gulp.task('get-deps-auth', function () { gulp.src('auth/package.json').pipe(install());});
+gulp.task('get-deps-autocomplete', function () { gulp.src('autocomplete/package.json').pipe(install());});
+gulp.task('get-deps-geocoding', function () { gulp.src('geocoding/package.json').pipe(install());});
+gulp.task('get-deps-locations', function () { gulp.src('locations/package.json').pipe(install());});
+gulp.task('get-deps-monitor', function () { gulp.src('monitor/package.json').pipe(install());});
+gulp.task('get-deps-provider-digitransit', function () { gulp.src('provider-digitransit/package.json').pipe(install());});
+gulp.task('get-deps-provider-google', function () { gulp.src('provider-google/package.json').pipe(install());});
+gulp.task('get-deps-provider-here', function () { gulp.src('provider-here/package.json').pipe(install());});
+gulp.task('get-deps-provider-hsl', function () { gulp.src('provider-hsl/package.json').pipe(install());});
+gulp.task('get-deps-provider-matka', function () { gulp.src('provider-matka/package.json').pipe(install());});
+gulp.task('get-deps-provider-nominatim', function () { gulp.src('provider-nominatim/package.json').pipe(install());});
+gulp.task('get-deps-provider-tripgo', function () { gulp.src('provider-tripgo/package.json').pipe(install());});
+gulp.task('get-deps-provider-twilio', function () { gulp.src('provider-twilio/package.json').pipe(install());});
+gulp.task('get-deps-root', function () { gulp.src('root/package.json').pipe(install());});
+gulp.task('get-deps-routes', function () { gulp.src('routes/package.json').pipe(install());});
+gulp.task('get-deps-simulator', function () { gulp.src('simulator/package.json').pipe(install());});
+gulp.task('get-deps-swagger', function () { gulp.src('swagger/package.json').pipe(install());});
+gulp.task('get-deps-tracking', function () { gulp.src('tracking/package.json').pipe(install());});
+gulp.task('get-deps-main', function () { gulp.src('package.json').pipe(install());});
 
-gulp.task('get-component-deps', function () {
-  gulp.src(['*/package.json'])
-    .pipe(install());
-});
+// jscs:enable requirePaddingNewLinesAfterBlocks
 
-gulp.task('get-deps', ['get-main-deps', 'get-component-deps']);
+gulp.task('get-deps', ['get-deps-auth', 'get-deps-autocomplete', 'get-deps-geocoding', 'get-deps-locations', 'get-deps-monitor', 'get-deps-provider-digitransit', 'get-deps-provider-google', 'get-deps-provider-here', 'get-deps-provider-hsl', 'get-deps-provider-matka', 'get-deps-provider-nominatim', 'get-deps-provider-tripgo', 'get-deps-provider-twilio', 'get-deps-root', 'get-deps-routes', 'get-deps-simulator', 'get-deps-swagger', 'get-deps-tracking', 'get-deps-main']); // jscs:ignore maximumLineLength
 
 gulp.task('jsonlint', function () {
   return gulp.src(['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'])
