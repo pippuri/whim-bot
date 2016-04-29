@@ -34,6 +34,7 @@ function adapt(input) {
   var query = {
     key: process.env.GOOGLE_API_KEY,
     input: input.name,
+    components: 'country:' + input.country,
     types: 'geocode',
   };
 
