@@ -1,4 +1,5 @@
 # Maas Serverless API
+[![Build Status](https://travis-ci.com/maasglobal/maas-backend.svg?token=qGskzXsqFBCyAJbx73qR&branch=master)](https://travis-ci.com/maasglobal/maas-backend)
 
 The [Maas](http://maas.fi/) API is built with
 [Serverless](https://github.com/serverless/serverless) framework. [SC5
