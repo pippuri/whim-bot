@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "bluebird": "^3.3.3",
-    "gulp-install": "^0.6.0",
     "serverless-cors-plugin": "^0.4.1",
     "serverless-meta-sync": "^0.1.0",
     "serverless-optimizer-plugin": "^2.5.1",
