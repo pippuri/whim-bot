@@ -51,7 +51,7 @@ module.exports = function (lambda, schema, fixture) {
           return;
         }
 
-        expect(response.features.length).to.not.be.empty;
+        expect(response.features).to.not.be.empty;
         response.features.forEach(function (feature) {
           expect([feature.geometry.coordinates[0], feature.geometry.coordinates[1]].join(',')).to.have.string([item.input.lat, item.input.lon].join(','));
         });
