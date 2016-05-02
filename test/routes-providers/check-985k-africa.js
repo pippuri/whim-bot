@@ -40,7 +40,7 @@ module.exports = function (lambda) {
     });
 
     it('response should have route', function () {
-      expect(response.plan.itineraries.length).to.not.be.empty;
+      expect(response.plan.itineraries).to.not.be.empty;
     });
 
     it('response should contain a leg with bus 985K leaving at 15:35', function () {

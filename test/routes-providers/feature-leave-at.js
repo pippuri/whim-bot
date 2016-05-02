@@ -36,7 +36,7 @@ module.exports = function (lambda) {
     });
 
     it('response should have route', function () {
-      expect(response.plan.itineraries.length).to.not.be.empty;
+      expect(response.plan.itineraries).to.not.be.empty;
     });
 
   });
