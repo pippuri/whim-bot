@@ -1,6 +1,6 @@
 var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
-var ajv = require('ajv')();
+var ajv = require('ajv')({ verbose: true });
 
 module.exports = function (lambda, schema, fixture) {
   describe('basic tests of a simple query', function () {
