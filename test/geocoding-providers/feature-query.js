@@ -54,7 +54,7 @@ module.exports = function (lambda, schema, fixture) {
           return;
         }
 
-        expect(response.features.length).to.not.be.empty;
+        expect(response.features).to.not.be.empty;
         response.features.forEach(function (feature) {
           expect(feature.properties.name).to.have.string(item.input.name);
         });
