@@ -15,6 +15,7 @@ gulp.task('get-deps-autocomplete', function () { gulp.src('autocomplete/package.
 gulp.task('get-deps-geocoding', function () { gulp.src('geocoding/package.json').pipe(install());});
 gulp.task('get-deps-locations', function () { gulp.src('locations/package.json').pipe(install());});
 gulp.task('get-deps-monitor', function () { gulp.src('monitor/package.json').pipe(install());});
+gulp.task('get-deps-profile', function () { gulp.src('profile/package.json').pipe(install());});
 gulp.task('get-deps-provider-digitransit', function () { gulp.src('provider-digitransit/package.json').pipe(install());});
 gulp.task('get-deps-provider-google', function () { gulp.src('provider-google/package.json').pipe(install());});
 gulp.task('get-deps-provider-here', function () { gulp.src('provider-here/package.json').pipe(install());});
@@ -26,6 +27,7 @@ gulp.task('get-deps-provider-twilio', function () { gulp.src('provider-twilio/pa
 gulp.task('get-deps-root', function () { gulp.src('root/package.json').pipe(install());});
 gulp.task('get-deps-routes', function () { gulp.src('routes/package.json').pipe(install());});
 gulp.task('get-deps-simulator', function () { gulp.src('simulator/package.json').pipe(install());});
+gulp.task('get-deps-store', function () { gulp.src('store/package.json').pipe(install());});
 gulp.task('get-deps-swagger', function () { gulp.src('swagger/package.json').pipe(install());});
 gulp.task('get-deps-tracking', function () { gulp.src('tracking/package.json').pipe(install());});
 gulp.task('get-deps-main', function () { gulp.src('package.json').pipe(install());});
@@ -65,4 +67,3 @@ gulp.task('validate', ['jsonlint', 'jshint', 'jscs']);
 gulp.task('test', ['jsonlint', 'jshint', 'jscs', 'mocha']);
 
 gulp.task('default');
-
