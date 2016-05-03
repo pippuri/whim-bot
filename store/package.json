@@ -1,0 +1,11 @@
+{
+  "name": "",
+  "version": "0.0.1",
+  "description": "Serverless module dependencies",
+  "author": "James Nguyen",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "bluebird": "^3.3.5"
+  }
+}
