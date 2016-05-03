@@ -8,7 +8,7 @@ describe('autocomplete provider', function () {
     testAutocomplete(lambda);
   });
 
-  describe('Here', function () {
+  describe('HERE', function () {
     this.timeout(20000);
     var lambda = require('../../provider-here/provider-here-autocomplete/handler.js');
     testAutocomplete(lambda);
