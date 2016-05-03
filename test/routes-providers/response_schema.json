@@ -14,7 +14,16 @@
             "properties": {
               "startTime": {"type": "number","minimum": 946684800000},
               "endTime": {"type": "number","minimum": 946684800000},
-              "legs": {"type": "array"}
+              "legs": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "mode": {"enum": ["WAIT", "WALK", "TRANSFER", "BUS", "TAXI"]}
+                  },
+                  "required": ["mode"]
+                }
+              }
             },
             "required": ["startTime", "endTime", "legs"]
           }
