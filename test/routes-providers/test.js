@@ -36,7 +36,7 @@ describe('routes provider', function () {
     test985kAfrica(lambda);
   });
 
-  describe.skip('Here', function () {
+  describe.skip('HERE', function () {
     var lambda = require('../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     test985kAfrica(lambda);

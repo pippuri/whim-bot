@@ -10,7 +10,7 @@ describe('geocoding provider', function () {
     testQuery(lambda, schema, fixture);
   });
 
-  describe('GOOGLE', function () {
+  describe('Google', function () {
     var lambda = require('../../provider-google/provider-google-geocoding/handler.js');
     var schema = require('../../geocoding/geocoding-query/response-schema.json');
     var fixture = require('./fixture.json');
