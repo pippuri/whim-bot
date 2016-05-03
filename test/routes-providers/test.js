@@ -8,7 +8,7 @@ describe('routes provider', function () {
   describe('TripGo (Middle Finland)', function () {
     this.timeout(20000);
     var lambda = require('../../provider-tripgo/provider-tripgo-routes-middlefinland/handler.js');
-    testLeaveAt(lambda);
+    testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
     test985kAfrica(lambda);
   });
@@ -16,7 +16,7 @@ describe('routes provider', function () {
   describe('TripGo (North Finland)', function () {
     this.timeout(20000);
     var lambda = require('../../provider-tripgo/provider-tripgo-routes-northfinland/handler.js');
-    testLeaveAt(lambda);
+    testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
     test985kAfrica(lambda);
   });
@@ -24,7 +24,7 @@ describe('routes provider', function () {
   describe('TripGo (South Finland)', function () {
     this.timeout(20000);
     var lambda = require('../../provider-tripgo/provider-tripgo-routes-middlefinland/handler.js');
-    testLeaveAt(lambda);
+    testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
     test985kAfrica(lambda);
   });
