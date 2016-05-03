@@ -44,7 +44,7 @@ module.exports = function (lambda, options) {
     });
 
     if (options.taxiSupport === true) {
-      it.skip('response should have taxi legs', function () {
+      it('response should have taxi legs', function () {
         var taxiLegs = [];
         response.plan.itineraries.forEach(itinerary => {
           itinerary.legs.forEach(leg => {
