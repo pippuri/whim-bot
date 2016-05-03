@@ -1,0 +1,11 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.dev.maas.global/v1/lib/user-context",
+  "description": "Maas.fi user context schema",
+  "type": "object",
+  "properties": {
+    "activePlans": {
+      "type": "array"
+    }
+  }
+}

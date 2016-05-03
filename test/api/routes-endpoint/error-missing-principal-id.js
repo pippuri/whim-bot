@@ -5,10 +5,10 @@ var moment = require('moment');
 
 module.exports = function (lambda) {
 
-  describe('request without "from"', function () {
+  describe('unauthorized request', function () {
 
     var event = {
-      principalId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // test user
+      from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
       leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
     };
@@ -29,7 +29,7 @@ module.exports = function (lambda) {
     });
 
     it('should provide the expected error message', function () {
-      expect(error.message).to.equal('Missing "from" argument.');
+      expect(error.message).to.equal('Authorization error.');
     });
 
     it('should not return a response', function () {
