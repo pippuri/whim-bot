@@ -2,6 +2,8 @@ var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
+var contextStore = require('../../lib/context-store/store.js');
+var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
 Promise.promisifyAll(lambda, { suffix:'Promise' });
 
 var providerRegions = {
@@ -80,7 +82,8 @@ function addRouteAndLegIdentifiers(itineraries) {
   });
 }
 
-function getRoutes(provider, from, to, leaveAt, arriveBy) {
+function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
+
   if (!provider) {
     provider = 'tripgo';
   }
@@ -88,7 +91,10 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
   var subProvider = chooseProviderByRegion(provider, from);
   var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
   console.log('Invoking router', functionName);
-  return lambda.invokePromise({
+
+  return contextStore.get(principalId)
+  .then((context) => businessRuleEngine.get(context.activePlans))
+  .then((policy) => lambda.invokePromise({
     FunctionName: functionName,
     Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
@@ -97,8 +103,9 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
       to: to,
       leaveAt: leaveAt,
       arriveBy: arriveBy,
+      policy: policy,
     }),
-  })
+  }))
   .then(function (response) {
     var payload = JSON.parse(response.Payload);
     if (payload.error) {
@@ -121,14 +128,16 @@ function getRoutes(provider, from, to, leaveAt, arriveBy) {
 }
 
 module.exports.respond = function (event, callback) {
-  if (!event.from) {
+  if (!event.principalId) {
+    callback(new Error('Authorization error.'));
+  } else if (!event.from) {
     callback(new Error('Missing "from" argument.'));
   } else if (!event.to) {
     callback(new Error('Missing "to" argument.'));
   } else if (event.leaveAt && event.arriveBy) {
     callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
   } else {
-    getRoutes(event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
+    getRoutes(event.principalId, event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
     .then(function (response) {
       callback(null, response);
     })

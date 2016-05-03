@@ -29,14 +29,14 @@ describe('routes provider', function () {
     test985kAfrica(lambda);
   });
 
-  describe('Digitransit', function () {
+  describe.skip('Digitransit', function () {
     var lambda = require('../../provider-digitransit/provider-digitransit-routes/handler.js');
     testLeaveAt(lambda);
     testArriveBy(lambda);
     test985kAfrica(lambda);
   });
 
-  describe('Here', function () {
+  describe.skip('HERE', function () {
     var lambda = require('../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     test985kAfrica(lambda);

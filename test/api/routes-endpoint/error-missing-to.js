@@ -8,6 +8,7 @@ module.exports = function (lambda) {
   describe('request without "to"', function () {
 
     var event = {
+      principalId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // test user
       from: '60.1684126,24.9316739', // SC5 Office
       leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
     };
