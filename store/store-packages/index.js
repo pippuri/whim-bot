@@ -1,5 +1,4 @@
 // Require dependency
-var Promise = require('bluebird');
 
 // Data
 var data = require('./data');
