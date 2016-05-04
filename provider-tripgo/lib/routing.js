@@ -13,8 +13,12 @@ var TRIPGO_PUBLIC_MODES = [
   //'wa_wal',
 ];
 
-var TRIPGO_TAXI_MODES = [
+var TRIPGO_MIXED_MODES = [
   'pt_pub',
+  'ps_tax',
+];
+
+var TRIPGO_TAXI_MODES = [
   'ps_tax',
 ];
 
@@ -60,24 +64,39 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   });
 }
 
+function mergeResults(results) {
+  var response;
+  results.forEach( result => {
+    if (typeof response === typeof undefined) {
+      response = result;
+    } else {
+      if (result && result.groups) {
+        result.groups.map(function (group) {
+          response.groups.push(group);
+        });
+      }
+
+      if (result && result.segmentTemplates) {
+        result.segmentTemplates.map(function (segmentTemplate) {
+          response.segmentTemplates.push(segmentTemplate);
+        });
+      }
+
+    }
+
+  });
+
+  return response;
+}
+
 function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
   return Promise.all([
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
+    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
   ])
   .then(function (results) {
-    var response = results[0];
-    if (results[1] && results[1].groups) {
-      results[1].groups.map(function (group) {
-        response.groups.push(group);
-      });
-    }
-
-    if (results[1] && results[1].segmentTemplates) {
-      results[1].segmentTemplates.map(function (segmentTemplate) {
-        response.segmentTemplates.push(segmentTemplate);
-      });
-    }
+    var response = mergeResults(results);
 
     if (format === 'original') {
       return response;
