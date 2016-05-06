@@ -3,7 +3,7 @@
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "provider-twilio-send-sms/handler.handler",
+  "handler": "handler.handler",
   "timeout": 10,
   "memorySize": 1024,
   "custom": {

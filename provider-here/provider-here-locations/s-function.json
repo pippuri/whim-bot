@@ -3,7 +3,7 @@
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "provider-here-locations/handler.handler",
+  "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
   "custom": {

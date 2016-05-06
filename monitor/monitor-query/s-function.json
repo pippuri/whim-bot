@@ -4,7 +4,7 @@
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
-  "handler": "monitor-query/handler.handler",
+  "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
   "authorizer": {},
