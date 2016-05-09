@@ -118,9 +118,9 @@ mocha -g "TripGo \(South Finland\) leaveAt request response"
 
 You can run the *query* function of *locations* component as follows
 ```
-AWS_PROFILE=maas sls function run locations/query
+AWS_PROFILE=maas sls function run routes-query -s dev
 ```
-Example data from file `locations/query/event.json` is used.
+Example data from file `routes/routes-query/event.json` is used.
 
 Since we'll be doing lots of `sls` commands you may feel the desire to set the
 AWS_PROFILE variable more permanently instead of providing it with each command
