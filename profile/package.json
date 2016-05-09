@@ -2,7 +2,7 @@
   "name": "",
   "version": "0.0.1",
   "description": "Serverless module dependencies",
-  "author": "Musie Kebede",
+  "author": "Musie Kebede, James Nguyen",
   "license": "MIT",
   "private": true,
   "repository": {
@@ -13,6 +13,7 @@
   "devDependencies": {},
   "dependencies": {
     "bluebird": "^3.3.4",
+    "dynamodb-doc": "^1.0.0",
     "request-promise": "^2.0.1"
   }
 }
