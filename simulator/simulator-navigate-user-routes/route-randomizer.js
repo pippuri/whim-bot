@@ -1,4 +1,4 @@
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 
 // Create random routes within this area
 var area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
@@ -12,9 +12,7 @@ function activateRoute(identityId, idToken, activeRoute) {
     legId: activeRoute.legs[0].legId,
     timestamp: Date.now(),
   };
-  return request({
-    method: 'PUT',
-    url: 'https://api.dev.maas.global/tracking/active-route',
+  return request.put('https://api.dev.maas.global/tracking/active-route', {
     json: activeRoute,
     headers: {
       Authorization: 'Bearer ' + idToken,
@@ -23,9 +21,7 @@ function activateRoute(identityId, idToken, activeRoute) {
   .then(() => (
 
     // Set location to beginning of leg
-    request({
-      method: 'PUT',
-      url: 'https://api.dev.maas.global/tracking/user-location',
+    request.put('https://api.dev.maas.global/tracking/user-location', {
       json: {
         legId: activeRoute.legs[0].legId,
         lat: activeRoute.legs[0].from.lat,
@@ -49,9 +45,7 @@ function startRandomRoute(identityId, idToken) {
     lon: area[1] + Math.random() * (area[3] - area[1]),
   };
   console.log('Starting random route from ' + from.lat + ',' + from.lon + ' to ' + to.lat + ',' + to.lon);
-  return request({
-    method: 'GET',
-    url: 'https://api.dev.maas.global/routes',
+  return request.get('https://api.dev.maas.global/routes', {
     qs: {
       from: from.lat + ',' + from.lon,
       to: to.lat + ',' + to.lon,

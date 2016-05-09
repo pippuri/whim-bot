@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 var adapter = require('./adapter');
 
 var HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';

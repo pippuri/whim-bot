@@ -1,4 +1,4 @@
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 
 var TRIPGO_REGIONS_URL = 'https://tripgo.skedgo.com/satapp/regions.json';
 

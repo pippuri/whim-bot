@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 var util = require('util');
 
 var ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
