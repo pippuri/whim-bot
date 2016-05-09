@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 var routeRandomizer = require('./route-randomizer');
 var routeNavigator = require('./route-navigator');
 
@@ -12,9 +12,7 @@ var START_USER = 29210000;
 var END_USER = 29210009;
 
 function loginSimulatedUser(phone) {
-  return request({
-    method: 'GET',
-    url: 'https://api.dev.maas.global/auth/sms-login',
+  return request.get('https://api.dev.maas.global/auth/sms-login', {
     qs: {
       phone: phone,
       code: '292',

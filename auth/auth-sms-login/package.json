@@ -13,7 +13,6 @@
   "devDependencies": {},
   "dependencies": {
     "bluebird": "^3.3.4",
-    "proj4": "^2.3.14",
-    "request-promise": "^2.0.1"
+    "jsonwebtoken": "^5.7.0"
   }
 }
