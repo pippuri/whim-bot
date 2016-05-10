@@ -1,56 +1,7 @@
-var Promise = require('bluebird');
 var crypto = require('crypto');
-var AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
 var contextStore = require('../../lib/context-store/store.js');
 var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
-Promise.promisifyAll(lambda, { suffix:'Promise' });
-
-var providerRegions = {
-  tripgo: [
-    {
-      area:[59.74, 22.65, 61.99, 30.24],
-      subProvider: '-southfinland',
-    },
-    {
-      area: [59.74, 19.31, 64.12, 29.93],
-      subProvider: '-middlefinland',
-    },
-    {
-      area: [61.72, 20, 70.36, 32.08],
-      subProvider: '-northfinland',
-    },
-  ],
-};
-
-function isInsideRegion(coords, area) {
-  return (area[0] <= coords[0] && coords[0] <= area[2] &&
-    area[1] <= coords[1] && coords[1] <= area[3]);
-}
-
-function chooseProviderByRegion(provider, from) {
-  var subProvider = '';
-  var regions = providerRegions[provider];
-  if (regions) {
-    var coords = from.split(',').map(parseFloat);
-
-    // Look for a sub-provider by matching region
-    regions.map(function (region) {
-      if (!subProvider && isInsideRegion(coords, region.area)) {
-        subProvider = region.subProvider;
-      }
-
-    });
-
-    if (!subProvider) {
-
-      // Could not find a subprovider in the configured regions
-      throw new Error('No provider found for region');
-    }
-  }
-
-  return subProvider;
-}
+var serviceBus = require('../../lib/service-bus/index.js');
 
 // Generate a unique route identifier by hashing the JSON
 function generateRouteId(itinerary) {
@@ -83,47 +34,17 @@ function addRouteAndLegIdentifiers(itineraries) {
 }
 
 function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
-
-  if (!provider) {
-    provider = 'tripgo';
+  var options = {};
+  if (typeof provider !== typeof undefined) {
+    options.provider = provider;
   }
-
-  var subProvider = chooseProviderByRegion(provider, from);
-  var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
-  console.log('Invoking router', functionName);
 
   return contextStore.get(principalId)
   .then((context) => businessRuleEngine.get(context.activePlans))
-  .then((policy) => lambda.invokePromise({
-    FunctionName: functionName,
-    Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
-    ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
-    Payload: JSON.stringify({
-      from: from,
-      to: to,
-      leaveAt: leaveAt,
-      arriveBy: arriveBy,
-      policy: policy,
-    }),
-  }))
-  .then(function (response) {
-    var payload = JSON.parse(response.Payload);
-    if (payload.error) {
-      return Promise.reject(new Error(payload.error));
-    } else if (payload.errorMessage) {
-      return Promise.reject(new Error(payload.errorMessage));
-    } else {
-
-      // Add any missing route and leg identifiers to response
-      addRouteAndLegIdentifiers(payload.plan.itineraries || []);
-
-      // Add some debug info to response
-      payload.maas = {
-        provider: provider + subProvider,
-      };
-      return payload;
-    }
-
+  .then((policy) => serviceBus.getRoutes(from, to, leaveAt, arriveBy, options))
+  .then((payload) => {
+    addRouteAndLegIdentifiers(payload.plan.itineraries || []);
+    return payload;
   });
 }
 

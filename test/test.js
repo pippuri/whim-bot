@@ -19,6 +19,9 @@ function loadEnvironment() {
 
 loadEnvironment();
 
+// Handle AWS Lambda calls locally
+process.env.maas_test_run = true;
+
 describe('MaaS.fi backend', function () {
   require('./api/test.js');
   require('./routes-providers/test.js');
