@@ -39,6 +39,7 @@
   "devDependencies": {
     "ajv": "^3.8.8",
     "aws-sdk": "^2.2.39",
+    "babel-core": "^6.0.0",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-install": "^0.6.0",
@@ -52,8 +53,8 @@
     "json-loader": "^0.5.4",
     "lambda-wrapper": "0.0.5",
     "moment": "^2.12.0",
+    "serverless": "^0.5.5",
     "serverless-webpack-plugin": "^0.4.3",
-    "babel-core": "^6.0.0",
     "webpack": "1 || ^2.1.0-beta"
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",
