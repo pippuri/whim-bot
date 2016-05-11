@@ -33,19 +33,45 @@ function addRouteAndLegIdentifiers(itineraries) {
   });
 }
 
+function addRouteAndLegIdentifiersToResponse(response) {
+  addRouteAndLegIdentifiers(response.plan.itineraries || []);
+  return response;
+}
+
+function filterPastRoutes(leaveAt, response) {
+  if (!leaveAt) {
+    return response;
+  }
+
+  var filtered = response.plan.itineraries.filter(itinerary => {
+    var tooEarly = [];
+    itinerary.legs.forEach(leg => {
+      var early = (leg.startTime - parseInt(leaveAt, 10));
+      tooEarly.push(early);
+    });
+    var earliest = Math.max.apply(null, tooEarly);
+    var inMinutes = ((earliest / 1000) / 60);
+    if (inMinutes > 1) {
+      return false;
+    }
+
+    return true;
+  });
+  response.plan.itineraries = filtered;
+  return response;
+}
+
 function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
   var options = {};
-  if (typeof provider !== typeof undefined) {
+  if (typeof provider !== typeof undefined && provider !== '') {
     options.provider = provider;
   }
 
   return contextStore.get(principalId)
   .then((context) => businessRuleEngine.get(context.activePlans))
   .then((policy) => serviceBus.getRoutes(from, to, leaveAt, arriveBy, options))
-  .then((payload) => {
-    addRouteAndLegIdentifiers(payload.plan.itineraries || []);
-    return payload;
-  });
+  .then((response) => addRouteAndLegIdentifiersToResponse(response))
+  .then(response => filterPastRoutes(leaveAt, response));
 }
 
 module.exports.respond = function (event, callback) {
