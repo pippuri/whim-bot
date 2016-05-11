@@ -5,18 +5,14 @@ var moment = require('moment');
 
 var validator = require('./response_validator');
 
-module.exports = function (lambda, options) {
-
-  if (typeof options === typeof undefined) {
-    options = {};
-  }
+module.exports = function (lambda) {
 
   describe('leaveAt request', function () {
 
     var event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
-      leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
     };
 
     var error;
@@ -42,21 +38,6 @@ module.exports = function (lambda, options) {
     it('response should have route', function () {
       expect(response.plan.itineraries).to.not.be.empty;
     });
-
-    if (options.taxiSupport === true) {
-      it('response should have taxi legs', function () {
-        var taxiLegs = [];
-        response.plan.itineraries.forEach(itinerary => {
-          itinerary.legs.forEach(leg => {
-            if (leg.mode === 'TAXI') {
-              taxiLegs.push(leg);
-            }
-
-          });
-        });
-        expect(taxiLegs).to.not.be.empty;
-      });
-    }
 
   });
 };

@@ -2,7 +2,7 @@ var Promise = require('bluebird');
 var request = require('../../lib/hacks/maas-request-promise');
 var adapter = require('./adapter');
 
-var DIGITRANSIT_HSL_URL = 'http://beta.digitransit.fi/otp/routers/hsl/plan';
+var DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';
 
 function getOTPDate(timestamp) {
   var time = new Date(timestamp);

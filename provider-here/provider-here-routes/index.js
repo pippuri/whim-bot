@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise');
 var adapter = require('./adapter');
 
 var HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
@@ -14,7 +14,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     waypoint1: 'geo!' + to,
     mode: 'fastest;publicTransport',
     combineChange: 'true',
-    maneuverAttributes: 'shape,roadName,nextRoadName',
+    maneuverAttributes: 'shape,roadName,nextRoadName,publicTransportLine',
   };
 
   if (leaveAt && arriveBy) {
