@@ -1,20 +1,18 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var DOC = require('dynamodb-doc');
 var lib = require('../lib/adapter');
+var _ = require('lodash/core');
 
-var dynamo = new AWS.DynamoDB({ region: process.env.AWS_REGION });
-var docClient = new DOC.DynamoDB(dynamo);
+var docClient = new AWS.DynamoDB.DocumentClient();
 
 Promise.promisifyAll(docClient);
 
 /**
  * Get single user data from database
- * TODO check phoneNumber format
  */
 function getSingleUserData(phoneNumber) {
-  if (!phoneNumber) {
+  if (!lib.checkPhoneNumber(phoneNumber)) {
     var error = new Error('Invalid profile data');
     return Promise.reject(error);
   }
@@ -27,14 +25,7 @@ function getSingleUserData(phoneNumber) {
           IdentityId: response.identityId,
         },
       };
-
-      return docClient.getItemAsync(params);
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error;
+      return docClient.getAsync(params);
     });
 }
 
@@ -44,7 +35,11 @@ function getSingleUserData(phoneNumber) {
 module.exports.respond = function (event, callback) {
   return getSingleUserData(event.phoneCountryCode + event.plainPhone)
     .then((response) => {
-      callback(null, response);
+      if (_.isEmpty(response)) {
+        callback(new Error('Empty response / No item found'));
+      } else {
+        callback(null, response);
+      }
     })
     .catch((error) => {
       callback(error);

@@ -6,8 +6,15 @@ var cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION }
 Promise.promisifyAll(cognitoIdentity);
 
 /**
- * Get/Create Cognito IdentityId
+ * Check phoneNumber validity
  * TODO check for phoneNumber format
+ */
+function checkPhoneNumber(phoneNumber) {
+  return true;
+}
+
+/**
+ * Get/Create Cognito IdentityId
  */
 function getCognitoDeveloperIdentity(phoneNumber) {
   var logins = {};
@@ -25,10 +32,8 @@ function getCognitoDeveloperIdentity(phoneNumber) {
         identityId: response.IdentityId,
         cognitoToken: response.Token,
       };
-    })
-    .catch((error) => {
-      return error;
     });
 }
 
+module.exports.checkPhoneNumber = checkPhoneNumber;
 module.exports.getCognitoDeveloperIdentity = getCognitoDeveloperIdentity;

@@ -1,11 +1,9 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var DOC = require('dynamodb-doc');
 var lib = require('../lib/adapter');
 
-var dynamo = new AWS.DynamoDB({ region: process.env.AWS_REGION });
-var docClient = new DOC.DynamoDB(dynamo);
+var docClient = new AWS.DynamoDB.DocumentClient();
 
 Promise.promisifyAll(docClient);
 
@@ -27,13 +25,7 @@ function persistUserData(payload) {
         ReturnValues: 'ALL_OLD',
         ReturnConsumedCapacity: 'TOTAL',
       };
-      return docClient.putItemAsync(params);
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      return error;
+      return docClient.putAsync(params);
     });
 }
 
