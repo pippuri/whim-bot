@@ -1,0 +1,34 @@
+{
+  "locations": [
+    {
+      "address": {
+        "city": "Turku",
+        "street_address": "Ratapihankatu 6"
+      },
+      "type": "pickup",
+      "passenger_count": 1,
+      "at": "2016-04-19T16:30:00+03:00",
+      "contacts": [
+        {
+          "provider_order_id": "MaaS-10001",
+          "name": "Karl",
+          "telephone": "+37256282689",
+          "passenger_count": 1
+        }
+      ]
+    },
+    {
+      "address": {
+        "city": "Turku",
+        "street_address": "Arvinkatu 8"
+      },
+      "type": "destination",
+      "drop_off": [
+        "MaaS-10001"
+      ],
+      "passenger_count": 1
+    }
+  ],
+  "submitted": "2016-04-19T10:12:51+03:00",
+  "prepaid": true
+}

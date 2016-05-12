@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.maas.global/v1/units",
+  "description": "MaaS Common units",
+  "definitions": {
+    "time": {
+      "type": "integer",
+      "maximum": 9007199254740991,
+      "minimum": 1463039460167
+    },
+    "latitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180
+    }
+  }
+}

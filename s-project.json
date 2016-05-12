@@ -9,11 +9,14 @@
     "meta": {
       "name": "maas-serverless",
       "region": "eu-west-1"
+    },
+    "webpack": {
+      "configPath": "webpack.config.js"
     }
   },
   "plugins": [
     "serverless-cors-plugin",
-    "serverless-optimizer-plugin",
+    "serverless-webpack-plugin",
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
     "serverless-plugin-autoinstall",
