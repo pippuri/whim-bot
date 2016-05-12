@@ -10,8 +10,9 @@ module.exports = function (lambda) {
 
     var event = {
       hint: 'latlon',
-      name: 'Kamppi',
+      name: 'Kamp',
       count: 5,
+      country: 'FI',
       lat: 60.1675800,
       lon: 24.9302260,
       radius: 5,
