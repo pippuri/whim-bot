@@ -203,6 +203,15 @@ master branch.
 git push origin <local_branch_name>
 ```
 
+### Working with Travis
+
+Before deploying or merging a pull request, you should check Travis tests are passing. You should note that Travis environment differs from your local environment:
+
+   * Travis does not see your Serverless environment settings at *_meta/variables/**; if you add a new env variable, also add it to [Travis settings](https://travis-ci.com/maasglobal/maas-backend/settings).
+   * Travis is running on Node 4.2 (sufficiently similar to AWS), whereas you may locally run something else.
+
+When things run safely in Travis, we can be sufficiently confident they run on AWS.
+
 ### Deploying To Dev
 
 You can init deploying a component (e.g. provider-tripgo ) to development environment as follows.
