@@ -10,12 +10,9 @@ Promise.promisifyAll(docClient);
 
 /**
  * Get single user data from database
+ * TODO fix checkPhoneNumber
  */
 function getSingleUserData(phoneNumber) {
-  if (!lib.checkPhoneNumber(phoneNumber)) {
-    var error = new Error('Invalid profile data');
-    return Promise.reject(error);
-  }
 
   return lib.getCognitoDeveloperIdentity(phoneNumber)
     .then((response) => {

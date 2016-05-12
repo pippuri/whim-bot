@@ -15,8 +15,8 @@
       "path": "profile/",
       "method": "PUT",
       "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
@@ -27,13 +27,45 @@
           "statusCode": "400"
         },
         "default": {
-          "statusCode": "200",
-          "responseParameters": {},
-          "responseModels": {
-            "application/json;charset=UTF-8": "Empty"
+          "^400.*": {
+            "statusCode": "400",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            }
           },
-          "responseTemplates": {
-            "application/json;charset=UTF-8": ""
+           "^403.*": {
+            "statusCode": "403",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            }
+          },
+          "^401.*": {
+            "statusCode": "401",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            }
+          },
+          "^404.*": {
+            "statusCode": "404",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            }
+          },
+          "[^0-9].*": {
+            "statusCode": "500",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            }
+          },
+          "default": {
+            "statusCode": "200",
+            "responseParameters": {
+              "method.response.header.Access-Control-Allow-Origin": "'*'"
+            },
+            "responseModels": {},
+            "responseTemplates": {
+              "application/json": ""
+            }
           }
         }
       }
