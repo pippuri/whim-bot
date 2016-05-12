@@ -12,7 +12,6 @@ Promise.promisifyAll(docClient);
 /**
  * Get single user data from database
  * TODO check phoneNumber format
- * TODO Move all TableName to env variables
  */
 function getSingleUserData(phoneNumber) {
   if (!phoneNumber) {
@@ -23,7 +22,7 @@ function getSingleUserData(phoneNumber) {
   return lib.getCognitoDeveloperIdentity(phoneNumber)
     .then((response) => {
       var params = {
-        TableName: 'maas-user-profile',
+        TableName: process.env.DYNAMO_USER_PROFILE,
         Key: {
           IdentityId: response.identityId,
         },

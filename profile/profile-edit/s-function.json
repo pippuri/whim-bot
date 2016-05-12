@@ -1,10 +1,9 @@
 {
-  "name": "profile-info",
+  "name": "profile-edit",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
-  "handler": "profile-info/handler.handler",
+  "handler": "profile-edit/handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "authorizer": {},
@@ -14,17 +13,14 @@
   "endpoints": [
     {
       "path": "profile/",
-      "method": "GET",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.querystring.phoneCountryCode": "method.request.querystring.phoneCountryCode",
-        "integration.request.querystring.plainPhone": "method.request.querystring.plainPhone"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"phoneCountryCode\": \"$input.phoneCountryCode\",\"plainPhone\": \"$input.plainPhone\"}"
+        "application/json": ""
       },
       "responses": {
         "400": {

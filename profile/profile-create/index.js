@@ -11,7 +11,6 @@ Promise.promisifyAll(docClient);
 
 /**
  * Save data to DynamoDB
- * TODO Move all TableName to env variables
  */
 function persistUserData(payload) {
   if (!payload) {
@@ -24,7 +23,7 @@ function persistUserData(payload) {
       payload.IdentityId = response.identityId;
       var params = {
         Item: payload,
-        TableName: 'maas-user-profile',
+        TableName: process.env.DYNAMO_USER_PROFILE,
         ReturnValues: 'ALL_OLD',
         ReturnConsumedCapacity: 'TOTAL',
       };

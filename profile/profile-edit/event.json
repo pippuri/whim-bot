@@ -1,0 +1,9 @@
+{
+  "plainPhone": "405103121",
+  "phoneCountryCode" : "+358",
+  "query" : {
+    "operation": "put",
+    "attribute": "routeHistory",
+    "value": {"email": "blackevil245@gmail.com"}
+  }
+}
