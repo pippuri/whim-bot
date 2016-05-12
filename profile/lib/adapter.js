@@ -7,7 +7,6 @@ var client = new LookupsClient(process.env.TWILIO_ACCOUNT_SID, process.env.TWILI
 var cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 
 Promise.promisifyAll(cognitoIdentity);
-// Promise.promisifyAll(client);
 
 /**
  * Check phoneNumber validity
