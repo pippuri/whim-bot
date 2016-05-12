@@ -7,11 +7,13 @@ var nextStartTime = 0;
 var nextEndTime = 0;
 var constructTo = [];
 
+/*
 function convertMode(data) {
 
   //strip out html tag from instruction
   return (data.instruction).replace(/(<([^>]+)>)/ig, '');
 }
+*/
 
 function convertFrom(from) {
   return {
