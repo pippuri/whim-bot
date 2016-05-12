@@ -42,7 +42,7 @@ function getCognitoDeveloperIdentity(phoneNumber) {
 
       return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options);
     })
-    .then((response) => {
+    .then(function (response) {
       return {
         identityId: response.IdentityId,
       };
