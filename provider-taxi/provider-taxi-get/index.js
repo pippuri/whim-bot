@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var request = require('request-promise');
-var ec = require('../lib/ec'); // TODO: Error handling based on codes
+var ec = require('../lib/ec');
 
 function getOrder(orderId) {
 
@@ -17,7 +17,6 @@ function getOrder(orderId) {
       };
     })
     .catch(function (err) {
-      // Timeout etc.. Think of a good way to handle
       return Promise.reject(err);
     });
 
