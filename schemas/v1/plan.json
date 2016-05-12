@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.maas.global/v1/plan",
+  "description": "OpenTripPlanner compatible format for plans",
+  "type": "object",
+  "properties": {
+    "from": {
+      "$ref": "#/definitions/place"
+    },
+    "itineraries": {
+      "$ref": "#/definitions/itineraries"
+    }
+  },
+  "required": [
+    "from",
+    "itineraries"
+  ],
+  "additionalProperties": true,
+  "definitions": {
+    "itineraries": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/definitions/itinerary"
+      }
+    },
+    "itinerary": {
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "endTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "waitingTime": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "fare": {
+          "$ref": "#/definitions/fare"
+        },
+        "legs": {
+          "type": "array",
+          "minItems": 0,
+          "items": {
+            "$ref": "#/definitions/leg"
+          }
+        }
+      },
+      "required": [
+        "startTime",
+        "endTime",
+        "legs"
+      ]
+    },
+    "leg": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "from": {
+          "$ref": "#/definitions/place"
+        },
+        "to": {
+          "$ref": "#/definitions/place"
+        },
+        "startTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "endTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "mode": {
+          "$ref": "#/definitions/mode"
+        },
+        "departureDelay": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "arrivalDelay": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "distance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "fare": {
+          "$ref": "#/definitions/fare"
+        },
+        "route": {
+          "type": "string"
+        },
+        "routeShortName": {
+          "type": "string"
+        },
+        "routeLongName": {
+          "type": "string"
+        },
+        "agencyId": {
+          "type": "string"
+        },
+        "legGeometry": {
+          "$ref": "#/definitions/legGeometry"
+        }
+      },
+      "required": [
+        "from",
+        "to",
+        "mode",
+        "startTime",
+        "endTime"
+      ]
+    },
+    "place": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "stopId": {
+          "type": "string"
+        },
+        "stopCode": {
+          "type": "string"
+        },
+        "lat": {
+          "$ref": "units.json#/definitions/latitude"
+        },
+        "lon": {
+          "$ref": "units.json#/definitions/longitude"
+        }
+      },
+      "required": [
+        "lon",
+        "lat"
+      ]
+    },
+    "legGeometry": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "points": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "fare": {
+      "type": "object"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "WALK",
+        "BICYCLE",
+        "CAR",
+        "TRAM",
+        "SUBWAY",
+        "RAIL",
+        "BUS",
+        "FERRY",
+        "CABLE_CAR",
+        "GONDOLA",
+        "FUNICULAR",
+        "TRANSIT",
+        "TRAINISH",
+        "BUSISH",
+        "LEG_SWITCH"
+      ]
+    }
+  }
+}
