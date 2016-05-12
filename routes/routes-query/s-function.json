@@ -3,7 +3,7 @@
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "routes-query/handler.handler",
+  "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
   "custom": {
@@ -18,7 +18,8 @@
       "path": "routes",
       "method": "GET",
       "type": "AWS",
-      "authorizationType": "none",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
         "integration.request.querystring.provider": "method.request.querystring.provider",
@@ -28,7 +29,7 @@
         "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy"
       },
       "requestTemplates": {
-        "application/json": "{\"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"provider\":\"$input.params('provider')\"}"
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\", \"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"provider\":\"$input.params('provider')\"}"
       },
       "responses": {
         "^400.*": {

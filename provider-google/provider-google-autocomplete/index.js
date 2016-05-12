@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('request-promise');
+var request = require('../../lib/hacks/maas-request-promise');
 var util = require('util');
 
 var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
@@ -34,14 +34,14 @@ function adapt(input) {
   var query = {
     key: process.env.GOOGLE_API_KEY,
     input: input.name,
+    components: 'country:' + input.country,
     types: 'geocode',
   };
 
   switch (input.hint) {
     case 'latlon':
       query.location = [input.lat, input.lon].join(',');
-
-      // radius = input.radius * 1000; - not in use
+      query.radius = input.radius * 1000;
       break;
     case 'none':
       break;

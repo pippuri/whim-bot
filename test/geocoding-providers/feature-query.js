@@ -1,6 +1,6 @@
 var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
-var ajv = require('ajv')();
+var ajv = require('ajv')({ verbose: true });
 
 module.exports = function (lambda, schema, fixture) {
   describe('basic tests of a simple query', function () {
@@ -54,7 +54,7 @@ module.exports = function (lambda, schema, fixture) {
           return;
         }
 
-        expect(response.features.length).to.not.be.empty;
+        expect(response.features).to.not.be.empty;
         response.features.forEach(function (feature) {
           expect(feature.properties.name).to.have.string(item.input.name);
         });

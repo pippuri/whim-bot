@@ -1,54 +1,7 @@
-var Promise = require('bluebird');
 var crypto = require('crypto');
-var AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
-Promise.promisifyAll(lambda, { suffix:'Promise' });
-
-var providerRegions = {
-  tripgo: [
-    {
-      area:[59.74, 22.65, 61.99, 30.24],
-      subProvider: '-southfinland',
-    },
-    {
-      area: [59.74, 19.31, 64.12, 29.93],
-      subProvider: '-middlefinland',
-    },
-    {
-      area: [61.72, 20, 70.36, 32.08],
-      subProvider: '-northfinland',
-    },
-  ],
-};
-
-function isInsideRegion(coords, area) {
-  return (area[0] <= coords[0] && coords[0] <= area[2] &&
-    area[1] <= coords[1] && coords[1] <= area[3]);
-}
-
-function chooseProviderByRegion(provider, from) {
-  var subProvider = '';
-  var regions = providerRegions[provider];
-  if (regions) {
-    var coords = from.split(',').map(parseFloat);
-
-    // Look for a sub-provider by matching region
-    regions.map(function (region) {
-      if (!subProvider && isInsideRegion(coords, region.area)) {
-        subProvider = region.subProvider;
-      }
-
-    });
-
-    if (!subProvider) {
-
-      // Could not find a subprovider in the configured regions
-      throw new Error('No provider found for region');
-    }
-  }
-
-  return subProvider;
-}
+var contextStore = require('../../lib/context-store/store.js');
+var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
+var serviceBus = require('../../lib/service-bus/index.js');
 
 // Generate a unique route identifier by hashing the JSON
 function generateRouteId(itinerary) {
@@ -80,55 +33,58 @@ function addRouteAndLegIdentifiers(itineraries) {
   });
 }
 
-function getRoutes(provider, from, to, leaveAt, arriveBy) {
-  if (!provider) {
-    provider = 'tripgo';
+function addRouteAndLegIdentifiersToResponse(response) {
+  addRouteAndLegIdentifiers(response.plan.itineraries || []);
+  return response;
+}
+
+function filterPastRoutes(leaveAt, response) {
+  if (!leaveAt) {
+    return response;
   }
 
-  var subProvider = chooseProviderByRegion(provider, from);
-  var functionName = 'MaaS-provider-' + provider + '-routes' + subProvider;
-  console.log('Invoking router', functionName);
-  return lambda.invokePromise({
-    FunctionName: functionName,
-    Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
-    ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
-    Payload: JSON.stringify({
-      from: from,
-      to: to,
-      leaveAt: leaveAt,
-      arriveBy: arriveBy,
-    }),
-  })
-  .then(function (response) {
-    var payload = JSON.parse(response.Payload);
-    if (payload.error) {
-      return Promise.reject(new Error(payload.error));
-    } else if (payload.errorMessage) {
-      return Promise.reject(new Error(payload.errorMessage));
-    } else {
-
-      // Add any missing route and leg identifiers to response
-      addRouteAndLegIdentifiers(payload.plan.itineraries || []);
-
-      // Add some debug info to response
-      payload.maas = {
-        provider: provider + subProvider,
-      };
-      return payload;
+  var filtered = response.plan.itineraries.filter(itinerary => {
+    var tooEarly = [];
+    itinerary.legs.forEach(leg => {
+      var early = (leg.startTime - parseInt(leaveAt, 10));
+      tooEarly.push(early);
+    });
+    var earliest = Math.max.apply(null, tooEarly);
+    var inMinutes = ((earliest / 1000) / 60);
+    if (inMinutes > 1) {
+      return false;
     }
 
+    return true;
   });
+  response.plan.itineraries = filtered;
+  return response;
+}
+
+function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
+  var options = {};
+  if (typeof provider !== typeof undefined && provider !== '') {
+    options.provider = provider;
+  }
+
+  return contextStore.get(principalId)
+  .then((context) => businessRuleEngine.get(context.activePlans))
+  .then((policy) => serviceBus.getRoutes(from, to, leaveAt, arriveBy, options))
+  .then((response) => addRouteAndLegIdentifiersToResponse(response))
+  .then(response => filterPastRoutes(leaveAt, response));
 }
 
 module.exports.respond = function (event, callback) {
-  if (!event.from) {
+  if (!event.principalId) {
+    callback(new Error('Authorization error.'));
+  } else if (!event.from) {
     callback(new Error('Missing "from" argument.'));
   } else if (!event.to) {
     callback(new Error('Missing "to" argument.'));
   } else if (event.leaveAt && event.arriveBy) {
     callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
   } else {
-    getRoutes(event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
+    getRoutes(event.principalId, event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
     .then(function (response) {
       callback(null, response);
     })

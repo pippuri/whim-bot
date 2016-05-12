@@ -1,4 +1,5 @@
 # Maas Serverless API
+[![Build Status](https://travis-ci.com/maasglobal/maas-backend.svg?token=qGskzXsqFBCyAJbx73qR&branch=master)](https://travis-ci.com/maasglobal/maas-backend)
 
 The [Maas](http://maas.fi/) API is built with
 [Serverless](https://github.com/serverless/serverless) framework. [SC5
@@ -63,6 +64,7 @@ npm install -g serverless
 git clone git@github.com:<your_user_account>/maas-backend.git
 cd maas-backend
 git remote add upstream git@github.com:maasglobal/maas-backend.git
+git pull upstream master
 ```
 
 Now running `git remote -v` should produce the following output:
@@ -82,9 +84,15 @@ The rest of the documentation will assume that you have this setup.
 cd maas-backend # unless you are already there
 npm install
 echo '{}' > _meta/variables/s-variables-dev.json
+AWS_PROFILE=maas sls meta sync -s dev
+```
+Select "Apply these changes to the local version" at the prompt.
+```
 echo '{}' > _meta/variables/s-variables-prod.json
-sls meta sync -s dev
-sls meta sync -s prod
+AWS_PROFILE=maas sls meta sync -s prod
+```
+Select "Apply these changes to the local version" at the prompt.
+```
 gulp get-deps
 ```
 
@@ -110,9 +118,9 @@ mocha -g "TripGo \(South Finland\) leaveAt request response"
 
 You can run the *query* function of *locations* component as follows
 ```
-AWS_PROFILE=maas sls function run locations/query
+AWS_PROFILE=maas sls function run routes-query -s dev
 ```
-Example data from file `locations/query/event.json` is used.
+Example data from file `routes/routes-query/event.json` is used.
 
 Since we'll be doing lots of `sls` commands you may feel the desire to set the
 AWS_PROFILE variable more permanently instead of providing it with each command

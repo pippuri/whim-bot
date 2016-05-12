@@ -1,0 +1,75 @@
+{
+  "name": "profile-activeroute",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
+    }
+  },
+  "endpoints": [
+    {
+      "path": "profile/active-route",
+      "method": "PUT",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {},
+      "requestTemplates": {
+        "application/json": "{\"principalId\":\"$context.authorizer.principalId\",\"timestamp\":$input.json('$.timestamp'),\"active_route\":\"$input.json('$.active_route')\"}"
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+         "^403.*": {
+          "statusCode": "403",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "[^0-9].*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}"
+}

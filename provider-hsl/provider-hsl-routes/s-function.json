@@ -3,7 +3,7 @@
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "provider-hsl-routes/handler.handler",
+  "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
   "custom": {

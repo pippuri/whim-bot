@@ -3,7 +3,7 @@
   "runtime": "nodejs",
   "customName": false,
   "customRole": false,
-  "handler": "autocomplete-query/handler.handler",
+  "handler": "handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "custom": {

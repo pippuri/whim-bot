@@ -5,7 +5,11 @@ var moment = require('moment');
 
 var validator = require('./response_validator');
 
-module.exports = function (lambda) {
+module.exports = function (lambda, options) {
+
+  if (typeof options === typeof undefined) {
+    options = {};
+  }
 
   describe('leaveAt request', function () {
 
@@ -36,8 +40,23 @@ module.exports = function (lambda) {
     });
 
     it('response should have route', function () {
-      expect(response.plan.itineraries.length).to.not.be.empty;
+      expect(response.plan.itineraries).to.not.be.empty;
     });
+
+    if (options.taxiSupport === true) {
+      it('response should have taxi legs', function () {
+        var taxiLegs = [];
+        response.plan.itineraries.forEach(itinerary => {
+          itinerary.legs.forEach(leg => {
+            if (leg.mode === 'TAXI') {
+              taxiLegs.push(leg);
+            }
+
+          });
+        });
+        expect(taxiLegs).to.not.be.empty;
+      });
+    }
 
   });
 };
