@@ -1,0 +1,44 @@
+{
+  "name": "provider-taxi-get",
+  "runtime": "nodejs",
+  "customName": false,
+  "customRole": false,
+  "handler": "provider-taxi-get/handler.handler",
+  "timeout": 30,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
+    }
+  },
+  "endpoints": [
+    {
+      "path": "providers/taxi/get",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "none",
+      "apiKeyRequired": false,
+      "requestParameters": {},
+      "requestTemplates": {
+        "application/json": ""
+      },
+      "responses": {
+        "400": {
+          "statusCode": "400"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {},
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}"
+}

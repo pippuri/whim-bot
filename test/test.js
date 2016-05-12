@@ -27,6 +27,7 @@ describe('MaaS.fi backend', function () {
   require('./routes-providers/test.js');
   require('./geocoding-providers/test.js');
   require('./autocomplete-providers/test.js');
+  require('./taxi-providers/test.js');
   require('./lib/test.js');
 });
 
