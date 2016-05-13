@@ -1,0 +1,9 @@
+{
+  "plainPhone": "465761332",
+  "phoneCountryCode" : "+358",
+  "query" : {
+    "operation": "put",
+    "attribute": "email",
+    "value": "abcs@maas.fi"
+  }
+}

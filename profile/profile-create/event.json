@@ -1,0 +1,22 @@
+{
+  "name": "Luke Skywalker",
+  "email": "Luke@Skywalker.star",
+  "phoneCountryCode": "+358",
+  "plainPhone": "405103121",
+  "profilePicUrl": "http://www.aktifmag.com/wp-content/uploads/2013/02/owls-being-cute-18.jpg",
+  "favLocations": [
+    {
+      "name": "home",
+      "address": "Great Chott salt flat, Tatooine",
+      "lat": "123123",
+      "lon": "231232"
+    }
+  ],
+  "plan": {
+    "name": "Basic",
+    "basePoints": 123,
+    "dateStart": 1462969828,
+    "dateRenew": "4/6/2016"
+  },
+  "balance": "0"
+}

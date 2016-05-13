@@ -9,7 +9,6 @@ var gmocha = require('gulp-mocha');
 // We can not properly use wildcards until https://github.com/slushjs/gulp-install/issues/38 is fixed
 
 // jscs:disable requirePaddingNewLinesAfterBlocks
-
 gulp.task('get-deps-auth-custom-authorizer', function () { return gulp.src('auth/auth-custom-authorizer/package.json').pipe(install());});
 gulp.task('get-deps-auth-me', function () { return gulp.src('auth/auth-me/package.json').pipe(install());});
 gulp.task('get-deps-auth-mqtt', function () { return gulp.src('auth/auth-mqtt/package.json').pipe(install());});
@@ -19,6 +18,10 @@ gulp.task('get-deps-autocomplete-query', function () { return gulp.src('autocomp
 gulp.task('get-deps-geocoding-query', function () { return gulp.src('geocoding/geocoding-query/package.json').pipe(install());});
 gulp.task('get-deps-locations-query', function () { return gulp.src('locations/locations-query/package.json').pipe(install());});
 gulp.task('get-deps-monitor-query', function () { return gulp.src('monitor/monitor-query/package.json').pipe(install());});
+gulp.task('get-deps-profile-create', function () { return gulp.src('profile/profile-create/package.json').pipe(install());});
+gulp.task('get-deps-profile-edit', function () { return gulp.src('profile/profile-edit/package.json').pipe(install());});
+gulp.task('get-deps-profile-history-route', function () { return gulp.src('profile/profile-history-route/package.json').pipe(install());});
+gulp.task('get-deps-profile-info', function () { return gulp.src('profile/profile-info/package.json').pipe(install());});
 gulp.task('get-deps-profile-activeroute', function () { return gulp.src('profile/profile-activeroute/package.json').pipe(install());});
 gulp.task('get-deps-provider-digitransit-routes', function () { return gulp.src('provider-digitransit/provider-digitransit-routes/package.json').pipe(install());});
 gulp.task('get-deps-provider-google-autocomplete', function () { return gulp.src('provider-google/provider-google-autocomplete/package.json').pipe(install());});
@@ -88,4 +91,3 @@ gulp.task('validate', ['jsonlint', 'jshint', 'jscs']);
 gulp.task('test', ['jsonlint', 'jshint', 'jscs', 'mocha']);
 
 gulp.task('default');
-
