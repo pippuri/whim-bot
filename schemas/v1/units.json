@@ -17,6 +17,26 @@
       "type": "number",
       "minimum": -180,
       "maximum": 180
+    },
+    "location": {
+      "type": "object",
+      "lat": {
+        "$ref": "#/definitions/latitude"
+      },
+      "lon": {
+        "$ref": "#/definitions/longitude"
+      }
+    },
+    "shortLocation": {
+      "type": "array",
+      "items": [
+        {
+          "$ref": "#/definitions/latitude"
+        },
+        {
+          "$ref": "#/definitions/longitude"
+        }
+      ]
     }
   }
 }

@@ -44,7 +44,17 @@
           "type": "array",
           "minItems": 0,
           "items": {
-            "$ref": "#/definitions/leg"
+            "anyOf": [
+              {
+                "$ref": "#/definitions/leg"
+              },
+              {
+                "$ref": "#/definitions/waitingLeg"
+              },
+              {
+                "$ref": "#/definitions/transferLeg"
+              }
+            ]
           }
         }
       },
@@ -112,9 +122,60 @@
         "endTime"
       ]
     },
+    "waitingLeg": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "startTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "endTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "WAIT"
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "startTime",
+        "endTime"
+      ]
+    },
+    "transferLeg": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "startTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "endTime": {
+          "$ref": "units.json#/definitions/time"
+        },
+        "mode": {
+          "type": "string",
+          "enum": [
+            "TRANSFER"
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "startTime",
+        "endTime"
+      ]
+    },
     "place": {
       "type": "object",
       "additionalProperties": true,
+      "allOf": [
+        {
+          "$ref": "units.json#/definitions/location"
+        }
+      ],
       "properties": {
         "name": {
           "type": "string"
@@ -124,17 +185,11 @@
         },
         "stopCode": {
           "type": "string"
-        },
-        "lat": {
-          "$ref": "units.json#/definitions/latitude"
-        },
-        "lon": {
-          "$ref": "units.json#/definitions/longitude"
         }
       },
       "required": [
-        "lon",
-        "lat"
+        "lat",
+        "lon"
       ]
     },
     "legGeometry": {
@@ -167,7 +222,8 @@
         "TRANSIT",
         "TRAINISH",
         "BUSISH",
-        "LEG_SWITCH"
+        "LEG_SWITCH",
+        "TAXI"
       ]
     }
   }

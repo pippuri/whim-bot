@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.maas.global/v1/units",
+  "description": "MaaS Common units",
+  "definitions": {
+    "arn": {
+      "type": "string",
+      "pattern": "^arn:aws:[a-z]+:[\\w\\-]*:\\d{12}:[ \\w\\-]+(\\/[\\w\\- \\/]+)*"
+    },
+    "cognitoPrincipalId": {
+      "type": "string",
+      "pattern": "^[\\w\\-]+:\\d{8}-[A-z]{4}-[A-z]{4}-[A-z]{4}-\\d{12}$"
+    }
+  }
+}
