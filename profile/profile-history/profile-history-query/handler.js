@@ -1,7 +1,10 @@
-'use strict';
+// Require Logic
+var lib = require('./index');
 
-module.exports.handler = function(event, context, cb) {
-  return cb(null, {
-    message: 'Go Serverless! Your Lambda function executed successfully!'
+// Lambda Handler
+module.exports.handler = function (event, context) {
+
+  lib.respond(event, function (error, response) {
+    return context.done(error, response);
   });
 };
