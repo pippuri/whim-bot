@@ -1,7 +1,6 @@
 {
-  "name": "profile-history-route",
+  "name": "profile-history-add-route",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -17,8 +16,8 @@
   },
   "endpoints": [
     {
-      "path": "profile/history-route",
-      "method": "GET",
+      "path": "profile/history/route",
+      "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
@@ -72,9 +71,5 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}",
-  "vpc": {
-    "securityGroupIds": [],
-    "subnetIds": []
-  }
+  "environment": "$${environment}"
 }

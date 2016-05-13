@@ -34,6 +34,20 @@
             {
               "Effect": "Allow",
               "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-profile-dev"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-route-history-dev"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -145,6 +159,68 @@
             "Ref": "IamRoleCustomAuthorizer"
           }
         ]
+      }
+    },
+    "DynamoUserProfile": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "Name",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "Name",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-profile-dev"
+      }
+    },
+    "DynamoUserRouteHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "TimeEpoch",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "TimeEpoch",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-route-history-dev"
       }
     }
   },

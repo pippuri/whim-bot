@@ -1,6 +1,6 @@
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../lib/adapter');
+var lib = require('../../lib/adapter');
 var moment = require('moment');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
