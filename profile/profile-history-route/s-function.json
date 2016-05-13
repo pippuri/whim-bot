@@ -4,7 +4,7 @@
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
-  "handler": "profile-history-route/handler.handler",
+  "handler": "handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "authorizer": {},
