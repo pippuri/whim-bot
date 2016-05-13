@@ -20,7 +20,11 @@ class RoutesController {
 
   findRoute(from, to) {
     this.directUrl = this.API_BASE_URL + '/routes?from=' + from + '&to=' + to + '&provider=' + this.provider;
-    this.$http.get(this.directUrl)
+    this.$http.get(this.directUrl, {
+      headers: {
+        Authorization: 'Bearer ' + this.$localStorage.idToken
+      }
+    })
     .then((response) => {
       this.routes = response.data;
       if (this.routes && this.routes.plan && this.routes.plan.itineraries) {
