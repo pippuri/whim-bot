@@ -3,7 +3,7 @@
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
-  "handler": "profile-edit/handler.handler",
+  "handler": "handler.handler",
   "timeout": 6,
   "memorySize": 1024,
   "authorizer": {},
