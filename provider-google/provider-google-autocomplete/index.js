@@ -59,7 +59,9 @@ function adapt(input) {
   .then(function (suggestions) {
     return {
       suggestions: suggestions,
-      query: query,
+      maas: {
+        query: query,
+      },
     };
   });
 }

@@ -2,7 +2,8 @@ var chai = require('chai');
 var expect = chai.expect;
 var wrap = require('lambda-wrapper').wrap;
 
-var validator = require('./response_validator');
+var validator = require('../../lib/validator');
+var schema = require('../../autocomplete/autocomplete-query/response-schema.json');
 
 module.exports = function (lambda) {
 
@@ -33,16 +34,10 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', function () {
-      var validationError = validator(response);
-      try {
-        expect(validationError).to.be.null;
-      } catch (e) { // TODO: Fix bugs and remove catch
-        if (e instanceof chai.AssertionError) {
-          this.skip();
-        }
-      }
+      validator.validate(response, schema)
+        .then(function (validationError) {
+          expect(validationError).to.be.null;
+        });
     });
-
   });
-
 };
