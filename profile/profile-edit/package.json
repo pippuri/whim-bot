@@ -2,7 +2,7 @@
   "name": "",
   "version": "0.0.1",
   "description": "Serverless module dependencies",
-  "author": "Musie Kebede, James Nguyen",
+  "author": "James Nguyen",
   "license": "MIT",
   "private": true,
   "repository": {

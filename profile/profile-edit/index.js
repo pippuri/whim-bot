@@ -119,7 +119,7 @@ function updateUserData(phoneNumber, options) {
  * Export respond to Handler
  */
 module.exports.respond = function (event, callback) {
-  return updateUserData('' + event.phoneCountryCode + event.plainPhone, event.query)
+  return updateUserData(event.phoneCountryCode + event.plainPhone, event.query)
     .then((response) => {
       callback(null, response);
     })

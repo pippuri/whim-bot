@@ -9,7 +9,7 @@ var cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION }
 Promise.promisifyAll(cognitoIdentity);
 
 /**
- * Check phoneNumber validity
+ * Check phoneNumber validity with Twilio
  */
 function checkPhoneNumber(phoneNumber) {
   var promise = new Promise(function (resolve, reject) {
@@ -27,6 +27,7 @@ function checkPhoneNumber(phoneNumber) {
 
 /**
  * Get/Create Cognito IdentityId
+ * TODO give IAM role for identity creation
  */
 function getCognitoDeveloperIdentity(phoneNumber) {
   return checkPhoneNumber(phoneNumber)

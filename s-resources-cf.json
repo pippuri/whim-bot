@@ -27,10 +27,24 @@
     "IamPolicyLambda": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "${stage}-${project}-lambda",
+        "PolicyName": "dev-MaaS-lambda",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-profile-${stage}"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-route-history-${stage}"
+            },
             {
               "Effect": "Allow",
               "Action": [
@@ -118,7 +132,7 @@
     "IamPolicyCustomAuthorizer": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "${stage}-${project}-customauthorizer",
+        "PolicyName": "dev-MaaS-customauthorizer",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -145,6 +159,68 @@
             "Ref": "IamRoleCustomAuthorizer"
           }
         ]
+      }
+    },
+    "DynamoUserProfile": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "Name",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "Name",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "${project}-user-profile-${stage}"
+      }
+    },
+    "DynamoUserRouteHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "TimeEpoch",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "TimeEpoch",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "${project}-user-route-history-${stage}"
       }
     }
   },
