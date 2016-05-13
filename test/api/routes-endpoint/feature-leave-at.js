@@ -3,7 +3,8 @@ var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
 
-var validator = require('./response_validator');
+var validator = require('../../../lib/validator');
+var schema = require('../../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda, options) {
 
@@ -38,8 +39,10 @@ module.exports = function (lambda, options) {
     });
 
     it('should trigger a valid response', function () {
-      var validationError = validator(response);
-      expect(validationError).to.be.null;
+      return validator.validate(response, schema)
+        .then((validationError) => {
+          expect(validationError).to.be.null;
+        });
     });
 
     it('response should have route', function () {
