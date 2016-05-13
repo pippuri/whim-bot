@@ -12,7 +12,7 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "ajv": "^3.8.7",
+    "ajv": "^4.0.5",
     "bluebird": "^3.3.4"
   }
 }

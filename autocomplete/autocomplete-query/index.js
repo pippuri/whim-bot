@@ -1,12 +1,13 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 var ajvFactory = require('ajv');
+var validator = require('../../lib/validator');
 
 // Input schema
-var schema = require('./schema.json');
-var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
-var validate;
+var schema = require('./request-schema.json');
+var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
+var ajv;
 
 // Initialization work
 (function init() {
@@ -14,7 +15,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
-  var ajv = ajvFactory({ inject: true, coerceTypes: true });
+  ajv = ajvFactory({ inject: true, coerceTypes: true });
 
   // Add a new handler
   ajv.addKeyword('inject', {
@@ -32,9 +33,6 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
       };
     },
   });
-
-  // Compile schema
-  validate = ajv.compile(schema);
 
   // Promisify Lambda helpers
   var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
@@ -75,16 +73,19 @@ function delegate(event) {
 module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
-  new Promise(function (resolve, reject) {
+  return validator.dereference(schema)
+    .then((dereferenced) => {
+      // Compile schema
+      var validate = ajv.compile(dereferenced);
       var valid = validate(event.query);
       console.log('Validation done', event.query);
 
       if (!valid) {
         console.log('errors', event.query, validate.errors);
-        return reject(new Error(JSON.stringify(validate.errors)));
+        return Promise.reject(new Error(JSON.stringify(validate.errors)));
       }
 
-      return resolve(valid);
+      return Promise.resolve(valid);
     })
     .then(function valid() {
       return delegate(event.query);
