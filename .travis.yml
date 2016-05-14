@@ -2,5 +2,5 @@ language: node_js
 node_js:
 - "4.2"
 before_script:
-- gulp get-deps
+- sls function autoinstall -a
 script: npm test
