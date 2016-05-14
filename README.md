@@ -93,7 +93,7 @@ AWS_PROFILE=maas sls meta sync -s prod
 ```
 Select "Apply these changes to the local version" at the prompt.
 ```
-gulp get-deps
+sls function autoinstall -a # Installs module dependencies to lambdas
 ```
 
 ### Running Tests
@@ -138,7 +138,7 @@ with the branch.
 ```
 git checkout master
 git pull upstream master
-gulp get-deps
+sls function autoinstall -a
 git checkout -b <local_branch_name>
 ```
 
@@ -160,7 +160,7 @@ Use imperative in commit messages. This makes them short. For example
 ```
 git checkout master
 git pull upstream master
-gulp get-deps
+sls function autoinstall -a
 git checkout <your_branch>
 git rebase master
 git push origin <your_branch> -f
@@ -186,7 +186,7 @@ git reset --hard HEAD^
 ...
 git reset --hard HEAD^
 git pull upstream master
-gulp get-deps
+sls function autoinstall -a
 ```
 
 Note that you need to call `git reset --hard HEAD^` once for each local commit.
