@@ -1,4 +1,4 @@
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('../../../lib/hacks/maas-request-promise');
 
 // Create random routes within this area
 var area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
