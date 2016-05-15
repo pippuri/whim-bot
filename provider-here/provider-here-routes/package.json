@@ -12,6 +12,7 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4"
+    "bluebird": "^3.3.4",
+    "request-promise-lite": "^0.3.0"
   }
 }

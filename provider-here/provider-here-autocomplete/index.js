@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var util = require('util');
 
 var ENDPOINT_URL = 'https://places.demo.api.here.com/places/v1/suggest';

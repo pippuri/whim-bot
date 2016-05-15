@@ -15,7 +15,7 @@
     "bluebird": "^3.3.4",
     "fs": "0.0.2",
     "path": "^0.12.7",
-    "request-promise": "^2.0.1",
+    "request-promise-lite": "^0.3.0",
     "serverless-helpers-js": "~0.1.0",
     "ssl-root-cas": "^1.1.10"
   }
