@@ -4,6 +4,7 @@ var jsonlint = require('gulp-jsonlint');
 var jshint = require('gulp-jshint');
 var jscs = require('gulp-jscs');
 var gmocha = require('gulp-mocha');
+var gulpSequence = require('gulp-sequence');
 
 gulp.task('jsonlint', function () {
   return gulp.src(['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'])
@@ -33,6 +34,6 @@ gulp.task('mocha', function () {
 
 gulp.task('validate', ['jsonlint', 'jshint', 'jscs']);
 
-gulp.task('test', ['jsonlint', 'jshint', 'jscs', 'mocha']);
+gulp.task('test', gulpSequence('validate', 'mocha'));
 
 gulp.task('default');
