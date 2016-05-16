@@ -7,11 +7,13 @@ var nextStartTime = 0;
 var nextEndTime = 0;
 var constructTo = [];
 
+/*
 function convertMode(data) {
 
   //strip out html tag from instruction
   return (data.instruction).replace(/(<([^>]+)>)/ig, '');
 }
+*/
 
 function convertFrom(from) {
   return {
@@ -113,7 +115,18 @@ function legGeometry(data) {
   };
 }
 
-function convertLeg(leg, data, route, startTime) {
+function convertLegType(legType) {
+  if (legType === 'railLight') {
+    return 'RAIL';
+  } else if (legType === 'busLight') {
+    return 'BUS';
+  } else if (legType === 'busPublic') {
+    return 'BUS';
+  }
+}
+
+function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Transport Line; LGT: LegType.
+  var LegType = '';
   nextStartTime = (nextEndTime === 0 ? nextEndTime + startTime : nextEndTime);
   nextEndTime = nextStartTime + (data.travelTime * 1000);
 
@@ -123,20 +136,25 @@ function convertLeg(leg, data, route, startTime) {
     if (i === leg.maneuver.length - 1) {
       constructTo.push(leg.maneuver[i].position);
     }
+  }
 
+  if (LGT === '' || LGT === 'WALK') {
+    LegType = 'WALK';
+  } else {
+    LegType = convertLegType(LGT);
   }
 
   return {
     startTime: nextStartTime,
     endTime: nextEndTime,
-    mode: convertMode(data),
+    mode: LegType,
     from: convertFrom(data),
     to: convertTo(data),
     legGeometry: legGeometry(data),
-    route: undefined,
-    routeShortName: undefined,
-    routeLongName: undefined,
-    agencyId: undefined,
+    route: PTL,
+    routeShortName: '',
+    routeLongName: '',
+    agencyId: '',
   };
 }
 
@@ -144,9 +162,22 @@ function convertItinerary(route) {
   var startTime = new Date(route.summary.departure);
   var result = [];
   var res = '';
+  var tempRoute = 0;
+  var PTL = '';
+  var tempType = '';
   route.leg.map(function (leg) {
     leg.maneuver.forEach(function (data, index) {
-      result.push(convertLeg(leg, data, route, startTime.getTime()));
+      if (data._type === 'PublicTransportManeuverType') {
+        tempRoute < route.publicTransportLine.length ? PTL = route.publicTransportLine[tempRoute].lineName : PTL = '';
+        tempRoute < route.publicTransportLine.length ? tempType = route.publicTransportLine[tempRoute].type : tempType = '';
+        tempRoute++;
+      } else if (data._type === 'PrivateTransportManeuverType') {
+        tempType = 'WALK';
+      } else {
+        tempType = '';
+      }
+
+      result.push(convertLeg(leg, data, route, startTime.getTime(), PTL, tempType));
     });
 
     res = result;

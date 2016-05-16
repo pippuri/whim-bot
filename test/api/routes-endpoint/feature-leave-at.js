@@ -19,7 +19,7 @@ module.exports = function (lambda, options) {
       provider: '',
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
-      leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
       arriveBy: '',
     };
 

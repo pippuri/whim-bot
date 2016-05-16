@@ -14,7 +14,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     waypoint1: 'geo!' + to,
     mode: 'fastest;publicTransport',
     combineChange: 'true',
-    maneuverAttributes: 'shape,roadName,nextRoadName',
+    maneuverAttributes: 'shape,roadName,nextRoadName,publicTransportLine',
   };
 
   if (leaveAt && arriveBy) {
