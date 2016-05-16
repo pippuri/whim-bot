@@ -1,11 +1,11 @@
 
-var testUnknownPlan = require('./error-unknown-plan.js');
-var testGetPolicy = require('./feature-get-policy.js');
+var testUnknownTransformation = require('./error-unknown-transformation.js');
+var testGetRoutes = require('./feature-get-routes.js');
 
 describe('business rule engine', function () {
 
-  var store = require('../../../lib/business-rule-engine/index.js');
-  testUnknownPlan(store);
-  testGetPolicy(store);
+  var engine = require('../../../lib/business-rule-engine/index.js');
+  testUnknownTransformation(engine);
+  testGetRoutes(engine);
 
 });
