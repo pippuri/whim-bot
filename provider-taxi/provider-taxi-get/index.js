@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('request-promise');
+var request = require('request-promise-lite');
 var ec = require('../lib/ec');
 
 function getOrder(orderId) {

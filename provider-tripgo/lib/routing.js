@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var adapter = require('./adapter');
 
 var TRIPGO_PUBLIC_MODES = [

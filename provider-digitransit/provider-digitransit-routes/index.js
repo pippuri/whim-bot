@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var adapter = require('./adapter');
 
 var DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';

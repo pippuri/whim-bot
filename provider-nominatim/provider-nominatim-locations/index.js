@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var util = require('util');
 
 var ENDPOINT_URL = 'http://nominatim.openstreetmap.org/search';
