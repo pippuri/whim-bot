@@ -46,7 +46,6 @@ function getCognitoDeveloperIdentity(phoneNumber) {
     .then(function (response) {
       return {
         identityId: response.IdentityId,
-        // token: response.token,
       };
     });
 }
