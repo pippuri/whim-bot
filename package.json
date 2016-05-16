@@ -32,7 +32,7 @@
     "request-promise-lite": "^0.3.0",
     "serverless-cors-plugin": "^0.4.1",
     "serverless-meta-sync": "^0.1.0",
-    "serverless-plugin-autoinstall": "^0.5.2",
+    "serverless-plugin-autoinstall": "^0.5.3",
     "serverless-plugin-autoprune": "^0.5.3",
     "serverless-plugin-revision": "^0.5.6",
     "serverless-plugin-swagger-export": "^0.5.0",
