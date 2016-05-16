@@ -1,4 +1,4 @@
-var request = require('../../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 
 function findLeg(legs, legId) {
   var foundLeg;

@@ -1,6 +1,6 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
-var request = require('../../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var routeRandomizer = require('./route-randomizer');
 var routeNavigator = require('./route-navigator');
 
