@@ -1,4 +1,4 @@
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var proj4 = require('proj4');
 var adapter = require('./adapter');
 
