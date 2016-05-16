@@ -14,6 +14,10 @@ Promise.promisifyAll(docClient);
  */
 function getSingleUserData(phoneNumber) {
 
+  if (phoneNumber === undefined || phoneNumber === '') {
+    return Promise.reject(new Error('No input phone'));
+  }
+
   return lib.getCognitoDeveloperIdentity(phoneNumber)
     .then((response) => {
       var params = {

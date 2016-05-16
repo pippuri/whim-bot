@@ -13,6 +13,8 @@ Promise.promisifyAll(docClient);
 function saveRoute(event) {
   if (event.route === undefined) {
     return Promise.reject(new Error('No input route'));
+  } else if (event.plainPhone === undefined || event.phoneCountryCode === undefined) {
+    return Promise.reject(new Error('No input phone'));
   }
 
   return lib.getCognitoDeveloperIdentity(event.phoneCountryCode + event.plainPhone)

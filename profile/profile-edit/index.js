@@ -104,6 +104,11 @@ function writeParams(input, identityId) {
  */
 function updateUserData(phoneNumber, options) {
   var parsedParams; // Params parsed from options
+
+  if (phoneNumber === undefined || phoneNumber === undefined) {
+    return Promise.reject(new Error('No input phone'));
+  }
+
   return parseOptions(options)
     .then((response) => {
       parsedParams = response;
