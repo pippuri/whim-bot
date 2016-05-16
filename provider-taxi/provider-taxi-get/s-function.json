@@ -1,6 +1,6 @@
 {
   "name": "provider-taxi-get",
-  "runtime": "nodejs",
+  "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
