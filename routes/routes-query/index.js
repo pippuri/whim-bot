@@ -1,7 +1,5 @@
 var crypto = require('crypto');
-var contextStore = require('../../lib/context-store/store.js');
 var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
-var serviceBus = require('../../lib/service-bus/index.js');
 
 // Generate a unique route identifier by hashing the JSON
 function generateRouteId(itinerary) {
@@ -62,14 +60,27 @@ function filterPastRoutes(leaveAt, response) {
 }
 
 function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
+
   var options = {};
   if (typeof provider !== typeof undefined && provider !== '') {
     options.provider = provider;
   }
 
-  return contextStore.get(principalId)
-  .then((context) => businessRuleEngine.get(context.activePlans))
-  .then((policy) => serviceBus.getRoutes(from, to, leaveAt, arriveBy, options))
+  var event = {
+    from: from,
+    to: to,
+    leaveAt: leaveAt,
+    arriveBy: arriveBy,
+  };
+
+  return businessRuleEngine.call(
+    {
+      rule: 'get-routes',
+      userId: principalId,
+      parameters: event,
+    },
+    options
+  )
   .then((response) => addRouteAndLegIdentifiersToResponse(response))
   .then(response => filterPastRoutes(leaveAt, response));
 }
