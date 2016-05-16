@@ -16,11 +16,37 @@ module.exports = function (engine) {
     };
 
     var calls = [];
+    var response;
+
     var serviceBusDummy = {
       call: (serviceName) => new Promise((resolve, reject) => {
         calls.push(serviceName);
         if (serviceName === 'MaaS-database-context-get') {
           return resolve({ activePlans: ['plan1', 'plan2'] });
+        }
+
+        if (serviceName === 'MaaS-provider-tripgo-routes-southfinland') {
+          return resolve({
+            plan: {
+              itineraries: [
+                {
+                  legs: [
+                    {
+                      from: {
+                        lat: 60.1684126,
+                        lon: 24.9316739,
+                      },
+                      to: {
+                        lat: 60.170779,
+                        lon: 24.7721584,
+                      },
+                      mode: 'BUS',
+                    },
+                  ],
+                },
+              ],
+            },
+          });
         }
 
         return resolve();
@@ -39,11 +65,28 @@ module.exports = function (engine) {
 
     before(function (done) {
       engine.call(ruleObject, options)
-      .then(() => {done();});
+      .then(data => {
+        response = data;
+        done();
+      });
     });
 
     it('should call context and routes service', function () {
       expect(calls).to.deep.equal(['MaaS-database-context-get', 'MaaS-provider-tripgo-routes-southfinland']);
+    });
+
+    it('should return routes annotated with co2 cost for each leg', function () {
+      var legsWithoutCo2Cost = [];
+      response.plan.itineraries.forEach(itinerary => {
+        itinerary.legs.forEach(leg => {
+          if (leg.hasOwnProperty('fare') && leg.fare.hasOwnProperty('co2') && typeof leg.fare.co2 === typeof 123) {
+            // no problem
+          } else {
+            legsWithoutCo2Cost.push(leg);
+          }
+        });
+      });
+      expect(legsWithoutCo2Cost).to.be.empty;
     });
 
   });
