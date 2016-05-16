@@ -1,4 +1,4 @@
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 
 var TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
 

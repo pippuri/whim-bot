@@ -1,4 +1,4 @@
-var request = require('request-promise');
+var request = require('request-promise-lite');
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 function validateOrder(order) {
@@ -23,8 +23,8 @@ function validateOrder(order) {
     .catch(function (err) {
       return {
         validated: false,
-        code: err.error.code,
-        cause: err.error.localized_description,
+        code: err.response.body.code,
+        cause: err.response.body.localized_description,
       };
     });
 

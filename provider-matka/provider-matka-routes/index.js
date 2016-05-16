@@ -1,5 +1,5 @@
 var Promise = require('bluebird');
-var request = require('../../lib/hacks/maas-request-promise');
+var request = require('request-promise-lite');
 var proj4 = require('proj4');
 var xml2js = require('xml2js');
 var adapter = require('./adapter');
