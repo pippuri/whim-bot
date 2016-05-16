@@ -48,6 +48,13 @@
             {
               "Effect": "Allow",
               "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-dev"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -213,6 +220,37 @@
           "WriteCapacityUnits": 5
         },
         "TableName": "MaaS-user-route-history-dev"
+      }
+    },
+    "DynamoUserTransactionHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "TransactionId",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "TransactionId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-transaction-history-dev"
       }
     }
   },

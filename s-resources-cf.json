@@ -234,10 +234,6 @@
           {
             "AttributeName": "TransactionId",
             "AttributeType": "N"
-          },
-          {
-            "AttributeName": "TimeEpoch",
-            "AttributeType": "N"
           }
         ],
         "KeySchema": [
