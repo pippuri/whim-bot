@@ -54,7 +54,6 @@
     "json": "^9.0.3",
     "json-loader": "^0.5.4",
     "lambda-wrapper": "0.0.5",
-    "moment": "^2.12.0",
     "serverless": "^0.5.5",
     "serverless-webpack-plugin": "^0.4.3",
     "webpack": "1 || ^2.1.0-beta"

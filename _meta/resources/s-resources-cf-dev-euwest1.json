@@ -169,20 +169,12 @@
           {
             "AttributeName": "IdentityId",
             "AttributeType": "S"
-          },
-          {
-            "AttributeName": "Name",
-            "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
             "AttributeName": "IdentityId",
             "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "Name",
-            "KeyType": "RANGE"
           }
         ],
         "ProvisionedThroughput": {
