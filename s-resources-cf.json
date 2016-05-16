@@ -48,6 +48,13 @@
             {
               "Effect": "Allow",
               "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-transaction-history-${stage}"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -213,6 +220,41 @@
           "WriteCapacityUnits": 5
         },
         "TableName": "${project}-user-route-history-${stage}"
+      }
+    },
+    "DynamoUserTransactionHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "IdentityId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "TransactionId",
+            "AttributeType": "N"
+          },
+          {
+            "AttributeName": "TimeEpoch",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "IdentityId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "TransactionId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "${project}-user-transaction-history-${stage}"
       }
     }
   },

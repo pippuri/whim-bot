@@ -1,6 +1,6 @@
 {
   "region": "eu-west-1",
   "resourcesStackName": "MaaS-dev-r",
-  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/MaaS-dev-r-IamRoleLambda-M9XHZE09V1VZ",
+  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/MaaS-dev-r-IamRoleLambda-9E7RGUWPHQ1O",
   "apiGatewayApi": "MaaS"
 }

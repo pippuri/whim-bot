@@ -12,8 +12,9 @@ Promise.promisifyAll(docClient);
  */
 function persistUserData(payload) {
   if (!payload) {
-    var error = new Error('Invalid profile data');
-    return Promise.reject(error);
+    return Promise.reject(new Error('Input missing'));
+  } else if (payload.phoneCountryCode === undefined || payload.plainPhone === undefined) {
+    return Promise.reject(new Error('Input missing phone number'));
   }
 
   return lib.getCognitoDeveloperIdentity(payload.phoneCountryCode + payload.plainPhone)

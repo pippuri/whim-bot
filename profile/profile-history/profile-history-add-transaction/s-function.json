@@ -1,5 +1,5 @@
 {
-  "name": "profile-info",
+  "name": "profile-history-add-transaction",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -8,26 +8,19 @@
   "memorySize": 1024,
   "authorizer": {},
   "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
-    }
+    "excludePatterns": []
   },
   "endpoints": [
     {
-      "path": "profile/",
-      "method": "PUT",
+      "path": "profile/history/transation",
+      "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.querystring.phoneCountryCode": "method.request.querystring.phoneCountryCode",
-        "integration.request.querystring.plainPhone": "method.request.querystring.plainPhone"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"phoneCountryCode\": \"$input.phoneCountryCode\",\"plainPhone\": \"$input.plainPhone\"}"
+        "application/json": ""
       },
       "responses": {
         "^400.*": {
@@ -73,6 +66,5 @@
       }
     }
   ],
-  "events": [],
   "environment": "$${environment}"
 }

@@ -33,7 +33,7 @@ function getCognitoDeveloperIdentity(phoneNumber) {
   return checkPhoneNumber(phoneNumber)
     .then((response) => {
       var logins = {};
-      logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + phoneNumber;
+      logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + response.phoneNumber;
       var options = {
         IdentityPoolId: process.env.COGNITO_POOL_ID,
         Logins: logins,
@@ -49,6 +49,8 @@ function getCognitoDeveloperIdentity(phoneNumber) {
       };
     });
 }
+
+// TODO check dynamo document existence
 
 module.exports = {
   checkPhoneNumber: checkPhoneNumber,

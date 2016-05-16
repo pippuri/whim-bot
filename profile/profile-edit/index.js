@@ -2,7 +2,7 @@
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../lib/adapter');
-var _ = require('lodash');
+var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -42,7 +42,7 @@ function parseOptions(params) {
     return Promise.reject('Empty value!');
   }
 
-  if (params.operation === allowedOperation[0]) { // if operation is ADD or DELETE
+  if (params.operation === allowedOperation[0] || params.operation === allowedOperation[2]) { // if operation is ADD or DELETE
     if (!_.isArray(params.value)) { // If value is not an array, make it array
       var tmp = [];
       tmp.push(params.value);
