@@ -1,5 +1,6 @@
 {
-  "phoneCountryCode": "+358",
-  "plainPhone": "465761333",
-  "route": "_p~iF~ps|U_ulLnnqC_mqNvxq`@"
+  "userId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "payload": {
+    "route": "_p~iF~ps|U_ulLnnqC_mqNvxq`@"
+  }
 }

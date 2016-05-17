@@ -1,5 +1,6 @@
 {
-  "plainPhone": "465761333",
-  "phoneCountryCode": "+358",
-  "transactionId": 12
+  "userId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "payload": {
+    "transactionId": 12
+  }
 }

@@ -1,9 +1,6 @@
 {
-  "plainPhone": "465761332",
-  "phoneCountryCode" : "+358",
-  "query" : {
-    "operation": "put",
-    "attribute": "email",
-    "value": "abcs@maas.fi"
+  "userId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "payload" : {
+    "email": "weeeeeee@gmail.com"
   }
 }

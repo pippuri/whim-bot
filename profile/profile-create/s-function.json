@@ -15,7 +15,7 @@
   },
   "endpoints": [
     {
-      "path": "profile/",
+      "path": "profile",
       "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
@@ -23,7 +23,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"userId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
       },
       "responses": {
         "^400.*": {

@@ -12,7 +12,7 @@
   },
   "endpoints": [
     {
-      "path": "profile/",
+      "path": "profile",
       "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",

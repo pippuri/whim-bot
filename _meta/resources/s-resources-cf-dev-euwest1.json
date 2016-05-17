@@ -170,7 +170,6 @@
     },
     "DynamoUserProfile": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -193,7 +192,6 @@
     },
     "DynamoUserRouteHistory": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -224,7 +222,6 @@
     },
     "DynamoUserTransactionHistory": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AttributeDefinitions": [
           {

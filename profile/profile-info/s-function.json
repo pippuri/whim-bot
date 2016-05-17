@@ -16,18 +16,15 @@
   },
   "endpoints": [
     {
-      "path": "profile/",
-      "method": "PUT",
+      "path": "profile",
+      "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.querystring.phoneCountryCode": "method.request.querystring.phoneCountryCode",
-        "integration.request.querystring.plainPhone": "method.request.querystring.plainPhone"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"phoneCountryCode\": \"$input.phoneCountryCode\",\"plainPhone\": \"$input.plainPhone\"}"
+        "application/json": "{\"userId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {

@@ -11,26 +11,30 @@ Promise.promisifyAll(docClient);
  * Save route and time start of route onto DyanomoDB
  */
 function saveRoute(event) {
-  if (event.route === undefined) {
+  if (typeof event.payload.route === typeof undefined) {
     return Promise.reject(new Error('No input route'));
-  } else if (event.plainPhone === undefined || event.phoneCountryCode === undefined) {
-    return Promise.reject(new Error('No input phone'));
+  } else if (event.hasOwnProperty('userId')) {
+    return Promise.reject(new Error('Missing userId'));
   }
 
-  return lib.getCognitoDeveloperIdentity(event.phoneCountryCode + event.plainPhone)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
     .then((response) => {
-      var item = {
-        IdentityId: response.identityId,
-        TimeEpoch: moment().unix(),
-        route: event.route,
-      };
-      var params = {
-        TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
-        Item: item,
-        ReturnValues: 'ALL_OLD',
-        ReturnConsumedCapacity: 'TOTAL',
-      };
-      return docClient.putAsync(params);
+      if (response === false) { // False if existed
+        var item = {
+          userId: event.userId,
+          timeEpoch: moment().unix(),
+          route: event.payload.route,
+        };
+        var params = {
+          TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
+          Item: item,
+          ReturnValues: 'ALL_NEW',
+          ReturnConsumedCapacity: 'TOTAL',
+        };
+        return docClient.putAsync(params);
+      } else if (response === true) {
+        return Promise.reject(new Error('User not existed'));
+      }
     });
 }
 

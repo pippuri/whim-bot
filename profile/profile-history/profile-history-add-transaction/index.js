@@ -11,32 +11,30 @@ Promise.promisifyAll(docClient);
  * Save route and time start of route onto DyanomoDB
  */
 function saveTransaction(event) {
-  if (event.transactionId === undefined) {
+  if (typeof event.transactionId === typeof undefined) {
     return Promise.reject(new Error('No input transaction'));
-  } else if (event.plainPhone === undefined || event.phoneCountryCode === undefined) {
-    return Promise.reject(new Error('No input phone'));
+  } else if (event.hasOwnProperty('userId')) {
+    return Promise.reject(new Error('Missing userId'));
   }
 
-  return lib.getCognitoDeveloperIdentity(event.phoneCountryCode + event.plainPhone)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
     .then((response) => {
-      var item = {
-        IdentityId: response.identityId,
-        TimeEpoch: moment().unix(),
-        TransactionId: event.transactionId,
-      };
-
-      if (event.description) {
-        item.description = event.description;
+      if (response === false) { // False if existed
+        var item = {
+          userId: event.userId,
+          timeEpoch: moment().unix(),
+          transactionId: event.payload.transactionId,
+        };
+        var params = {
+          TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
+          Item: item,
+          ReturnValues: 'ALL_NEW',
+          ReturnConsumedCapacity: 'TOTAL',
+        };
+        return docClient.putAsync(params);
+      } else if (response === true) {
+        return Promise.reject(new Error('User not existed'));
       }
-
-      var params = {
-        TableName: process.env.DYNAMO_USER_TRANSACTION_HISTORY,
-        Item: item,
-        ReturnValues: 'ALL_OLD',
-        ReturnConsumedCapacity: 'TOTAL',
-      };
-
-      return docClient.putAsync(params);
     });
 }
 
