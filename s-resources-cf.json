@@ -43,7 +43,7 @@
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-route-history-${stage}"
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-travel-log-${stage}"
             },
             {
               "Effect": "Allow",
@@ -174,13 +174,13 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           }
         ],
@@ -197,21 +197,21 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "AttributeType": "N"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "KeyType": "RANGE"
           }
         ],
@@ -219,7 +219,7 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "${project}-user-route-history-${stage}"
+        "TableName": "${project}-user-travel-log-${stage}"
       }
     },
     "DynamoUserTransactionHistory": {
@@ -228,21 +228,21 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "TransactionId",
+            "AttributeName": "transactionId",
             "AttributeType": "N"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "TransactionId",
+            "AttributeName": "transactionId",
             "KeyType": "RANGE"
           }
         ],
