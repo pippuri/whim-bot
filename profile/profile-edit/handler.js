@@ -1,5 +1,5 @@
 // Require Logic
-var lib = require('./index2');
+var lib = require('./index');
 
 // Lambda Handler
 module.exports.handler = function (event, context) {
