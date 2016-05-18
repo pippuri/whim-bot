@@ -75,18 +75,18 @@ module.exports = function (engine) {
       expect(calls).to.deep.equal(['MaaS-database-context-get', 'MaaS-provider-tripgo-routes-southfinland']);
     });
 
-    it('should return routes annotated with co2 cost for each leg', function () {
-      var legsWithoutCo2Cost = [];
-      response.plan.itineraries.forEach(itinerary => {
-        itinerary.legs.forEach(leg => {
-          if (leg.hasOwnProperty('fare') && leg.fare.hasOwnProperty('co2') && typeof leg.fare.co2 === typeof 123) {
-            // no problem
-          } else {
-            legsWithoutCo2Cost.push(leg);
-          }
-        });
-      });
-      expect(legsWithoutCo2Cost).to.be.empty;
+    it('should return routes annotated with co2 cost for each itinerary', function () {
+      var itinerariesWithoutCo2Cost = [];
+      for (var itinerary of response.plan.itineraries) {
+        if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('co2') && typeof itinerary.fare.co2 === typeof 123) {
+          // no problem
+        } else {
+          itinerariesWithoutCo2Cost.push(itinerary);
+        }
+
+      }
+
+      expect(itinerariesWithoutCo2Cost).to.be.empty;
     });
 
   });
