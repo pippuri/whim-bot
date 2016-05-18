@@ -75,5 +75,19 @@ module.exports = function (lambda, options) {
       expect(taxiLegs).to.not.be.empty;
     });
 
+    it('response legs should contain co2 cost', function () {
+      var legsWithoutCo2Cost = [];
+      response.plan.itineraries.forEach(itinerary => {
+        itinerary.legs.forEach(leg => {
+          if (leg.hasOwnProperty('fare') && leg.fare.hasOwnProperty('co2') && typeof leg.fare.co2 === typeof 123) {
+            // no problem
+          } else {
+            legsWithoutCo2Cost.push(leg);
+          }
+        });
+      });
+      expect(legsWithoutCo2Cost).to.be.empty;
+    });
+
   });
 };
