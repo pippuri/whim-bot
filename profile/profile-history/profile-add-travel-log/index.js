@@ -11,9 +11,13 @@ Promise.promisifyAll(docClient);
  * Save route and time start of route onto DyanomoDB
  */
 function saveRoute(event) {
-  if (typeof event.payload.route === typeof undefined) {
+  if (event.hasOwnProperty('payload') && event.payload.hasOwnProperty('route') && event.payload.route !== '') {
+    // No problem
+  } else {
     return Promise.reject(new Error('No input route'));
-  } else if (event.hasOwnProperty('userId')) {
+  }
+
+  if (!event.hasOwnProperty('userId')) {
     return Promise.reject(new Error('Missing userId'));
   }
 

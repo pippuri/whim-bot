@@ -18,7 +18,7 @@ function documentExist(tableName, hashKey, hashValue, rangeKey, rangeValue) {
 
   if (!hashKey) {
     return Promise.reject(new Error('Required Hash Key Missing'));
-  } else if (hashValue === '' || typeof hashValue === undefined) {
+  } else if (hashValue === '' || typeof hashValue === typeof undefined) {
     return Promise.reject(new Error('Missing Hash Value'));
   }
 
