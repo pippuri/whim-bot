@@ -1,5 +1,5 @@
 {
-  "name": "profile-history-add-route",
+  "name": "profile-add-travel-log",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,

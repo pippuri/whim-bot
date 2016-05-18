@@ -2,6 +2,7 @@
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../lib/adapter');
+var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
@@ -10,22 +11,27 @@ Promise.promisifyAll(docClient);
 /**
  * Save data to DynamoDB
  */
-function persistUserData(payload) {
-  if (!payload) {
-    var error = new Error('Invalid profile data');
-    return Promise.reject(error);
+function persistUserData(event) {
+  if (_.isEmpty(event)) {
+    return Promise.reject(new Error('Input missing'));
+  } else if (event.userId === '' || !event.hasOwnProperty('userId')) {
+    return Promise.reject(new Error('Missing userId'));
   }
 
-  return lib.getCognitoDeveloperIdentity(payload.phoneCountryCode + payload.plainPhone)
+  console.log(event.userId);
+
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
     .then((response) => {
-      payload.IdentityId = response.identityId;
-      var params = {
-        Item: payload,
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        ReturnValues: 'ALL_OLD',
-        ReturnConsumedCapacity: 'TOTAL',
-      };
-      return docClient.putAsync(params);
+      if (response === false) { // False if existed
+        return Promise.reject(new Error('User Existed'));
+      } else if (response === true) {
+        var params = {
+          Item: event.payload,
+          TableName: process.env.DYNAMO_USER_PROFILE,
+          ReturnValues: 'NONE',
+        };
+        return docClient.putAsync(params);
+      }
     });
 }
 

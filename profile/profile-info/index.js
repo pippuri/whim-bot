@@ -1,7 +1,6 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../lib/adapter');
 var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -10,30 +9,31 @@ Promise.promisifyAll(docClient);
 
 /**
  * Get single user data from database
- * TODO fix checkPhoneNumber
  */
-function getSingleUserData(phoneNumber) {
+function getSingleUserData(userId) {
 
-  return lib.getCognitoDeveloperIdentity(phoneNumber)
-    .then((response) => {
-      var params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          IdentityId: response.identityId,
-        },
-      };
-      return docClient.getAsync(params);
-    });
+  if (typeof userId === typeof undefined || userId === '') {
+    return Promise.reject(new Error('No input userId'));
+  }
+
+  var params = {
+    TableName: process.env.DYNAMO_USER_PROFILE,
+    Key: {
+      userId: userId,
+    },
+  };
+  return docClient.getAsync(params);
+
 }
 
 /**
  * Export respond to Handler
  */
 module.exports.respond = function (event, callback) {
-  return getSingleUserData(event.phoneCountryCode + event.plainPhone)
+  return getSingleUserData(event.userId)
     .then((response) => {
       if (_.isEmpty(response)) {
-        callback(new Error('Empty response / No item found'));
+        callback(new Error('Empty response / No item found with userId ' + event.userId));
       } else {
         callback(null, response);
       }

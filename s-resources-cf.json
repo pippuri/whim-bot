@@ -43,7 +43,14 @@
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-route-history-${stage}"
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-travel-log-${stage}"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-transaction-history-${stage}"
             },
             {
               "Effect": "Allow",
@@ -163,17 +170,17 @@
     },
     "DynamoUserProfile": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "${deletionPolicy}",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           }
         ],
@@ -186,25 +193,25 @@
     },
     "DynamoUserRouteHistory": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
+      "DeletionPolicy": "${deletionPolicy}",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "AttributeType": "N"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "KeyType": "RANGE"
           }
         ],
@@ -212,7 +219,38 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "${project}-user-route-history-${stage}"
+        "TableName": "${project}-user-travel-log-${stage}"
+      }
+    },
+    "DynamoUserTransactionHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "${deletionPolicy}",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "transactionId",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "transactionId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "${project}-user-transaction-history-${stage}"
       }
     }
   },

@@ -31,4 +31,3 @@ describe('MaaS.fi backend', function () {
   require('./taxi-providers/test.js');
   require('./lib/test.js');
 });
-
