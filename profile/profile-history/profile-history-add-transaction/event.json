@@ -1,6 +1,6 @@
 {
   "userId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "payload" : {
-    "email": "weeeeeee@gmail.com"
+  "payload": {
+    "transactionId": 12
   }
 }

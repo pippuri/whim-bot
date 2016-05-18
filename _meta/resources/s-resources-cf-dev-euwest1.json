@@ -43,7 +43,14 @@
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-route-history-dev"
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-travel-log-dev"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-dev"
             },
             {
               "Effect": "Allow",
@@ -163,17 +170,16 @@
     },
     "DynamoUserProfile": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           }
         ],
@@ -186,25 +192,24 @@
     },
     "DynamoUserRouteHistory": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "AttributeType": "S"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "AttributeType": "N"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "IdentityId",
+            "AttributeName": "userId",
             "KeyType": "HASH"
           },
           {
-            "AttributeName": "TimeEpoch",
+            "AttributeName": "timeEpoch",
             "KeyType": "RANGE"
           }
         ],
@@ -212,7 +217,37 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "MaaS-user-route-history-dev"
+        "TableName": "MaaS-user-travel-log-dev"
+      }
+    },
+    "DynamoUserTransactionHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "transactionId",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "transactionId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-transaction-history-dev"
       }
     }
   },

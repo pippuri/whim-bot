@@ -27,10 +27,31 @@
     "IamPolicyLambda": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "prod-MaaS-lambda",
+        "PolicyName": "dev-MaaS-lambda",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-profile-prod"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-travel-log-prod"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-prod"
+            },
             {
               "Effect": "Allow",
               "Action": [
@@ -118,7 +139,7 @@
     "IamPolicyCustomAuthorizer": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "prod-MaaS-customauthorizer",
+        "PolicyName": "dev-MaaS-customauthorizer",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -145,6 +166,91 @@
             "Ref": "IamRoleCustomAuthorizer"
           }
         ]
+      }
+    },
+    "DynamoUserProfile": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-profile-prod"
+      }
+    },
+    "DynamoUserRouteHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "timeEpoch",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "timeEpoch",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-travel-log-prod"
+      }
+    },
+    "DynamoUserTransactionHistory": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "userId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "transactionId",
+            "AttributeType": "N"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "userId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "transactionId",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "MaaS-user-transaction-history-prod"
       }
     }
   },
