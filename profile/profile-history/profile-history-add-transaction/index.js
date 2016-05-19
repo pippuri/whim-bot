@@ -17,15 +17,15 @@ function saveTransaction(event) {
     return Promise.reject(new Error('No input transaction'));
   }
 
-  if (!event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  if (!event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
       if (response === false) { // False if existed
         var item = {
-          userId: event.userId,
+          identityId: event.identityId,
           timeEpoch: moment().unix(),
           transactionId: event.payload.transactionId,
         };

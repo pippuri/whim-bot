@@ -11,11 +11,11 @@ Promise.promisifyAll(docClient);
 function updateUserData(event) {
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
-  } else if (event.userId === '' || !event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
       if (response === false) { // False if existed
         return Promise.reject(new Error('User Existed'));
@@ -24,7 +24,7 @@ function updateUserData(event) {
           var params = {
             TableName: process.env.DYNAMO_USER_PROFILE,
             Key: {
-              userId: event.userId,
+              identityId: event.identityId,
             },
             UpdateExpression: 'SET #attr = :value',
             ExpressionAttributeNames: {
