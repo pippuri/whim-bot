@@ -10,16 +10,18 @@ Promise.promisifyAll(docClient);
 /**
  * Get single user data from database
  */
-function getSingleUserData(identityId) {
+function getSingleUserData(event) {
 
-  if (typeof identityId === typeof undefined || identityId === '') {
+  if (event.hasOwnProperty('identityId') && event.identityId !== '') {
+    // No problem
+  } else {
     return Promise.reject(new Error('No input identityId'));
   }
 
   var params = {
     TableName: process.env.DYNAMO_USER_PROFILE,
     Key: {
-      identityId: identityId,
+      identityId: event.identityId,
     },
   };
   return docClient.getAsync(params);
@@ -30,7 +32,7 @@ function getSingleUserData(identityId) {
  * Export respond to Handler
  */
 module.exports.respond = function (event, callback) {
-  return getSingleUserData(event.identityId)
+  return getSingleUserData(event)
     .then((response) => {
       if (_.isEmpty(response)) {
         callback(new Error('Empty response / No item found with identityId ' + event.identityId));

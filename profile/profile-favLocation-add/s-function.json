@@ -1,6 +1,7 @@
 {
-  "name": "profile-edit",
+  "name": "profile-favLocation-add",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -12,15 +13,15 @@
   },
   "endpoints": [
     {
-      "path": "profile",
-      "method": "PUT",
+      "path": "profile/favLocation",
+      "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
       },
       "responses": {
         "^400.*": {

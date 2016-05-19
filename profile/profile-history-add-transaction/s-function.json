@@ -12,7 +12,7 @@
   },
   "endpoints": [
     {
-      "path": "profile/history/transation",
+      "path": "profile/history/transaction",
       "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",

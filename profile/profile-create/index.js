@@ -19,16 +19,21 @@ function persistUserData(event) {
     return Promise.reject(new Error('Missing identityId'));
   }
 
+  // TODO and regex check for identityId
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === false) { // False if existed
+      if (response === true) { // True if existed
         return Promise.reject(new Error('User Existed'));
-      } else if (response === true) {
+      } else {
         event.payload.identityId = event.identityId;
+        if (!event.hasOwnProperty('favLocation')) {
+          event.payload.favLocation = [];
+        }
+
         var params = {
           Item: event.payload,
           TableName: process.env.DYNAMO_USER_PROFILE,
-          ReturnValues: 'NONE',
+          ReturnValues: 'ALL_OLD',
         };
         return docClient.putAsync(params);
       }

@@ -40,9 +40,9 @@ function documentExist(tableName, hashKey, hashValue, rangeKey, rangeValue) {
   return docClient.getAsync(params)
     .then((response) => {
       if (!_.isEmpty(response)) { // If not empty -> exist
-        return Promise.resolve(false);
-      } else {
         return Promise.resolve(true);
+      } else {
+        return Promise.resolve(false);
       }
     });
 }

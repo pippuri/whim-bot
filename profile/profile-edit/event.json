@@ -1,6 +1,7 @@
 {
-  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "identityId": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
   "payload" : {
-    "email": "weeeeeee@gmail.com"
+    "email": "weeeeeee@gmail.com",
+    "phone": "10983012"
   }
 }

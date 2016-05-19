@@ -15,11 +15,10 @@ function updateUserData(event) {
     return Promise.reject(new Error('Missing identityId'));
   }
 
+  console.log(event);
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === false) { // False if existed
-        return Promise.reject(new Error('User Existed'));
-      } else if (response === true) {
+      if (response === true) { // True if existed
         _.forEach(event.payload, (value, key) => {
           var params = {
             TableName: process.env.DYNAMO_USER_PROFILE,
@@ -38,7 +37,8 @@ function updateUserData(event) {
           };
           return docClient.updateAsync(params);
         });
-
+      } else {
+        return Promise.reject(new Error('User Not Existed'));
       }
     });
 }
