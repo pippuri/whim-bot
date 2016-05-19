@@ -1,5 +1,5 @@
 {
-  "name": "profile-history-add-transaction",
+  "name": "profile-travel-log-add",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -8,11 +8,15 @@
   "memorySize": 1024,
   "authorizer": {},
   "custom": {
-    "excludePatterns": []
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
+    }
   },
   "endpoints": [
     {
-      "path": "profile/history/transaction",
+      "path": "profile/history/route",
       "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
@@ -20,7 +24,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"route\":$input.json('$.route')}"
       },
       "responses": {
         "^400.*": {
@@ -66,5 +70,6 @@
       }
     }
   ],
+  "events": [],
   "environment": "$${environment}"
 }
