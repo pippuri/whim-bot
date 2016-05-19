@@ -1,7 +1,7 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../lib/adapter');
+var lib = require('../../lib/ultilities/adapter');
 var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();

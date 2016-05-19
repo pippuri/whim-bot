@@ -3,13 +3,15 @@ var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
 
-var cognitoIdentity = new AWS.CognitoIdentity({ region:process.env.AWS_REGION });
-var cognitoSync = new AWS.CognitoSync({ region:process.env.AWS_REGION });
-var iot = new AWS.Iot({ region:process.env.AWS_REGION });
+var cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
+var cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
+var iot = new AWS.Iot({ region: process.env.AWS_REGION });
+var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 
 Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
 Promise.promisifyAll(iot);
+Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -203,13 +205,34 @@ function smsLogin(phone, code) {
     var token = jwt.sign({
       id: identityId,
     }, process.env.JWT_SECRET);
-    return {
-      id_token: token,
-      cognito_id: identityId,
-      cognito_token: cognitoToken,
-      cognito_pool: process.env.COGNITO_POOL_ID,
-      cognito_provider: 'cognito-identity.amazonaws.com',
+
+    var profilePayload = {
+      identityId: identityId,
+      payload: {
+        plainPhone: plainPhone,
+        phone: phone,
+        balance: 0,
+      },
     };
+    // Run profile-create which create a new user profile if not exist
+    return lambda.invokePromise({
+      FunctionName: 'MaaS-profile-create',
+      Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
+      Payload: JSON.stringify(profilePayload),
+    })
+    .then((response) => {
+      var parsedPayload = JSON.parse(response.Payload);
+      var message = (!parsedPayload.hasOwnProperty('errorMessage') && !parsedPayload.hasOwnProperty('errorType')) ? 'created' : 'abort:existed';
+
+      return {
+        id_token: token,
+        cognito_id: identityId,
+        cognito_token: cognitoToken,
+        cognito_pool: process.env.COGNITO_POOL_ID,
+        cognito_provider: 'cognito-identity.amazonaws.com',
+        profile_create_message: message,
+      };
+    });
   });
 }
 
