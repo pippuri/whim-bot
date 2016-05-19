@@ -15,16 +15,16 @@ function persistUserData(event) {
   console.log(event);
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
-  } else if (event.userId === '' || !event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
       if (response === false) { // False if existed
         return Promise.reject(new Error('User Existed'));
       } else if (response === true) {
-        event.payload.userId = event.userId;
+        event.payload.identityId = event.identityId;
         var params = {
           Item: event.payload,
           TableName: process.env.DYNAMO_USER_PROFILE,

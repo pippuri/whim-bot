@@ -174,13 +174,13 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           }
         ],
@@ -197,7 +197,7 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           },
           {
@@ -207,7 +207,7 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           },
           {
@@ -228,7 +228,7 @@
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           },
           {
@@ -238,7 +238,7 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           },
           {

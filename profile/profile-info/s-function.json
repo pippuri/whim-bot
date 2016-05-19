@@ -24,7 +24,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"userId\":\"$context.authorizer.principalId\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {

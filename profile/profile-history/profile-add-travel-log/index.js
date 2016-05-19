@@ -11,29 +11,27 @@ Promise.promisifyAll(docClient);
  * Save route and time start of route onto DyanomoDB
  */
 function saveRoute(event) {
-  if (event.hasOwnProperty('payload') && event.payload.hasOwnProperty('route') && event.payload.route !== '') {
+  if (event.hasOwnProperty('route') && event.route !== '') {
     // No problem
   } else {
     return Promise.reject(new Error('No input route'));
   }
 
-  if (!event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  if (!event.hasOwnProperty('identityId') || event.identityId === '') {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
       if (response === false) { // False if existed
         var item = {
-          userId: event.userId,
+          identityId: event.identityId,
           timeEpoch: moment().unix(),
-          route: event.payload.route,
+          route: event.route,
         };
         var params = {
-          TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
+          TableName: process.env.DYNAMO_USER_TRAVEL_LOG,
           Item: item,
-          ReturnValues: 'ALL_NEW',
-          ReturnConsumedCapacity: 'TOTAL',
         };
         return docClient.putAsync(params);
       } else if (response === true) {

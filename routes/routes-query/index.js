@@ -76,7 +76,7 @@ function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
   return businessRuleEngine.call(
     {
       rule: 'get-routes',
-      userId: principalId,
+      identityId: principalId,
       parameters: event,
     },
     options

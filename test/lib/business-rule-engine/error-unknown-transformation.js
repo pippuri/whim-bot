@@ -27,7 +27,7 @@ module.exports = function (engine) {
 
     var ruleObject = {
       rule: 'get-something-that-does-not-exist',
-      userId: principalId,
+      identityId: principalId,
       parameters: event,
     };
 
