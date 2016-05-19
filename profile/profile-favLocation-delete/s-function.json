@@ -20,10 +20,9 @@
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.querystring.identifier": "method.request.querystring.identifier"
       },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"identifier\":$input.params('identifier')}}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"identifier\":$input.json('$.identifier')}}"
       },
       "responses": {
         "^400.*": {
