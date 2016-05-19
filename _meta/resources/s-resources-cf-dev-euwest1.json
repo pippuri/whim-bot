@@ -170,16 +170,17 @@
     },
     "DynamoUserProfile": {
       "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           }
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           }
         ],
@@ -192,10 +193,11 @@
     },
     "DynamoUserRouteHistory": {
       "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           },
           {
@@ -205,7 +207,7 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           },
           {
@@ -222,10 +224,11 @@
     },
     "DynamoUserTransactionHistory": {
       "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "AttributeType": "S"
           },
           {
@@ -235,7 +238,7 @@
         ],
         "KeySchema": [
           {
-            "AttributeName": "userId",
+            "AttributeName": "identityId",
             "KeyType": "HASH"
           },
           {

@@ -55,7 +55,7 @@ module.exports = function (engine) {
 
     var ruleObject = {
       rule: 'get-routes',
-      userId: principalId,
+      identityId: principalId,
       parameters: event,
     };
 
