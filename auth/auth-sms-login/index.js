@@ -2,6 +2,7 @@ var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
 var jwt = require('jsonwebtoken');
+
 // var lib = require('../../lib/service-bus/index');
 
 var cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
