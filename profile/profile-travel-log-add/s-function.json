@@ -1,5 +1,5 @@
 {
-  "name": "profile-add-travel-log",
+  "name": "profile-travel-log-add",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,

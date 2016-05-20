@@ -1,6 +1,7 @@
 {
-  "name": "profile-edit",
+  "name": "profile-favLocation-delete",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -12,15 +13,16 @@
   },
   "endpoints": [
     {
-      "path": "profile",
-      "method": "PUT",
+      "path": "profile/favLocation",
+      "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+      },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"identifier\":$input.json('$.identifier')}}"
       },
       "responses": {
         "^400.*": {
