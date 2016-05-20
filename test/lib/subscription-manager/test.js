@@ -23,6 +23,7 @@ describe('store products', function () {
   it('should find products', function () {
     expect(response).to.be.not.empty;
   });
+
   it('should not have errored', function () {
     expect(error).to.be.empty;
   });
@@ -66,7 +67,6 @@ describe('user by ID', function () {
   });
 });
 
-
 describe('update User', function () {
   var error;
   var response;
@@ -89,7 +89,7 @@ describe('update User', function () {
   });
 
   it('should have changed the user', function () {
-      expect(response).to.be.not.empty;
+    expect(response).to.be.not.empty;
   });
 
   it('should have no error', function () {
@@ -142,7 +142,7 @@ describe('List the user plan', function () {
   it('should have a subscription', function () {
     expect(response).to.be.not.empty;
   });
-  
+
   it('should not have an error', function () {
     expect(error).to.be.empty;
   });
