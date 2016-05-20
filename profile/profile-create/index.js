@@ -25,13 +25,22 @@ function persistUserData(event) {
       if (response === true) { // True if existed
         return Promise.reject(new Error('User Existed'));
       } else {
-        event.payload.identityId = event.identityId;
+        var record = {
+          identityId: event.identityId,
+          payload: {
+            identityId: event.identityId,
+            balance: 0,
+            email: '',
+            plan: [],
+            phone: event.payload.phone,
+          },
+        };
         if (!event.hasOwnProperty('favLocation')) {
-          event.payload.favLocation = [];
+          record.payload.favLocation = [];
         }
 
         var params = {
-          Item: event.payload,
+          Item: record,
           TableName: process.env.DYNAMO_USER_PROFILE,
           ReturnValues: 'ALL_OLD',
         };

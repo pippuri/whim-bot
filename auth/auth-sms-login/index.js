@@ -209,11 +209,10 @@ function smsLogin(phone, code) {
     var profilePayload = {
       identityId: identityId,
       payload: {
-        plainPhone: plainPhone,
         phone: phone,
-        balance: 0,
       },
     };
+
     // Run profile-create which create a new user profile if not exist
     return lambda.invokePromise({
       FunctionName: 'MaaS-profile-create',
