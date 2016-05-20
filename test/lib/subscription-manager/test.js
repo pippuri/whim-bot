@@ -1,5 +1,6 @@
-//process.env.CHARGEBEE_API_KEY = null;
-//process.env.CHARGEBEE_API_URL = null;
+
+process.env.CHARGEBEE_API_KEY = 'tbd:';
+process.env.CHARGEBEE_SITE = 'whim-test';
 
 var mgr = require('../../../lib/subscription-manager');
 var expect = require('chai').expect;
@@ -9,10 +10,11 @@ describe('store products', function () {
   var response;
 
   before(function (done) {
-    mgr.getProducts().then(data => {
+    mgr.getProducts().then((data) => {
       response = data;
       done();
     }).catch(data => {
+      console.log('getproducts was not successful', data);
       error = data;
       done();
     });
@@ -20,6 +22,9 @@ describe('store products', function () {
 
   it('should find products', function () {
     expect(response).to.be.not.empty;
+  });
+  it('should not have errored', function () {
+    expect(error).to.be.empty;
   });
 });
 
@@ -39,7 +44,6 @@ describe('user by ID', function () {
 
   it('should find the user', function () {
     expect(response).to.be.not.empty;
-    //console.log(JSON.stringify(response));
   });
 });
 
@@ -62,12 +66,13 @@ describe('user by ID', function () {
   });
 });
 
-describe('create User', function () {
+
+describe('update User', function () {
   var error;
   var response;
 
   before(function (done) {
-    mgr.createUser('eu-west-1:01e0e77e-ea55-45fa-a1d2-cd9bd860137e', {
+    mgr.updateUser('IG5rynMPlZaTwQ1nSg', {
       first_name: 'Test',
       last_name: 'User',
       email: 'me@maas.fi',
@@ -83,9 +88,12 @@ describe('create User', function () {
     });
   });
 
-  it('should have added the user', function () {
-    expect(response).to.be.empty;
-    console.log(JSON.stringify(response));
+  it('should have changed the user', function () {
+      expect(response).to.be.not.empty;
+  });
+
+  it('should have no error', function () {
+    expect(error).to.be.empty;
   });
 });
 
@@ -94,7 +102,7 @@ describe('update User card', function () {
   var response;
 
   before(function (done) {
-    mgr.updateUserCreditCard('IG5rynMPlZaTwQ1nSg', {
+    mgr.updateUserCreditCard('ergaegeaeageagrseg', {
       first_name: 'Test',
       last_name: 'User',
       email: 'me@maas.fi',
@@ -113,6 +121,29 @@ describe('update User card', function () {
 
   it('should have added the card', function () {
     expect(response).to.be.empty;
-    console.log(JSON.stringify(response));
+  });
+});
+
+describe('List the user plan', function () {
+  var error;
+  var response;
+
+  before(function (done) {
+    mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {
+      response = data;
+      console.log(data);
+      done();
+    }).catch(data => {
+      error = data;
+      done();
+    });
+  });
+
+  it('should have a subscription', function () {
+    expect(response).to.be.not.empty;
+  });
+  
+  it('should not have an error', function () {
+    expect(error).to.be.empty;
   });
 });
