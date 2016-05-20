@@ -1,6 +1,6 @@
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../../lib/adapter');
+var lib = require('../../lib/profile/index');
 var moment = require('moment');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -10,24 +10,24 @@ Promise.promisifyAll(docClient);
 /**
  * Save route and time start of route onto DyanomoDB
  */
-function saveRoute(event) {
-  if (event.hasOwnProperty('payload') && event.payload.hasOwnProperty('route') && event.payload.route !== '') {
+function saveTransaction(event) {
+  if (event.hasOwnProperty('transactionId') && event.transactionId !== '') {
     // No problem
   } else {
-    return Promise.reject(new Error('No input route'));
+    return Promise.reject(new Error('No input transaction'));
   }
 
-  if (!event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  if (!event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === false) { // False if existed
+      if (response === true) { // True if existed
         var item = {
-          userId: event.userId,
+          identityId: event.identityId,
           timeEpoch: moment().unix(),
-          route: event.payload.route,
+          transactionId: event.payload.transactionId,
         };
         var params = {
           TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
@@ -43,7 +43,7 @@ function saveRoute(event) {
 }
 
 module.exports.respond = function (event, callback) {
-  return saveRoute(event)
+  return saveTransaction(event)
     .then((response) => {
       callback(null, response);
     })

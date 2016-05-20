@@ -1,7 +1,7 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../lib/adapter');
+var lib = require('../../lib/profile/index');
 var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
@@ -12,23 +12,30 @@ Promise.promisifyAll(docClient);
  * Save data to DynamoDB
  */
 function persistUserData(event) {
+  console.log(event);
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
-  } else if (event.userId === '' || !event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  console.log(event.userId);
-
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  // TODO and regex check for identityId
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === false) { // False if existed
+      if (response === true) { // True if existed
         return Promise.reject(new Error('User Existed'));
-      } else if (response === true) {
+      } else {
+        var record = {
+            identityId: event.identityId,
+            balance: 0,
+            plan: [],
+            favLocation: [],
+            phone: event.payload.phone,
+          };
+
         var params = {
-          Item: event.payload,
+          Item: record,
           TableName: process.env.DYNAMO_USER_PROFILE,
-          ReturnValues: 'NONE',
         };
         return docClient.putAsync(params);
       }

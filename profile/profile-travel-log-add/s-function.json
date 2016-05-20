@@ -1,5 +1,5 @@
 {
-  "name": "profile-add-travel-log",
+  "name": "profile-travel-log-add",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -24,7 +24,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"route\":$input.json('$.route')}"
       },
       "responses": {
         "^400.*": {

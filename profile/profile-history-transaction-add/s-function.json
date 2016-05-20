@@ -1,5 +1,5 @@
 {
-  "name": "profile-history-add-transaction",
+  "name": "profile-history-transaction-add",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -12,7 +12,7 @@
   },
   "endpoints": [
     {
-      "path": "profile/history/transation",
+      "path": "profile/history/transaction",
       "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",

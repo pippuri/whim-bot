@@ -1,10 +1,9 @@
   {
-    "userId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
     "payload": {
-      "name": "Luke Skywalker",
-      "email": "Luke@Skywalker.star",
-      "phoneCountryCode": "+358",
-      "plainPhone": "405103121",
+      "name": "Dummy Profile",
+      "email": "profile@dummy.maas",
+      "phone": "+358405103121",
       "profilePicUrl": "http://www.aktifmag.com/wp-content/uploads/2013/02/owls-being-cute-18.jpg",
       "favLocations": [
         {

@@ -1,30 +1,30 @@
 
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
-var lib = require('../lib/adapter');
+var lib = require('../../lib/profile/index');
 var _ = require('lodash/core');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 
 Promise.promisifyAll(docClient);
 
+// TODO add accepted key list
 function updateUserData(event) {
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
-  } else if (event.userId === '' || !event.hasOwnProperty('userId')) {
-    return Promise.reject(new Error('Missing userId'));
+  } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
+    return Promise.reject(new Error('Missing identityId'));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'userId', event.userId, null, null)
+  console.log(event);
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === false) { // False if existed
-        return Promise.reject(new Error('User Existed'));
-      } else if (response === true) {
+      if (response === true) { // True if existed
         _.forEach(event.payload, (value, key) => {
           var params = {
             TableName: process.env.DYNAMO_USER_PROFILE,
             Key: {
-              userId: event.userId,
+              identityId: event.identityId,
             },
             UpdateExpression: 'SET #attr = :value',
             ExpressionAttributeNames: {
@@ -38,7 +38,8 @@ function updateUserData(event) {
           };
           return docClient.updateAsync(params);
         });
-
+      } else {
+        return Promise.reject(new Error('User Not Existed'));
       }
     });
 }
