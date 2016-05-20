@@ -8,6 +8,7 @@ var docClient = new AWS.DynamoDB.DocumentClient();
 
 Promise.promisifyAll(docClient);
 
+// TODO add accepted key list
 function updateUserData(event) {
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
