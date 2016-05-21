@@ -64,12 +64,12 @@ describe('user by ID not found', function () {
   });
 });
 
-describe('update User', function () {
+describe('Update user', function () {
   var error;
   var response;
 
   before(function (done) {
-    mgr.updateUser('IG5rynMPlZaTwQ1nSg', {
+    mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
       first_name: 'Test',
       last_name: 'User',
       email: 'me@maas.fi',
