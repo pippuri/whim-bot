@@ -1,7 +1,4 @@
 
-process.env.CHARGEBEE_API_KEY = 'tbd:';
-process.env.CHARGEBEE_SITE = 'whim-test';
-
 var mgr = require('../../../lib/subscription-manager');
 var expect = require('chai').expect;
 
@@ -48,7 +45,7 @@ describe('user by ID', function () {
   });
 });
 
-describe('user by ID', function () {
+describe('user by ID not found', function () {
   var error;
   var response;
 
@@ -97,7 +94,7 @@ describe('update User', function () {
   });
 });
 
-describe('update User card', function () {
+describe('Update User card', function () {
   var error;
   var response;
 
@@ -119,7 +116,7 @@ describe('update User card', function () {
     });
   });
 
-  it('should have added the card', function () {
+  it('Should not work since Stripe isnt configured', function () {
     expect(response).to.be.empty;
   });
 });
