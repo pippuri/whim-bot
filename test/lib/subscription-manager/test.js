@@ -11,7 +11,6 @@ describe('store products', function () {
       response = data;
       done();
     }).catch(data => {
-      console.log('getproducts was not successful', data);
       error = data;
       done();
     });
@@ -128,7 +127,6 @@ describe('List the user plan', function () {
   before(function (done) {
     mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {
       response = data;
-      console.log(data);
       done();
     }).catch(data => {
       error = data;
