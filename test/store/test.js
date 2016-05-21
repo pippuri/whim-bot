@@ -1,10 +1,8 @@
-process.env.STORE_PROCUCTS_KEY = null;
-
 var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var lambda = require('../../store/store-packages/handler.js');
 
-describe('test packages', function () {
+describe('Store packages', function () {
   var error;
   var response;
 
