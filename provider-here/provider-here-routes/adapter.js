@@ -194,8 +194,8 @@ function convertPlanFrom(original) {
   var from;
 
   if (original.response && original.response.route[0] && original.response.route[0].waypoint[0]) {
-    var lon = (original.response.route[0].waypoint[0].originalPosition.longitude).toFixed(5);
-    var lat = (original.response.route[0].waypoint[0].originalPosition.latitude).toFixed(5);
+    var lon = (original.response.route[0].waypoint[0].originalPosition.longitude);
+    var lat = (original.response.route[0].waypoint[0].originalPosition.latitude);
     from = {
       lon: lon,
       lat: lat,
