@@ -17,7 +17,7 @@ function sendSmsMessage(phone, message) {
       user: process.env.TWILIO_ACCOUNT_SID,
       pass: process.env.TWILIO_ACCOUNT_TOKEN,
       sendImmediately: true,
-    },
+    }
   })
   .then(function (response) {
     return {
@@ -26,13 +26,15 @@ function sendSmsMessage(phone, message) {
   });
 }
 
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   sendSmsMessage(event.phone, event.message)
   .then(function (response) {
     callback(null, response);
   })
   .catch(function (err) {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+  .then(response => callback(null, response.toString()))
+  .catch(function (err) {
+    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
   });
 };
