@@ -31,14 +31,16 @@ function getStoreAddons() {
 
 function formatResponse(input) {
 
-  var plans = [];
-  var addons = [];
+  var output = {
+    plans: [],
+    addons: [],
+  };
 
   // Parse plans
   for (var i = 0; i < input[0].list.length; i++) {
     var context = input[0].list[i].plan;
-    console.log('context', context);
-    plans.push({
+    console.log('plan context', context);
+    output.plans.push({
       id: context.id,
       name: context.name,
       invoiceName: context.invoice_name,
@@ -49,28 +51,28 @@ function formatResponse(input) {
       pointGrant: context.meta_data.pointGrant,
       period: context.period,
       periodUnit: context.period_unit,
-      chargeModel: context.chargeModel,
-      feature: context.meta_data.feature,
+      chargeModel: context.charge_model,
+      feature: context.meta_data.features,
       provider: context.meta_data.provider,
     });
   }
 
   // Parse addons
   for (var i = 0; i < input[1].list.length; i++) {
-    var context = input[1].list[i].plan;
-    console.log('context', context);
-    addons.push({
+    var context = input[1].list[i].addon;
+    console.log('addon context', context);
+    output.addons.push({
       id: context.id,
       name: context.name,
       invoiceName: context.invoice_name,
       price: context.price,
       period: context.period,
       periodUnit: context.period_unit,
-      chargeModel: context.chargeModel,
+      chargeModel: context.charge_model,
     });
   }
 
-  return input;
+  return output;
 }
 
 module.exports.respond = function (event, callback) {
