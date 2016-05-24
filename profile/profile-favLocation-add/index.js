@@ -39,7 +39,6 @@ function addFavLocation(event) {
       return docClient.queryAsync(query);
     })
     .then((response) => {
-      console.log('1' + JSON.stringify(response));
       var favLocations = response.Items[0].favLocation;
 
       for (var i = 0; i < favLocations.length; i++) {
@@ -68,7 +67,6 @@ function addFavLocation(event) {
 module.exports.respond = function (event, callback) {
   return addFavLocation(event)
     .then((response) => {
-      console.log('1' + JSON.stringify(response));
       callback(null, response);
     })
     .catch((error) => {
