@@ -20,7 +20,7 @@ function getStoreProducts() {
   });
 }
 
-function getStoreComponents() {
+function getStoreAddons() {
   return request.get(PRODUCT_BASE_URL + ADDONS_ENDPOINT, {
     json: true,
     headers: {
@@ -29,12 +29,58 @@ function getStoreComponents() {
   });
 }
 
+function formatResponse(input) {
+
+  var output = {
+    plans: [],
+    addons: [],
+  };
+
+  // Parse plans
+  for (var i = 0; i < input[0].list.length; i++) {
+    var planContext = input[0].list[i].plan;
+
+    output.plans.push({
+      id: planContext.id,
+      name: planContext.name,
+      invoiceName: planContext.invoice_name,
+      price: planContext.price,
+      currency: planContext.meta_data.currency,
+      formattedPrice: planContext.meta_data.currency + planContext.price,
+      description: planContext.meta_data.description,
+      pointGrant: planContext.meta_data.pointGrant,
+      period: planContext.period,
+      periodUnit: planContext.period_unit,
+      chargeModel: planContext.charge_model,
+      feature: planContext.meta_data.features,
+      provider: planContext.meta_data.provider,
+    });
+  }
+
+  // Parse addons
+  for (var j = 0; j < input[1].list.length; j++) {
+    var addonContext = input[1].list[j].addon;
+
+    output.addons.push({
+      id: addonContext.id,
+      name: addonContext.name,
+      invoiceName: addonContext.invoice_name,
+      price: addonContext.price,
+      period: addonContext.period,
+      periodUnit: addonContext.period_unit,
+      chargeModel: addonContext.charge_model,
+    });
+  }
+
+  return output;
+}
+
 module.exports.respond = function (event, callback) {
-  Promise.all([getStoreProducts(), getStoreComponents()])
-  .then(function (response, resp) {
-    callback(null, response);
+  Promise.all([getStoreProducts(), getStoreAddons()])
+  .then(function (response) {
+    callback(null, formatResponse(response));
   })
-  .catch(function (err) {
-    callback(err);
+  .catch(function (error) {
+    callback(error);
   });
 };
