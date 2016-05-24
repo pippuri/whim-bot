@@ -16,13 +16,18 @@ module.exports = function (engine) {
     };
 
     var calls = [];
+    var error;
     var response;
 
     var serviceBusDummy = {
       call: (serviceName) => new Promise((resolve, reject) => {
         calls.push(serviceName);
-        if (serviceName === 'MaaS-database-context-get') {
-          return resolve({ activePlans: ['plan1', 'plan2'] });
+        if (serviceName === 'MaaS-profile-info') {
+          return resolve({
+            Item: {
+              plan: [],
+            },
+          });
         }
 
         if (serviceName === 'MaaS-provider-tripgo-routes-southfinland') {
@@ -68,11 +73,19 @@ module.exports = function (engine) {
       .then(data => {
         response = data;
         done();
+      })
+      .catch(err => {
+        error = err;
+        done();
       });
     });
 
+    it('should succeed without errors', function () {
+      expect(error).to.be.undefined;
+    });
+
     it('should call context and routes service', function () {
-      expect(calls).to.deep.equal(['MaaS-database-context-get', 'MaaS-provider-tripgo-routes-southfinland']);
+      expect(calls).to.deep.equal(['MaaS-profile-info', 'MaaS-provider-tripgo-routes-southfinland']);
     });
 
     it('should return routes annotated with co2 cost for each itinerary', function () {
