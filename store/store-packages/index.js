@@ -38,37 +38,37 @@ function formatResponse(input) {
 
   // Parse plans
   for (var i = 0; i < input[0].list.length; i++) {
-    var context = input[0].list[i].plan;
-    console.log('plan context', context);
+    var planContext = input[0].list[i].plan;
+
     output.plans.push({
-      id: context.id,
-      name: context.name,
-      invoiceName: context.invoice_name,
-      price: context.price,
-      currency: context.meta_data.currency,
-      formattedPrice: context.meta_data.currency + context.price,
-      description: context.meta_data.description,
-      pointGrant: context.meta_data.pointGrant,
-      period: context.period,
-      periodUnit: context.period_unit,
-      chargeModel: context.charge_model,
-      feature: context.meta_data.features,
-      provider: context.meta_data.provider,
+      id: planContext.id,
+      name: planContext.name,
+      invoiceName: planContext.invoice_name,
+      price: planContext.price,
+      currency: planContext.meta_data.currency,
+      formattedPrice: planContext.meta_data.currency + planContext.price,
+      description: planContext.meta_data.description,
+      pointGrant: planContext.meta_data.pointGrant,
+      period: planContext.period,
+      periodUnit: planContext.period_unit,
+      chargeModel: planContext.charge_model,
+      feature: planContext.meta_data.features,
+      provider: planContext.meta_data.provider,
     });
   }
 
   // Parse addons
-  for (var i = 0; i < input[1].list.length; i++) {
-    var context = input[1].list[i].addon;
-    console.log('addon context', context);
+  for (var j = 0; j < input[1].list.length; j++) {
+    var addonContext = input[1].list[j].addon;
+
     output.addons.push({
-      id: context.id,
-      name: context.name,
-      invoiceName: context.invoice_name,
-      price: context.price,
-      period: context.period,
-      periodUnit: context.period_unit,
-      chargeModel: context.charge_model,
+      id: addonContext.id,
+      name: addonContext.name,
+      invoiceName: addonContext.invoice_name,
+      price: addonContext.price,
+      period: addonContext.period,
+      periodUnit: addonContext.period_unit,
+      chargeModel: addonContext.charge_model,
     });
   }
 
