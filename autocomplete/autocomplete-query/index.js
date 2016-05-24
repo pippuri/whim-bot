@@ -7,11 +7,17 @@ module.exports.respond = function (event, callback) {
   return new Promise((resolve, reject) => {
     const query = event.query;
 
-    // Inject input hints
-    if (typeof query.lat === 'number' && typeof query.lon === 'number') {
+    // Inject input hints, typecast input
+    if (typeof query.lat === 'string' && typeof query.lon === 'string') {
+      query.lat = parseFloat(query.lat);
+      query.lon = parseFloat(query.lon);
       query.hint = 'latlon';
     } else {
       query.hint = 'none';
+    }
+
+    if (typeof query.count === 'string') {
+      query.count = parseInt(query.count, 10);
     }
 
     resolve(query);
