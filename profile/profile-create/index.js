@@ -1,18 +1,13 @@
 
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/profile/index');
+var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-
-Promise.promisifyAll(docClient);
 
 /**
  * Save data to DynamoDB
  */
 function persistUserData(event) {
-  console.log(event);
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
   } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
@@ -37,7 +32,8 @@ function persistUserData(event) {
           Item: record,
           TableName: process.env.DYNAMO_USER_PROFILE,
         };
-        return docClient.putAsync(params);
+
+        return bus.call('Dynamo-put', params);
       }
     });
 }

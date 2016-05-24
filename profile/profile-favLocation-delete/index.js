@@ -1,11 +1,8 @@
 
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/profile/index');
+var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-Promise.promisifyAll(docClient);
 
 function removeFavLocation(event) {
   if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
@@ -27,20 +24,17 @@ function removeFavLocation(event) {
             identityId: event.identityId,
           },
         };
-        return docClient.getAsync(params);
+        return bus.call('Dynamo-get', params);
       } else {
         return Promise.reject(new Error('User Not Existed'));
       }
     })
     .then((response) => {
-      console.log('BEFORE ' + response.Item.favLocation);
       for (var i = response.Item.favLocation.length - 1; i > -1; i--) {
         if (response.Item.favLocation[i].name === event.payload.identifier) {
           response.Item.favLocation.splice(i, 1);
         }
       }
-
-      console.log('AFTER ' + response.Item.favLocation);
 
       var params = {
         TableName: process.env.DYNAMO_USER_PROFILE,
@@ -54,9 +48,8 @@ function removeFavLocation(event) {
         ExpressionAttributeValues: {
           ':value': response.Item.favLocation,
         },
-        ReturnConsumedCapacity: 'INDEXES',
       };
-      return docClient.updateAsync(params);
+      return bus.call('Dynamo-update', params);
     });
 }
 
