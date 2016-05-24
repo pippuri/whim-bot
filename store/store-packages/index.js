@@ -20,7 +20,7 @@ function getStoreProducts() {
   });
 }
 
-function getStoreComponents() {
+function getStoreAddons() {
   return request.get(PRODUCT_BASE_URL + ADDONS_ENDPOINT, {
     json: true,
     headers: {
@@ -29,12 +29,56 @@ function getStoreComponents() {
   });
 }
 
+function formatResponse(input) {
+
+  var plans = [];
+  var addons = [];
+
+  // Parse plans
+  for (var i = 0; i < input[0].list.length; i++) {
+    var context = input[0].list[i].plan;
+    console.log('context', context);
+    plans.push({
+      id: context.id,
+      name: context.name,
+      invoiceName: context.invoice_name,
+      price: context.price,
+      currency: context.meta_data.currency,
+      formattedPrice: context.meta_data.currency + context.price,
+      description: context.meta_data.description,
+      pointGrant: context.meta_data.pointGrant,
+      period: context.period,
+      periodUnit: context.period_unit,
+      chargeModel: context.chargeModel,
+      feature: context.meta_data.feature,
+      provider: context.meta_data.provider,
+    });
+  }
+
+  // Parse addons
+  for (var i = 0; i < input[1].list.length; i++) {
+    var context = input[1].list[i].plan;
+    console.log('context', context);
+    addons.push({
+      id: context.id,
+      name: context.name,
+      invoiceName: context.invoice_name,
+      price: context.price,
+      period: context.period,
+      periodUnit: context.period_unit,
+      chargeModel: context.chargeModel,
+    });
+  }
+
+  return input;
+}
+
 module.exports.respond = function (event, callback) {
-  Promise.all([getStoreProducts(), getStoreComponents()])
-  .then(function (response, resp) {
-    callback(null, response);
+  Promise.all([getStoreProducts(), getStoreAddons()])
+  .then(function (response) {
+    callback(null, formatResponse(response));
   })
-  .catch(function (err) {
-    callback(err);
+  .catch(function (error) {
+    callback(error);
   });
 };
