@@ -1,11 +1,8 @@
 
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/profile/index');
+var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-Promise.promisifyAll(docClient);
 
 function addFavLocation(event) {
   if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
@@ -36,7 +33,7 @@ function addFavLocation(event) {
         KeyConditionExpression: '#priKey = :priKeyValue',
         ProjectionExpression: 'favLocation',
       };
-      return docClient.queryAsync(query);
+      return bus.call('Dynamo-query', query);
     })
     .then((response) => {
       var favLocations = response.Items[0].favLocation;
@@ -60,7 +57,7 @@ function addFavLocation(event) {
           ':value': [event.payload],
         },
       };
-      return docClient.updateAsync(params);
+      return bus.call('Dynamo-update', params);
     });
 }
 

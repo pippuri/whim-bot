@@ -1,14 +1,9 @@
 
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/profile/index');
+var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
 
-var docClient = new AWS.DynamoDB.DocumentClient();
-
-Promise.promisifyAll(docClient);
-
-// TODO add accepted key list
 function updateUserData(event) {
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
@@ -16,7 +11,6 @@ function updateUserData(event) {
     return Promise.reject(new Error('Missing identityId'));
   }
 
-  console.log(event);
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
       if (response === true) { // True if existed
@@ -36,7 +30,8 @@ function updateUserData(event) {
             ReturnValues: 'UPDATED_NEW',
             ReturnConsumedCapacity: 'INDEXES',
           };
-          return docClient.updateAsync(params);
+
+          return bus.call('Dynamo-update', params);
         });
       } else {
         return Promise.reject(new Error('User Not Existed'));
@@ -50,7 +45,6 @@ function updateUserData(event) {
 module.exports.respond = function (event, callback) {
   return updateUserData(event)
     .then((response) => {
-      console.log(response);
       callback(null, response);
     })
     .catch((error) => {

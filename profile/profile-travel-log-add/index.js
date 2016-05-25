@@ -1,11 +1,7 @@
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/profile/index');
+var bus = require('../../lib/service-bus/index');
 var moment = require('moment');
-
-var docClient = new AWS.DynamoDB.DocumentClient();
-
-Promise.promisifyAll(docClient);
 
 /**
  * Save route and time start of route onto DyanomoDB
@@ -33,7 +29,7 @@ function saveRoute(event) {
           TableName: process.env.DYNAMO_USER_TRAVEL_LOG,
           Item: item,
         };
-        return docClient.putAsync(params);
+        return bus.call('Dynamo-put', params);
       } else {
         return Promise.reject(new Error('User not existed'));
       }
