@@ -1,3 +1,6 @@
+// Dependency
+var Promise = require('bluebird');
+
 // Library
 var SubscriptionMgr = require('../../lib/subscription-manager');
 
