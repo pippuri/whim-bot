@@ -95,12 +95,15 @@ Select "Apply these changes to the local version" at the prompt.
 ```
 sls function autoinstall -a # Installs module dependencies to lambdas
 ```
-### Creating CloudFront Stack
-Run the following command to create new CloudFormation stack, ProjectDomain variable should have value, this is required to create Static Files CDN.
+### Deploying static files/images to S3 Bucket
 ```
-ProjectDomain=<Valid_Domain_or_Sub_Domain> 
-aws cloudformation create-stack --stack-name <Stack_Name> --template-body file://<Template_Location> --capabilities CAPABILITY_IAM --parameters ParameterKey=DomainName,ParameterValue=$ProjectDomain
+Add files/folders to client/dist folder
+``` 
+Then run the following command:
 ```
+sls client deploy -s dev #stage should be specified
+```
+# NB DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE S3 BUCKET AND REDEPLOY ALL FILES.
 
 ### Running Tests
 

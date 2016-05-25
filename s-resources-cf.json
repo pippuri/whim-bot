@@ -1,14 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "The AWS CloudFormation template for this Serverless application's resources outside of Lambdas and Api Gateway",
-  "Parameters" : {
-    "DomainName" : {
-      "Type" : "String",
-      "Description" : "The DNS name of an existing Amazon Route 53 hosted zone",
-      "AllowedPattern" : "(?!-)[a-zA-Z0-9-.]{1,63}(?<!-)",
-      "ConstraintDescription" : "must be a valid DNS zone name."
-    }
-  },
   "Mappings" : {
     "RegionMap" : {
         "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com" },
@@ -321,7 +313,7 @@
     "StaticFilesBucket" : {
       "Type" : "AWS::S3::Bucket",
       "Properties" : {
-        "BucketName": { "Ref" : "DomainName" },
+        "BucketName": "staticfiles.maas.global" ,
         "AccessControl" : "PublicRead",
         "WebsiteConfiguration" : {
           "IndexDocument" : "index.html",
@@ -338,7 +330,7 @@
             "Origins" : [ {
                 "DomainName": {
                   "Fn::Join" : [".", [
-                    {"Ref" : "DomainName"},
+                    "staticfiles.maas.global",
                     {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
                   ]]
                 },
@@ -352,7 +344,7 @@
            "Enabled" : "true",
            "DefaultRootObject" : "index.html",
            "Aliases" : [
-             { "Ref": "DomainName" }
+             "staticfiles.maas.global"
            ],
             "DefaultCacheBehavior" : {
                 "AllowedMethods" : [ "GET", "HEAD" ],
