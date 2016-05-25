@@ -20,32 +20,47 @@ function addFavLocation(event) {
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === true) { // True means Existed
-        var params = {
-          TableName: process.env.DYNAMO_USER_PROFILE,
-          Key: {
-            identityId: event.identityId,
-          },
-          UpdateExpression: 'SET #attr = list_append(#attr, :value)',
-          ExpressionAttributeNames: {
-            '#attr': 'favLocation',
-          },
-          ExpressionAttributeValues: {
-            ':value': [event.payload],
-          },
-          ReturnConsumedCapacity: 'INDEXES',
-        };
-        return docClient.updateAsync(params);
-      } else {
+      if (response === false) { // False means NOT existed
         return Promise.reject(new Error('User Not Existed'));
       }
+
+      // Check FL existance
+      var query = {
+        TableName: process.env.DYNAMO_USER_PROFILE,
+        ExpressionAttributeNames: {
+          '#priKey': 'identityId',
+        },
+        ExpressionAttributeValues: {
+          ':priKeyValue': event.identityId,
+        },
+        KeyConditionExpression: '#priKey = :priKeyValue',
+        ProjectionExpression: 'favLocation',
+      };
+      return docClient.queryAsync(query);
     })
     .then((response) => {
-      if (response === null) {
-        return Promise.reject(new Error('Operation failed'));
-      } else {
-        return Promise.resolve(response);
+      var favLocations = response.Items[0].favLocation;
+
+      for (var i = 0; i < favLocations.length; i++) {
+        if (favLocations[i].name === event.payload.name) {
+          return Promise.reject(new Error('favLocation name existed'));
+        }
       }
+
+      var params = {
+        TableName: process.env.DYNAMO_USER_PROFILE,
+        Key: {
+          identityId: event.identityId,
+        },
+        UpdateExpression: 'SET #attr = list_append(#attr, :value)',
+        ExpressionAttributeNames: {
+          '#attr': 'favLocation',
+        },
+        ExpressionAttributeValues: {
+          ':value': [event.payload],
+        },
+      };
+      return docClient.updateAsync(params);
     });
 }
 
@@ -54,7 +69,7 @@ module.exports.respond = function (event, callback) {
     .then((response) => {
       callback(null, response);
     })
-    .then((error) => {
+    .catch((error) => {
       callback(error);
     });
 };

@@ -65,7 +65,7 @@ module.exports.respond = function (event, callback) {
     .then((response) => {
       callback(null, response);
     })
-    .then((error) => {
+    .catch((error) => {
       callback(error);
     });
 };

@@ -1,11 +1,8 @@
 
-var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var _ = require('lodash/core');
 
-var docClient = new AWS.DynamoDB.DocumentClient();
-
-Promise.promisifyAll(docClient);
+var serviceBus = require('../../lib/service-bus/index.js');
 
 /**
  * Get single user data from database
@@ -24,7 +21,7 @@ function getSingleUserData(event) {
       identityId: event.identityId,
     },
   };
-  return docClient.getAsync(params);
+  return serviceBus.call('Dynamo-get', params);
 
 }
 
@@ -32,7 +29,7 @@ function getSingleUserData(event) {
  * Export respond to Handler
  */
 module.exports.respond = function (event, callback) {
-  return getSingleUserData(event)
+  getSingleUserData(event)
     .then((response) => {
       if (_.isEmpty(response)) {
         callback(new Error('Empty response / No item found with identityId ' + event.identityId));
