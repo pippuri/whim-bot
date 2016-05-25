@@ -2,6 +2,7 @@
 {
   "preset": "airbnb",
 
+  "requireShorthandArrowFunctions": null,
   "disallowSpacesInsideParentheses": null,
   "disallowEmptyBlocks": null,
   "maximumLineLength": 256,
@@ -14,6 +15,6 @@
     "_meta",
     "www"
   ],
-  maxErrors: 1000
-
+  "maxErrors": 1000,
+  "verbose": true
 }
