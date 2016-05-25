@@ -1,34 +1,5 @@
 // Require dependency
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-
-var PRODUCT_BASE_URL =  'https://whim-test.chargebee.com/api/v2/';
-
-var PRODUCTS_ENDPOINT = 'plans';
-var ADDONS_ENDPOINT = 'addons';
-
-// this key is read-only for products
-var PRODUCT_API_KEY = 'test_XS9469U7N9XORirV8Hv6YZVIV6L0y4zx:';
-
-// Get regions from TripGo
-function getStoreProducts() {
-  return request.get(PRODUCT_BASE_URL + PRODUCTS_ENDPOINT, {
-    json: true,
-    headers: {
-      Authorization: 'Basic ' + new Buffer(PRODUCT_API_KEY).toString('base64'),
-    },
-  });
-}
-
-function getStoreAddons() {
-  return request.get(PRODUCT_BASE_URL + ADDONS_ENDPOINT, {
-    json: true,
-    headers: {
-      Authorization: 'Basic ' + new Buffer(PRODUCT_API_KEY).toString('base64'),
-    },
-  });
-}
-
+var SubscriptionMgr = require('../../lib/subscription-manager');
 function formatResponse(input) {
 
   var output = {
@@ -40,11 +11,12 @@ function formatResponse(input) {
   for (var i = 0; i < input[0].list.length; i++) {
     var planContext = input[0].list[i].plan;
 
+    planContext.price =  planContext.price / 100;
     output.plans.push({
       id: planContext.id,
       name: planContext.name,
       invoiceName: planContext.invoice_name,
-      price: planContext.price,
+      price: planContext.price / 100,
       currency: planContext.meta_data.currency,
       formattedPrice: planContext.meta_data.currency + planContext.price,
       description: planContext.meta_data.description,
@@ -65,7 +37,7 @@ function formatResponse(input) {
       id: addonContext.id,
       name: addonContext.name,
       invoiceName: addonContext.invoice_name,
-      price: addonContext.price,
+      price: addonContext.price / 100,
       period: addonContext.period,
       periodUnit: addonContext.period_unit,
       chargeModel: addonContext.charge_model,
@@ -76,7 +48,7 @@ function formatResponse(input) {
 }
 
 module.exports.respond = function (event, callback) {
-  Promise.all([getStoreProducts(), getStoreAddons()])
+  SubscriptionMgr.getProducts()
   .then(function (response) {
     callback(null, formatResponse(response));
   })

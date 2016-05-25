@@ -26,6 +26,7 @@
   "dependencies": {
     "ajv": "^4.0.0",
     "bluebird": "^3.3.3",
+    "chargebee": "^2.0.3",
     "haversine": "^1.0.0",
     "json-schema-deref": "^0.3.2",
     "lambda-wrapper": "0.0.5",
