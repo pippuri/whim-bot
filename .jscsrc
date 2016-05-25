@@ -2,6 +2,7 @@
 {
   "preset": "airbnb",
 
+  "requireShorthandArrowFunctions": null,
   "disallowSpacesInsideParentheses": null,
   "disallowEmptyBlocks": null,
   "maximumLineLength": 256,
