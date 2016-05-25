@@ -15,5 +15,6 @@
     "_meta",
     "www"
   ],
-  "maxErrors": 1000
+  "maxErrors": 1000,
+  "verbose": true
 }
