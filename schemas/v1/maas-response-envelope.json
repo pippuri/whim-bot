@@ -1,10 +1,10 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://api.maas.global/v1/plan",
-  "description": "OpenTripPlanner compatible format for plans",
+  "description": "MaaS envelope for passing requests & responses forward",
   "type": "object",
   "properties": {
-    "query": {
+    "maas": {
       "type": "object",
       "additionalProperties": true
     }

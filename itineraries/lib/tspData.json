@@ -1,0 +1,8 @@
+{
+  "HSL": {
+    "agencyId": "HSL",
+    "adapter": {
+      "baseUrl": "https://a523hzmaj7.execute-api.eu-west-1.amazonaws.com/dev/"
+    }
+  }
+}

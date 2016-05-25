@@ -1,38 +1,21 @@
-var crypto = require('crypto');
 var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
+var maasUtils = require('../../lib/utils');
 
-// Generate a unique route identifier by hashing the JSON
-function generateRouteId(itinerary) {
-  var hash = crypto.createHash('sha1');
-  hash.update(JSON.stringify(itinerary));
-  return hash.digest('hex');
-}
+// Add route and leg identifiers that are unique and also act as
+// a signature for the response.
+function addRouteAndLegIdentifiersToResponse(response) {
+  var itineraries = response.plan.itineraries || [];
 
-// Generate a unique leg identifier by hashing the JSON
-function generateLegId(leg) {
-  var hash = crypto.createHash('sha1');
-  hash.update(JSON.stringify(leg));
-  return hash.digest('hex');
-}
-
-// Add route and leg identifiers to itineraries that don't yet have them
-// Identifiers may already have been added by individual providers
-function addRouteAndLegIdentifiers(itineraries) {
   itineraries.map(function (itinerary) {
-    if (!itinerary.routeId) {
-      itinerary.routeId = generateRouteId(itinerary);
-    }
-
     (itinerary.legs || []).map(function (leg) {
-      if (!leg.legId) {
-        leg.legId = generateLegId(leg);
+      if (!leg.signature) {
+        leg.signature = maasUtils.sign(leg, process.env.MAAS_SIGNING_SECRET);
       }
     });
-  });
-}
 
-function addRouteAndLegIdentifiersToResponse(response) {
-  addRouteAndLegIdentifiers(response.plan.itineraries || []);
+    itinerary.signature = maasUtils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
+  });
+
   return response;
 }
 
@@ -68,6 +51,7 @@ function filterPastRoutes(leaveAt, response) {
 
     return true;
   });
+
   response.plan.itineraries = filtered;
   return response;
 }
@@ -94,9 +78,9 @@ function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
     },
     options
   )
-  .then(response => addRouteAndLegIdentifiersToResponse(response))
   .then(response => filterOutRoutesWithoutPointCost(response))
   .then(response => filterPastRoutes(leaveAt, response));
+  .then(response => addRouteAndLegIdentifiersToResponse(response))
 }
 
 module.exports.respond = function (event, callback) {

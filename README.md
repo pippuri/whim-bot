@@ -221,6 +221,33 @@ Before deploying or merging a pull request, you should check Travis tests are pa
 
 When things run safely in Travis, we can be sufficiently confident they run on AWS.
 
+### Modifying PostgreSQL Database
+
+MaaS uses Postgres for storing itineraries, legs and bookings into database. We use [Objection.js](http://vincit.github.io/objection.js/) and [Knex](http://knexjs.org/) as our ORM layer. Knex has a concept of 'migrations' when working with data, in which database schema changes are wrapped into their own script files.
+
+To work with Knex, you will likely want to install its cli from npm:
+
+```
+npm install -g knex
+```
+
+When working with development data (that can be deleted):
+
+1. Delete the tables using your own SQL client, e.g. [PSequel](http://www.psequel.com/)
+2. Modify the initial migration script at `scripts/migrations`
+3. Run the migration scripts:
+
+```
+cd scripts
+knex migrate:latest
+```
+
+When working with production data (where you need to migrate):
+
+1. Add a new script to `scripts/migrations` describing the change
+2. Run the migration scripts as above
+
+
 ### Deploying To Dev
 
 You can init deploying a component (e.g. provider-tripgo ) to development environment as follows.
