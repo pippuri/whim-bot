@@ -12,6 +12,9 @@
     },
     "webpack": {
       "configPath": "webpack.config.js"
+    },
+    "client": {
+        "bucketName": "staticfiles.maas.global"
     }
   },
   "plugins": [
@@ -22,7 +25,8 @@
     "serverless-plugin-autoinstall",
     "serverless-meta-sync",
     "serverless-plugin-revision",
-    "serverless-plugin-autoinstall"
+    "serverless-plugin-autoinstall",
+    "serverless-client-s3"
   ],
   "swaggerExport": {
     "host": "api.dev.maas.global",
