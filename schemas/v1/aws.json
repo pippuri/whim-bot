@@ -7,7 +7,7 @@
       "type": "string",
       "pattern": "^arn:aws:[a-z]+:[\\w\\-]*:\\d{12}:[ \\w\\-]+(\\/[\\w\\- \\/]+)*"
     },
-    "cognitoPrincipalId": {
+    "cognitoidentityId": {
       "type": "string",
       "pattern": "^[aepus]{2}-[\\w]{4}-\\d:[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}$"
     }

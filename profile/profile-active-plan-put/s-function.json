@@ -21,7 +21,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"planId\": \"$input.params('id')\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.identityId\", \"planId\": \"$input.params('id')\"}"
       },
       "responses": {
         "^400.*": {

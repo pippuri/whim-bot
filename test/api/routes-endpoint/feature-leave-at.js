@@ -15,7 +15,7 @@ module.exports = function (lambda, options) {
   describe('leaveAt request', function () {
 
     var event = {
-      principalId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
       provider: '',
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
