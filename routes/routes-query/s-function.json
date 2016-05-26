@@ -29,7 +29,7 @@
         "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy"
       },
       "requestTemplates": {
-        "application/json": "{\"principalId\":\"$context.authorizer.principalId\", \"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"provider\":\"$input.params('provider')\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.identityId\", \"from\":\"$input.params('from')\", \"to\":\"$input.params('to')\", \"leaveAt\":\"$input.params('leaveAt')\", \"arriveBy\":\"$input.params('arriveBy')\", \"provider\":\"$input.params('provider')\"}"
       },
       "responses": {
         "^400.*": {

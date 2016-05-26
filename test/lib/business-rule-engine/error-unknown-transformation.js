@@ -7,7 +7,7 @@ module.exports = function (engine) {
 
   describe('unknown transformation', function () {
 
-    var principalId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    var identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     var event = {
       from: '60.1684126,24.9316739', // SC5 Office
@@ -27,7 +27,7 @@ module.exports = function (engine) {
 
     var ruleObject = {
       rule: 'get-something-that-does-not-exist',
-      identityId: principalId,
+      identityId: identityId,
       parameters: event,
     };
 

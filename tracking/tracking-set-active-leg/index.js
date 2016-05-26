@@ -4,7 +4,7 @@ var AWS = require('aws-sdk');
 var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-function setActiveRouteLeg(principalId, legId, timestamp) {
+function setActiveRouteLeg(identityId, legId, timestamp) {
   if (!legId) {
     return Promise.reject(new Error('400 legId is required'));
   }
@@ -13,7 +13,7 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
     return Promise.reject(new Error('400 timestamp is required'));
   }
 
-  var thingName = principalId.replace(/:/, '-');
+  var thingName = identityId.replace(/:/, '-');
   var payload = JSON.stringify({
     state: {
       reported: {
@@ -38,7 +38,7 @@ function setActiveRouteLeg(principalId, legId, timestamp) {
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRouteLeg('' + event.principalId, event.legId, event.timestamp)
+  setActiveRouteLeg('' + event.identityId, event.legId, event.timestamp)
   .then(function (response) {
     callback(null, response);
   })

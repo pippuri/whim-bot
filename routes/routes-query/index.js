@@ -59,7 +59,7 @@ function filterPastRoutes(leaveAt, response) {
   return response;
 }
 
-function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
+function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
 
   var options = {};
   if (typeof provider !== typeof undefined && provider !== '') {
@@ -76,7 +76,7 @@ function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
   return businessRuleEngine.call(
     {
       rule: 'get-routes',
-      identityId: principalId,
+      identityId: identityId,
       parameters: event,
     },
     options
@@ -86,7 +86,7 @@ function getRoutes(principalId, provider, from, to, leaveAt, arriveBy) {
 }
 
 module.exports.respond = function (event, callback) {
-  if (!event.principalId) {
+  if (!event.identityId) {
     callback(new Error('Authorization error.'));
   } else if (!event.from) {
     callback(new Error('Missing "from" argument.'));
@@ -95,7 +95,7 @@ module.exports.respond = function (event, callback) {
   } else if (event.leaveAt && event.arriveBy) {
     callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
   } else {
-    getRoutes(event.principalId, event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
+    getRoutes(event.identityId, event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
     .then(function (response) {
       callback(null, response);
     })

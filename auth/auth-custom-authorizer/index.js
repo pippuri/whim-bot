@@ -28,7 +28,7 @@ function customAuthorize(event) {
   return Promise.resolve()
   .then(function () {
     return {
-      principalId: user.id,
+      identityId: user.id,
       policyDocument: {
         Version: '2012-10-17',
         Statement: [
