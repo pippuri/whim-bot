@@ -6,7 +6,7 @@ var cognitoSync = new AWS.CognitoSync();
 Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
 
-function getMqttCredentials(identityId) {
+function getMqttCredentials(principalId) {
 
   // var token = ''; - not in use
   return Promise.resolve()
@@ -15,7 +15,7 @@ function getMqttCredentials(identityId) {
     // Get identity login token
     return cognitoSync.listRecordsAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
-      IdentityId: identityId,
+      IdentityId: principalId,
       DatasetName: process.env.COGNITO_PROFILE_DATASET,
     });
   })
@@ -34,7 +34,7 @@ function getMqttCredentials(identityId) {
     console.log('Identity logins:', logins);
     return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
-      IdentityId: identityId,
+      IdentityId: principalId,
       Logins: logins,
     });
   })
@@ -42,7 +42,7 @@ function getMqttCredentials(identityId) {
 
     // Get credentials using the token
     return cognitoIdentity.getCredentialsForIdentityAsync({
-      IdentityId: identityId,
+      IdentityId: principalId,
       Logins: {
         'cognito-identity.amazonaws.com': response.Token,
       },
@@ -50,13 +50,13 @@ function getMqttCredentials(identityId) {
   })
   .then(function (response) {
     response.IotEndpoint = process.env.IOT_ENDPOINT;
-    response.ThingName = identityId.replace(/:/g, '-');
+    response.ThingName = principalId.replace(/:/g, '-');
     return response;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  getMqttCredentials('' + event.identityId)
+  getMqttCredentials('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })
