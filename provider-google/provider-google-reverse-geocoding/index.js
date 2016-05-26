@@ -41,7 +41,6 @@ function parseResults(response) {
 }
 
 function adapt(input) {
-  var hint = 'latlon';
   var query = {
     key: 'AIzaSyDoItUq6y7LTrZLQy-t7aXbfajgdBgRyco',
     latlng: input.lat + ',' + input.lon,
