@@ -4,6 +4,12 @@ var util = require('util');
 
 var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
+function getCityAddress(Address) {
+  var tempAddress = [];
+  tempAddress = Address.split(',');
+  return tempAddress[tempAddress.length - 2];
+}
+
 function parseResults(response) {
   var result = {
     type: 'FeatureCollection',
@@ -21,6 +27,7 @@ function parseResults(response) {
       type: 'Feature',
       properties: {
         name: item.formatted_address,
+        city: getCityAddress(item.formatted_address),
       },
       geometry: {
         type: 'Point',
@@ -35,18 +42,10 @@ function parseResults(response) {
 
 function adapt(input) {
   var query = {
-    key: process.env.GOOGLE_API_KEY,
+    key: 'AIzaSyDoItUq6y7LTrZLQy-t7aXbfajgdBgRyco',
     latlng: input.lat + ',' + input.lon,
   };
-  switch (input.hint) {
-    case 'latlon':
-      query.result_type = 'street_address';
-      break;
-    case 'none':
-      return Promise.reject(new Error("'none' not supported for Google Geocoding."));
-    default:
-      throw new Error('Location hint not given');
-  }
+  query.result_type = 'street_address';
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
