@@ -4,7 +4,7 @@
   "description": "Lambda input schema for autocomplete.",
   "type": "object",
   "properties": {
-    "name": { "type": "string", "minLength": 5, "maxLength": 128 },
+    "name": { "type": "string", "minLength": 2, "maxLength": 128 },
     "count": { "type": "integer", "minimum": 1, "maximum": 100, "default": 5 },
     "lat": { "type": "number", "minimum": -90, "maximum": 90 },
     "lon": { "type": "number", "minimum": -180, "maximum": 180 }
