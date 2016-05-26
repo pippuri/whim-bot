@@ -1,5 +1,6 @@
-// Require dependency
+// Library
 var SubscriptionMgr = require('../../lib/subscription-manager');
+
 function formatResponse(input) {
 
   var output = {
