@@ -27,30 +27,25 @@
         "application/json": "{\"lat\":\"$input.params('lat')\", \"lon\":\"$input.params('lon')\"}"
       },
       "responses": {
-        "400": {
-          "statusCode": "400"
+        "400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {},
-          "responseModels": {
-            "application/json;charset=UTF-8": "Empty"
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
           },
+          "responseModels": {},
           "responseTemplates": {
-            "application/json;charset=UTF-8": ""
+            "application/json": ""
           }
         }
       }
     }
   ],
   "events": [],
-  "environment": {
-    "SERVERLESS_PROJECT": "${project}",
-    "SERVERLESS_STAGE": "${stage}",
-    "SERVERLESS_REGION": "${region}"
-  },
-  "vpc": {
-    "securityGroupIds": [],
-    "subnetIds": []
-  }
+  "environment": "$${environment}"
 }
