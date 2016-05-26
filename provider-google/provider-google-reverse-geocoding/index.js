@@ -4,6 +4,12 @@ var util = require('util');
 
 var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
+function getCityAddress(Address) {
+  var tempAddress = [];
+  tempAddress = Address.split(',');
+  return tempAddress[tempAddress.length - 2];
+}
+
 function parseResults(response) {
   var result = {
     type: 'FeatureCollection',
@@ -21,6 +27,7 @@ function parseResults(response) {
       type: 'Feature',
       properties: {
         name: item.formatted_address,
+        city: getCityAddress(item.formatted_address),
       },
       geometry: {
         type: 'Point',
