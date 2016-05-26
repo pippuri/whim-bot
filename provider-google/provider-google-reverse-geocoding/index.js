@@ -41,19 +41,14 @@ function parseResults(response) {
 }
 
 function adapt(input) {
+  var hint = 'latlon';
   var query = {
     key: process.env.GOOGLE_API_KEY,
     latlng: input.lat + ',' + input.lon,
   };
-  switch (input.hint) {
-    case 'latlon':
-      query.result_type = 'street_address';
-      break;
-    case 'none':
-      return Promise.reject(new Error("'none' not supported for Google Geocoding."));
-    default:
-      throw new Error('Location hint not given');
-  }
+  
+  query.result_type = 'street_address';
+  
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
