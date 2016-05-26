@@ -59,13 +59,13 @@ function filterBookableLegs(legs) {
   });
 }
 
-function validateItinerary(itinerary) {
+function validateSignature(itinerary, profile) {
   // Verify that the data matches the signature
-  var originalSignature = itinerary.signature;
+  const originalSignature = itinerary.signature;
   var withoutSignature = Object.assign({}, itinerary);
   delete withoutSignature.signature;
 
-  var computedSignature = maasUtils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
+  const computedSignature = maasUtils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
 
   if (originalSignature === computedSignature) {
     return Promise.resolve(itinerary);
@@ -75,21 +75,40 @@ function validateItinerary(itinerary) {
   Promise.reject(new Error('Itinerary validation failed.'));
 }
 
-function updateProfile(profile) {
-  return profile;
+function computeBalance(itinerary, profile) {
+  // Check that the user has sufficient balance
+  const cost = itinerary.fare.points;
+  const balance = profile.balance;
+  const message = `Insufficent balance (required: ${cost}, actual: ${balance})`;
+
+  //if (balance > cost) {
+    return Promise.resolve(balance - cost);
+  //}
+
+  // FIXME change routeId term
+  Promise.reject(new Error(message));
+}
+
+function updateBalance(profile, newBalance) {
+  return bus.call('MaaS-profile-edit', {
+    identityId: profile.identityId,
+    payload: {
+      balance: newBalance,
+    }
+  });
 }
 
 function annotateItinerary(_itinerary, profile, bookings) {
   // Copy the main itinerary object, annotate it with user info
-  var itineraryCore = {
+  const itineraryCore = {
     identityId: profile.identityId,
   };
-  var itinerary = Object.assign({}, _itinerary, itineraryCore);
+  const itinerary = Object.assign({}, _itinerary, itineraryCore);
 
   // Annotate the legs with booking information if needed
   itinerary.legs.forEach(leg => {
     // Find the booking that matches the leg
-    var booking = bookings.find(booking => booking.leg.signature === leg.signature);
+    const booking = bookings.find(booking => booking.leg.signature === leg.signature);
 
     // In case of no booking, this is a leg that customer should take manually
     if (!booking) {
@@ -97,7 +116,7 @@ function annotateItinerary(_itinerary, profile, bookings) {
     }
 
     // Isolate the booking core - we don't need duplicate leg or customer info
-    var bookingCore = {
+    const bookingCore = {
       id: booking.signature,
       state: booking.state,
       token: booking.token,
@@ -127,22 +146,25 @@ function wrapToEnvelope(itinerary) {
 module.exports.respond = function (event, callback) {
   var input;
   var itinerary;
+  var balance;
 
   // Validate the input route, fetch profile, do bookings and update user profile
   return Promise.props({
-      valid: validateItinerary(event.itinerary),
+      valid: validateSignature(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
       legs: filterBookableLegs(event.itinerary.legs),
     })
-    .then(_input     => input = _input)
-    .then(input      => tsp.createBookings(input.legs, input.profile))
-    .then(bookings   => annotateItinerary(event.itinerary, input.profile, bookings))
-    .then(_itinerary => saveItinerary(_itinerary))
-    .then(_itinerary => itinerary = _itinerary)
-    .then(_itinerary => updateProfile(input.profile, itinerary))
-    .then(profile    => wrapToEnvelope(itinerary))
+    .then(_input      => input = _input)
+    .then(_empty      => computeBalance(event.itinerary, input.profile))
+    .then(_newBalance => balance = _newBalance)
+    .then(_newBalance => tsp.createBookings(input.legs, input.profile))
+    .then(bookings    => annotateItinerary(event.itinerary, input.profile, bookings))
+    .then(_itinerary  => saveItinerary(_itinerary))
+    .then(_itinerary  => itinerary = _itinerary)
+    .then(_itinerary  => updateBalance(input.profile, balance))
+    .then(profile     => wrapToEnvelope(itinerary))
     .then(
-      response       => callback(null, response),
-      error          => callback(error, null)
+      response        => callback(null, response),
+      error           => callback(error, null)
     );
 };
