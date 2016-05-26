@@ -1,6 +1,6 @@
 const Promise = require('bluebird');
-const lib = require('../../lib/profile/index');
-const bus = require('../../lib/service-bus/index');
+const lib = require('../../lib/utilities');
+const bus = require('../../lib/service-bus');
 
 function updateUserData(event) {
   const table = process.env.DYNAMO_USER_PROFILE;
