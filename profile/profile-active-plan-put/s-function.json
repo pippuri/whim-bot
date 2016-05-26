@@ -1,48 +1,37 @@
 {
-  "name": "tracking-cancel-active-route",
+  "name": "profile-active-plan-put",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 6,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
-    }
+    "excludePatterns": []
   },
   "endpoints": [
     {
-      "swaggerExport": {
-        "summary": "Cancel active route",
-        "description": "Cancels any currently active route and route leg.",
-        "security": [{"Bearer":[]}],
-        "responses": {
-          "200": {
-            "description": "Success",
-            "schema": {
-              "type": "object",
-              "properties": {
-              }
-            }
-          }
-        }
-      },
-      "path": "tracking/active-route",
-      "method": "DELETE",
+      "path": "profile/plan",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"planId\": \"$input.params('id')\"}"
       },
       "responses": {
         "^400.*": {
           "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+         "^403.*": {
+          "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
@@ -63,6 +52,10 @@
           "statusCode": "500",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
           }
         },
         "default": {

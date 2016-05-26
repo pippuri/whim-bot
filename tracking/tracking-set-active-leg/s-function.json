@@ -66,7 +66,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"principalId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"timestamp\":$input.json('$.timestamp')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"timestamp\":$input.json('$.timestamp')}"
       },
       "responses": {
         "^400.*": {

@@ -1,11 +1,11 @@
 var Promise = require('bluebird');
 var AWS = require('aws-sdk');
 
-var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
+var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-function destroyActiveRoute(principalId) {
-  var thingName = principalId.replace(/:/, '-');
+function destroyActiveRoute(identityId) {
+  var thingName = identityId.replace(/:/, '-');
   return iotData.updateThingShadowAsync({
     thingName: thingName,
     payload: JSON.stringify({
@@ -19,7 +19,7 @@ function destroyActiveRoute(principalId) {
 }
 
 module.exports.respond = function (event, callback) {
-  destroyActiveRoute('' + event.principalId)
+  destroyActiveRoute('' + event.identityId)
   .then(function (response) {
     callback(null, response);
   })
