@@ -16,7 +16,7 @@ function setActivePlan(event) {
   }
 
   // Get all package info with planId
-  return bus.call('store-single-package', {
+  return bus.call('MaaS-store-single-package', {
     id: event.planId,
     type: 'plan',
   })
