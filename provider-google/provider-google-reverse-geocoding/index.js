@@ -43,12 +43,10 @@ function parseResults(response) {
 function adapt(input) {
   var hint = 'latlon';
   var query = {
-    key: process.env.GOOGLE_API_KEY,
+    key: 'AIzaSyDoItUq6y7LTrZLQy-t7aXbfajgdBgRyco',
     latlng: input.lat + ',' + input.lon,
   };
-  
   query.result_type = 'street_address';
-  
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
