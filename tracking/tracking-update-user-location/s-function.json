@@ -82,7 +82,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.identityId\",\"legId\":$input.json('$.legId'),\"lat\":$input.json('$.lat'),\"lon\":$input.json('$.lon'),\"timestamp\":$input.json('$.timestamp')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"lat\":$input.json('$.lat'),\"lon\":$input.json('$.lon'),\"timestamp\":$input.json('$.timestamp')}"
       },
       "responses": {
         "^400.*": {

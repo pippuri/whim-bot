@@ -24,7 +24,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.identityId\",\"timestamp\":$input.json('$.timestamp'),\"active_route\":\"$input.json('$.active_route')\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"timestamp\":$input.json('$.timestamp'),\"active_route\":\"$input.json('$.active_route')\"}"
       },
       "responses": {
         "^400.*": {

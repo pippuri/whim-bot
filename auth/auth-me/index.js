@@ -4,15 +4,15 @@ var AWS = require('aws-sdk');
 var cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 Promise.promisifyAll(cognitoSync);
 
-function getMe(identityId) {
+function getMe(principalId) {
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
-    IdentityId: identityId,
+    IdentityId: principalId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
   })
   .then(function (response) {
     var user = {
-      identityId: identityId,
+      principalId: principalId,
     };
     response.Records.map(function (record) {
       user[record.Key] = record.Value;
@@ -23,7 +23,7 @@ function getMe(identityId) {
 }
 
 module.exports.respond = function (event, callback) {
-  getMe('' + event.identityId)
+  getMe('' + event.principalId)
   .then(function (response) {
     callback(null, response);
   })
