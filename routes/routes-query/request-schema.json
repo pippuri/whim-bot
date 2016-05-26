@@ -3,7 +3,7 @@
   "type": "object",
   "properties": {
     "identityId": {
-      "$ref": "v1/aws.json#definitions/cognitoidentityId"
+      "$ref": "v1/aws.json#definitions/cognitoIdentityId"
     },
     "from": {
       "$ref": "v1/units.json#definitions/shortLocation"

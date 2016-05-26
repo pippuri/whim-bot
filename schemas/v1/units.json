@@ -37,6 +37,12 @@
           "$ref": "#/definitions/longitude"
         }
       ]
-    }
+    },
+    "phone": {
+      "type": "string"
+    },
+    "email": {
+      "type": "string"
+    }    
   }
 }

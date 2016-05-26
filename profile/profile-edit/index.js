@@ -17,7 +17,7 @@ function updateUserData(event) {
   return lib.documentExist(table, 'identityId', identityId, null, null)
     .then(response => {
       if (response !== true) {
-        return Promise.reject(new Error(`User ${identityId} does not exist`));        
+        return Promise.reject(new Error(`User ${identityId} does not exist`));
       }
 
       const keys = Object.keys(event.payload);
@@ -25,7 +25,7 @@ function updateUserData(event) {
       const values = {};
 
       keys.forEach(key => values[':' + key] = event.payload[key]);
-      
+
       const params = {
         TableName: table,
         Key: {
@@ -37,18 +37,26 @@ function updateUserData(event) {
         ReturnConsumedCapacity: 'INDEXES',
       };
 
-      return docClient.updateAsync(params);
+      return bus.call('Dynamo-update', params);
     });
+}
+
+function wrapToEnvelope(profile, event) {
+  return {
+    profile: profile,
+    maas: {
+      query: event,
+    },
+  };
 }
 
 /**
  * Export respond to Handler
  */
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   return updateUserData(event)
-    .then((response) => {
-      callback(null, response.Attributes);
-    })
+    .then(response => wrapToEnvelope(response.Attributes, event))
+    .then(envelope => callback(null, envelope))
     .catch((error) => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
