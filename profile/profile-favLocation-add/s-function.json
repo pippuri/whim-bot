@@ -21,7 +21,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
+        "application/json": "{\"identityId\":\"$context.authorizer.identityId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
       },
       "responses": {
         "^400.*": {

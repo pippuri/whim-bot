@@ -22,7 +22,7 @@
       "requestParameters": {
       },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"identifier\":$input.json('$.identifier')}}"
+        "application/json": "{\"identityId\":\"$context.authorizer.identityId\",\"payload\":{\"identifier\":$input.json('$.identifier')}}"
       },
       "responses": {
         "^400.*": {
