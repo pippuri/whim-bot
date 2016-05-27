@@ -7,7 +7,7 @@ var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 function getCityAddress(Address) {
   var tempAddress = [];
   tempAddress = Address.split(',');
-  return tempAddress[tempAddress.length - 2];
+  return ((tempAddress[tempAddress.length - 2]).replace(/\d+/g, '')).trim();
 }
 
 function parseResults(response) {
