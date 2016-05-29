@@ -4,7 +4,7 @@ var ajvFactory = require('ajv');
 
 // Input schema
 var schema = require('./schema.json');
-var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
+var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 var validate;
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
@@ -90,6 +90,7 @@ module.exports.respond = function (event, callback) {
       callback(null, results);
     })
     .catch(function (err) {
+      console.log('This event caused error: ' + event);
       console.warn('Error:', err.errors);
 
       // TODO Process the error

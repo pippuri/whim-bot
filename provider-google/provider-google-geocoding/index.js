@@ -70,6 +70,7 @@ module.exports.respond = function (event, callback) {
     return callback(null, response);
   })
   .catch(function (err) {
+    console.log('This event caused error: ' + event);
     return callback(err);
   });
 };

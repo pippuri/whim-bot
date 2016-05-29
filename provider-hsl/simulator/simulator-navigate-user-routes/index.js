@@ -4,7 +4,7 @@ var request = require('request-promise-lite');
 var routeRandomizer = require('./route-randomizer');
 var routeNavigator = require('./route-navigator');
 
-var iotData = new AWS.IotData({ region:process.env.AWS_REGION, endpoint:process.env.IOT_ENDPOINT });
+var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 // Simulate this user range
@@ -80,6 +80,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(function (err) {
+    console.log('This event caused error: ' + event);
     callback(err);
   });
 };

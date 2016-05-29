@@ -6,6 +6,5 @@
   "license": "MIT",
   "private": true,
   "dependencies": {
-    "bluebird": "^3.4.0"
   }
 }
