@@ -1,5 +1,5 @@
 {
-  "name": "profile-activeroute",
+  "name": "profile-active-route",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
