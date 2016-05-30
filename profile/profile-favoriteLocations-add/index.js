@@ -1,10 +1,10 @@
 
 var Promise = require('bluebird');
-var lib = require('../../lib/profile/index');
+var lib = require('../../lib/utilities/index');
 var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
 
-function removeFavLocation(event) {
+function addfavoriteLocations(event) {
   if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
     if (!_.isEmpty(event.payload)) {
       // No problem
@@ -17,22 +17,30 @@ function removeFavLocation(event) {
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === true) { // True means Existed
-        var params = {
-          TableName: process.env.DYNAMO_USER_PROFILE,
-          Key: {
-            identityId: event.identityId,
-          },
-        };
-        return bus.call('Dynamo-get', params);
-      } else {
+      if (response === false) { // False means NOT existed
         return Promise.reject(new Error('User Not Existed'));
       }
+
+      // Check FL existance
+      var query = {
+        TableName: process.env.DYNAMO_USER_PROFILE,
+        ExpressionAttributeNames: {
+          '#priKey': 'identityId',
+        },
+        ExpressionAttributeValues: {
+          ':priKeyValue': event.identityId,
+        },
+        KeyConditionExpression: '#priKey = :priKeyValue',
+        ProjectionExpression: 'favoriteLocations',
+      };
+      return bus.call('Dynamo-query', query);
     })
     .then((response) => {
-      for (var i = response.Item.favLocation.length - 1; i > -1; i--) {
-        if (response.Item.favLocation[i].name === event.payload.identifier) {
-          response.Item.favLocation.splice(i, 1);
+      var favoriteLocations = response.Items[0].favoriteLocations;
+
+      for (var i = 0; i < favoriteLocations.length; i++) {
+        if (favoriteLocations[i].name === event.payload.name) {
+          return Promise.reject(new Error('favoriteLocations name existed'));
         }
       }
 
@@ -41,12 +49,12 @@ function removeFavLocation(event) {
         Key: {
           identityId: event.identityId,
         },
-        UpdateExpression: 'SET #attr = :value',
+        UpdateExpression: 'SET #attr = list_append(#attr, :value)',
         ExpressionAttributeNames: {
-          '#attr': 'favLocation',
+          '#attr': 'favoriteLocations',
         },
         ExpressionAttributeValues: {
-          ':value': response.Item.favLocation,
+          ':value': [event.payload],
         },
       };
       return bus.call('Dynamo-update', params);
@@ -54,7 +62,7 @@ function removeFavLocation(event) {
 }
 
 module.exports.respond = function (event, callback) {
-  return removeFavLocation(event)
+  return addfavoriteLocations(event)
     .then((response) => {
       callback(null, response);
     })

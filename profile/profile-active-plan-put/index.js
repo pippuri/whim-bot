@@ -1,6 +1,6 @@
 
 var Promise = require('bluebird');
-var lib = require('../../lib/profile/index');
+var lib = require('../../lib/utilities/index');
 var bus = require('../../lib/service-bus/index');
 
 var planInfo;

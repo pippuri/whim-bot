@@ -1,6 +1,6 @@
 
 var Promise = require('bluebird');
-var lib = require('../../lib/profile/index');
+var lib = require('../../lib/utilities/index');
 var bus = require('../../lib/service-bus/index');
 var _ = require('lodash/core');
 
@@ -24,7 +24,7 @@ function persistUserData(event) {
             identityId: event.identityId,
             balance: 0,
             plan: [],
-            favLocation: [],
+            favoriteLocations: [],
             phone: event.payload.phone,
           };
 
