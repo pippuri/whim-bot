@@ -13,7 +13,7 @@
   },
   "endpoints": [
     {
-      "path": "profile/favoriteLocations",
+      "path": "profile/favorite-locations",
       "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
