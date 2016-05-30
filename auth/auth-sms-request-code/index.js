@@ -1,8 +1,8 @@
 var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({ region:process.env.AWS_REGION });
-Promise.promisifyAll(lambda, { suffix:'Promise' });
+var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
+Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 /**
  * Request a login verification code by SMS.
@@ -49,6 +49,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(function (err) {
+    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

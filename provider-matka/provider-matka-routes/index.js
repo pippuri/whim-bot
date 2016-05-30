@@ -32,7 +32,7 @@ function getMatkaRoutes(from, to, format) {
     },
   })
   .then(function (response) {
-    return xml2js.parseStringAsync(response, { explicitChildren:true, preserveChildrenOrder:true });
+    return xml2js.parseStringAsync(response, { explicitChildren: true, preserveChildrenOrder: true });
   })
   .then(function (result) {
     console.log('Format:', format);
@@ -50,6 +50,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(function (err) {
+    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };
