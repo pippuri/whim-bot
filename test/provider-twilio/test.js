@@ -1,11 +1,12 @@
 const testSendSMS = require('./feature-send-sms.js');
-const testReceiveSMS = require('./feature-receive-sms.js');
 
 describe('Twilio (SMS) provider', () => {
+  const _this = this;
 
-  describe('Send SMS', () => {
-    this.timeout(20000);
-    var lambda = require('../../provider-twilio/provider-twilio-send-sms/handler.js');
+  // Skip the SMS sending in normal cases
+  describe.skip('Send SMS', () => {
+    _this.timeout = 20000;
+    const lambda = require('../../provider-twilio/provider-twilio-send-sms/handler.js');
     testSendSMS(lambda);
   });
 });

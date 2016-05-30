@@ -6,7 +6,7 @@ var TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
  * Handle an imcoming SMS message received at Twilio.
  */
 function sendSmsMessage(phone, message) {
-  console.log('Sending SMS message:', phone, message);
+  //console.log('Sending SMS message:', phone, message);
   return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages', {
     form: {
       From: process.env.TWILIO_FROM_NUMBER,
@@ -28,13 +28,9 @@ function sendSmsMessage(phone, message) {
 
 module.exports.respond = (event, callback) => {
   sendSmsMessage(event.phone, event.message)
-  .then(function (response) {
-    callback(null, response);
-  })
-  .catch(function (err) {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
   .then(response => callback(null, response.toString()))
-  .catch(function (err) {
+  .catch(err => {
+    console.log(err.response.toString());
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
   });
 };
