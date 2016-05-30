@@ -13,7 +13,7 @@
           "lon": 231232
         }
       ],
-      "plan": {
+      "plans": {
         "name": "Basic",
         "basePoints": 123,
         "dateStart": 1462969828,

@@ -33,7 +33,7 @@ function setActivePlan(event) {
         },
         UpdateExpression: 'SET #attr = :value',
         ExpressionAttributeNames: {
-          '#attr': 'plan',
+          '#attr': 'plans',
         },
         ExpressionAttributeValues: {
           ':value': planInfo,

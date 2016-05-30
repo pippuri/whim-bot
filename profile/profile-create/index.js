@@ -23,7 +23,7 @@ function persistUserData(event) {
         var record = {
             identityId: event.identityId,
             balance: 0,
-            plan: [],
+            plans: [],
             favoriteLocations: [],
             phone: event.payload.phone,
           };
