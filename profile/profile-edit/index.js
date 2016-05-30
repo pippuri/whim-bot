@@ -17,7 +17,7 @@ function updateUserData(event) {
   return lib.documentExist(table, 'identityId', identityId, null, null)
     .then(response => {
       if (response !== true) {
-        return Promise.reject(new Error(`User ${identityId} does not exist`));
+        return Promise.reject(new Error('User does not exist'));
       }
 
       const keys = Object.keys(event.payload);
@@ -42,6 +42,9 @@ function updateUserData(event) {
 }
 
 function wrapToEnvelope(profile, event) {
+  // Delete identity id from the error
+  delete profile.identityId;
+
   return {
     profile: profile,
     maas: {
