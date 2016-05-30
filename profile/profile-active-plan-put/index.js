@@ -58,6 +58,10 @@ function setActivePlan(event) {
 module.exports.respond = (event, callback) => {
   setActivePlan(event)
     .then((response) => {
+      if (response.Item.hasOwnProperty('identityId')) {
+        delete response.Item.identityId;
+      }
+
       callback(null, response);
     })
     .catch((error) => {
