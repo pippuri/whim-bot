@@ -54,7 +54,7 @@ module.exports.respond = function (event, callback) {
     callback(null, formatResponse(response));
   })
   .catch(function (error) {
-    console.log('This event caused error: ' + event);
+    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(error);
   });
 };
