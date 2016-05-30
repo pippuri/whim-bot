@@ -13,29 +13,29 @@ function updateUserData(event) {
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === true) { // True if existed
-        _.forEach(event.payload, (value, key) => {
-          var params = {
-            TableName: process.env.DYNAMO_USER_PROFILE,
-            Key: {
-              identityId: event.identityId,
-            },
-            UpdateExpression: 'SET #attr = :value',
-            ExpressionAttributeNames: {
-              '#attr': key,
-            },
-            ExpressionAttributeValues: {
-              ':value': value,
-            },
-            ReturnValues: 'UPDATED_NEW',
-            ReturnConsumedCapacity: 'INDEXES',
-          };
-
-          return bus.call('Dynamo-update', params);
-        });
-      } else {
+      if (response === false) { // True if existed
         return Promise.reject(new Error('User Not Existed'));
       }
+
+      _.forEach(event.payload, (value, key) => {
+        var params = {
+          TableName: process.env.DYNAMO_USER_PROFILE,
+          Key: {
+            identityId: event.identityId,
+          },
+          UpdateExpression: 'SET #attr = :value',
+          ExpressionAttributeNames: {
+            '#attr': key,
+          },
+          ExpressionAttributeValues: {
+            ':value': value,
+          },
+          ReturnValues: 'UPDATED_NEW',
+          ReturnConsumedCapacity: 'INDEXES',
+        };
+
+        return bus.call('Dynamo-update', params);
+      });
     });
 }
 

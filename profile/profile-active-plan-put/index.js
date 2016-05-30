@@ -25,27 +25,27 @@ function setActivePlan(event) {
     return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null);
   })
   .then((response) => {
-    if (response === true) { // True if existed
-      var params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          identityId: event.identityId,
-        },
-        UpdateExpression: 'SET #attr = :value',
-        ExpressionAttributeNames: {
-          '#attr': 'plans',
-        },
-        ExpressionAttributeValues: {
-          ':value': planInfo,
-        },
-        ReturnValues: 'UPDATED_NEW',
-        ReturnConsumedCapacity: 'INDEXES',
-      };
-
-      return bus.call('Dynamo-update', params);
-    } else {
+    if (response === false) { // True if existed
       return Promise.reject(new Error('User Not Existed'));
     }
+
+    var params = {
+      TableName: process.env.DYNAMO_USER_PROFILE,
+      Key: {
+        identityId: event.identityId,
+      },
+      UpdateExpression: 'SET #attr = :value',
+      ExpressionAttributeNames: {
+        '#attr': 'plans',
+      },
+      ExpressionAttributeValues: {
+        ':value': planInfo,
+      },
+      ReturnValues: 'UPDATED_NEW',
+      ReturnConsumedCapacity: 'INDEXES',
+    };
+
+    return bus.call('Dynamo-update', params);
   })
   .then((response) => {
     var params2 = {
