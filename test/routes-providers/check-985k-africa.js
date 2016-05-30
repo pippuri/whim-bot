@@ -45,7 +45,7 @@ module.exports = function (lambda) {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
-    //FIXME Modify test, 30.5. Tripgo stopped returning the bus while it still exists.
+    // FIXME change to another bus route, tripgo doesn't return proper route for 985K, 30.5
     xit('response should contain a leg with bus 985K leaving at 15:35', function () {
       var leg985KTimes = [];
       response.plan.itineraries.map(function (i) {
