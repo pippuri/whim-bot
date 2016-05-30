@@ -6,6 +6,7 @@ const jshint = require('gulp-jshint');
 const jscs = require('gulp-jscs');
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
+const gutil = require('gulp-util');
 
 const jsoncFiles = ['.jshintrc', '.jscsrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
@@ -44,7 +45,8 @@ gulp.task('jscs', () => {
 
 gulp.task('mocha', () => {
   return gulp.src('test/test.js', { read: false })
-    .pipe(gmocha());
+    .pipe(gmocha())
+    .on('error', gutil.log);
 });
 
 gulp.task('validate', ['jsonclint', 'jsonlint', 'jshint', 'jscs']);
