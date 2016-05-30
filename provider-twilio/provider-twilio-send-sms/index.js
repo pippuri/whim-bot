@@ -17,7 +17,7 @@ function sendSmsMessage(phone, message) {
       user: process.env.TWILIO_ACCOUNT_SID,
       pass: process.env.TWILIO_ACCOUNT_TOKEN,
       sendImmediately: true,
-    }
+    },
   })
   .then(function (response) {
     return {
