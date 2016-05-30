@@ -1,0 +1,56 @@
+[
+  {  
+    "plans":[  
+      {  
+        "id":"payg",
+        "invoiceName":"Pay as You Go",
+        "price":0,
+        "pointGrant":0,
+        "formattedPrice":"EUR0",
+        "name":"Pay-As-You-Go",
+        "chargeModel":"flat_fee",
+        "provider":[  
+          {  
+            "icon":"https://google.com/image/gimmesomething",
+            "desc":"Pay with points",
+            "name":"taxi"
+          },
+          {  
+            "icon":"https://google.com/image/gimmesomething",
+            "desc":"Pay with points",
+            "name":"uber"
+          },
+          {  
+            "icon":"https://google.com/image/gimmesomething",
+            "desc":"Pay with points",
+            "name":"chopper"
+          }
+        ],
+        "feature":[  
+
+        ],
+        "period":1,
+        "periodUnit":"month",
+        "currency":"EUR"
+      }
+    ],
+    "balance":0,
+    "phone":"10983012",
+    "favoriteLocations":[  
+      {  
+        "lon":231232,
+        "address":"Great Chott salt flat, Tatooine",
+        "name":"work",
+        "lat":123123
+      },
+      {  
+        "lon":231232,
+        "address":"Great Chott salt flat, Tatooine",
+        "name":"somewhere",
+        "lat":123123
+      }
+    ],
+    "email":"abcd@gmail.com",
+    "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000"
+  }
+]
