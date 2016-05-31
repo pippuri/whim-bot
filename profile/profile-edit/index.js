@@ -11,7 +11,6 @@ function updateUserData(event) {
     return Promise.reject(new Error('Input missing'));
   }
 
-
   if (typeof identityId !== 'string') {
     return Promise.reject(new Error('Invalid or missing identityId'));
   }
@@ -42,7 +41,6 @@ function updateUserData(event) {
       };
 
       return bus.call('Dynamo-update', params);
->>>>>>> cf2e1eddd320549b9ddaf915314747ebb8e74140
     });
 }
 
