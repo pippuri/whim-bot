@@ -89,5 +89,19 @@ module.exports = function (lambda, options) {
       expect(itinerariesWithoutCo2Cost).to.be.empty;
     });
 
+    it('response itineraries should contain point cost', function () {
+      var itinerariesWithoutPointsCost = [];
+      for (var itinerary of response.plan.itineraries) {
+        if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('points') && typeof itinerary.fare.points === typeof 123) {
+          // no problem
+        } else {
+          itinerariesWithoutPointsCost.push(itinerary);
+        }
+
+      }
+
+      expect(itinerariesWithoutPointsCost).to.be.empty;
+    });
+
   });
 };
