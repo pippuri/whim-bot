@@ -20,6 +20,11 @@ module.exports = function (lambda) {
     });
 
     it('should not raise an error', function () {
+      if (error) {
+        console.warn(error.message);
+        console.warn(error.stack);
+      }
+
       expect(error).to.be.null;
     });
 
