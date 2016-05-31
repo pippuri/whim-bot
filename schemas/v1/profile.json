@@ -1,0 +1,38 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.maas.global/v1/profile",
+  "description": "MaaS user profiles",
+  "type": "object",
+  "properties": {
+    "identityId": {
+      "$ref": "aws.json#definitions/cognitoIdentityId"
+    },
+    "plans": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": true
+      }
+    },
+    "favoriteLocations": {
+      "type": "array",
+      "items": [
+        {
+          "type": "object",
+          "additionalProperties": true
+        }
+      ]
+    },
+    "balance": {
+      "type": "number"
+    },
+    "phone": {
+      "$ref": "units.json#definitions/phone"
+    },
+    "email": {
+      "$ref": "units.json#definitions/email"
+    }
+  },
+  "additionalProperties": false,
+  "required": [ "plans", "favoriteLocations", "balance", "phone", "email" ]
+}
