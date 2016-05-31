@@ -36,6 +36,19 @@ function addRouteAndLegIdentifiersToResponse(response) {
   return response;
 }
 
+function filterOutRoutesWithoutPointCost(response) {
+  const filtered = response.plan.itineraries.filter(itinerary => {
+    if (itinerary.fare.points === null) {
+      return false;
+    }
+
+    return true;
+  });
+
+  response.plan.itineraries = filtered;
+  return response;
+}
+
 function filterPastRoutes(leaveAt, response) {
   if (!leaveAt) {
     return response;
@@ -81,7 +94,8 @@ function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
     },
     options
   )
-  .then((response) => addRouteAndLegIdentifiersToResponse(response))
+  .then(response => addRouteAndLegIdentifiersToResponse(response))
+  .then(response => filterOutRoutesWithoutPointCost(response))
   .then(response => filterPastRoutes(leaveAt, response));
 }
 
