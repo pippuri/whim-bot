@@ -1,6 +1,6 @@
 
 var Promise = require('bluebird');
-var lib = require('../../lib/profile/index');
+var lib = require('../../lib/utilities/index');
 var bus = require('../../lib/service-bus/index');
 
 var planInfo;
@@ -33,7 +33,7 @@ function setActivePlan(event) {
         },
         UpdateExpression: 'SET #attr = :value',
         ExpressionAttributeNames: {
-          '#attr': 'plan',
+          '#attr': 'plans',
         },
         ExpressionAttributeValues: {
           ':value': planInfo,

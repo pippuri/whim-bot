@@ -1,5 +1,5 @@
 {
-  "name": "profile-favLocation-add",
+  "name": "profile-favoriteLocations-delete",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
@@ -13,15 +13,16 @@
   },
   "endpoints": [
     {
-      "path": "profile/favLocation",
-      "method": "POST",
+      "path": "profile/favorite-locations",
+      "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+      },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name')}}"
       },
       "responses": {
         "^400.*": {

@@ -9,7 +9,7 @@
         "plan": {
           "type": "array"
         },
-        "favLocation": {
+        "favoriteLocations": {
           "type": "array",
           "item": {
             "type": "array",

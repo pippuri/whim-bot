@@ -3,6 +3,7 @@ var Promise = require('bluebird');
 
 // Library
 var SubscriptionMgr = require('../../lib/subscription-manager');
+var lib = require('../../lib/utilities/index');
 
 function getSingleProduct(event) {
   if (event.type === 'plan') {
@@ -17,7 +18,7 @@ function getSingleProduct(event) {
 module.exports.respond = function (event, callback) {
   getSingleProduct(event)
     .then(function (response) {
-      callback(null, response);
+      callback(null, lib.parseChargebeePackage(response));
     })
     .catch(function (error) {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
