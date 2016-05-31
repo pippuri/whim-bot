@@ -3,6 +3,7 @@ var expect = require('chai').expect;
 var moment = require('moment');
 var validator = require('../../lib/validator');
 var schema = require('../../routes/routes-query/response-schema.json');
+var _ = require('lodash');
 
 module.exports = function (lambda, options) {
 
@@ -45,17 +46,26 @@ module.exports = function (lambda, options) {
     });
 
     if (options.taxiSupport === true) {
-      it('response should have taxi legs', function () {
-        var taxiLegs = [];
-        response.plan.itineraries.forEach(itinerary => {
-          itinerary.legs.forEach(leg => {
-            if (leg.mode === 'TAXI') {
-              taxiLegs.push(leg);
-            }
+      it('response should have direct taxi route', function () {
+        const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
+          const modes = _.map(itinerary.legs, 'mode');
+          if (_.includes(modes, 'BUS')) {
+            return false;
+          }
 
-          });
+          return true;
         });
-        expect(taxiLegs).to.not.be.empty;
+
+        const directTaxiRoutes = itinerariesWithoutBus.filter(itinerary => {
+          const modes = _.map(itinerary.legs, 'mode');
+          if (_.includes(modes, 'TAXI')) {
+            return true;
+          }
+
+          return false;
+        });
+
+        expect(directTaxiRoutes).to.not.be.empty;
       });
     }
   });
