@@ -7,7 +7,12 @@ function convertMode(mode) {
   return mode ? mode.toUpperCase() : undefined;
 }
 
-function convertAgencyId(serviceOperator) {
+function convertAgencyId(mode, serviceOperator, taxiProvider) {
+
+  if (mode === 'TAXI') {
+    return taxiProvider;
+  }
+
   if (serviceOperator === 'Helsingin seudun liikenne') {
     return 'HSL';
   } else {
@@ -26,12 +31,13 @@ function convertFromTo(from) {
   };
 }
 
-function convertLeg(segment, original, templates) {
+function convertLeg(segment, original, templates, taxiProvider) {
   var template = templates[segment.segmentTemplateHashCode] || {};
+  const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
   return {
     startTime: segment.startTime * 1000,
     endTime: segment.endTime * 1000,
-    mode: convertMode(template.modeInfo && template.modeInfo.localIcon),
+    mode: mode,
     from: convertFromTo(template.from),
     to: convertFromTo(template.to),
     legGeometry: template.streets && template.streets[0] ? {
@@ -40,16 +46,16 @@ function convertLeg(segment, original, templates) {
     route: segment.serviceNumber,
     routeShortName: segment.serviceNumber,
     routeLongName: segment.serviceName,
-    agencyId: convertAgencyId(template.serviceOperator),
+    agencyId: convertAgencyId(mode, template.serviceOperator, taxiProvider),
   };
 }
 
-function convertItinerary(trip, original, templates) {
+function convertItinerary(trip, original, templates, taxiProvider) {
   return {
     startTime: trip.depart * 1000,
     endTime: trip.arrive * 1000,
     legs: trip.segments.map(function (segment) {
-      return convertLeg(segment, original, templates);
+      return convertLeg(segment, original, templates, taxiProvider);
     }),
   };
 }
@@ -79,7 +85,7 @@ function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
 
-module.exports = function (original) {
+module.exports = function (original, taxiProvider) {
   var allTrips = [];
 
   // Build template hashmap
@@ -97,7 +103,7 @@ module.exports = function (original) {
     plan: {
       from: convertPlanFrom(original),
       itineraries: allTrips.map(function (trip) {
-        return convertItinerary(trip, original, templates);
+        return convertItinerary(trip, original, templates, taxiProvider);
       }).sort(compareItinerary),
     },
   });
