@@ -46,7 +46,7 @@
   },
   "definitions": {
     "identityId": {
-      "$ref": "aws.json#/definitions/cognitoPrincipalId"
+      "$ref": "aws.json#/definitions/cognitoIdentityId"
     }
   }
 }
