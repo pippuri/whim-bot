@@ -2,6 +2,7 @@
 var wrap = require('lambda-wrapper').wrap;
 var expect = require('chai').expect;
 var moment = require('moment');
+var _ = require('lodash');
 
 var validator = require('../../../lib/validator');
 var schema = require('../../../routes/routes-query/response-schema.json');
@@ -62,17 +63,26 @@ module.exports = function (lambda, options) {
       expect(inMinutes).to.be.below(5);
     });
 
-    it.skip('response should have taxi legs', function () {
-      var taxiLegs = [];
-      response.plan.itineraries.forEach(itinerary => {
-        itinerary.legs.forEach(leg => {
-          if (leg.mode === 'TAXI') {
-            taxiLegs.push(leg);
-          }
+    it.skip('response should have direct taxi route', function () {
+      const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
+        const modes = _.map(itinerary.legs, 'mode');
+        if (_.includes(modes, 'BUS')) {
+          return false;
+        }
 
-        });
+        return true;
       });
-      expect(taxiLegs).to.not.be.empty;
+
+      const directTaxiRoutes = itinerariesWithoutBus.filter(itinerary => {
+        const modes = _.map(itinerary.legs, 'mode');
+        if (_.includes(modes, 'TAXI')) {
+          return true;
+        }
+
+        return false;
+      });
+
+      expect(directTaxiRoutes).to.not.be.empty;
     });
 
     it('response itineraries should contain co2 cost', function () {
