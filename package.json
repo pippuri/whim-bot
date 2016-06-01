@@ -77,7 +77,7 @@
   "scripts": {
     "test": "gulp test",
     "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json",
-    "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger/swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/"
+    "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/"
   },
   "version": "0.1.0"
 }

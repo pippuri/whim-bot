@@ -23,6 +23,31 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
       },
+      "swaggerExport": {
+        "summary": "Add an user favorite location",
+        "description": "Add an user favorite location to the his/her list on DynamoDB",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Location that will be added to user's favoriteLocations list",
+            "required": true,
+            "schema": {
+              "$ref": "request-schema.json#/properties"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success"
+          },
+          "default": {
+            "description": "Errors"
+          }
+        }
+      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
