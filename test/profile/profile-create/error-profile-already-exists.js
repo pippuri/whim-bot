@@ -26,7 +26,7 @@ module.exports = function (lambda) {
       });
     });
 
-    it.skip('should raise an error', function () {
+    it('should raise an error', function () {
       const errorMessage = '' + error;
       expect(errorMessage).to.contain('User Existed');
     });
