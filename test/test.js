@@ -30,5 +30,6 @@ describe('MaaS.fi backend', function () {
   require('./autocomplete-providers/test.js');
   require('./taxi-providers/test.js');
   require('./provider-twilio/test.js');
+  require('./profile/test.js');
   require('./lib/test.js');
 });
