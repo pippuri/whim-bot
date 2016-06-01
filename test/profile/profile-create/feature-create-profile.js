@@ -11,6 +11,9 @@ module.exports = (lambda) => {
 
     const event = {
       identityId: identityId,
+      payload: {
+        phone: Math.random() * 1000,
+      },
     };
 
     var error;
@@ -24,11 +27,11 @@ module.exports = (lambda) => {
       });
     });
 
-    it.skip('should not raise an error', function () {
+    it('should not raise an error', function () {
       expect(error).to.be.null;
     });
 
-    it.skip('should return an empty object', function () {
+    it('should return empty', function () {
       expect(response).to.deep.equal({});
     });
 

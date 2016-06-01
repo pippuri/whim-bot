@@ -34,6 +34,10 @@ module.exports.respond = function (event, callback) {
       if (_.isEmpty(response)) {
         callback(new Error('Empty response / No item found with identityId ' + event.identityId));
       } else {
+        if (response.Item.hasOwnProperty('identityId')) {
+          delete response.Item.identityId;
+        }
+
         callback(null, response);
       }
     })

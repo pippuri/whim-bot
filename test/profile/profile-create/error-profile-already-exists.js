@@ -11,7 +11,7 @@ module.exports = (lambda) => {
     const event = {
       identityId: identityId,
       payload: {
-        name: 'Dummy Profile',
+        phone: Math.random() * 1000,
       },
     };
 
