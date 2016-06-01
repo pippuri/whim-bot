@@ -95,6 +95,15 @@ Select "Apply these changes to the local version" at the prompt.
 ```
 sls function autoinstall -a # Installs module dependencies to lambdas
 ```
+### Deploying static files/images to S3 Bucket
+```
+Add files/folders to client/dist folder
+``` 
+Then run the following command:
+```
+sls client deploy -s dev #stage should be specified
+```
+# NB DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE S3 BUCKET AND REDEPLOY ALL FILES.
 
 ### Running Tests
 

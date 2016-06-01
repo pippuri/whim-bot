@@ -1,6 +1,18 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
   "Description": "The AWS CloudFormation template for this Serverless application's resources outside of Lambdas and Api Gateway",
+  "Mappings" : {
+    "RegionMap" : {
+        "us-east-1" : { "S3hostedzoneID" : "Z3AQBSTGFYJSTF", "websiteendpoint" : "s3-website-us-east-1.amazonaws.com" },
+        "us-west-1" : { "S3hostedzoneID" : "Z2F56UZL2M1ACD", "websiteendpoint" : "s3-website-us-west-1.amazonaws.com" },
+        "us-west-2" : { "S3hostedzoneID" : "Z3BJ6K6RIION7M", "websiteendpoint" : "s3-website-us-west-2.amazonaws.com" },
+        "eu-west-1" : { "S3hostedzoneID" : "Z1BKCTXD74EZPE", "websiteendpoint" : "s3-website-eu-west-1.amazonaws.com" },
+        "ap-southeast-1" : { "S3hostedzoneID" : "Z3O0J2DXBE1FTB", "websiteendpoint" : "s3-website-ap-southeast-1.amazonaws.com" },
+        "ap-southeast-2" : { "S3hostedzoneID" : "Z1WCIGYICN2BYD", "websiteendpoint" : "s3-website-ap-southeast-2.amazonaws.com" },
+        "ap-northeast-1" : { "S3hostedzoneID" : "Z2M4EHUR26P7ZW", "websiteendpoint" : "s3-website-ap-northeast-1.amazonaws.com" },
+        "sa-east-1" : { "S3hostedzoneID" : "Z31GFT0UA1I2HV", "websiteendpoint" : "s3-website-sa-east-1.amazonaws.com" }
+    }
+  },
   "Resources": {
     "IamRoleLambda": {
       "Type": "AWS::IAM::Role",
@@ -252,6 +264,101 @@
         },
         "TableName": "${project}-user-transaction-history-${stage}"
       }
+    },
+    "S3IamRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "s3.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
+    "S3IamPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "Static-MaaS-Bucket",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "*"
+              ],
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "S3IamRole"
+          }
+        ]
+      }
+    },
+    "StaticFilesBucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+        "BucketName": "staticfiles.maas.global" ,
+        "AccessControl" : "PublicRead",
+        "WebsiteConfiguration" : {
+          "IndexDocument" : "index.html",
+          "ErrorDocument" : "error.html"
+        }
+      },
+      "DeletionPolicy" : "Retain"
+    },
+    "StaticFilesCDN" : {
+      "Type" : "AWS::CloudFront::Distribution",
+      "Properties" : {
+         "DistributionConfig" : {
+           "Comment" : "CloudFront distibution for Static FIles S3 buceket",
+            "Origins" : [ {
+                "DomainName": {
+                  "Fn::Join" : [".", [
+                    "staticfiles.maas.global",
+                    {"Fn::FindInMap" : [ "RegionMap", { "Ref" : "AWS::Region" }, "websiteendpoint"]}
+                  ]]
+                },
+                "Id" : "StaticFilesOrigin",
+                "CustomOriginConfig" : {
+                  "HTTPPort": "80",
+                  "HTTPSPort": "443",
+                  "OriginProtocolPolicy": "http-only"
+                }
+            }],
+           "Enabled" : "true",
+           "DefaultRootObject" : "index.html",
+           "Aliases" : [
+             "staticfiles.maas.global"
+           ],
+            "DefaultCacheBehavior" : {
+                "AllowedMethods" : [ "GET", "HEAD" ],
+                "Compress": "true",
+                "TargetOriginId" : "StaticFilesOrigin",
+                "ForwardedValues" : {
+                    "QueryString" : "true"
+                },
+                "ViewerProtocolPolicy" : "allow-all"
+            },
+            "PriceClass" : "PriceClass_100",
+            "ViewerCertificate" : { "CloudFrontDefaultCertificate" : "true" }
+         }
+      }
     }
   },
   "Outputs": {
@@ -263,6 +370,10 @@
           "Arn"
         ]
       }
+    },
+    "BucketName" : {
+      "Value" : { "Ref" : "StaticFilesBucket" },
+      "Description" : "Name of S3 bucket to store static files"
     }
   }
 }
