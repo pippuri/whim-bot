@@ -51,19 +51,20 @@ module.exports = function (lambda, options) {
     });
 
     it('response should not have legs from the past', function () {
-      var tooEarly = [];
+      var waitingTimes = [];
       response.plan.itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
-          var early = (leg.startTime - parseInt(event.leaveAt, 10));
-          tooEarly.push(early);
+          const waitingTime = (leg.startTime - parseInt(event.leaveAt, 10));
+          waitingTimes.push(waitingTime);
         });
       });
-      var earliest = Math.max.apply(null, tooEarly);
-      var inMinutes = ((earliest / 1000) / 60);
-      expect(inMinutes).to.be.below(5);
+      const shortest = Math.min.apply(null, waitingTimes);
+      const inMinutes = ((shortest / 1000) / 60);
+      const margin = 1;
+      expect(inMinutes).to.be.above(-margin);
     });
 
-    it.skip('response should have direct taxi route', function () {
+    it('response should have direct taxi route', function () {
       const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
         const modes = _.map(itinerary.legs, 'mode');
         if (_.includes(modes, 'BUS')) {
