@@ -17,6 +17,8 @@
     }
   },
   "environment": {
+    "region": "${region}",
+    "deletionPolicy": "${deletionPolicy}",
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_DATA_MODEL_STAGE": "${stage}",
     "SERVERLESS_PROJECT_NAME": "${project}",

@@ -15,6 +15,11 @@
       "type": "apiKey",
       "name": "Authorization",
       "in": "header"
+    },
+    "authorizationHeader": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
     }
   },
   "paths": {
@@ -41,7 +46,11 @@
         "produces": [
           "application/json"
         ],
-        "security": [],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
         "parameters": [],
         "responses": {}
       }
@@ -55,7 +64,11 @@
         "produces": [
           "application/json"
         ],
-        "security": [],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
         "parameters": [],
         "responses": {}
       }
@@ -70,7 +83,20 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "code",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -84,7 +110,14 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "phone",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -102,6 +135,47 @@
         "responses": {}
       }
     },
+    "/geocoding": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-geocoding",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/geocoding/reverse-google": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-geocoding-reverse-google",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "lat",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "lon",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
     "/locations": {
       "get": {
         "tags": [],
@@ -116,17 +190,164 @@
         "responses": {}
       }
     },
-    "/locations/query": {
+    "/monitor": {
       "get": {
         "tags": [],
         "summary": "",
         "description": "",
-        "operationId": "get-locations-query",
+        "operationId": "get-monitor",
         "produces": [
           "application/json"
         ],
         "security": [],
         "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-profile",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      },
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-profile",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile/active-route": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-profile-active-route",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile/favorite-locations": {
+      "post": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "post-profile-favorite-locations",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      },
+      "delete": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "delete-profile-favorite-locations",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile/history/route": {
+      "post": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "post-profile-history-route",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile/history/transaction": {
+      "post": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "post-profile-history-transaction",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/profile/plan/{planId}": {
+      "put": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "put-profile-plan-planId",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "planId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -140,7 +361,38 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -154,7 +406,38 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -168,7 +451,26 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -178,6 +480,81 @@
         "summary": "",
         "description": "",
         "operationId": "get-providers-matka-routes",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/providers/taxi/cancel": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-taxi-cancel",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/taxi/get": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-taxi-get",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/taxi/order": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-taxi-order",
+        "produces": [
+          "application/json"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {}
+      }
+    },
+    "/providers/taxi/validate": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-providers-taxi-validate",
         "produces": [
           "application/json"
         ],
@@ -210,7 +587,38 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -224,7 +632,38 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
         "responses": {}
       }
     },
@@ -238,21 +677,38 @@
           "application/json"
         ],
         "security": [],
-        "parameters": [],
-        "responses": {}
-      }
-    },
-    "/providers/twilio/receive-sms": {
-      "get": {
-        "tags": [],
-        "summary": "",
-        "description": "",
-        "operationId": "get-providers-twilio-receive-sms",
-        "produces": [
-          "application/json"
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "format",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
         ],
-        "security": [],
-        "parameters": [],
         "responses": {}
       }
     },
@@ -265,7 +721,91 @@
         "produces": [
           "application/json"
         ],
-        "security": [],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "provider",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/store/package": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-store-package",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "responses": {}
+      }
+    },
+    "/store/packages": {
+      "get": {
+        "tags": [],
+        "summary": "",
+        "description": "",
+        "operationId": "get-store-packages",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "authorizationHeader": []
+          }
+        ],
         "parameters": [],
         "responses": {}
       }
