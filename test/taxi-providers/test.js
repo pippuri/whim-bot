@@ -1,9 +1,9 @@
 process.env.TAXI_ORDER_ID = null;
 
-var testValidate = require('./feature-validate.js');
-var testOrder = require('./feature-order.js');
-var testGet = require('./feature-get.js');
-var testCancel = require('./feature-cancel.js');
+const testValidate = require('./feature-validate.js');
+const testOrder = require('./feature-order.js');
+const testGet = require('./feature-get.js');
+const testCancel = require('./feature-cancel.js');
 
 describe('taxi providers', function () {
   describe('Taxi', function () {

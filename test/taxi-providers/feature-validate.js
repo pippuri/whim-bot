@@ -1,12 +1,12 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
 
-module.exports = function () {
-  var lambda = require('../../provider-taxi/provider-taxi-validate/handler.js');
+module.exports = () => {
+  const lambda = require('../../provider-taxi/provider-taxi-validate/handler.js');
 
   describe('validate order request', function () {
-    var event = {
+    const event = {
       locations: [
         {
           address: {
@@ -44,8 +44,8 @@ module.exports = function () {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();

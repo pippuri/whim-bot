@@ -39,7 +39,7 @@ function setActivePlan(event) {
         '#attr': 'plans',
       },
       ExpressionAttributeValues: {
-        ':value': planInfo,
+        ':value': [planInfo],
       },
       ReturnValues: 'UPDATED_NEW',
       ReturnConsumedCapacity: 'INDEXES',

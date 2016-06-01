@@ -1,34 +1,37 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('for a nonexistent user', function () {
 
-    var randomHex = ('0000' + (Math.random() * 0xffff).toString(16)).slice(-4);
-    var identityId = 'eu-west-1:00000000-dead-' + randomHex + '-dead-000000000000';
+    const randomHex = ('0000' + (Math.random() * 0xffff).toString(16)).slice(-4);
+    const identityId = 'eu-west-1:00000000-dead-' + randomHex + '-dead-000000000000';
 
-    var event = {
+    const event = {
       identityId: identityId,
+      payload: {
+        phone: Math.random() * 1000,
+      },
     };
 
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
       });
     });
 
-    it.skip('should not raise an error', function () {
+    it('should not raise an error', function () {
       expect(error).to.be.null;
     });
 
-    it.skip('should return an empty object', function () {
+    it('should return empty', function () {
       expect(response).to.deep.equal({});
     });
 

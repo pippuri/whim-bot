@@ -1,12 +1,13 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
+const _ = require('lodash');
 
-var validator = require('../../../lib/validator');
-var schema = require('../../../routes/routes-query/response-schema.json');
+const validator = require('../../../lib/validator');
+const schema = require('../../../routes/routes-query/response-schema.json');
 
-module.exports = function (lambda, options) {
+module.exports = (lambda, options) => {
 
   if (typeof options === typeof undefined) {
     options = {};
@@ -14,7 +15,7 @@ module.exports = function (lambda, options) {
 
   describe('leaveAt request', function () {
 
-    var event = {
+    const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
       provider: '',
       from: '60.1684126,24.9316739', // SC5 Office
@@ -26,8 +27,8 @@ module.exports = function (lambda, options) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -40,7 +41,7 @@ module.exports = function (lambda, options) {
 
     it('should trigger a valid response', function () {
       return validator.validate(response, schema)
-        .then((validationError) => {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
@@ -50,29 +51,39 @@ module.exports = function (lambda, options) {
     });
 
     it('response should not have legs from the past', function () {
-      var tooEarly = [];
+      var waitingTimes = [];
       response.plan.itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
-          var early = (leg.startTime - parseInt(event.leaveAt, 10));
-          tooEarly.push(early);
+          const waitingTime = (leg.startTime - parseInt(event.leaveAt, 10));
+          waitingTimes.push(waitingTime);
         });
       });
-      var earliest = Math.max.apply(null, tooEarly);
-      var inMinutes = ((earliest / 1000) / 60);
-      expect(inMinutes).to.be.below(5);
+      const shortest = Math.min.apply(null, waitingTimes);
+      const inMinutes = ((shortest / 1000) / 60);
+      const margin = 1;
+      expect(inMinutes).to.be.above(-margin);
     });
 
-    it.skip('response should have taxi legs', function () {
-      var taxiLegs = [];
-      response.plan.itineraries.forEach(itinerary => {
-        itinerary.legs.forEach(leg => {
-          if (leg.mode === 'TAXI') {
-            taxiLegs.push(leg);
-          }
+    it('response should have direct taxi route', function () {
+      const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
+        const modes = _.map(itinerary.legs, 'mode');
+        if (_.includes(modes, 'BUS')) {
+          return false;
+        }
 
-        });
+        return true;
       });
-      expect(taxiLegs).to.not.be.empty;
+
+      const directTaxiRoutes = itinerariesWithoutBus.filter(itinerary => {
+        const modes = _.map(itinerary.legs, 'mode');
+        if (_.includes(modes, 'TAXI')) {
+          return true;
+        }
+
+        return false;
+      });
+
+      expect(directTaxiRoutes).to.not.be.empty;
     });
 
     it('response itineraries should contain co2 cost', function () {

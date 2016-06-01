@@ -89,7 +89,7 @@ function mergeResults(results) {
   return response;
 }
 
-function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
+function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format, taxiProvider) {
   return Promise.all([
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
@@ -101,7 +101,7 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format) {
     if (format === 'original') {
       return response;
     } else {
-      return adapter(response);
+      return adapter(response, taxiProvider);
     }
 
   });

@@ -1,32 +1,32 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('for an existing user', function () {
 
-    var identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
-    var event = {
+    const event = {
       identityId: identityId,
       payload: {
-        name: 'Dummy Profile',
+        phone: Math.random() * 1000,
       },
     };
 
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
       });
     });
 
-    it.skip('should raise an error', function () {
+    it('should raise an error', function () {
       const errorMessage = '' + error;
       expect(errorMessage).to.contain('User Existed');
     });

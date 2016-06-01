@@ -1,18 +1,18 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var validator = require('../../../lib/validator');
-var schema = require('../../../profile/profile-edit/response-schema.json');
-var event = require('../../../profile/profile-edit/event.json');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const validator = require('../../../lib/validator');
+const schema = require('../../../profile/profile-edit/response-schema.json');
+const event = require('../../../profile/profile-edit/event.json');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('edit an existing user', function () {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -30,7 +30,7 @@ module.exports = function (lambda) {
 
     it('should return a valid response', function () {
       return validator.validate(response, schema)
-        .then((validationError) => {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });

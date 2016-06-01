@@ -1,10 +1,11 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
-var validator = require('../../lib/validator');
-var schema = require('../../routes/routes-query/response-schema.json');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
+const validator = require('../../lib/validator');
+const schema = require('../../routes/routes-query/response-schema.json');
+const _ = require('lodash');
 
-module.exports = function (lambda, options) {
+module.exports = (lambda, options) => {
 
   if (typeof options === typeof undefined) {
     options = {};
@@ -12,7 +13,7 @@ module.exports = function (lambda, options) {
 
   describe('leaveAt request', function () {
 
-    var event = {
+    const event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
@@ -21,8 +22,8 @@ module.exports = function (lambda, options) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -35,7 +36,7 @@ module.exports = function (lambda, options) {
 
     it('should trigger a valid response', function () {
       return validator.validate(response, schema)
-        .then((validationError) => {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
@@ -45,17 +46,26 @@ module.exports = function (lambda, options) {
     });
 
     if (options.taxiSupport === true) {
-      it('response should have taxi legs', function () {
-        var taxiLegs = [];
-        response.plan.itineraries.forEach(itinerary => {
-          itinerary.legs.forEach(leg => {
-            if (leg.mode === 'TAXI') {
-              taxiLegs.push(leg);
-            }
+      it('response should have direct taxi route', function () {
+        const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
+          const modes = _.map(itinerary.legs, 'mode');
+          if (_.includes(modes, 'BUS')) {
+            return false;
+          }
 
-          });
+          return true;
         });
-        expect(taxiLegs).to.not.be.empty;
+
+        const directTaxiRoutes = itinerariesWithoutBus.filter(itinerary => {
+          const modes = _.map(itinerary.legs, 'mode');
+          if (_.includes(modes, 'TAXI')) {
+            return true;
+          }
+
+          return false;
+        });
+
+        expect(directTaxiRoutes).to.not.be.empty;
       });
     }
   });

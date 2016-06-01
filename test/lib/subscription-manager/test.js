@@ -1,13 +1,13 @@
 
-var mgr = require('../../../lib/subscription-manager');
-var expect = require('chai').expect;
+const mgr = require('../../../lib/subscription-manager');
+const expect = require('chai').expect;
 
 describe('store products', function () {
   var error;
   var response;
 
-  before(function (done) {
-    mgr.getProducts().then((data) => {
+  before(done => {
+    mgr.getProducts().then(data => {
       response = data;
       done();
     }).catch(data => {
@@ -29,7 +29,7 @@ describe('user by ID', function () {
   var error;
   var response;
 
-  before(function (done) {
+  before(done => {
     mgr.getUser('IG5rynMPlZaTwQ1nSg').then(data => {
       response = data;
       done();
@@ -48,7 +48,7 @@ describe('user by ID not found', function () {
   var error;
   var response;
 
-  before(function (done) {
+  before(done => {
     mgr.getUser('eagegeagehehaehae').then(data => {
       response = data;
       done();
@@ -67,7 +67,7 @@ describe('Update user', function () {
   var error;
   var response;
 
-  before(function (done) {
+  before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
       first_name: 'Test',
       last_name: 'User',
@@ -97,7 +97,7 @@ describe('Update User card', function () {
   var error;
   var response;
 
-  before(function (done) {
+  before(done => {
     mgr.updateUserCreditCard('ergaegeaeageagrseg', {
       first_name: 'Test',
       last_name: 'User',
@@ -124,7 +124,7 @@ describe('List the user plan', function () {
   var error;
   var response;
 
-  before(function (done) {
+  before(done => {
     mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {
       response = data;
       done();
