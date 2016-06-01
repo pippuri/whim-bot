@@ -19,22 +19,22 @@ function persistUserData(event) {
     .then((response) => {
       if (response === true) { // True if existed
         return Promise.reject(new Error('User Existed'));
-      } else {
-        var record = {
-            identityId: event.identityId,
-            balance: 0,
-            plans: [],
-            favoriteLocations: [],
-            phone: event.payload.phone,
-          };
+      }
 
-        var params = {
-          Item: record,
-          TableName: process.env.DYNAMO_USER_PROFILE,
+      var record = {
+          identityId: event.identityId,
+          balance: 0,
+          plans: [],
+          favoriteLocations: [],
+          phone: event.payload.phone,
         };
 
-        return bus.call('Dynamo-put', params);
-      }
+      var params = {
+        Item: record,
+        TableName: process.env.DYNAMO_USER_PROFILE,
+      };
+
+      return bus.call('Dynamo-put', params);
     });
 }
 

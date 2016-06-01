@@ -23,22 +23,22 @@ function saveTransaction(event) {
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then((response) => {
-      if (response === true) { // True if existed
-        var item = {
-          identityId: event.identityId,
-          timeEpoch: moment().unix(),
-          transactionId: event.payload.transactionId,
-        };
-        var params = {
-          TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
-          Item: item,
-          ReturnValues: 'ALL_NEW',
-          ReturnConsumedCapacity: 'TOTAL',
-        };
-        return docClient.putAsync(params);
-      } else if (response === true) {
+      if (response === false) { // True if existed
         return Promise.reject(new Error('User not existed'));
       }
+
+      var item = {
+        identityId: event.identityId,
+        timeEpoch: moment().unix(),
+        transactionId: event.payload.transactionId,
+      };
+      var params = {
+        TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
+        Item: item,
+        ReturnValues: 'ALL_NEW',
+        ReturnConsumedCapacity: 'TOTAL',
+      };
+      return docClient.putAsync(params);
     });
 }
 
