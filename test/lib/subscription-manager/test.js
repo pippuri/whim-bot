@@ -1,6 +1,6 @@
 
-var mgr = require('../../../lib/subscription-manager');
-var expect = require('chai').expect;
+const mgr = require('../../../lib/subscription-manager');
+const expect = require('chai').expect;
 
 describe('store products', function () {
   var error;

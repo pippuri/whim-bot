@@ -1,13 +1,13 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
 
 module.exports = function (lambda) {
 
   describe('request without "from"', function () {
 
-    var event = {
+    const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // test user
       to: '60.170779,24.7721584', // Gallows Bird Pub
       leaveAt: '' + moment().isoWeekday(8).hour(17).valueOf(), // Monday one week forward around five

@@ -1,10 +1,10 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var ajv = require('ajv')({ verbose: true });
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const ajv = require('ajv')({ verbose: true });
 
 module.exports = function (lambda, schema, fixture) {
   describe('basic tests of a simple query', function () {
-    var event = {
+    const event = {
       hint: 'latlon',
       name: 'Kamppi Bus Station',
       count: 5,
@@ -28,8 +28,8 @@ module.exports = function (lambda, schema, fixture) {
     });
 
     it('should trigger a valid response', function () {
-      var valid = ajv.validate(schema, response);
-      var validationError = valid ? null : JSON.stringify(ajv.errors);
+      const valid = ajv.validate(schema, response);
+      const validationError = valid ? null : JSON.stringify(ajv.errors);
       expect(validationError).to.be.null;
     });
   });

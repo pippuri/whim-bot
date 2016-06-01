@@ -1,19 +1,19 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var chai = require('chai');
-var expect = chai.expect;
-var moment = require('moment');
-var validator = require('../../lib/validator');
-var schema = require('../../routes/routes-query/response-schema.json');
+const wrap = require('lambda-wrapper').wrap;
+const chai = require('chai');
+const expect = chai.expect;
+const moment = require('moment');
+const validator = require('../../lib/validator');
+const schema = require('../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda) {
 
   // Afrikantie bus stop schedule http://aikataulut.reittiopas.fi/pysakit/fi/9219204.html
 
   describe('request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at 15:15', function () {
-    var timeZone = +3;
+    const timeZone = +3;
 
-    var event = {
+    const event = {
       from: '60.375224,25.2181888', // Afrikantie bus stop
       to: '60.3990481,25.1093918', // Keravan Muovi ja Lelu Oy
       leaveAt: '' + moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(14).minute(45).valueOf(), // Tuesday one week forward around 15:15
@@ -58,13 +58,13 @@ module.exports = function (lambda) {
 
       expect(leg985KTimes).to.not.be.empty;
 
-      var expectedTime =  moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(15).minute(35).second(0).millisecond(0).valueOf();
-      var timeDifferences = leg985KTimes.map(function (startTime) {
+      const expectedTime =  moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(15).minute(35).second(0).millisecond(0).valueOf();
+      const timeDifferences = leg985KTimes.map(function (startTime) {
         return Math.abs(startTime - expectedTime);
       });
 
-      var bestFitDifference = Math.min.apply(0, timeDifferences);
-      var inMinutes = ((bestFitDifference / 1000) / 60);
+      const bestFitDifference = Math.min.apply(0, timeDifferences);
+      const inMinutes = ((bestFitDifference / 1000) / 60);
 
       expect(inMinutes).to.be.below(1300); //error #2 should be less than 1 (180 for Digitransit, 1300 for here)
 

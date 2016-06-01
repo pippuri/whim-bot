@@ -1,11 +1,11 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
-var _ = require('lodash');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
+const _ = require('lodash');
 
-var validator = require('../../../lib/validator');
-var schema = require('../../../routes/routes-query/response-schema.json');
+const validator = require('../../../lib/validator');
+const schema = require('../../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda, options) {
 
@@ -15,7 +15,7 @@ module.exports = function (lambda, options) {
 
   describe('leaveAt request', function () {
 
-    var event = {
+    const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
       provider: '',
       from: '60.1684126,24.9316739', // SC5 Office

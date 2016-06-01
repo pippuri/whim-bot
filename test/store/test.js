@@ -1,13 +1,13 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var lambda = require('../../store/store-packages/handler.js');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const lambda = require('../../store/store-packages/handler.js');
 
 describe('Store packages', function () {
   var error;
   var response;
 
   before(function (done) {
-    var event = {
+    const event = {
       id: process.env.TAXI_ORDER_ID,
     };
 

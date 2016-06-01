@@ -1,14 +1,14 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
-var validator = require('../../lib/validator');
-var schema = require('../../routes/routes-query/response-schema.json');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
+const validator = require('../../lib/validator');
+const schema = require('../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda) {
 
   describe('arriveBy request', function () {
 
-    var event = {
+    const event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
       arriveBy: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five

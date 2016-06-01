@@ -1,8 +1,8 @@
-var expect = require('chai').expect;
-var wrap = require('lambda-wrapper').wrap;
-var validator = require('../../../lib/validator');
-var schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
-var event = require('../../../autocomplete/autocomplete-query/event.json');
+const expect = require('chai').expect;
+const wrap = require('lambda-wrapper').wrap;
+const validator = require('../../../lib/validator');
+const schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
+const event = require('../../../autocomplete/autocomplete-query/event.json');
 
 module.exports = function (lambda) {
 

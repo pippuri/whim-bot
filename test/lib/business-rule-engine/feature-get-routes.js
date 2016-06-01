@@ -1,15 +1,15 @@
 
-var Promise = require('bluebird');
-var expect = require('chai').expect;
-var moment = require('moment');
+const Promise = require('bluebird');
+const expect = require('chai').expect;
+const moment = require('moment');
 
 module.exports = function (engine) {
 
   describe('query for routes', function () {
 
-    var identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
-    var event = {
+    const event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
@@ -19,7 +19,7 @@ module.exports = function (engine) {
     var error;
     var response;
 
-    var serviceBusDummy = {
+    const serviceBusDummy = {
       call: (serviceName) => new Promise((resolve, reject) => {
         calls.push(serviceName);
         if (serviceName === 'MaaS-profile-info') {
@@ -58,13 +58,13 @@ module.exports = function (engine) {
       }),
     };
 
-    var ruleObject = {
+    const ruleObject = {
       rule: 'get-routes',
       identityId: identityId,
       parameters: event,
     };
 
-    var options = {
+    const options = {
       serviceBus: serviceBusDummy,
     };
 

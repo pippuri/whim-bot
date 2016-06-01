@@ -1,14 +1,14 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
 
 module.exports = function (lambda) {
 
   describe('for an existing user', function () {
 
-    var identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
-    var event = {
+    const event = {
       identityId: identityId,
       payload: {
         name: 'Dummy Profile',

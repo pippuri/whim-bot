@@ -1,13 +1,13 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var moment = require('moment');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const moment = require('moment');
 
 module.exports = function (lambda) {
 
   describe('request with both "leaveAt" and "arriveBy"', function () {
 
-    var event = {
+    const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // test user
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub

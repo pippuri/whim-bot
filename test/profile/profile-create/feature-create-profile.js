@@ -1,15 +1,15 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
 
 module.exports = function (lambda) {
 
   describe('for a nonexistent user', function () {
 
-    var randomHex = ('0000' + (Math.random() * 0xffff).toString(16)).slice(-4);
-    var identityId = 'eu-west-1:00000000-dead-' + randomHex + '-dead-000000000000';
+    const randomHex = ('0000' + (Math.random() * 0xffff).toString(16)).slice(-4);
+    const identityId = 'eu-west-1:00000000-dead-' + randomHex + '-dead-000000000000';
 
-    var event = {
+    const event = {
       identityId: identityId,
     };
 
