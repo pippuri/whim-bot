@@ -1,16 +1,16 @@
-var chai = require('chai');
-var expect = chai.expect;
-var wrap = require('lambda-wrapper').wrap;
-var event = require('../../provider-twilio/provider-twilio-send-sms/event.json');
+const chai = require('chai');
+const expect = chai.expect;
+const wrap = require('lambda-wrapper').wrap;
+const event = require('../../provider-twilio/provider-twilio-send-sms/event.json');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('send-sms request', function () {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();

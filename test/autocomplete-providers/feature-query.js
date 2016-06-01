@@ -1,15 +1,15 @@
-var chai = require('chai');
-var expect = chai.expect;
-var wrap = require('lambda-wrapper').wrap;
+const chai = require('chai');
+const expect = chai.expect;
+const wrap = require('lambda-wrapper').wrap;
 
-var validator = require('../../lib/validator');
-var schema = require('../../autocomplete/autocomplete-query/response-schema.json');
+const validator = require('../../lib/validator');
+const schema = require('../../autocomplete/autocomplete-query/response-schema.json');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('autocomplete request', function () {
 
-    var event = {
+    const event = {
       hint: 'latlon',
       name: 'Kamp',
       count: 5,
@@ -22,8 +22,8 @@ module.exports = function (lambda) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -36,7 +36,7 @@ module.exports = function (lambda) {
 
     it('should trigger a valid response', function () {
       validator.validate(response, schema)
-        .then(function (validationError) {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });

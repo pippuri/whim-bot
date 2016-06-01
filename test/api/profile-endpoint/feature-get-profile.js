@@ -1,22 +1,22 @@
 
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var validator = require('./response_validator');
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const validator = require('./response_validator');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('query for an existing user', function () {
 
-    var identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
-    var event = {
+    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const event = {
       identityId: identityId,
     };
 
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -28,7 +28,7 @@ module.exports = function (lambda) {
     });
 
     it('should return a valid response', function () {
-      var validationError = validator(response);
+      const validationError = validator(response);
       expect(validationError).to.be.null;
     });
 

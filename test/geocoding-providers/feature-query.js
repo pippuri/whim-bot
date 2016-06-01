@@ -1,10 +1,10 @@
-var wrap = require('lambda-wrapper').wrap;
-var expect = require('chai').expect;
-var ajv = require('ajv')({ verbose: true });
+const wrap = require('lambda-wrapper').wrap;
+const expect = require('chai').expect;
+const ajv = require('ajv')({ verbose: true });
 
-module.exports = function (lambda, schema, fixture) {
+module.exports = (lambda, schema, fixture) => {
   describe('basic tests of a simple query', function () {
-    var event = {
+    const event = {
       hint: 'latlon',
       name: 'Kamppi Bus Station',
       count: 5,
@@ -15,8 +15,8 @@ module.exports = function (lambda, schema, fixture) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -28,20 +28,20 @@ module.exports = function (lambda, schema, fixture) {
     });
 
     it('should trigger a valid response', function () {
-      var valid = ajv.validate(schema, response);
-      var validationError = valid ? null : JSON.stringify(ajv.errors);
+      const valid = ajv.validate(schema, response);
+      const validationError = valid ? null : JSON.stringify(ajv.errors);
       expect(validationError).to.be.null;
     });
   });
 
-  fixture.forEach(function (item) {
+  fixture.forEach(item => {
     describe(['Search:', item.input.name, item.pass].join(' '),
       function () {
       var error;
       var response;
 
-      before(function (done) {
-        wrap(lambda).run(item.input, function (err, data) {
+      before(done => {
+        wrap(lambda).run(item.input, (err, data) => {
           error = err;
           response = data;
           done();
@@ -55,7 +55,7 @@ module.exports = function (lambda, schema, fixture) {
         }
 
         expect(response.features).to.not.be.empty;
-        response.features.forEach(function (feature) {
+        response.features.forEach(feature => {
           expect(feature.properties.name).to.have.string(item.input.name);
         });
       });
