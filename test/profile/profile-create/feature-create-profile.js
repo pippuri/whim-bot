@@ -2,7 +2,7 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('for a nonexistent user', function () {
 
@@ -16,8 +16,8 @@ module.exports = function (lambda) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();

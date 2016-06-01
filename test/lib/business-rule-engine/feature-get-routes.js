@@ -3,7 +3,7 @@ const Promise = require('bluebird');
 const expect = require('chai').expect;
 const moment = require('moment');
 
-module.exports = function (engine) {
+module.exports = (engine) => {
 
   describe('query for routes', function () {
 
@@ -20,7 +20,7 @@ module.exports = function (engine) {
     var response;
 
     const serviceBusDummy = {
-      call: (serviceName) => new Promise((resolve, reject) => {
+      call: serviceName => new Promise((resolve, reject) => {
         calls.push(serviceName);
         if (serviceName === 'MaaS-profile-info') {
           return resolve({
@@ -68,7 +68,7 @@ module.exports = function (engine) {
       serviceBus: serviceBusDummy,
     };
 
-    before(function (done) {
+    before(done => {
       engine.call(ruleObject, options)
       .then(data => {
         response = data;

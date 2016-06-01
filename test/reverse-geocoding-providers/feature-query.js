@@ -2,7 +2,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const ajv = require('ajv')({ verbose: true });
 
-module.exports = function (lambda, schema, fixture) {
+module.exports = (lambda, schema, fixture) => {
   describe('basic tests of a simple query', function () {
     const event = {
       lat: 660.16732510000001,
@@ -11,8 +11,8 @@ module.exports = function (lambda, schema, fixture) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -30,14 +30,14 @@ module.exports = function (lambda, schema, fixture) {
     });
   });
 
-  fixture.forEach(function (item) {
+  fixture.forEach(item => {
     describe(['Search:', item.input.lat, item.input.lon, item.pass].join(','),
       function () {
       var error;
       var response;
 
-      before(function (done) {
-        wrap(lambda).run(item.input, function (err, data) {
+      before(done => {
+        wrap(lambda).run(item.input, (err, data) => {
           error = err;
           response = data;
           done();

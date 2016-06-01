@@ -2,7 +2,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const moment = require('moment');
 
-module.exports = function () {
+module.exports = () => {
   const lambda = require('../../provider-taxi/provider-taxi-validate/handler.js');
 
   describe('validate order request', function () {
@@ -44,8 +44,8 @@ module.exports = function () {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();

@@ -6,7 +6,7 @@ const moment = require('moment');
 const validator = require('../../lib/validator');
 const schema = require('../../routes/routes-query/response-schema.json');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   // Afrikantie bus stop schedule http://aikataulut.reittiopas.fi/pysakit/fi/9219204.html
 
@@ -22,8 +22,8 @@ module.exports = function (lambda) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -36,7 +36,7 @@ module.exports = function (lambda) {
 
     it('should trigger a valid response', function () {
       return validator.validate(response, schema)
-        .then((validationError) => {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
@@ -48,8 +48,8 @@ module.exports = function (lambda) {
     // FIXME change to another bus route, tripgo doesn't return proper route for 985K, 30.5
     xit('response should contain a leg with bus 985K leaving at 15:35', function () {
       var leg985KTimes = [];
-      response.plan.itineraries.map(function (i) {
-        i.legs.map(function (l) {
+      response.plan.itineraries.map(i => {
+        i.legs.map(l => {
           if (('' + l.route).includes('985')) {
             leg985KTimes.push(l.startTime);
           }
@@ -59,7 +59,7 @@ module.exports = function (lambda) {
       expect(leg985KTimes).to.not.be.empty;
 
       const expectedTime =  moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(15).minute(35).second(0).millisecond(0).valueOf();
-      const timeDifferences = leg985KTimes.map(function (startTime) {
+      const timeDifferences = leg985KTimes.map(startTime => {
         return Math.abs(startTime - expectedTime);
       });
 

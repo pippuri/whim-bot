@@ -3,7 +3,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('./response_validator');
 
-module.exports = function (lambda) {
+module.exports = (lambda) => {
 
   describe('query for an existing user', function () {
 
@@ -15,8 +15,8 @@ module.exports = function (lambda) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();

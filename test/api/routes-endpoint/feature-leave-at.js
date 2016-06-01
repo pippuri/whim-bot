@@ -7,7 +7,7 @@ const _ = require('lodash');
 const validator = require('../../../lib/validator');
 const schema = require('../../../routes/routes-query/response-schema.json');
 
-module.exports = function (lambda, options) {
+module.exports = (lambda, options) => {
 
   if (typeof options === typeof undefined) {
     options = {};
@@ -27,8 +27,8 @@ module.exports = function (lambda, options) {
     var error;
     var response;
 
-    before(function (done) {
-      wrap(lambda).run(event, function (err, data) {
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
         done();
@@ -41,7 +41,7 @@ module.exports = function (lambda, options) {
 
     it('should trigger a valid response', function () {
       return validator.validate(response, schema)
-        .then((validationError) => {
+        .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
