@@ -2,31 +2,38 @@ const URL = require('url');
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
 const maasUtils = require('../../lib/utils');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 const tsp = require('../lib/tsp.js');
 const knexFactory = require('knex');
 const Model = require('objection').Model;
 const models = require('../../lib/models');
 
-// Initialize knex.
-// FIXME Change variable names to something that tells about MaaS in general
-const connection = URL.format({
-  protocol: 'postgres:',
-  slashes: true,
-  hostname: process.env.MAAS_PGHOST,
-  port: process.env.MAAS_PGPORT,
-  auth: process.env.MAAS_PGUSER + ':' + process.env.MAAS_PGPASSWORD,
-  pathname: '/' + process.env.MAAS_PGDATABASE,
-});
-const config = {
-  client: 'postgresql',
-  connection: connection,
-  pool: {
-    min: 2,
-    max: 10,
-  },
-};
-const knex = knexFactory(config);
-Model.knex(knex);
+function initKnex() {
+  // FIXME Change variable names to something that tells about MaaS in general
+  const connection = URL.format({
+    protocol: 'postgres:',
+    slashes: true,
+    hostname: process.env.MAAS_PGHOST,
+    port: process.env.MAAS_PGPORT,
+    auth: process.env.MAAS_PGUSER + ':' + process.env.MAAS_PGPASSWORD,
+    pathname: '/' + process.env.MAAS_PGDATABASE,
+  });
+  const config = {
+    client: 'postgresql',
+    connection: connection,
+    pool: {
+      min: 1,
+      max: 1,
+    },
+  };
+
+  return new Promise((resolve, reject) => {
+    const knex = knexFactory(config);
+    Model.knex(knex);
+
+    resolve(knex);
+  });
+}
 
 function fetchCustomerProfile(identityId) {
 
@@ -72,7 +79,7 @@ function validateSignature(itinerary, profile) {
   }
 
   // FIXME change routeId term
-  Promise.reject(new Error('Itinerary validation failed.'));
+  return Promise.reject(new new MaaSError('Itinerary validation failed.', 400));
 }
 
 function computeBalance(itinerary, profile) {
@@ -81,20 +88,20 @@ function computeBalance(itinerary, profile) {
   const balance = profile.balance;
   const message = `Insufficent balance (required: ${cost}, actual: ${balance})`;
 
-  //if (balance > cost) {
+  if (balance > cost) {
     return Promise.resolve(balance - cost);
-  //}
+  }
 
   // FIXME change routeId term
-  Promise.reject(new Error(message));
+  return Promise.reject(new MaaSError(message, 403));
 }
 
-function updateBalance(profile, newBalance) {
+function updateBalance(identityId, newBalance) {
   return bus.call('MaaS-profile-edit', {
-    identityId: profile.identityId,
+    identityId: identityId,
     payload: {
       balance: newBalance,
-    }
+    },
   });
 }
 
@@ -148,23 +155,35 @@ module.exports.respond = function (event, callback) {
   var itinerary;
   var balance;
 
-  // Validate the input route, fetch profile, do bookings and update user profile
-  return Promise.props({
+  // Process & validate the input, then save the itinerary; then do bookings,
+  // update balance and save both itinerary and profile.
+  return initKnex()
+    .then(() => Promise.props({
       valid: validateSignature(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
       legs: filterBookableLegs(event.itinerary.legs),
-    })
+      knex: initKnex(),
+    }))
     .then(_input      => input = _input)
     .then(_empty      => computeBalance(event.itinerary, input.profile))
     .then(_newBalance => balance = _newBalance)
+    .then(_itinerary  => saveItinerary(_itinerary))
     .then(_newBalance => tsp.createBookings(input.legs, input.profile))
     .then(bookings    => annotateItinerary(event.itinerary, input.profile, bookings))
-    .then(_itinerary  => saveItinerary(_itinerary))
     .then(_itinerary  => itinerary = _itinerary)
-    .then(_itinerary  => updateBalance(input.profile, balance))
+    .then(_itinerary  => saveItinerary(_itinerary))
+    .then(_itinerary  => updateBalance(event.identityId, balance))
     .then(profile     => wrapToEnvelope(itinerary))
-    .then(
-      response        => callback(null, response),
-      error           => callback(error, null)
-    );
+    .then(response    => callback(null, response))
+    .catch(MaaSError, error => callback(error))
+    .catch(_error => {
+      // Uncaught, unexpected error
+      const error = new MaaSError('Internal server error: ' + _error.message, 500);
+
+      callback(error);
+    })
+    .finally(() => {
+      // Close all db connections
+      input.knex.destroy();
+    });
 };

@@ -3,15 +3,15 @@
   "id": "https://api.maas.global/v1/itineraries/response-schema.json",
   "description": "Response schema for itineraries",
   "type": "object",
-  "anyOf": [
-    {
-      "$ref": "v1/maas-response-envelope.json"
-    }
-  ],
   "properties": {
     "itinerary": {
       "$ref": "v1/maas-itinerary.json"
+    },
+    "maas": {
+      "type": "object",
+      "additionalProperties": true
     }
   },
-  "required": [ "itinerary" ]
+  "required": [ "itinerary" ],
+  "additionalProperties": false
 }

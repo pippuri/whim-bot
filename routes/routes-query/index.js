@@ -79,8 +79,8 @@ function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
     options
   )
   .then(response => filterOutRoutesWithoutPointCost(response))
-  .then(response => filterPastRoutes(leaveAt, response));
-  .then(response => addRouteAndLegIdentifiersToResponse(response))
+  .then(response => filterPastRoutes(leaveAt, response))
+  .then(response => addRouteAndLegIdentifiersToResponse(response));
 }
 
 module.exports.respond = function (event, callback) {

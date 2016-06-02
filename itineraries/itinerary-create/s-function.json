@@ -16,16 +16,25 @@
       "path": "itineraries",
       "method": "POST",
       "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "itinerary": "$input.json('$.itinerary')"
+        }
       },
       "responses": {
-        "400": {
+        "^400.*": {
           "statusCode": "400"
+        },
+        "^403.*": {
+          "statusCode": "403"
+        },
+        "^500.*": {
+          "statusCode": "500"
         },
         "default": {
           "statusCode": "200",
