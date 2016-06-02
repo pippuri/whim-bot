@@ -31,7 +31,7 @@ function initKnex() {
     const knex = knexFactory(config);
     Model.knex(knex);
 
-    resolve(knex);
+    return resolve(knex);
   });
 }
 
@@ -69,7 +69,7 @@ function filterBookableLegs(legs) {
 function validateSignature(itinerary, profile) {
   // Verify that the data matches the signature
   const originalSignature = itinerary.signature;
-  var withoutSignature = Object.assign({}, itinerary);
+  const withoutSignature = Object.assign({}, itinerary);
   delete withoutSignature.signature;
 
   const computedSignature = maasUtils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
@@ -79,7 +79,7 @@ function validateSignature(itinerary, profile) {
   }
 
   // FIXME change routeId term
-  return Promise.reject(new new MaaSError('Itinerary validation failed.', 400));
+  return Promise.reject(new MaaSError('Itinerary validation failed.', 400));
 }
 
 function computeBalance(itinerary, profile) {
@@ -157,13 +157,12 @@ module.exports.respond = function (event, callback) {
 
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
-  return initKnex()
-    .then(() => Promise.props({
+  return Promise.props({
+      knex: initKnex(),
       valid: validateSignature(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
       legs: filterBookableLegs(event.itinerary.legs),
-      knex: initKnex(),
-    }))
+    })
     .then(_input      => input = _input)
     .then(_empty      => computeBalance(event.itinerary, input.profile))
     .then(_newBalance => balance = _newBalance)
@@ -178,12 +177,14 @@ module.exports.respond = function (event, callback) {
     .catch(MaaSError, error => callback(error))
     .catch(_error => {
       // Uncaught, unexpected error
-      const error = new MaaSError('Internal server error: ' + _error.message, 500);
+      const error = new MaaSError('Internal server error: ' + _error.toString(), 500);
 
       callback(error);
     })
     .finally(() => {
       // Close all db connections
-      input.knex.destroy();
+      if (input && input.knex) {
+        input.knex.destroy();
+      }
     });
 };
