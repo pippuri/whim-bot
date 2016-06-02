@@ -1,18 +1,18 @@
 
-var Promise = require('bluebird');
-var lib = require('../../lib/utilities/index');
-var bus = require('../../lib/service-bus/index');
-var _ = require('lodash/core');
+const Promise = require('bluebird');
+const lib = require('../../lib/utilities/index');
+const bus = require('../../lib/service-bus/index');
+const _ = require('lodash/core');
 
 function removefavoriteLocations(event) {
   if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
     if (!_.isEmpty(event.payload)) {
       // No problem
     } else {
-      return Promise.reject('Payload empty');
+      return Promise.reject('400 Payload empty');
     }
   } else {
-    return Promise.reject('Missing identityId or payload');
+    return Promise.reject('400 Missing identityId or payload');
   }
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
@@ -21,7 +21,7 @@ function removefavoriteLocations(event) {
         return Promise.reject(new Error('User Not Existed'));
       }
 
-      var params = {
+      const params = {
         TableName: process.env.DYNAMO_USER_PROFILE,
         Key: {
           identityId: event.identityId,
@@ -36,7 +36,7 @@ function removefavoriteLocations(event) {
         }
       }
 
-      var params = {
+      const params = {
         TableName: process.env.DYNAMO_USER_PROFILE,
         Key: {
           identityId: event.identityId,
@@ -53,12 +53,10 @@ function removefavoriteLocations(event) {
     });
 }
 
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   return removefavoriteLocations(event)
-    .then((response) => {
-      callback(null, response);
-    })
-    .catch((error) => {
+    .then(response => callback(null, response))
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });
