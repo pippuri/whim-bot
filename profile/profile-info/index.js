@@ -21,6 +21,11 @@ function getSingleUserData(event) {
       identityId: event.identityId,
     },
   };
+
+  if (event.hasOwnProperty('projection')) {
+    params.ProjectionExpression = event.projection.replace(/\&/g, ', ');
+  }
+
   return serviceBus.call('Dynamo-get', params);
 
 }
