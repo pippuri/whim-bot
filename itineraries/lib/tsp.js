@@ -1,10 +1,10 @@
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var data = require('./tspData.json');
-var URL = require('url');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const data = require('./tspData.json');
+const URL = require('url');
 
 function findProvider(leg) {
-  var provider = data[leg.agencyId];
+  const provider = data[leg.agencyId];
 
   if (typeof provider === 'object') {
     return Promise.resolve(provider);
@@ -14,27 +14,26 @@ function findProvider(leg) {
 }
 
 function createBooking(leg, profile) {
-  var customer = {
+  const customer = {
     id: profile.identityId,
     firstName: profile.firstName,
     lastName: profile.lastName,
     phone: profile.phone,
   };
-  var booking = {
+  const booking = {
     state: 'NEW',
     leg: leg,
     customer: customer,
   };
 
-  //console.log('Create booking', JSON.stringify(booking, null, 2));
-
+  console.log('Create booking', JSON.stringify(booking, null, 2));
   return findProvider(leg)
     .then((tsp) => {
-      var url = URL.resolve(tsp.adapter.baseUrl, 'bookings');
-      var options = {
+      const url = URL.resolve(tsp.adapter.baseUrl, 'bookings');
+      const options = Object.assign({
         json: true,
         body: booking,
-      };
+      }, tsp.adapter.options);
 
       return request.post(url, options);
     });
@@ -47,8 +46,8 @@ function cancelBooking(booking) {
 }
 
 function createBookings(legs, profile) {
-  var completed = [];
-  var failed = [];
+  const completed = [];
+  const failed = [];
 
   function createOneBooking(leg) {
     return createBooking(leg, profile)
@@ -71,8 +70,8 @@ function createBookings(legs, profile) {
 }
 
 function cancelBookings(bookings) {
-  var cancelled = [];
-  var failed = [];
+  const cancelled = [];
+  const failed = [];
 
   function cancelOneBooking(booking) {
     return cancelBooking(booking)

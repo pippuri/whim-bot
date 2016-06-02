@@ -1,135 +1,92 @@
 {  
   "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "itinerary":  {  
-    "startTime":1458826553000,
-    "endTime":1458830199000,
-    "legs":[  
-      {  
-        "startTime":1458826553000,
-        "endTime":1458826860000,
-        "mode":"WALK",
-        "from":{  
-          "name":"Linnankoskenkatu",
-          "lon":24.9148,
-          "lat":60.18503
+  "itinerary": {
+    "startTime": 1474877078000,
+    "endTime": 1474880470000,
+    "legs": [
+        {
+            "startTime": 1474877078000,
+            "endTime": 1474877520000,
+            "mode": "WALK",
+            "from": {
+                "name": "Linnankoskenkatu",
+                "lon": 24.9148,
+                "lat": 60.18503
+            },
+            "to": {
+                "name": "Kansaneläkelaitos",
+                "lon": 24.91707,
+                "lat": 60.18948
+            },
+            "legGeometry": {
+                "points": "u{inJseawCUD??Ac@MqBMACUQs@IWCQACSoAyDgB]{@ECyBgAGG{@e@K?WYGEs@DKIECA?ACA?GE??oBxBES[d@qAxBC@"
+            },
+            "signature": "a6c3924a60d888337b47755bedcae5e83b2d038fb9836f36813ae47c9b1be39c"
         },
-        "to":{  
-          "name":"Töölön halli",
-          "lon":24.9213,
-          "lat":60.18575
+        {
+            "startTime": 1474877520000,
+            "endTime": 1474879920000,
+            "mode": "BUS",
+            "from": {
+                "name": "Kansaneläkelaitos",
+                "lon": 24.91707,
+                "lat": 60.18948
+            },
+            "to": {
+                "name": "Mustasilta",
+                "lon": 24.64748,
+                "lat": 60.32773
+            },
+            "route": "345",
+            "routeShortName": "345",
+            "routeLongName": "Elielinaukio-Rinnekoti",
+            "agencyId": "HSL",
+            "signature": "0db8ad7b6769f0db55d947e9143b3cfd09e9e334a3728e3f4493e07306b89cc3"
         },
-        "legGeometry":{  
-          "points":"w{inJqeawCEqCd@{@?K@C?Ma@eAG[G[OgAIc@IcAGyB?IKqDAUGaCE}BAc@YcAQc@"
+        {
+            "startTime": 1474879920000,
+            "endTime": 1474880046000,
+            "mode": "WALK",
+            "from": {
+                "name": "Mustasilta",
+                "lon": 24.64748,
+                "lat": 60.32773
+            },
+            "to": {
+                "name": "Vihdintie & Lakistontie",
+                "lon": 24.6471,
+                "lat": 60.32626
+            },
+            "legGeometry": {
+                "points": "iweoJw}luC@V??|@C`ACb@Bp@Nd@\\VPPG"
+            },
+            "signature": "657fd37404852f8adc190e40f63ea58eef538dcdda9c2e86ca86dae5cb5ef6c9"
         },
-        "signature":"1a466022ac2ef67212b0e28fe0fa603025bab078cfeac59c93d59be961d97aab"
-      },
-      {  
-        "startTime":1458826860000,
-        "endTime":1458827580000,
-        "mode":"TRAM",
-        "from":{  
-          "name":"Töölön halli",
-          "lon":24.9213,
-          "lat":60.18575
-        },
-        "to":{  
-          "name":"Pasilan asema",
-          "lon":24.93491,
-          "lat":60.19913
-        },
-        "route":"7A",
-        "routeShortName":"7A",
-        "routeLongName":"Senaatintori-Töölö-Pasila-Senaatintori",
-        "agencyId":"HSL",
-        "signature":"7e09ceef1b60343b5b5a67763abcab34b169dba965b88a20829a077a2f3ac3a8"
-      },
-      {  
-        "startTime":1458827580000,
-        "endTime":1458827696000,
-        "mode":"WALK",
-        "from":{  
-          "name":"Pasilan asema",
-          "lon":24.93491,
-          "lat":60.19913
-        },
-        "to":{  
-          "name":"Pasila",
-          "lon":24.93293,
-          "lat":60.19904
-        },
-        "legGeometry":{  
-          "points":"qslnJebewCL?h@QLrBAjC{@XCBL`C"
-        },
-        "signature":"07133be48cc7a9bd48ccff00e6b0f3313f8aa6b9c59b3115fd016237f51cba95"
-      },
-      {  
-        "startTime":1458827696000,
-        "endTime":1458827880000,
-        "mode":"TRANSFER",
-        "signature":"fe4e9fb82739f7cc95b80dc5a43072d2063f6a306ab88e94f49ee0ac802ba633"
-      },
-      {  
-        "startTime":1458827880000,
-        "endTime":1458829140000,
-        "mode":"TRAIN",
-        "from":{  
-          "name":"Pasila",
-          "lon":24.93293,
-          "lat":60.19904
-        },
-        "to":{  
-          "name":"Espoo",
-          "lon":24.65645,
-          "lat":60.2051
-        },
-        "route":"E",
-        "routeShortName":"E",
-        "routeLongName":"Helsinki-Kauklahti",
-        "agencyId":"HSL",
-        "signature":"3c956f9b6c4ca4e78aa6923f89fb864737e8748df2fcf2906b323f1dd7764794"
-      },
-      {  
-        "startTime":1458829140000,
-        "endTime":1458829159000,
-        "mode":"WALK",
-        "from":{  
-          "name":"Espoo",
-          "lon":24.65645,
-          "lat":60.2051
-        },
-        "to":{  
-          "lon":24.65617,
-          "lat":60.20525
-        },
-        "legGeometry":{  
-          "points":"yxmnJwunuCIz@SC"
-        },
-        "signature":"f2c4450a8b0e5dac5f80838dc3287f5b68a865add61064e2e947cf38734380f1"
-      },
-      {  
-        "startTime":1458829159000,
-        "endTime":1458830199000,
-        "mode":"TAXI",
-        "from":{  
-          "lon":24.65617,
-          "lat":60.20525
-        },
-        "to":{  
-          "name":"Nuuksiontie",
-          "lon":24.558,
-          "lat":60.29377
-        },
-        "legGeometry":{  
-          "points":"kzmnJevnuCMkAu@Zp@zFHn@`@pD`@`@DVJjAPlCHtCJzATxEF`ADx@Nj@JVJT?@Ot@I^In@Ex@Et@Af@?\\FtB?@DvCD`BBvBAjACfACx@IfAI`AQfAU~@Ql@Wv@e@bAi@fAaBzC{@hA}@xAq@jAKT[l@q@pA}A~CgAnBiCfEo@~Ae@rAo@~B[|A[`Bw@tFa@lCu@Me@C_@?u@Js@Ds@FeA?e@Gu@Iw@Qy@Uo@U{@K??mAm@cBeAsAcAeAaAw@y@u@}@aAsAy@oAmAsBw@}A_BqDYsAk@iBe@gBi@qCa@wBYiBOyAO}AMmBCuACoAA{@AoEAmC?wIAmAC_AGy@KaAMq@Me@O_@Sc@OYWYYSYK]G[?WFYF[V[`@[j@Ob@Qp@Or@Ip@Gp@Ar@?p@@n@Bp@Dn@PjBFv@@p@@t@@jA?tCB|@QpMWvM@tBOxDW~EUpDQbDc@fFQnBYbD_@lDa@~CcBrMs@`Fi@zEc@nEa@|FYjESzDObESdHOvEW~ES|D_@zDi@xEo@rEq@rDuBtJu@jDi@nCi@bDq@jFc@zFe@|HSnEYtE_@`Fm@xFm@|Em@fEs@bEkArF_C~IoB|G}CtJgCzGqBtEoBfEiBhD}EbIiA`BmCvCaCzBaChBqDzCgCvCs@x@aAtAuB|C}@`BgAnBu@vA?@sBtEcA|B}BdGwCxI{A`FqArEyAjFaApDs@~B_@bAa@|@Yf@Y\\UHSFQCOISOQ[Qg@Ik@Cy@?u@Dy@JaAVaARm@Te@\\_@f@Yl@Mj@BCs@E}A?_C?cA@eA@eCHkEFgBLwBNaBf@oF??t@gHz@wHXkCx@uHf@uEnA{K\\oC\\wBtBaLvCwOz@aDDU|AqFxDaKtDsG|@eBi@cAwAi@w@UKAmAa@]?_@?{@b@e@X_@b@IJwArB[b@[T[Tk@Tc@L_@Te@^o@x@o@jAe@v@_@f@e@^c@\\oBlAm@^gB`AOFkDrB_FbDYPYBe@?a@M]]??[m@??Y}@s@iCSw@[g@Y_@y@]mBn@_A^UDI?_@Cs@UaDeCuEqCkB_AmAw@OIu@W?@y@YqAU?AoBBIBA?aAZs@Ru@Ig@Ui@c@[]aAy@o@c@w@a@i@Se@k@_@w@U_AcCoJo@mC?As@mDOgAOeBOeBSwAOu@Uo@[m@]c@_@Uc@Me@Cc@Fg@T_@Z[b@c@hAgArCyA|Dk@fA??sArBg@v@g@d@YXa@Ta@P??m@Jm@FaC\\_AXkA^eAf@y@f@w@n@aA|@y@|@cAtAgAvAFt@sAlASp@Yu@sAdAu@^q@Xi@Pm@LcBNk@Bq@Lw@\\e@\\e@^aA`A_At@_Af@mEdB??kChAi@Pi@HeAJe@Hc@L_@T_@`@_@f@a@l@[v@k@dB]bAWj@[j@[^[`@k@^w@ZmA\\A?g@Li@XEDm@Zo@d@c@b@_@b@u@dAa@p@c@dACDmBxF]dAk@rAi@bAo@x@m@v@k@b@mA|@eAf@s@Xa@H??g@Ca@GcAMeA[cAYe@Mc@Ca@He@TaAt@u@v@yBpCo@p@aDzBu@|@e@r@s@dB[xBShFQxDGtAOvAGn@]rBMdAS`BO|AO`CUfEMbC??E\\QfDIt@GjAEnA?r@?x@D`B?vA?l@Cn@Gn@]pDM`AO|@ObAi@lCs@bCYjAaAtDSt@Yx@]v@a@z@@?o@dAU\\_@^k@^mBdAo@f@m@bAK[Ea@GIE?KF@~@ATIJQDE?CoA?MWBKFMLCDDXGpB?V_@lA]l@S`@Y|@U|@a@x@Y|@FV@BOT"
-        },
-        "agencyId":"Valopilkku",
-        "signature":"271941463fc257eb32781886cf8ad7e6ed61dafc9a5c7271f38a4a3c6c24cf23"
-      }
+        {
+            "startTime": 1474880046000,
+            "endTime": 1474880470000,
+            "mode": "TAXI",
+            "from": {
+                "name": "Vihdintie & Lakistontie",
+                "lon": 24.6471,
+                "lat": 60.32626
+            },
+            "to": {
+                "name": "Nuuksiontie",
+                "lon": 24.558,
+                "lat": 60.29377
+            },
+            "legGeometry": {
+                "points": "aneoJk{luC??TcDz@{Rx@{OToFRyHBuHC}DEuDIoEEcDE{BBsAWuKA_C@aB@}ADqBHwBLoBLeBReBRmBXqBf@oCh@qCp@_DP}@z@mE`@_C^{B^eC^cCf@kERiBFaB\\cCh@sGvAcRp@uIRqBRsBXsBX{Bb@qCxAuIHe@pDwUv@cFf@sCT}A^aC\\eC\\eC^uDPmBNqB@QPiCNqDLqCToIFkCr@qTJ_ELcCXcEv@kHLaAp@mCbAuDTDh@}Ch@qA?AZaAZ}@dAoBpDmGvB{DpA}C??`AaD~@uDzB_LhAeGPaAReAx@_EZ{AlAaFp@gCx@aCd@oAXw@f@qAb@kAXu@zC}HxAkEH]jA_Ev@mC^uAFY^kBPaATqAZaAX}BxC}R~A{Kv@wF??XsB@GjAcIT}Ap@{E\\eCHk@jC{Q@@b@cCVgCNcAR{A@BVkB`@sCT}Ad@kD~@iGbAmHJu@Z{A`@gDx@eGVaBAETsAJq@VeBJy@RmAn@eEPmAd@iCTqAj@eCpAwFRq@lAsE@Cb@{A`AeDzBuG|AkDLUtBuDfA}ArDoE~E}FdCuCvDoEhAqArBgCb@g@zAiBhAsAjBwB~CyDjEcFp@w@v@_An@c@n@g@JONMl@o@l@o@\\q@z@yALMhDaEl@q@lB_ChA}AvA_CLYrAaCA?l@oA^}@j@uAzA}DfBeFDM?@`@kAPc@xByGjHqSRg@??h@}Ah@oAv@yAhAwAb@c@nAkAj@k@ZYp@_@BC@ANI?ANK?DXSZIb@Kh@Mp@Mt@Mn@MNC@CBt@??XlCJ|@Nf@Nb@NXFHNLTJ\\DTAXCR?PBLLRZLf@XzB^|HPjHB~HEbEIpEUtGc@|Ge@xG@C]|EOjDIrBK~BEzBGlCA`AA~D@fCBrBBjBJxCFvBLvBAC@TB`@??LjBTtC^xDTrB`@zBVzAv@tDjAbFpBbHbCpHpFxO~@vCj@xBvA`GrAlGjAvHp@bGh@nGbA~M`A~Mt@rJ^tEXfDn@~Gx@hHpAfJ`AdGhB|K`CtNvA`JfDfSRpCZbCP`CZlDNpBXvBPdDNrANvAT|AZ|AZzAf@~Bp@~CfA|E\\bBn@hBt@pChApDjAbD|@rB~@nB|@hBlAlBpAnBpDnEhDbExPfTfGrHvFtGnK~KbBhBxEnG\\j@~@xAlA~B|B`F`CdGvB|FnC~Gr@zA~BnFjEzIVf@t@tA|@fBvAxC|@bAl@b@x@`@ZV~@j@pBzAbB|ArCdDbAz@fJ~LpB|BnCjCtAnAxCrBpFlDdBrArAjAnArAbAfA|ArBfBpCbBzCr@vAr@|A~@vB~@dCz@fCh@`BNf@v@tCt@rCv@tDr@xDh@vCl@~DX~B?A@Ld@bEhApLx@hIdArKhCnW^~Db@vE^nEf@vGRhCh@`Hf@rFh@`Gj@xF\\xE\\nDd@jFJjBHvADnA@~@DdA?tA@lACpAArAG~DSlKQpMWvM@tBOxDW~EUpDQbDc@fFQnBYbD_@lDa@~CcBrMs@`Fi@zEc@nEa@|FYjESzDObESdHOvEW~ES|D_@zDi@xEo@rEq@rDuBtJu@jDi@nCi@bDq@jFc@zFe@|HSnEYtE_@`Fm@xFm@|Em@fEs@bEkArF_C~IoB|G}CtJgCzGqBtEoBfEiBhD}EbIiA`BmCvCaCzBaChBqDzCgCvCs@x@aAtAuB|C}@`BgAnBu@vA?@sBtEcA|B}BdGwCxI{A`FqArEyAjFaApDs@~B_@bAa@|@Yf@Y\\UHSFQCOISOQ[Qg@Ik@Cy@?u@Dy@JaAVaARm@Te@\\_@f@Yl@Mj@BCs@E}A?_C?cA@eA@eCHkEFgBLwBNaBf@oF??t@gHz@wHXkCx@uHf@uEnA{K\\oC\\wBtBaLvCwOz@aDDU|AqFxDaKtDsG|@eBi@cAwAi@w@UKAmAa@]?_@?{@b@e@X_@b@IJwArB[b@[T[Tk@Tc@L_@Te@^o@x@o@jAe@v@_@f@e@^c@\\oBlAm@^gB`AOFkDrB_FbDYPYBe@?a@M]]??[m@??Y}@s@iCSw@[g@Y_@y@]mBn@_A^UDI?_@Cs@UaDeCuEqCkB_AmAw@OIu@W?@y@YqAU?AoBBIBA?aAZs@Ru@Ig@Ui@c@[]aAy@o@c@w@a@i@Se@k@_@w@U_AcCoJo@mC?As@mDOgAOeBOeBSwAOu@Uo@[m@]c@_@Uc@Me@Cc@Fg@T_@Z[b@c@hAgArCyA|Dk@fA??sArBg@v@g@d@YXa@Ta@P??m@Jm@FaC\\_AXkA^eAf@y@f@w@n@aA|@y@|@cAtAgAvAFt@sAlASp@Yu@sAdAu@^q@Xi@Pm@LcBNk@Bq@Lw@\\e@\\e@^aA`A_At@_Af@mEdB??kChAi@Pi@HeAJe@Hc@L_@T_@`@_@f@a@l@[v@k@dB]bAWj@[j@[^[`@k@^w@ZmA\\A?g@Li@XEDm@Zo@d@c@b@_@b@u@dAa@p@c@dACDmBxF]dAk@rAi@bAo@x@m@v@k@b@mA|@eAf@s@Xa@H??g@Ca@GcAMeA[cAYe@Mc@Ca@He@TaAt@u@v@yBpCo@p@aDzBu@|@e@r@s@dB[xBShFQxDGtAOvAGn@]rBMdAS`BO|AO`CUfEMbC??E\\QfDIt@GjAEnA?r@?x@D`B?vA?l@Cn@Gn@]pDM`AO|@ObAi@lCs@bCYjAaAtDSt@Yx@]v@a@z@@?o@dAU\\_@^k@^mBdAo@f@m@bAK[Ea@GIE?KF@~@ATIJQDE?CoA?MWBKFMLCDDXGpB?V_@lA]l@S`@Y|@U|@a@x@Y|@FV@BOT"
+            },
+            "agencyId": "Valopilkku",
+            "signature": "39f67a6321deafa2a12707e544c25ad8512db5e26ee9794ba5ca4ad6f7c39b26"
+        }
     ],
-    "fare":{  
-      "points":1005.3333333333333,
-      "co2":0
+    "fare": {
+        "points": 409.8666666666667,
+        "co2": 0
     },
-    "signature":"bd915682c4f8f376e7da6480fb02cfc068965e3780c6e31db8565d3c42a2c887"
-  }
+    "signature": "8342f62bd929d41a05bf3a90e8a7bdbd04cd468e492f2d80aa960d11037c9426"
+}
 }
