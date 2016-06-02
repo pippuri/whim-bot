@@ -1,12 +1,12 @@
 {  
   "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "itinerary": {  
-    "startTime":1458831726000,
-    "endTime":1458833049000,
+  "itinerary":  {  
+    "startTime":1458826553000,
+    "endTime":1458830199000,
     "legs":[  
       {  
-        "startTime":1458831726000,
-        "endTime":1458831840000,
+        "startTime":1458826553000,
+        "endTime":1458826860000,
         "mode":"WALK",
         "from":{  
           "name":"Linnankoskenkatu",
@@ -14,104 +14,122 @@
           "lat":60.18503
         },
         "to":{  
-          "name":"Linnankoskenkatu",
-          "lon":24.91689,
-          "lat":60.18479
+          "name":"Töölön halli",
+          "lon":24.9213,
+          "lat":60.18575
         },
         "legGeometry":{  
-          "points":"i|inJmdawC??A_@?K@gA?c@?]p@{@?K@C?Ma@eAHIDGABj@w@?G"
+          "points":"w{inJqeawCEqCd@{@?K@C?Ma@eAG[G[OgAIc@IcAGyB?IKqDAUGaCE}BAc@YcAQc@"
         },
-        "signature":"ea980384882ba64ff73aee3a1470ff6586b809ba54ff6f21af10af781c50444b"
+        "signature":"1a466022ac2ef67212b0e28fe0fa603025bab078cfeac59c93d59be961d97aab"
       },
       {  
-        "startTime":1458831840000,
-        "endTime":1458831960000,
-        "mode":"BUS",
-        "from":{  
-          "name":"Linnankoskenkatu",
-          "lon":24.91689,
-          "lat":60.18479
-        },
-        "to":{  
-          "name":"Töölöntori",
-          "lon":24.92227,
-          "lat":60.17966
-        },
-        "route":"39B",
-        "routeShortName":"39B",
-        "routeLongName":"Kamppi - Munkkiniemi - Konala (teollisuusalue)",
-        "agencyId":"HSL",
-        "signature":"0e92d1c371f767b445aa02f3cea0bc65f860ef35b1054f298f4f45619a7b3bdc"
-      },
-      {  
-        "startTime":1458831960000,
-        "endTime":1458832091000,
-        "mode":"WALK",
-        "from":{  
-          "name":"Töölöntori",
-          "lon":24.92227,
-          "lat":60.17966
-        },
-        "to":{  
-          "name":"Töölöntori",
-          "lon":24.92371,
-          "lat":60.17971
-        },
-        "legGeometry":{  
-          "points":"{yhnJesbwCDPJK\\]TUWgD@Q?A?O?C@A?C?KWQg@[??B\\"
-        },
-        "signature":"bff4c7523900d0e8f85da10acba206f6d47cd836ea83c2d556a021d7cb245bb1"
-      },
-      {  
-        "startTime":1458832091000,
-        "endTime":1458832380000,
-        "mode":"TRANSFER",
-        "signature":"63e659c57c6c513ac691adc688516aa87156510ea223fe717e2885559c9cddd2"
-      },
-      {  
-        "startTime":1458832380000,
-        "endTime":1458832800000,
+        "startTime":1458826860000,
+        "endTime":1458827580000,
         "mode":"TRAM",
         "from":{  
-          "name":"Töölöntori",
-          "lon":24.92371,
-          "lat":60.17971
+          "name":"Töölön halli",
+          "lon":24.9213,
+          "lat":60.18575
         },
         "to":{  
-          "name":"Helsinginkatu",
-          "lon":24.95391,
-          "lat":60.18708
+          "name":"Pasilan asema",
+          "lon":24.93491,
+          "lat":60.19913
         },
-        "route":"8",
-        "routeShortName":"8",
-        "routeLongName":"Jätkäsaari - Töölö - Arabia",
+        "route":"7A",
+        "routeShortName":"7A",
+        "routeLongName":"Senaatintori-Töölö-Pasila-Senaatintori",
         "agencyId":"HSL",
-        "signature":"156e363bd1fb4f51f51aafd6a4973ac2da8767464d23355f394240ff3fe7138b"
+        "signature":"7e09ceef1b60343b5b5a67763abcab34b169dba965b88a20829a077a2f3ac3a8"
       },
       {  
-        "startTime":1458832800000,
-        "endTime":1458833049000,
+        "startTime":1458827580000,
+        "endTime":1458827696000,
         "mode":"WALK",
         "from":{  
-          "name":"Helsinginkatu",
-          "lon":24.95391,
-          "lat":60.18708
+          "name":"Pasilan asema",
+          "lon":24.93491,
+          "lat":60.19913
         },
         "to":{  
-          "name":"Vaasankatu",
-          "lon":24.95749,
-          "lat":60.18837
+          "name":"Pasila",
+          "lon":24.93293,
+          "lat":60.19904
         },
         "legGeometry":{  
-          "points":"ghjnJ}xhwCIB??KyCIoBGqBAQGsA?u@O_DUeBA?EAqCa@KA"
+          "points":"qslnJebewCL?h@QLrBAjC{@XCBL`C"
         },
-        "signature":"9ec26a56f1d46954a6bcef83fd6d6bcd0b4d569173aae56f8584ee60957c8782"
+        "signature":"07133be48cc7a9bd48ccff00e6b0f3313f8aa6b9c59b3115fd016237f51cba95"
+      },
+      {  
+        "startTime":1458827696000,
+        "endTime":1458827880000,
+        "mode":"TRANSFER",
+        "signature":"fe4e9fb82739f7cc95b80dc5a43072d2063f6a306ab88e94f49ee0ac802ba633"
+      },
+      {  
+        "startTime":1458827880000,
+        "endTime":1458829140000,
+        "mode":"TRAIN",
+        "from":{  
+          "name":"Pasila",
+          "lon":24.93293,
+          "lat":60.19904
+        },
+        "to":{  
+          "name":"Espoo",
+          "lon":24.65645,
+          "lat":60.2051
+        },
+        "route":"E",
+        "routeShortName":"E",
+        "routeLongName":"Helsinki-Kauklahti",
+        "agencyId":"HSL",
+        "signature":"3c956f9b6c4ca4e78aa6923f89fb864737e8748df2fcf2906b323f1dd7764794"
+      },
+      {  
+        "startTime":1458829140000,
+        "endTime":1458829159000,
+        "mode":"WALK",
+        "from":{  
+          "name":"Espoo",
+          "lon":24.65645,
+          "lat":60.2051
+        },
+        "to":{  
+          "lon":24.65617,
+          "lat":60.20525
+        },
+        "legGeometry":{  
+          "points":"yxmnJwunuCIz@SC"
+        },
+        "signature":"f2c4450a8b0e5dac5f80838dc3287f5b68a865add61064e2e947cf38734380f1"
+      },
+      {  
+        "startTime":1458829159000,
+        "endTime":1458830199000,
+        "mode":"TAXI",
+        "from":{  
+          "lon":24.65617,
+          "lat":60.20525
+        },
+        "to":{  
+          "name":"Nuuksiontie",
+          "lon":24.558,
+          "lat":60.29377
+        },
+        "legGeometry":{  
+          "points":"kzmnJevnuCMkAu@Zp@zFHn@`@pD`@`@DVJjAPlCHtCJzATxEF`ADx@Nj@JVJT?@Ot@I^In@Ex@Et@Af@?\\FtB?@DvCD`BBvBAjACfACx@IfAI`AQfAU~@Ql@Wv@e@bAi@fAaBzC{@hA}@xAq@jAKT[l@q@pA}A~CgAnBiCfEo@~Ae@rAo@~B[|A[`Bw@tFa@lCu@Me@C_@?u@Js@Ds@FeA?e@Gu@Iw@Qy@Uo@U{@K??mAm@cBeAsAcAeAaAw@y@u@}@aAsAy@oAmAsBw@}A_BqDYsAk@iBe@gBi@qCa@wBYiBOyAO}AMmBCuACoAA{@AoEAmC?wIAmAC_AGy@KaAMq@Me@O_@Sc@OYWYYSYK]G[?WFYF[V[`@[j@Ob@Qp@Or@Ip@Gp@Ar@?p@@n@Bp@Dn@PjBFv@@p@@t@@jA?tCB|@QpMWvM@tBOxDW~EUpDQbDc@fFQnBYbD_@lDa@~CcBrMs@`Fi@zEc@nEa@|FYjESzDObESdHOvEW~ES|D_@zDi@xEo@rEq@rDuBtJu@jDi@nCi@bDq@jFc@zFe@|HSnEYtE_@`Fm@xFm@|Em@fEs@bEkArF_C~IoB|G}CtJgCzGqBtEoBfEiBhD}EbIiA`BmCvCaCzBaChBqDzCgCvCs@x@aAtAuB|C}@`BgAnBu@vA?@sBtEcA|B}BdGwCxI{A`FqArEyAjFaApDs@~B_@bAa@|@Yf@Y\\UHSFQCOISOQ[Qg@Ik@Cy@?u@Dy@JaAVaARm@Te@\\_@f@Yl@Mj@BCs@E}A?_C?cA@eA@eCHkEFgBLwBNaBf@oF??t@gHz@wHXkCx@uHf@uEnA{K\\oC\\wBtBaLvCwOz@aDDU|AqFxDaKtDsG|@eBi@cAwAi@w@UKAmAa@]?_@?{@b@e@X_@b@IJwArB[b@[T[Tk@Tc@L_@Te@^o@x@o@jAe@v@_@f@e@^c@\\oBlAm@^gB`AOFkDrB_FbDYPYBe@?a@M]]??[m@??Y}@s@iCSw@[g@Y_@y@]mBn@_A^UDI?_@Cs@UaDeCuEqCkB_AmAw@OIu@W?@y@YqAU?AoBBIBA?aAZs@Ru@Ig@Ui@c@[]aAy@o@c@w@a@i@Se@k@_@w@U_AcCoJo@mC?As@mDOgAOeBOeBSwAOu@Uo@[m@]c@_@Uc@Me@Cc@Fg@T_@Z[b@c@hAgArCyA|Dk@fA??sArBg@v@g@d@YXa@Ta@P??m@Jm@FaC\\_AXkA^eAf@y@f@w@n@aA|@y@|@cAtAgAvAFt@sAlASp@Yu@sAdAu@^q@Xi@Pm@LcBNk@Bq@Lw@\\e@\\e@^aA`A_At@_Af@mEdB??kChAi@Pi@HeAJe@Hc@L_@T_@`@_@f@a@l@[v@k@dB]bAWj@[j@[^[`@k@^w@ZmA\\A?g@Li@XEDm@Zo@d@c@b@_@b@u@dAa@p@c@dACDmBxF]dAk@rAi@bAo@x@m@v@k@b@mA|@eAf@s@Xa@H??g@Ca@GcAMeA[cAYe@Mc@Ca@He@TaAt@u@v@yBpCo@p@aDzBu@|@e@r@s@dB[xBShFQxDGtAOvAGn@]rBMdAS`BO|AO`CUfEMbC??E\\QfDIt@GjAEnA?r@?x@D`B?vA?l@Cn@Gn@]pDM`AO|@ObAi@lCs@bCYjAaAtDSt@Yx@]v@a@z@@?o@dAU\\_@^k@^mBdAo@f@m@bAK[Ea@GIE?KF@~@ATIJQDE?CoA?MWBKFMLCDDXGpB?V_@lA]l@S`@Y|@U|@a@x@Y|@FV@BOT"
+        },
+        "agencyId":"Valopilkku",
+        "signature":"271941463fc257eb32781886cf8ad7e6ed61dafc9a5c7271f38a4a3c6c24cf23"
       }
     ],
     "fare":{  
-      "points":192,
+      "points":1005.3333333333333,
       "co2":0
     },
-    "signature":"32447e1365967d508ce0f9c64cb2576b7a6a09b7207180020afd5f741dd796d7"
+    "signature":"bd915682c4f8f376e7da6480fb02cfc068965e3780c6e31db8565d3c42a2c887"
   }
 }
