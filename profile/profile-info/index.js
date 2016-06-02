@@ -1,8 +1,8 @@
 
-var Promise = require('bluebird');
-var _ = require('lodash/core');
+const Promise = require('bluebird');
+const _ = require('lodash/core');
 
-var serviceBus = require('../../lib/service-bus/index.js');
+const serviceBus = require('../../lib/service-bus/index.js');
 
 /**
  * Get single user data from database
@@ -15,7 +15,7 @@ function getSingleUserData(event) {
     return Promise.reject(new Error('No input identityId'));
   }
 
-  var params = {
+  const params = {
     TableName: process.env.DYNAMO_USER_PROFILE,
     Key: {
       identityId: event.identityId,
@@ -28,9 +28,9 @@ function getSingleUserData(event) {
 /**
  * Export respond to Handler
  */
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   getSingleUserData(event)
-    .then((response) => {
+    .then(response => {
       if (_.isEmpty(response)) {
         callback(new Error('Empty response / No item found with identityId ' + event.identityId));
       } else {
@@ -41,7 +41,7 @@ module.exports.respond = function (event, callback) {
         callback(null, response);
       }
     })
-    .catch((error) => {
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });
