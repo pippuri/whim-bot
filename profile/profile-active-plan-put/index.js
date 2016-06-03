@@ -3,9 +3,8 @@ const Promise = require('bluebird');
 const lib = require('../../lib/utilities/index');
 const bus = require('../../lib/service-bus/index');
 
-var planInfo;
+var newPlan;
 
-// TODO get rid of all lodash require
 function setActivePlan(event) {
   if (Object.keys(event).length === 0) {
     return Promise.reject(new Error('400: Input missing'));
@@ -19,20 +18,19 @@ function setActivePlan(event) {
     return Promise.reject(new Error('400: Missing planId'));
   }
 
-  // Get all package info with planId
-  return bus.call('MaaS-store-single-package', {
-    id: event.planId,
-    type: 'plan',
-  })
-  .then(response => {
-    planInfo = response;
-    return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null);
-  })
-  .then(response => {
-    if (response === false) { // False if not existed
-      return Promise.reject(new Error('User Not Existed'));
-    }
+  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
+    .then(documentExist => {
+      if (documentExist === false) { // False if not existed
+        return Promise.reject(new Error('User Not Existed'));
+      }
 
+      return bus.call('MaaS-store-single-package', {
+        id: event.planId,
+        type: 'plan',
+      });
+    })
+  .then(plan => {
+    newPlan = plan;
     const params = {
       TableName: process.env.DYNAMO_USER_PROFILE,
       Key: {
@@ -43,7 +41,7 @@ function setActivePlan(event) {
         '#plan_list': 'plans',
       },
       ExpressionAttributeValues: {
-        ':value': [planInfo],
+        ':value': [newPlan],
       },
       ReturnValues: 'UPDATED_NEW',
       ReturnConsumedCapacity: 'INDEXES',
@@ -54,8 +52,17 @@ function setActivePlan(event) {
   .then(response => {
     const params2 = {
       identityId: event.identityId,
+      payload: {
+        balance: newPlan.pointGrant,
+      },
     };
-    return bus.call('MaaS-profile-info', params2);
+    return bus.call('MaaS-profile-edit', params2);
+  })
+  .then(response => {
+    const params3 = {
+      identityId: event.identityId,
+    };
+    return bus.call('MaaS-profile-info', params3);
   });
 }
 
