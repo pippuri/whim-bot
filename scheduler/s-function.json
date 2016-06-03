@@ -1,0 +1,15 @@
+{
+  "name": "scheduler",
+  "runtime": "nodejs4.3",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 30,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [],
+  "events": [],
+  "environment": "$${environment}"
+}
