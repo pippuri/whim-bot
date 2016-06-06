@@ -24,7 +24,6 @@ function getSingleUserData(event) {
 
   if (event.hasOwnProperty('attributes') && event.attributes !== '') {
     params.ProjectionExpression = event.attributes.replace(/\s/g, ', ');
-    console.log(params.ProjectionExpression);
   }
 
   return serviceBus.call('Dynamo-get', params);
