@@ -1,0 +1,13 @@
+{
+  "name": "swagger-populate",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "authorizer": {},
+  "endpoints": [],
+  "environment": "$${environment}"
+}

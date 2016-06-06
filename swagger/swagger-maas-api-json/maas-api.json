@@ -277,14 +277,34 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "$ref": "request-schema.json#/properties"
+              "wee": {
+                "type": "string",
+                "required": true
+              },
+              "address": {
+                "type": "string",
+                "required": true
+              },
+              "lat": {
+                "type": "number",
+                "required": true
+              },
+              "lon": {
+                "type": "number",
+                "required": true
+              }
             }
           }
         ],
         "responses": {
           "200": {
             "application/json": {},
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "bac": {
+                "type": "string"
+              }
+            }
           },
           "default": {
             "description": "Errors"

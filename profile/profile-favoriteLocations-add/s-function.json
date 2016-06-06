@@ -34,14 +34,17 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "$ref": "request-schema.json#/properties"
+              "$ref": "profile/profile-favoriteLocations-add/request-schema.json#properties"
             }
           }
         ],
         "responses": {
           "200": {
             "application/json": {},
-            "description": "Success"
+            "description": "Success",
+            "schema": {
+              "$ref": "profile/profile-favoriteLocations-add/response-schema.json#properties"
+            }
           },
           "default": {
             "description": "Errors"
