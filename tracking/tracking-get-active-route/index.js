@@ -13,9 +13,9 @@ function getActiveRoute(identityId) {
     var payload = JSON.parse(response.payload);
     if (payload && payload.state && payload.state.reported && payload.state.reported.activeRoute) {
       return payload.state.reported.activeRoute;
-    } else {
-      return Promise.reject(new Error('404 No Active Route'));
     }
+
+    return Promise.reject(new Error('404 No Active Route'));
   });
 }
 

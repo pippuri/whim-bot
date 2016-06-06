@@ -38,9 +38,9 @@ function getMatkaRoutes(from, to, format) {
     console.log('Format:', format);
     if (format === 'original') {
       return result;
-    } else {
-      return adapter(result);
     }
+
+    return adapter(result);
   });
 }
 

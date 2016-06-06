@@ -32,9 +32,8 @@ function getHslRoutes(from, to, format) {
   .then(function (result) {
     if (format === 'original') {
       return result;
-    } else {
-      return adapter(result);
     }
+    return adapter(result);
   });
 }
 

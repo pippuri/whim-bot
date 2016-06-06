@@ -10,9 +10,9 @@ function getSingleProduct(event) {
     return SubscriptionMgr.getPlanById(event.id);
   } else if (event.type === 'addon') {
     return SubscriptionMgr.getAddonById(event.id);
-  } else {
-    return Promise.reject(new TypeError('Invalid product type'));
   }
+
+  return Promise.reject(new TypeError('Invalid product type'));
 }
 
 module.exports.respond = function (event, callback) {

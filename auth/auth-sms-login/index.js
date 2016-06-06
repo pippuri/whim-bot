@@ -118,10 +118,10 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
           },
         },
       });
-    } else {
-      console.log('ERROR:', err.code, err);
-      return Promise.reject(err);
     }
+
+    console.log('ERROR:', err.code, err);
+    return Promise.reject(err);
   })
   .then(function (response) {
     // Attach the cognito identity to the thing
