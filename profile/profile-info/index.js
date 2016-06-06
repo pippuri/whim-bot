@@ -21,6 +21,11 @@ function getSingleUserData(event) {
       identityId: event.identityId,
     },
   };
+
+  if (event.hasOwnProperty('attributes') && event.attributes !== '') {
+    params.ProjectionExpression = event.attributes.replace(/\s/g, ', ');
+  }
+
   return serviceBus.call('Dynamo-get', params);
 
 }

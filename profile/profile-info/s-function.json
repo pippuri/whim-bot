@@ -22,9 +22,10 @@
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+      },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"attributes\":\"$input.params('attributes')\"}"
       },
       "responses": {
         "^400.*": {
