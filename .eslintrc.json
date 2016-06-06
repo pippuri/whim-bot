@@ -1,0 +1,24 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 6
+  },
+  "env": {
+    "node": true,
+    "mocha": true
+  },
+  "extends": "eslint:recommended",
+  "rules": {
+    "no-console": 0,
+    "no-unused-vars": 0,
+    "comma-dangle": [2, "always-multiline"],
+    "prefer-const": 1,
+    "consistent-return": 1,
+    "no-else-return": 1,
+    "no-lonely-if": 1,
+    "no-param-reassign": 1,
+    "no-return-assign": 1,
+    "no-self-compare": 1,
+    "radix": 1,
+    "no-bitwise": 1
+  }
+}
