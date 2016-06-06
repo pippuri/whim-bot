@@ -42,6 +42,7 @@ function convertTo(data) {
 
 // https://developers.google.com/maps/documentation/utilities/polylinealgorithm#example
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
+/* eslint-disable no-bitwise */
 
 function encodeNumber(num) {
   var encodeString = '';
@@ -96,6 +97,7 @@ function createEncodedPolyline(points) {
   return encoded_point;
 }
 
+/* eslint-enable no-bitwise */
 // jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 //--------------------------------------------------------------------------------
 

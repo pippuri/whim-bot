@@ -19,6 +19,6 @@
     "no-return-assign": 1,
     "no-self-compare": 1,
     "radix": 2,
-    "no-bitwise": 1
+    "no-bitwise": 2
   }
 }
