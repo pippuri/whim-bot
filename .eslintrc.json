@@ -11,7 +11,7 @@
     "no-console": 0,
     "no-unused-vars": 0,
     "comma-dangle": [2, "always-multiline"],
-    "prefer-const": 1,
+    "prefer-const": 2,
     "consistent-return": 1,
     "no-else-return": 1,
     "no-lonely-if": 1,
