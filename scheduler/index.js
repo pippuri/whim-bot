@@ -7,7 +7,7 @@ var aws = require('aws-sdk');
 var lambda = new aws.Lambda();
 var docClient = new aws.DynamoDB.DocumentClient();
 
-function updatFunctionStatus(functionId, status, FnResponse) {
+function updateFunctionStatus(functionId, status, FnResponse) {
   if (_.isEmpty(functionId)) {
     return Promise.reject(new Error('Input missing'));
   } else if (functionId === '' ) {

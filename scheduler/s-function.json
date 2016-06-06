@@ -10,6 +10,14 @@
     "excludePatterns": []
   },
   "endpoints": [],
-  "events": [],
+  "events": [
+    {
+      "name" : "MaaSScheduler",
+      "type": "schedule",
+      "config": {
+        "schedule": "rate(1 minute)"
+      }
+    }
+  ],
   "environment": "$${environment}"
 }
