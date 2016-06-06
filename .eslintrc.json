@@ -15,7 +15,6 @@
     "consistent-return": 1,
     "no-else-return": 1,
     "no-lonely-if": 1,
-    "no-param-reassign": 1,
     "no-return-assign": 1,
     "no-self-compare": 2,
     "radix": 2,
