@@ -33,6 +33,7 @@ function getHslRoutes(from, to, format) {
     if (format === 'original') {
       return result;
     }
+
     return adapter(result);
   });
 }

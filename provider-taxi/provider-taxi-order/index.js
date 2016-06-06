@@ -30,6 +30,7 @@ function orderTaxi(order) {
           errors: err.response.body.errors,
         };
       }
+
       return {
         success: false,
         code: err.statusCode,
