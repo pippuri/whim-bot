@@ -1,5 +1,5 @@
 {
-  "name": "provider-google-reverse-geocoding",
+  "name": "swagger-populate",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
@@ -8,9 +8,6 @@
   "timeout": 6,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": []
-  },
-  "events": [],
+  "endpoints": [],
   "environment": "$${environment}"
 }

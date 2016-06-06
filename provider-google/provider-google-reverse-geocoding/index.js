@@ -44,6 +44,7 @@ function adapt(input) {
   var query = {
     key: 'AIzaSyDoItUq6y7LTrZLQy-t7aXbfajgdBgRyco',
     latlng: input.lat + ',' + input.lon,
+    language: input.lang,
   };
   query.result_type = 'street_address';
   return request.get(ENDPOINT_URL, {

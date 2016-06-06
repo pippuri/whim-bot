@@ -259,19 +259,56 @@
     "/profile/favorite-locations": {
       "post": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Add an user favorite location",
+        "description": "Add an user favorite location to the his/her list",
         "operationId": "post-profile-favorite-locations",
         "produces": [
           "application/json"
         ],
         "security": [
           {
-            "authorizationHeader": []
+            "Bearer": []
           }
         ],
-        "parameters": [],
-        "responses": {}
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Location that will be added to user's favoriteLocations list",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "required": true
+                },
+                "address": {
+                  "type": "string",
+                  "required": true
+                },
+                "lat": {
+                  "type": "number",
+                  "required": true
+                },
+                "lon": {
+                  "type": "number",
+                  "required": true
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {}
+          },
+          "405": {
+            "description": "Invalid Input"
+          }
+        }
       },
       "delete": {
         "tags": [],

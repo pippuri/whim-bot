@@ -1,52 +1,62 @@
 
-var Promise = require('bluebird');
-var lib = require('../../lib/utilities/index');
-var bus = require('../../lib/service-bus/index');
-var _ = require('lodash/core');
+const Promise = require('bluebird');
+const lib = require('../../lib/utilities/index');
+const bus = require('../../lib/service-bus/index');
+const _ = require('lodash');
 
 /**
  * Save data to DynamoDB
  */
 function persistUserData(event) {
+
+  var defaultPlan;
+
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));
-  } else if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
+  }
+
+  if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
     return Promise.reject(new Error('Missing identityId'));
   }
 
-  // TODO and regex check for identityId
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then((response) => {
-      if (response === true) { // True if existed
-        return Promise.reject(new Error('User Existed'));
-      }
+  return bus.call('MaaS-store-single-package', {
+    id: process.env.DEFAULT_WHIM_PLAN,
+    type: 'plan',
+  })
+  .then(plan => {
+    defaultPlan = plan;
+    return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null);
+  })
+  .then(documentExist => {
+    if (documentExist === true) { // True if existed
+      return Promise.reject(new Error('User Existed'));
+    }
 
-      var record = {
-          identityId: event.identityId,
-          balance: 0,
-          plans: [],
-          favoriteLocations: [],
-          phone: event.payload.phone,
-        };
-
-      var params = {
-        Item: record,
-        TableName: process.env.DYNAMO_USER_PROFILE,
+    const record = {
+        identityId: event.identityId,
+        balance: 0,
+        plans: [defaultPlan],
+        favoriteLocations: [],
+        phone: event.payload.phone,
+        profileImage: 'http://maas.fi/wp-content/uploads/2016/01/mugshot-sampo.png',
       };
 
-      return bus.call('Dynamo-put', params);
-    });
+    const params = {
+      Item: record,
+      TableName: process.env.DYNAMO_USER_PROFILE,
+    };
+
+    return bus.call('Dynamo-put', params);
+  });
 }
 
 /**
  * Export respond to Handler
  */
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   return persistUserData(event)
-    .then((response) => {
-      callback(null, response);
-    })
-    .catch((error) => {
+    .then(response => callback(null, response))
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });

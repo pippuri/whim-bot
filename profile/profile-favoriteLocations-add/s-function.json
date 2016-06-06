@@ -23,6 +23,37 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
       },
+      "swaggerExport": {
+        "summary": "Add an user favorite location",
+        "description": "Add an user favorite location to the his/her list",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Location that will be added to user's favoriteLocations list",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "$ref": "profile/profile-favoriteLocations-add/request-schema.json#properties"
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "profile/profile-favoriteLocations-add/response-schema.json#properties"
+            }
+          },
+          "405": {
+            "description": "Invalid Input"
+          }
+        }
+      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
