@@ -260,7 +260,7 @@
       "post": {
         "tags": [],
         "summary": "Add an user favorite location",
-        "description": "Add an user favorite location to the his/her list on DynamoDB",
+        "description": "Add an user favorite location to the his/her list",
         "operationId": "post-profile-favorite-locations",
         "produces": [
           "application/json"
@@ -277,21 +277,24 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "wee": {
-                "type": "string",
-                "required": true
-              },
-              "address": {
-                "type": "string",
-                "required": true
-              },
-              "lat": {
-                "type": "number",
-                "required": true
-              },
-              "lon": {
-                "type": "number",
-                "required": true
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "required": true
+                },
+                "address": {
+                  "type": "string",
+                  "required": true
+                },
+                "lat": {
+                  "type": "number",
+                  "required": true
+                },
+                "lon": {
+                  "type": "number",
+                  "required": true
+                }
               }
             }
           }
@@ -300,14 +303,10 @@
           "200": {
             "application/json": {},
             "description": "Success",
-            "schema": {
-              "bac": {
-                "type": "string"
-              }
-            }
+            "schema": {}
           },
-          "default": {
-            "description": "Errors"
+          "405": {
+            "description": "Invalid Input"
           }
         }
       },

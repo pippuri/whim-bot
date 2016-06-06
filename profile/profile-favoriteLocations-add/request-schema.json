@@ -4,7 +4,7 @@
   "description": "Request schema for profile-favoriteLocations-add",
   "type": "object",
   "properties": {
-    "wee": {
+    "name": {
       "type": "string",
       "required": true
     },

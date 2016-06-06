@@ -14,7 +14,6 @@ function derefJsonSchema() {
         return Promise.reject(error);
       }
 
-      console.log(fullSchema.paths['/profile/favorite-locations'].post.parameters[0].schema);
       return writeFileAsync(path.join(__dirname, '..', 'swagger-maas-api-json/maas-api.json'), JSON.stringify(fullSchema, null, 2));
     })
     .then(writefileError => {

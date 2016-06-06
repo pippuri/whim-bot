@@ -25,7 +25,7 @@
       },
       "swaggerExport": {
         "summary": "Add an user favorite location",
-        "description": "Add an user favorite location to the his/her list on DynamoDB",
+        "description": "Add an user favorite location to the his/her list",
         "security": [{"Bearer":[]}],
         "parameters": [
           {
@@ -34,7 +34,10 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "$ref": "profile/profile-favoriteLocations-add/request-schema.json#properties"
+              "type": "object",
+              "properties": {
+                "$ref": "profile/profile-favoriteLocations-add/request-schema.json#properties"
+              }
             }
           }
         ],
@@ -46,8 +49,8 @@
               "$ref": "profile/profile-favoriteLocations-add/response-schema.json#properties"
             }
           },
-          "default": {
-            "description": "Errors"
+          "405": {
+            "description": "Invalid Input"
           }
         }
       },
