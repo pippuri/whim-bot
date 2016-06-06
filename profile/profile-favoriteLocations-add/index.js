@@ -9,7 +9,7 @@ function addfavoriteLocations(event) {
     if (!_.isEmpty(event.payload)) {
       // No problem
     } else {
-      return Promise.reject('400: Payload empty');
+      return Promise.reject('405: Payload empty');
     }
   } else {
     return Promise.reject('400: Missing identityId or payload');
