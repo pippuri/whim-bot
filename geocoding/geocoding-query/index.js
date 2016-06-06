@@ -14,7 +14,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
-  var ajv = ajvFactory({ inject: true, coerceTypes: true });
+  var ajv = ajvFactory({ verbose: true, inject: true, coerceTypes: true });
 
   // Add a new handler
   ajv.addKeyword('inject', {
