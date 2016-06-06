@@ -14,7 +14,7 @@
     "prefer-const": 2,
     "consistent-return": 1,
     "no-else-return": 1,
-    "no-lonely-if": 1,
+    "no-lonely-if": 2,
     "no-return-assign": 2,
     "no-self-compare": 2,
     "radix": 2,
