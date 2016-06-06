@@ -71,16 +71,16 @@ module.exports.respond = function (event, callback) {
           FunctionName: item.functionName,
           Payload: item.parameters,
         };
-        updatFunctionStatus(item.functionId, 'STARTED', null);
+        updateFunctionStatus(item.functionId, 'STARTED', null);
         lambda.invoke(params, function (err, data) {
           if (err) {
-            updatFunctionStatus(item.functionId, 'FAILED', data.Payload);
+            updateFunctionStatus(item.functionId, 'FAILED', data.Payload);
             callback(err);
           } else {
             if (data.hasOwnProperty('FunctionError')) {
-              updatFunctionStatus(item.functionId, 'FAILED', data.Payload);
+              updateFunctionStatus(item.functionId, 'FAILED', data.Payload);
             } else {
-              updatFunctionStatus(item.functionId, 'FINISHED', data.Payload);
+              updateFunctionStatus(item.functionId, 'FINISHED', data.Payload);
               callback(null, JSON.stringify(data, null, 0));
             }
           }
