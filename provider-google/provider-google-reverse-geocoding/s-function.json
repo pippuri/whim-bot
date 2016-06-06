@@ -11,41 +11,6 @@
   "custom": {
     "excludePatterns": []
   },
-  "endpoints": [
-    {
-      "path": "geocoding/reverse-google",
-      "method": "GET",
-      "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
-      "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.querystring.lat": "method.request.querystring.lat",
-        "integration.request.querystring.lon": "method.request.querystring.lon"
-       },
-      "requestTemplates": {
-        "application/json": "{\"lat\":\"$input.params('lat')\", \"lon\":\"$input.params('lon')\"}"
-      },
-      "responses": {
-        "400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "default": {
-          "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
-          "responseModels": {},
-          "responseTemplates": {
-            "application/json": ""
-          }
-        }
-      }
-    }
-  ],
   "events": [],
   "environment": "$${environment}"
 }
