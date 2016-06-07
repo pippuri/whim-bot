@@ -9,7 +9,7 @@ const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
 const gutil = require('gulp-util');
 
-const jsoncFiles = ['.jshintrc', '.jscsrc']; // json with comments
+const jsoncFiles = ['.jshintrc', '.eslintrc', '.jscsrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
 const jsFiles = ['**/*.js', '!**/node_modules/**/*.js', '!www/**/*.js', '!_meta/**/*.js'];
 
