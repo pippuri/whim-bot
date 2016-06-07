@@ -210,19 +210,153 @@
       },
       "get": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Retrieve an user profile",
+        "description": "Retrieve all public information of an user profile",
         "operationId": "get-profile",
         "produces": [
           "application/json"
         ],
         "security": [
           {
-            "authorizationHeader": []
+            "Bearer": []
           }
         ],
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "identityId": {
+                  "type": "string",
+                  "pattern": "^[aepus]{2}-[\\w]{4}-\\d:[a-f\\d]{8}(-[a-f\\d]{4}){3}-[a-f\\d]{12}$"
+                },
+                "plans": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "required": [
+                      "id",
+                      "name",
+                      "price",
+                      "currency"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "invoiceName": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "integer"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "pointGrant": {
+                        "type": "integer"
+                      },
+                      "period": {
+                        "type": "integer"
+                      },
+                      "periodUnit": {
+                        "type": "string",
+                        "enum": [
+                          "month"
+                        ]
+                      },
+                      "chargeModel": {
+                        "type": "string"
+                      },
+                      "feature": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "desc": {
+                              "type": "string"
+                            },
+                            "icon": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "provider": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "desc": {
+                              "type": "string"
+                            },
+                            "icon": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "favoriteLocations": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "required": true
+                      },
+                      "address": {
+                        "type": "string",
+                        "required": true
+                      },
+                      "lat": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      },
+                      "lon": {
+                        "type": "number",
+                        "minimum": -90,
+                        "maximum": 90
+                      }
+                    }
+                  }
+                },
+                "balance": {
+                  "type": "number"
+                },
+                "phone": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/profile/active-route": {
@@ -921,6 +1055,9 @@
           },
           "400": {
             "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }

@@ -10,18 +10,14 @@
     "plans": {
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": true
+        "$ref": "package.json#definitions/plan"
       }
     },
     "favoriteLocations": {
       "type": "array",
-      "items": [
-        {
-          "type": "object",
-          "additionalProperties": true
-        }
-      ]
+      "items": {
+        "$ref": "#/definitions/favoriteLocation"
+      }
     },
     "balance": {
       "type": "number"
@@ -34,5 +30,26 @@
     }
   },
   "additionalProperties": false,
-  "required": [ "plans", "favoriteLocations", "balance", "phone", "email" ]
+  "required": [ "plans", "favoriteLocations", "balance", "phone", "email" ],
+  "definitions": {
+    "favoriteLocation": {
+      "type": "object",
+      "properties": {
+        "name":{
+          "type": "string",
+          "required": true
+        },
+        "address":{
+          "type": "string",
+          "required": true
+        },
+        "lat":{
+          "$ref": "units.json#definitions/latitude"
+        },
+        "lon":{
+          "$ref": "units.json#definitions/latitude"
+        }
+      }
+    }
+  }
 }

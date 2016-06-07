@@ -41,6 +41,9 @@
           },
           "400": {
             "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },

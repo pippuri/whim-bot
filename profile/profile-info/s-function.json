@@ -27,6 +27,30 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"attributes\":\"$input.params('attributes')\"}"
       },
+      "swaggerExport": {
+        "summary": "Retrieve an user profile",
+        "description": "Retrieve all public information of an user profile",
+        "security": [{"Bearer":[]}],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "$ref": "schemas/v1/profile.json#properties"
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
