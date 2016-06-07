@@ -32,6 +32,7 @@
     "ajv": "^4.0.0",
     "bluebird": "^3.3.3",
     "chargebee": "^2.0.3",
+    "deep-sort-object": "^1.0.1",
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
     "json-schema-deref": "^0.3.2",
