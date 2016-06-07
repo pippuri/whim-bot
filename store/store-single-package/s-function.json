@@ -23,7 +23,7 @@
         "integration.request.path.id": "method.request.path.id"
       },
       "requestTemplates": {
-        "application/json": "{\"id\": \"$input.params('id')\"}"
+        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"plan\"}"
       },
       "swaggerExport": {
         "summary": "Retrieve one available plan",
@@ -112,7 +112,7 @@
         "integration.request.path.id": "method.request.path.id"
       },
       "requestTemplates": {
-        "application/json": "{\"id\": \"$input.params('id')\"}"
+        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"addon\"}"
       },
       "swaggerExport": {
         "summary": "Retrieve one available addon",
