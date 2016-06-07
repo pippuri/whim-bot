@@ -33,10 +33,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "type": "object",
-              "properties": {
-                "$ref": "schemas/v1/package.json#properties"
-              }
+              "$ref": "schemas/v1/package.json"
             }
           },
           "400": {

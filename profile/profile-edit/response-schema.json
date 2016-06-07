@@ -6,10 +6,6 @@
   "properties": {
     "profile": {
       "$ref": "v1/profile.json"
-    },
-    "maas": {
-      "type": "object",
-      "additionalProperties": true
     }
   },
   "additionalProperties": false
