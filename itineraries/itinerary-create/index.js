@@ -213,15 +213,24 @@ module.exports.respond = function (event, callback) {
       valid: validateSignatures(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
     })
-    .then(_input      => input = _input)
+    .then(_input      => {
+      input = _input;
+      return input;
+    })
     .then(_empty      => computeBalance(event.itinerary, input.profile))
-    .then(_newBalance => balance = _newBalance)
+    .then(_newBalance => {
+      balance = _newBalance;
+      return balance;
+    })
     .then(_itinerary  => removeSignatures(event.itinerary))
     .then(_itinerary  => annotateIdentifiers(_itinerary))
     .then(_itinerary  => annotateIdentityId(_itinerary, input.profile.identityId))
     .then(_itinerary  => createAndAppendBookings(_itinerary, input.profile))
     .then(_itinerary  => saveItinerary(_itinerary))
-    .then(_itinerary  => itinerary = _itinerary)
+    .then(_itinerary  => {
+      itinerary = _itinerary;
+      return itinerary;
+    })
     .then(_empty      => updateBalance(event.identityId, balance))
     .then(profile     => wrapToEnvelope(itinerary))
     .then(response    => callback(null, response))
