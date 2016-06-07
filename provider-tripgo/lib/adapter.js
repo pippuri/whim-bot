@@ -15,9 +15,9 @@ function convertAgencyId(mode, serviceOperator, taxiProvider) {
 
   if (serviceOperator === 'Helsingin seudun liikenne') {
     return 'HSL';
-  } else {
-    return undefined;
   }
+
+  return undefined;
 
 }
 

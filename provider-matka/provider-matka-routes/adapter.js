@@ -35,7 +35,7 @@ function convertFromTo(xy, name) {
 function convertDateTime(date, time) {
   var d = new Date();
   d.setFullYear(date.slice(0, 4));
-  d.setMonth(parseInt(date.slice(4, 6)) - 1);
+  d.setMonth(parseInt(date.slice(4, 6), 10) - 1);
   d.setDate(date.slice(6, 8));
   d.setHours(time.slice(0, 2));
   d.setMinutes(time.slice(2, 4));

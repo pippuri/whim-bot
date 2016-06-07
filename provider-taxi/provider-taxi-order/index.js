@@ -29,13 +29,13 @@ function orderTaxi(order) {
           success: false,
           errors: err.response.body.errors,
         };
-      } else {
-        return {
-          success: false,
-          code: err.statusCode,
-          cause: err.response.body.localized_description,
-        };
       }
+
+      return {
+        success: false,
+        code: err.statusCode,
+        cause: err.response.body.localized_description,
+      };
     });
 
 }

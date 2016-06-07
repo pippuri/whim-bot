@@ -54,10 +54,11 @@ function simulateUser(phone) {
     if (state.activeRoute) {
       // Route is active, continue it.
       return routeNavigator.continueExistingRoute(identityId, idToken, state.activeRoute);
-    } else {
-      // No route is active, start one.
-      return routeRandomizer.startRandomRoute(identityId, idToken);
     }
+
+    // No route is active, start one.
+
+    return routeRandomizer.startRandomRoute(identityId, idToken);
   });
 }
 

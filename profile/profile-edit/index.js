@@ -27,7 +27,9 @@ function updateUserData(event) {
       const expressions = keys.map(key => `${key}=:${key}`);
       const values = {};
 
-      keys.forEach(key => values[':' + key] = event.payload[key]);
+      keys.forEach(key => {
+        values[':' + key] = event.payload[key];
+      });
 
       const params = {
         TableName: table,

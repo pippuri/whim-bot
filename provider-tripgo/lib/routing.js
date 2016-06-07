@@ -58,9 +58,9 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
   .then(function (result) {
     if (result.error) {
       return Promise.reject(new Error(result.error));
-    } else {
-      return result;
     }
+
+    return result;
   });
 }
 
@@ -100,10 +100,9 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format, t
 
     if (format === 'original') {
       return response;
-    } else {
-      return adapter(response, taxiProvider);
     }
 
+    return adapter(response, taxiProvider);
   });
 }
 

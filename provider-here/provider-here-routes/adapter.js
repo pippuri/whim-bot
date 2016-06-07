@@ -40,8 +40,10 @@ function convertTo(data) {
   };
 }
 
+/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
+/* eslint-disable no-bitwise */
+
 // https://developers.google.com/maps/documentation/utilities/polylinealgorithm#example
-// jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 function encodeNumber(num) {
   var encodeString = '';
@@ -96,8 +98,10 @@ function createEncodedPolyline(points) {
   return encoded_point;
 }
 
-// jscs:enable requireCamelCaseOrUpperCaseIdentifiers
 //--------------------------------------------------------------------------------
+
+/* eslint-enable no-bitwise */
+/* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 
 function convertToLegGeometry(shapes) {
 

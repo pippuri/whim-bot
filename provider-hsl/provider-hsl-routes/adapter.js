@@ -42,7 +42,7 @@ function convertFromTo(from) {
 function convertDateTime(str) {
   var d = new Date();
   d.setFullYear(str.slice(0, 4));
-  d.setMonth(parseInt(str.slice(4, 6)) - 1);
+  d.setMonth(parseInt(str.slice(4, 6), 10) - 1);
   d.setDate(str.slice(6, 8));
   d.setHours(str.slice(8, 10));
   d.setMinutes(str.slice(10, 12));
