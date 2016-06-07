@@ -86,8 +86,8 @@
     "test": "gulp test",
     "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json && sls function run -s dev swagger-populate",
     "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/",
-    "deploy-dev:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
-    "deploy-prod:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && sls function deploy -a -s prod && sls endpoint deploy -a -s prod"
+    "deploy-dev:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
+    "deploy-prod:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod"
   },
   "version": "0.1.0"
 }
