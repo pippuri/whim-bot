@@ -127,6 +127,8 @@ function convertLegType(legType) {
   } else if (legType === 'busPublic') {
     return 'BUS';
   }
+
+  throw new Error('Unknown HERE leg type.');
 }
 
 function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Transport Line; LGT: LegType.
@@ -197,15 +199,19 @@ function convertItinerary(route) {
 function convertPlanFrom(original) {
   var from;
 
-  if (original.response && original.response.route[0] && original.response.route[0].waypoint[0]) {
-    var lon = (original.response.route[0].waypoint[0].originalPosition.longitude);
-    var lat = (original.response.route[0].waypoint[0].originalPosition.latitude);
-    from = {
-      lon: lon,
-      lat: lat,
-    };
-    return from;
+  if (!original.response || !original.response.route[0] || !original.response.route[0].waypoint[0]) {
+    return new Error('Invalid HERE response.');
   }
+
+  var lon = (original.response.route[0].waypoint[0].originalPosition.longitude);
+  var lat = (original.response.route[0].waypoint[0].originalPosition.latitude);
+
+  from = {
+    lon: lon,
+    lat: lat,
+  };
+
+  return from;
 
 }
 

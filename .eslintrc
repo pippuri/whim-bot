@@ -12,7 +12,7 @@
     "no-unused-vars": 0,
     "comma-dangle": [2, "always-multiline"],
     "prefer-const": 2,
-    "consistent-return": 0, // TODO: set to 2 and fix errors
+    "consistent-return": 2,
     "no-else-return": 2,
     "no-lonely-if": 2,
     "no-return-assign": 2,

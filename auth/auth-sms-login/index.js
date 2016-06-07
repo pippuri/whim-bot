@@ -86,6 +86,7 @@ function updateCognitoProfile(identityId, profile) {
       });
     }
 
+    return Promise.resolve();
   });
 }
 

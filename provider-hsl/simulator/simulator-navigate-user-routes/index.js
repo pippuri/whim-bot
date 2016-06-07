@@ -46,9 +46,10 @@ function simulateUser(phone) {
     if (err.code === 'ResourceNotFoundException') {
       console.log('Note: Thing', thingName, 'does not have a thing shadow yet');
       state = {};
-    } else {
-      return Promise.reject(err);
+      return Promise.resolve();
     }
+
+    return Promise.reject(err);
   })
   .then(function () {
     if (state.activeRoute) {

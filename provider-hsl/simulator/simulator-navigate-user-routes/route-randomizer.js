@@ -1,4 +1,5 @@
-var request = require('request-promise-lite');
+const request = require('request-promise-lite');
+const Promise = require('bluebird');
 
 // Create random routes within this area
 var area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
@@ -53,17 +54,19 @@ function startRandomRoute(identityId, idToken) {
     json: true,
   })
   .then(response => {
-    if (response.plan && response.plan.itineraries && response.plan.itineraries.length > 0) {
-      // Found some routes, pick one
-      var activeRoute;
-      var now = Date.now();
-      response.plan.itineraries.map(route => {
-        if (!activeRoute && route.startTime >= now && route.legs && route.legs.length > 0 && route.legs[0].from && route.legs[0].from.lat && route.legs[0].from.lon) {
-          activeRoute = route;
-        }
-      });
-      return activateRoute(identityId, idToken, activeRoute);
+    if (!response.plan || !response.plan.itineraries || response.plan.itineraries.length < 1) {
+      return Promise.reject(new Error('Invalid routes response.'));
     }
+
+    // Found some routes, pick one
+    var activeRoute;
+    var now = Date.now();
+    response.plan.itineraries.map(route => {
+      if (!activeRoute && route.startTime >= now && route.legs && route.legs.length > 0 && route.legs[0].from && route.legs[0].from.lat && route.legs[0].from.lon) {
+        activeRoute = route;
+      }
+    });
+    return activateRoute(identityId, idToken, activeRoute);
   });
 }
 
