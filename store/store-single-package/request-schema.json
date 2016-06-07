@@ -3,6 +3,15 @@
   "id": "https://api.maas.global/v1/profile-favoriteLocations-add/request-schema.json",
   "description": "Request schema for profile-favoriteLocations-add",
   "type": "object",
-  "properties": {},
+  "properties": {
+    "id": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "string",
+      "required": true
+    }
+  },
   "additionalProperties": false
 }

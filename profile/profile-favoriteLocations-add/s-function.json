@@ -49,8 +49,11 @@
               "$ref": "profile/profile-favoriteLocations-add/response-schema.json#properties"
             }
           },
-          "405": {
+          "400": {
             "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthenticated"
           }
         }
       },

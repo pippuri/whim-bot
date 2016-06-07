@@ -149,30 +149,17 @@
         "responses": {}
       }
     },
-    "/geocoding/reverse-google": {
+    "/geocoding/reverse": {
       "get": {
         "tags": [],
         "summary": "",
         "description": "",
-        "operationId": "get-geocoding-reverse-google",
+        "operationId": "get-geocoding-reverse",
         "produces": [
           "application/json"
         ],
         "security": [],
-        "parameters": [
-          {
-            "name": "lat",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "lon",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
+        "parameters": [],
         "responses": {}
       }
     },
@@ -305,8 +292,11 @@
             "description": "Success",
             "schema": {}
           },
-          "405": {
+          "400": {
             "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthenticated"
           }
         }
       },
@@ -798,53 +788,313 @@
         "responses": {}
       }
     },
-    "/store/package": {
-      "get": {
-        "tags": [],
-        "summary": "",
-        "description": "",
-        "operationId": "get-store-package",
-        "produces": [
-          "application/json"
-        ],
-        "security": [
-          {
-            "authorizationHeader": []
-          }
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "type",
-            "in": "query",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {}
-      }
-    },
     "/store/packages": {
       "get": {
         "tags": [],
-        "summary": "",
-        "description": "",
+        "summary": "Retrieve all available packages in store",
+        "description": "Retrieve all public plans and addons available for purchase from MaaS store.",
         "operationId": "get-store-packages",
         "produces": [
           "application/json"
         ],
         "security": [
           {
-            "authorizationHeader": []
+            "Bearer": []
           }
         ],
         "parameters": [],
-        "responses": {}
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "plans": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "required": [
+                      "id",
+                      "name",
+                      "price",
+                      "currency"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "invoiceName": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "integer"
+                      },
+                      "currency": {
+                        "type": "string"
+                      },
+                      "pointGrant": {
+                        "type": "integer"
+                      },
+                      "period": {
+                        "type": "integer"
+                      },
+                      "periodUnit": {
+                        "type": "string",
+                        "enum": [
+                          "month"
+                        ]
+                      },
+                      "chargeModel": {
+                        "type": "string"
+                      },
+                      "feature": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "desc": {
+                              "type": "string"
+                            },
+                            "icon": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
+                      "provider": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string"
+                            },
+                            "desc": {
+                              "type": "string"
+                            },
+                            "icon": {
+                              "type": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
+                "addons": {
+                  "type": "array",
+                  "minItems": 0,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "name",
+                      "price"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "invoiceName": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          }
+        }
+      }
+    },
+    "/store/packages/addon/{id}": {
+      "get": {
+        "tags": [],
+        "summary": "Retrieve one available addon",
+        "description": "Retrieve one addon available for public purchase from MaaS store",
+        "operationId": "get-store-packages-addon-id",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the addon",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "required": [
+                "id",
+                "name",
+                "price"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "invoiceName": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    },
+    "/store/packages/plan/{id}": {
+      "get": {
+        "tags": [],
+        "summary": "Retrieve one available plan",
+        "description": "Retrieve one plan available for public purchase from MaaS store",
+        "operationId": "get-store-packages-plan-id",
+        "produces": [
+          "application/json"
+        ],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the plan",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "type": "object",
+              "additionalProperties": true,
+              "required": [
+                "id",
+                "name",
+                "price",
+                "currency"
+              ],
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": "string"
+                },
+                "invoiceName": {
+                  "type": "string"
+                },
+                "price": {
+                  "type": "integer"
+                },
+                "currency": {
+                  "type": "string"
+                },
+                "pointGrant": {
+                  "type": "integer"
+                },
+                "period": {
+                  "type": "integer"
+                },
+                "periodUnit": {
+                  "type": "string",
+                  "enum": [
+                    "month"
+                  ]
+                },
+                "chargeModel": {
+                  "type": "string"
+                },
+                "feature": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "desc": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                },
+                "provider": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "desc": {
+                        "type": "string"
+                      },
+                      "icon": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     },
     "/swagger/maas-api-json": {
