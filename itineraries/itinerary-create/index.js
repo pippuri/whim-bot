@@ -1,12 +1,12 @@
 const URL = require('url');
 const Promise = require('bluebird');
+const knexFactory = require('knex');
+const Model = require('objection').Model;
 const bus = require('../../lib/service-bus');
 const maasUtils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
-const tsp = require('../lib/tsp.js');
-const knexFactory = require('knex');
-const Model = require('objection').Model;
 const models = require('../../lib/models');
+const tsp = require('../lib/tsp.js');
 
 function initKnex() {
   // FIXME Change variable names to something that tells about MaaS in general
@@ -41,12 +41,15 @@ function fetchCustomerProfile(identityId) {
   return bus.call('MaaS-profile-info', {
     identityId: identityId,
   })
-  .then(data => data.Item);
+  .then(data => {
+    // Append identity ID
+    return Object.assign({ identityId: identityId }, data.Item);
+  });
 }
 
 function filterBookableLegs(legs) {
   // Filter away the legs that do not need a TSP
-  return legs.filter(leg => {
+  return Promise.resolve(legs.filter(leg => {
     switch (leg.mode) {
       // Erraneous data
       case 'undefined':
@@ -63,10 +66,10 @@ function filterBookableLegs(legs) {
       default:
         return true;
     }
-  });
+  }));
 }
 
-function validateSignature(itinerary, profile) {
+function validateSignatures(itinerary) {
   // Verify that the data matches the signature
   const originalSignature = itinerary.signature;
   const withoutSignature = Object.assign({}, itinerary);
@@ -80,6 +83,19 @@ function validateSignature(itinerary, profile) {
 
   // FIXME change routeId term
   return Promise.reject(new MaaSError('Itinerary validation failed.', 400));
+}
+
+function removeSignatures(itinerary) {
+  // Remove old signatures and assign new ones
+  const itineraryCopy = Object.assign({}, itinerary);
+  delete itineraryCopy.signature;
+  itineraryCopy.legs = itinerary.legs.map(leg => {
+    const copy = Object.assign({}, leg);
+    delete copy.signature;
+    return copy;
+  });
+
+  return Promise.resolve(itineraryCopy);
 }
 
 function computeBalance(itinerary, profile) {
@@ -105,36 +121,71 @@ function updateBalance(identityId, newBalance) {
   });
 }
 
-function annotateItinerary(_itinerary, profile, bookings) {
-  // Copy the main itinerary object, annotate it with user info
-  const itineraryCore = {
-    identityId: profile.identityId,
-  };
-  const itinerary = Object.assign({}, _itinerary, itineraryCore);
+function annotateIdentifiers(itinerary) {
 
-  // Annotate the legs with booking information if needed
+  // Assign fresh identifiers for the itinerary and legs
+  itinerary.id = maasUtils.createId();
   itinerary.legs.forEach(leg => {
-    // Find the booking that matches the leg
-    const booking = bookings.find(booking => booking.leg.signature === leg.signature);
-
-    // In case of no booking, this is a leg that customer should take manually
-    if (!booking) {
-      return;
-    }
-
-    // Isolate the booking core - we don't need duplicate leg or customer info
-    const bookingCore = {
-      id: booking.signature,
-      state: booking.state,
-      token: booking.token,
-      meta: booking.meta,
-    };
-
-    // Append booking information for the leg
-    leg.booking = bookingCore;
+    leg.id = maasUtils.createId();
   });
 
+  return Promise.resolve(itinerary);
+}
+
+function annotateIdentityId(itinerary, identityId) {
+  itinerary.identityId = identityId;
+
   return itinerary;
+}
+
+function createAndAppendBookings(itinerary, profile) {
+
+  const completed = [];
+  const failed = [];
+  const cancelled = [];
+
+  function appendOneBooking(leg) {
+    return tsp.createBooking(leg, profile)
+      .then(
+        booking => {
+          completed.push(leg);
+          leg.booking = booking;
+        },
+
+        error => {
+          console.warn(error);
+          console.warn(`Booking failed for agency ${leg.agencyId}`);
+          failed.push(leg);
+        }
+      );
+  }
+
+  function cancelOneBooking(leg) {
+    return tsp.cancelBooking(leg.booking)
+      .then(
+        booking => cancelled.push(leg),
+
+        error => {
+          console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
+        }
+      );
+  }
+
+  return filterBookableLegs(itinerary.legs)
+    .then(legs => Promise.map(legs, appendOneBooking))
+    .then(_empty => {
+      // In case of success, return the itinerary. In case of failure,
+      // cancel the completed bookings.
+      if (failed.length === 0) {
+        return Promise.resolve(itinerary);
+      }
+
+      return Promise.map(completed, cancelOneBooking)
+        .then(_empty => {
+          const error = new MaaSError(`${failed.length} bookings failed.`, 500);
+          return Promise.reject(error);
+        });
+    });
 }
 
 function saveItinerary(itinerary) {
@@ -159,19 +210,19 @@ module.exports.respond = function (event, callback) {
   // update balance and save both itinerary and profile.
   return Promise.props({
       knex: initKnex(),
-      valid: validateSignature(event.itinerary),
+      valid: validateSignatures(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
-      legs: filterBookableLegs(event.itinerary.legs),
     })
     .then(_input      => input = _input)
     .then(_empty      => computeBalance(event.itinerary, input.profile))
     .then(_newBalance => balance = _newBalance)
+    .then(_itinerary  => removeSignatures(event.itinerary))
+    .then(_itinerary  => annotateIdentifiers(_itinerary))
+    .then(_itinerary  => annotateIdentityId(_itinerary, input.profile.identityId))
+    .then(_itinerary  => createAndAppendBookings(_itinerary, input.profile))
     .then(_itinerary  => saveItinerary(_itinerary))
-    .then(_newBalance => tsp.createBookings(input.legs, input.profile))
-    .then(bookings    => annotateItinerary(event.itinerary, input.profile, bookings))
     .then(_itinerary  => itinerary = _itinerary)
-    .then(_itinerary  => saveItinerary(_itinerary))
-    .then(_itinerary  => updateBalance(event.identityId, balance))
+    .then(_empty      => updateBalance(event.identityId, balance))
     .then(profile     => wrapToEnvelope(itinerary))
     .then(response    => callback(null, response))
     .catch(MaaSError, error => callback(error))
