@@ -37,9 +37,6 @@ function createBooking(leg, profile) {
       }, tsp.adapter.options);
 
       return request.post(url, options);
-    })
-    .then(booking => {
-      return booking;
     });
 }
 
