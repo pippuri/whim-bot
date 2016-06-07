@@ -28,14 +28,14 @@ build/Release
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
 
-#IDE Stuff
+# IDE Stuff
 **/.idea
 
-#OS STUFF
+# OS STUFF
 .DS_Store
 .tmp
 
-#SERVERLESS STUFF
+# SERVERLESS STUFF
 admin.env
 .env
 _meta/_tmp
@@ -44,3 +44,6 @@ _meta/variables/s-variables-prod.json
 
 #VIM STUFF
 *.swp
+
+# SWAGGER OUTPUT
+swagger/swagger-maas-api-json/maas-api.json
