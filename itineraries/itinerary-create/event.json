@@ -1,92 +1,96 @@
 {  
   "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "itinerary": {
-    "startTime": 1474877078000,
-    "endTime": 1474880470000,
+  "itinerary":{
+    "startTime": 1475314020000,
+    "endTime": 1475316632000,
     "legs": [
         {
-            "startTime": 1474877078000,
-            "endTime": 1474877520000,
-            "mode": "WALK",
+            "startTime": 1475314020000,
+            "endTime": 1475315520000,
+            "mode": "TRAIN",
             "from": {
-                "name": "Linnankoskenkatu",
-                "lon": 24.9148,
-                "lat": 60.18503
+                "name": "Helsinki",
+                "lon": 24.93991,
+                "lat": 60.17272
             },
             "to": {
-                "name": "Kansaneläkelaitos",
-                "lon": 24.91707,
-                "lat": 60.18948
+                "name": "Espoo",
+                "lon": 24.65645,
+                "lat": 60.2051
             },
-            "legGeometry": {
-                "points": "u{inJseawCUD??Ac@MqBMACUQs@IWCQACSoAyDgB]{@ECyBgAGG{@e@K?WYGEs@DKIECA?ACA?GE??oBxBES[d@qAxBC@"
-            },
-            "signature": "a6c3924a60d888337b47755bedcae5e83b2d038fb9836f36813ae47c9b1be39c"
-        },
-        {
-            "startTime": 1474877520000,
-            "endTime": 1474879920000,
-            "mode": "BUS",
-            "from": {
-                "name": "Kansaneläkelaitos",
-                "lon": 24.91707,
-                "lat": 60.18948
-            },
-            "to": {
-                "name": "Mustasilta",
-                "lon": 24.64748,
-                "lat": 60.32773
-            },
-            "route": "345",
-            "routeShortName": "345",
-            "routeLongName": "Elielinaukio-Rinnekoti",
+            "route": "E",
+            "routeShortName": "E",
+            "routeLongName": "Helsinki-Kauklahti",
             "agencyId": "HSL",
-            "signature": "0db8ad7b6769f0db55d947e9143b3cfd09e9e334a3728e3f4493e07306b89cc3"
+            "signature": "5bfe6a4b8410b948d02a7a22d78c7a6a94897a8dd5aaac6dc497c34b7eff23c8"
         },
         {
-            "startTime": 1474879920000,
-            "endTime": 1474880046000,
+            "startTime": 1475315520000,
+            "endTime": 1475315539000,
             "mode": "WALK",
             "from": {
-                "name": "Mustasilta",
-                "lon": 24.64748,
-                "lat": 60.32773
+                "name": "Espoo",
+                "lon": 24.65645,
+                "lat": 60.2051
             },
             "to": {
-                "name": "Vihdintie & Lakistontie",
-                "lon": 24.6471,
-                "lat": 60.32626
+                "lon": 24.65617,
+                "lat": 60.20525
             },
             "legGeometry": {
-                "points": "iweoJw}luC@V??|@C`ACb@Bp@Nd@\\VPPG"
+                "points": "yxmnJwunuCIz@SC"
             },
-            "signature": "657fd37404852f8adc190e40f63ea58eef538dcdda9c2e86ca86dae5cb5ef6c9"
+            "signature": "f03977c85b07f98cbaea8a65797a7f1fbf640fd98b08c4c32024e1bed42e21be"
         },
         {
-            "startTime": 1474880046000,
-            "endTime": 1474880470000,
+            "startTime": 1475315539000,
+            "endTime": 1475316019000,
+            "mode": "WAIT",
+            "signature": "e55e6f29b673069bd1cae874b3ca7fc285dca03076da25ec45594c3fe817fbe7"
+        },
+        {
+            "startTime": 1475316019000,
+            "endTime": 1475316575000,
             "mode": "TAXI",
             "from": {
-                "name": "Vihdintie & Lakistontie",
-                "lon": 24.6471,
-                "lat": 60.32626
+                "lon": 24.65617,
+                "lat": 60.20525
             },
             "to": {
-                "name": "Nuuksiontie",
-                "lon": 24.558,
-                "lat": 60.29377
+                "name": "Mäntytie",
+                "lon": 24.6904,
+                "lat": 60.16256
             },
             "legGeometry": {
-                "points": "aneoJk{luC??TcDz@{Rx@{OToFRyHBuHC}DEuDIoEEcDE{BBsAWuKA_C@aB@}ADqBHwBLoBLeBReBRmBXqBf@oCh@qCp@_DP}@z@mE`@_C^{B^eC^cCf@kERiBFaB\\cCh@sGvAcRp@uIRqBRsBXsBX{Bb@qCxAuIHe@pDwUv@cFf@sCT}A^aC\\eC\\eC^uDPmBNqB@QPiCNqDLqCToIFkCr@qTJ_ELcCXcEv@kHLaAp@mCbAuDTDh@}Ch@qA?AZaAZ}@dAoBpDmGvB{DpA}C??`AaD~@uDzB_LhAeGPaAReAx@_EZ{AlAaFp@gCx@aCd@oAXw@f@qAb@kAXu@zC}HxAkEH]jA_Ev@mC^uAFY^kBPaATqAZaAX}BxC}R~A{Kv@wF??XsB@GjAcIT}Ap@{E\\eCHk@jC{Q@@b@cCVgCNcAR{A@BVkB`@sCT}Ad@kD~@iGbAmHJu@Z{A`@gDx@eGVaBAETsAJq@VeBJy@RmAn@eEPmAd@iCTqAj@eCpAwFRq@lAsE@Cb@{A`AeDzBuG|AkDLUtBuDfA}ArDoE~E}FdCuCvDoEhAqArBgCb@g@zAiBhAsAjBwB~CyDjEcFp@w@v@_An@c@n@g@JONMl@o@l@o@\\q@z@yALMhDaEl@q@lB_ChA}AvA_CLYrAaCA?l@oA^}@j@uAzA}DfBeFDM?@`@kAPc@xByGjHqSRg@??h@}Ah@oAv@yAhAwAb@c@nAkAj@k@ZYp@_@BC@ANI?ANK?DXSZIb@Kh@Mp@Mt@Mn@MNC@CBt@??XlCJ|@Nf@Nb@NXFHNLTJ\\DTAXCR?PBLLRZLf@XzB^|HPjHB~HEbEIpEUtGc@|Ge@xG@C]|EOjDIrBK~BEzBGlCA`AA~D@fCBrBBjBJxCFvBLvBAC@TB`@??LjBTtC^xDTrB`@zBVzAv@tDjAbFpBbHbCpHpFxO~@vCj@xBvA`GrAlGjAvHp@bGh@nGbA~M`A~Mt@rJ^tEXfDn@~Gx@hHpAfJ`AdGhB|K`CtNvA`JfDfSRpCZbCP`CZlDNpBXvBPdDNrANvAT|AZ|AZzAf@~Bp@~CfA|E\\bBn@hBt@pChApDjAbD|@rB~@nB|@hBlAlBpAnBpDnEhDbExPfTfGrHvFtGnK~KbBhBxEnG\\j@~@xAlA~B|B`F`CdGvB|FnC~Gr@zA~BnFjEzIVf@t@tA|@fBvAxC|@bAl@b@x@`@ZV~@j@pBzAbB|ArCdDbAz@fJ~LpB|BnCjCtAnAxCrBpFlDdBrArAjAnArAbAfA|ArBfBpCbBzCr@vAr@|A~@vB~@dCz@fCh@`BNf@v@tCt@rCv@tDr@xDh@vCl@~DX~B?A@Ld@bEhApLx@hIdArKhCnW^~Db@vE^nEf@vGRhCh@`Hf@rFh@`Gj@xF\\xE\\nDd@jFJjBHvADnA@~@DdA?tA@lACpAArAG~DSlKQpMWvM@tBOxDW~EUpDQbDc@fFQnBYbD_@lDa@~CcBrMs@`Fi@zEc@nEa@|FYjESzDObESdHOvEW~ES|D_@zDi@xEo@rEq@rDuBtJu@jDi@nCi@bDq@jFc@zFe@|HSnEYtE_@`Fm@xFm@|Em@fEs@bEkArF_C~IoB|G}CtJgCzGqBtEoBfEiBhD}EbIiA`BmCvCaCzBaChBqDzCgCvCs@x@aAtAuB|C}@`BgAnBu@vA?@sBtEcA|B}BdGwCxI{A`FqArEyAjFaApDs@~B_@bAa@|@Yf@Y\\UHSFQCOISOQ[Qg@Ik@Cy@?u@Dy@JaAVaARm@Te@\\_@f@Yl@Mj@BCs@E}A?_C?cA@eA@eCHkEFgBLwBNaBf@oF??t@gHz@wHXkCx@uHf@uEnA{K\\oC\\wBtBaLvCwOz@aDDU|AqFxDaKtDsG|@eBi@cAwAi@w@UKAmAa@]?_@?{@b@e@X_@b@IJwArB[b@[T[Tk@Tc@L_@Te@^o@x@o@jAe@v@_@f@e@^c@\\oBlAm@^gB`AOFkDrB_FbDYPYBe@?a@M]]??[m@??Y}@s@iCSw@[g@Y_@y@]mBn@_A^UDI?_@Cs@UaDeCuEqCkB_AmAw@OIu@W?@y@YqAU?AoBBIBA?aAZs@Ru@Ig@Ui@c@[]aAy@o@c@w@a@i@Se@k@_@w@U_AcCoJo@mC?As@mDOgAOeBOeBSwAOu@Uo@[m@]c@_@Uc@Me@Cc@Fg@T_@Z[b@c@hAgArCyA|Dk@fA??sArBg@v@g@d@YXa@Ta@P??m@Jm@FaC\\_AXkA^eAf@y@f@w@n@aA|@y@|@cAtAgAvAFt@sAlASp@Yu@sAdAu@^q@Xi@Pm@LcBNk@Bq@Lw@\\e@\\e@^aA`A_At@_Af@mEdB??kChAi@Pi@HeAJe@Hc@L_@T_@`@_@f@a@l@[v@k@dB]bAWj@[j@[^[`@k@^w@ZmA\\A?g@Li@XEDm@Zo@d@c@b@_@b@u@dAa@p@c@dACDmBxF]dAk@rAi@bAo@x@m@v@k@b@mA|@eAf@s@Xa@H??g@Ca@GcAMeA[cAYe@Mc@Ca@He@TaAt@u@v@yBpCo@p@aDzBu@|@e@r@s@dB[xBShFQxDGtAOvAGn@]rBMdAS`BO|AO`CUfEMbC??E\\QfDIt@GjAEnA?r@?x@D`B?vA?l@Cn@Gn@]pDM`AO|@ObAi@lCs@bCYjAaAtDSt@Yx@]v@a@z@@?o@dAU\\_@^k@^mBdAo@f@m@bAK[Ea@GIE?KF@~@ATIJQDE?CoA?MWBKFMLCDDXGpB?V_@lA]l@S`@Y|@U|@a@x@Y|@FV@BOT"
+                "points": "kzmnJevnuCMkAu@Zp@zFHn@`@pD`@`@DVJjAPlCHtCJzATxEF`ADx@Nj@JVJTl@eAfBgFh@gAl@eA|@cAHI?AVYVQXQVMXI^K|@IZ?Z@lBDv@BR?XGd@MNI`@[TUTYd@y@\\aA^eATs@f@sBz@mD\\sB?aA\\{BL[Z{APu@@AFWRy@Vs@Vu@\\q@^s@\\g@h@m@j@o@h@m@j@s@`@q@^y@Pa@Tk@`@gALo@@}@v@kE`@oBTy@LDt@}Bb@mAh@kAVa@LIVUd@Y\\E\\G|@Cv@BfAPfFfEjFtDd@V@@b@?d@Qd@k@nEgJz@kA`BsArBwB`AkA?@p@y@VW`@g@lA}@`AY\\C?@nAId@GbAIbAQv@U`@KxBq@x@Y\\KJCtBy@v@]ZQh@_@r@s@Vg@\\y@@?`@}@Ni@XoAj@cD?CJgAHm@DiA@}A?gA?M?iC?KGgFIaCCkA?w@FcAFkAHmAH_APoANeANm@Rm@Rk@P_@DMdBkEXo@bFoLf@aAx@mAvAoARUr@}@??n@aANU`AuAFOJIx@w@h@y@PMDIj@g@PIf@]z@[r@YTMr@Qh@Cz@Xn@Df@E^E`AAz@Cz@Q^Q?Cp@[r@g@NINYHQJ_@La@A@PeAV}Bp@_HXuBFk@j@aCb@aBFXVh@FTR|A^~AX~@r@dBXb@z@jAlA|AlA`Bn@hBnAlE?@r@q@zAQ@Ad@IfIiFLEZMf@@t@PhAdA\\Lx@G"
             },
             "agencyId": "Valopilkku",
-            "signature": "39f67a6321deafa2a12707e544c25ad8512db5e26ee9794ba5ca4ad6f7c39b26"
+            "signature": "dafe6e3ec57255d59e09afe08bc441c907fa3158805d7c8b619414861f34e285"
+        },
+        {
+            "startTime": 1475316575000,
+            "endTime": 1475316632000,
+            "mode": "WALK",
+            "from": {
+                "name": "Mäntytie",
+                "lon": 24.6904,
+                "lat": 60.16256
+            },
+            "to": {
+                "name": "Varputie",
+                "lon": 24.69177,
+                "lat": 60.16193
+            },
+            "legGeometry": {
+                "points": "_oenJ_juuCAm@B]?Y?u@Gc@GYCQCUJI"
+            },
+            "signature": "2348d0104dcfc19d5051345786978bd3383522327e7707a9864aa53f4ab503e1"
         }
     ],
     "fare": {
-        "points": 409.8666666666667,
+        "points": 290,
         "co2": 0
     },
-    "signature": "8342f62bd929d41a05bf3a90e8a7bdbd04cd468e492f2d80aa960d11037c9426"
-}
+    "signature": "394d0621c88d585ce0ea9464181e894f484a342550f02a83e1c6b4dfc4bd03f5"
+  }
 }
