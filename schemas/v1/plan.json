@@ -224,6 +224,7 @@
         "GONDOLA",
         "FUNICULAR",
         "TRANSIT",
+        "TRAIN",
         "TRAINISH",
         "BUSISH",
         "LEG_SWITCH",
