@@ -27,16 +27,13 @@ function initKnex() {
     },
   };
 
-  return new Promise((resolve, reject) => {
-    const knex = knexFactory(config);
-    Model.knex(knex);
+  const knex = knexFactory(config);
+  Model.knex(knex);
 
-    return resolve(knex);
-  });
+  return knex;
 }
 
 function fetchCustomerProfile(identityId) {
-
   // FIXME The 'Item' envelope is unnecessary in profile
   return bus.call('MaaS-profile-info', {
     identityId: identityId,
@@ -49,12 +46,11 @@ function fetchCustomerProfile(identityId) {
 
 function filterBookableLegs(legs) {
   // Filter away the legs that do not need a TSP
-  return Promise.resolve(legs.filter(leg => {
+  return legs.filter(leg => {
     switch (leg.mode) {
       // Erraneous data
       case 'undefined':
-        var msg = 'No mode available for leg ' + JSON.stringify(leg, null, 2);
-        throw new Error(msg);
+        throw new Error(`No mode available for leg ${JSON.stringify(leg, null, 2)}`);
 
       // Manual modes, no TSP needed
       case 'WAIT':
@@ -66,7 +62,7 @@ function filterBookableLegs(legs) {
       default:
         return true;
     }
-  }));
+  });
 }
 
 function validateSignatures(itinerary) {
@@ -87,15 +83,12 @@ function validateSignatures(itinerary) {
 
 function removeSignatures(itinerary) {
   // Remove old signatures and assign new ones
-  const itineraryCopy = Object.assign({}, itinerary);
-  delete itineraryCopy.signature;
-  itineraryCopy.legs = itinerary.legs.map(leg => {
-    const copy = Object.assign({}, leg);
-    delete copy.signature;
-    return copy;
+  delete itinerary.signature;
+  itinerary.legs.forEach(leg => {
+    delete leg.signature;
   });
 
-  return Promise.resolve(itineraryCopy);
+  return itinerary;
 }
 
 function computeBalance(itinerary, profile) {
@@ -105,11 +98,10 @@ function computeBalance(itinerary, profile) {
   const message = `Insufficent balance (required: ${cost}, actual: ${balance})`;
 
   if (balance > cost) {
-    return Promise.resolve(balance - cost);
+    return balance - cost;
   }
 
-  // FIXME change routeId term
-  return Promise.reject(new MaaSError(message, 403));
+  throw new MaaSError(message, 403);
 }
 
 function updateBalance(identityId, newBalance) {
@@ -122,14 +114,13 @@ function updateBalance(identityId, newBalance) {
 }
 
 function annotateIdentifiers(itinerary) {
-
   // Assign fresh identifiers for the itinerary and legs
   itinerary.id = maasUtils.createId();
   itinerary.legs.forEach(leg => {
     leg.id = maasUtils.createId();
   });
 
-  return Promise.resolve(itinerary);
+  return itinerary;
 }
 
 function annotateIdentityId(itinerary, identityId) {
@@ -171,7 +162,7 @@ function createAndAppendBookings(itinerary, profile) {
       );
   }
 
-  return filterBookableLegs(itinerary.legs)
+  return Promise.resolve(filterBookableLegs(itinerary.legs))
     .then(legs => Promise.map(legs, appendOneBooking))
     .then(_empty => {
       // In case of success, return the itinerary. In case of failure,
@@ -202,9 +193,9 @@ function wrapToEnvelope(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  var input;
+  var knex;
+  var profile;
   var itinerary;
-  var balance;
 
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
@@ -213,38 +204,40 @@ module.exports.respond = function (event, callback) {
       valid: validateSignatures(event.itinerary),
       profile: fetchCustomerProfile(event.identityId),
     })
-    .then(_input      => {
-      input = _input;
-      return input;
-    })
-    .then(_empty      => computeBalance(event.itinerary, input.profile))
-    .then(_newBalance => {
-      balance = _newBalance;
-      return balance;
-    })
-    .then(_itinerary  => removeSignatures(event.itinerary))
-    .then(_itinerary  => annotateIdentifiers(_itinerary))
-    .then(_itinerary  => annotateIdentityId(_itinerary, input.profile.identityId))
-    .then(_itinerary  => createAndAppendBookings(_itinerary, input.profile))
-    .then(_itinerary  => saveItinerary(_itinerary))
-    .then(_itinerary  => {
-      itinerary = _itinerary;
-      return itinerary;
-    })
-    .then(_empty      => updateBalance(event.identityId, balance))
-    .then(profile     => wrapToEnvelope(itinerary))
-    .then(response    => callback(null, response))
-    .catch(MaaSError, error => callback(error))
-    .catch(_error => {
-      // Uncaught, unexpected error
-      const error = new MaaSError('Internal server error: ' + _error.toString(), 500);
+    .then(_input => {
 
-      callback(error);
+      // Assign our inputs
+      itinerary = event.itinerary;
+      knex = _input.knex;
+      profile = _input.profile;
+
+      // Update itinerary for storable form
+      removeSignatures(itinerary);
+      annotateIdentifiers(itinerary);
+      annotateIdentityId(itinerary, profile.identityId);
+
+      return createAndAppendBookings(itinerary, profile);
+    })
+    .then(saveItinerary)
+    .then(_itinerary  => {
+
+      // Update input, update balance
+      itinerary = _itinerary;
+      const balance = computeBalance(itinerary, profile);
+
+      return updateBalance(profile.identityId, balance);
+    })
+    .then(profile => callback(null, wrapToEnvelope(itinerary)))
+    .catch(MaaSError, callback)
+    .catch(_error => {
+
+      // Uncaught, unexpected error
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     })
     .finally(() => {
       // Close all db connections
-      if (input && input.knex) {
-        input.knex.destroy();
+      if (knex) {
+        knex.destroy();
       }
     });
 };
