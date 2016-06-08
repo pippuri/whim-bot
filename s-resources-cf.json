@@ -67,6 +67,13 @@
             {
               "Effect": "Allow",
               "Action": [
+                "*"
+              ],
+              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-scheduled-functions-${stage}"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
@@ -263,6 +270,29 @@
           "WriteCapacityUnits": 5
         },
         "TableName": "${project}-user-transaction-history-${stage}"
+      }
+    },
+    "DynamoScheduledFunctions": {
+      "Type": "AWS::DynamoDB::Table",
+      "DeletionPolicy": "${deletionPolicy}",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "functionId",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "functionId",
+            "KeyType": "HASH"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": 5,
+          "WriteCapacityUnits": 5
+        },
+        "TableName": "${project}-scheduled-functions-${stage}"
       }
     },
     "S3IamRole": {
