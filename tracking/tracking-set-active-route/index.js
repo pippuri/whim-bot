@@ -1,7 +1,7 @@
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
+const Promise = require('bluebird');
+const AWS = require('aws-sdk');
 
-var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
+const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 function setActiveRoute(identityId, activeRoute) {
@@ -29,33 +29,34 @@ function setActiveRoute(identityId, activeRoute) {
     return Promise.reject(new Error('400 activeLeg.timestamp is required'));
   }
 
-  console.log('Activating user', identityId, 'route', activeRoute);
-  var thingName = identityId.replace(/:/, '-');
-  var payload = JSON.stringify({
+  console.log(`Activating user ${identityId} route ${activeRoute}`);
+  const thingName = identityId.replace(/:/, '-');
+  const payload = JSON.stringify({
     state: {
       reported: {
         activeRoute: activeRoute,
       },
     },
   });
-  console.log('Thing shadow payload:', payload);
+
+  console.log(`Thing shadow payload: ${payload}`);
   return iotData.updateThingShadowAsync({
     thingName: thingName,
     payload: payload,
   })
-  .then(function (response) {
-    var payload = JSON.parse(response.payload);
+  .then(response => {
+    const payload = JSON.parse(response.payload);
     return payload.state.reported.activeRoute;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRoute('' + event.identityId, event.activeRoute)
-  .then(function (response) {
+  setActiveRoute(event.identityId, event.activeRoute)
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+  .catch(err => {
+    console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
     callback(err);
   });
 };
