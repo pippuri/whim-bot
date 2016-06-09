@@ -1,5 +1,5 @@
 {
-  "name": "tracking-set-active-route",
+  "name": "tracking-get-active-itinerary",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -16,85 +16,34 @@
   "endpoints": [
     {
       "swaggerExport": {
-        "summary": "Set active route",
-        "description": "Sets the currently active route. There can only be one active route per user.",
+        "summary": "Get active itinerary",
+        "description": "Gets the currently active itinerary. The response includes both the active itinerary and the active itinerary leg.",
         "security": [{"Bearer":[]}],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": "true",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "routeId": {
-                  "type": "string",
-                  "description": "Identifier of currently active route"
-                },
-                "timestamp": {
-                  "type": "number",
-                  "description": "Time when route was activated (JavaScript timestamp)"
-                },
-                "activeLeg": {
-                  "type": "object",
-                  "description": "Currently active route leg",
-                  "properties": {
-                    "legId": {
-                      "type": "string",
-                      "description": "Identifier of currently active route leg"
-                    },
-                    "timestamp": {
-                      "type": "number",
-                      "description": "Time when route was activated (JavaScript timestamp)"
-                    }
-                  }
-                },
-                "startTime": {
-                  "type": "number",
-                  "description": "Route start time"
-                },
-                "endTime": {
-                  "type": "number",
-                  "description": "Route start time"
-                },
-                "legs": {
-                  "type": "array",
-                  "description": "List of route legs in time order",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                    }
-                  }
-                }
-              }
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
               "type": "object",
               "properties": {
-                "routeId": {
+                "id": {
                   "type": "string",
-                  "description": "Identifier of currently active route"
+                  "description": "Identifier of currently active itinerary"
                 },
                 "timestamp": {
                   "type": "number",
-                  "description": "Time when route was activated (JavaScript timestamp)"
+                  "description": "Time when the itinerary was activated (JavaScript timestamp)"
                 },
                 "activeLeg": {
                   "type": "object",
-                  "description": "Currently active route leg",
+                  "description": "Currently active itinerary leg",
                   "properties": {
-                    "legId": {
+                    "id": {
                       "type": "string",
-                      "description": "Identifier of currently active route leg"
+                      "description": "Identifier of currently active itinerary leg"
                     },
                     "timestamp": {
                       "type": "number",
-                      "description": "Time when leg was activated (JavaScript timestamp)"
+                      "description": "Time when itinerary was activated (JavaScript timestamp)"
                     }
                   }
                 },
@@ -108,7 +57,7 @@
                 },
                 "legs": {
                   "type": "array",
-                  "description": "List of route legs in time order",
+                  "description": "List of itinerary legs in time order",
                   "items": {
                     "type": "object",
                     "properties": {
@@ -120,15 +69,15 @@
           }
         }
       },
-      "path": "tracking/active-route",
-      "method": "PUT",
+      "path": "tracking/active-itinerary",
+      "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"activeRoute\":$input.json('$')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {

@@ -1,5 +1,5 @@
 {
-  "name": "tracking-get-active-route",
+  "name": "tracking-cancel-active-itinerary",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -16,8 +16,8 @@
   "endpoints": [
     {
       "swaggerExport": {
-        "summary": "Get active route",
-        "description": "Gets the currently active route. The response includes both the active route and the active route leg.",
+        "summary": "Cancel active route",
+        "description": "Cancels any currently active route and route leg.",
         "security": [{"Bearer":[]}],
         "responses": {
           "200": {
@@ -25,52 +25,13 @@
             "schema": {
               "type": "object",
               "properties": {
-                "routeId": {
-                  "type": "string",
-                  "description": "Identifier of currently active route"
-                },
-                "timestamp": {
-                  "type": "number",
-                  "description": "Time when route was activated (JavaScript timestamp)"
-                },
-                "activeLeg": {
-                  "type": "object",
-                  "description": "Currently active route leg",
-                  "properties": {
-                    "legId": {
-                      "type": "string",
-                      "description": "Identifier of currently active route leg"
-                    },
-                    "timestamp": {
-                      "type": "number",
-                      "description": "Time when route was activated (JavaScript timestamp)"
-                    }
-                  }
-                },
-                "startTime": {
-                  "type": "number",
-                  "description": "Route start time"
-                },
-                "endTime": {
-                  "type": "number",
-                  "description": "Route start time"
-                },
-                "legs": {
-                  "type": "array",
-                  "description": "List of route legs in time order",
-                  "items": {
-                    "type": "object",
-                    "properties": {
-                    }
-                  }
-                }
               }
             }
           }
         }
       },
-      "path": "tracking/active-route",
-      "method": "GET",
+      "path": "tracking/active-itinerary",
+      "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",

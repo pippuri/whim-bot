@@ -1,5 +1,5 @@
 {
-  "name": "tracking-cancel-active-route",
+  "name": "tracking-set-active-itinerary",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -16,29 +16,57 @@
   "endpoints": [
     {
       "swaggerExport": {
-        "summary": "Cancel active route",
-        "description": "Cancels any currently active route and route leg.",
+        "summary": "Set active itinerary",
+        "description": "Sets the currently active itinerary. There can only be one active itinerary per user.",
         "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": "true",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identifier of currently active itinerary"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when itinerary was activated (JavaScript timestamp)"
+                }
+              }
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "Success",
             "schema": {
               "type": "object",
               "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identifier of currently active itinerary"
+                },
+                "timestamp": {
+                  "type": "number",
+                  "description": "Time when itinerary was activated (JavaScript timestamp)"
+                }
               }
             }
           }
         }
       },
-      "path": "tracking/active-route",
-      "method": "DELETE",
+      "path": "tracking/active-itinerary",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"itinerary\":$input.json('$')}"
       },
       "responses": {
         "^400.*": {

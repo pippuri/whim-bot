@@ -4,9 +4,24 @@ var AWS = require('aws-sdk');
 var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-function setActiveRouteLeg(identityId, legId, timestamp) {
+function getActiveItinerary(identityId) {
+  const thingName = identityId.replace(/:/, '-');
+  return iotData.getThingShadowAsync({
+    thingName: thingName,
+  })
+  .then(response => {
+    const payload = JSON.parse(response.payload);
+    if (payload && payload.state && payload.state.reported && payload.state.reported.itinerary) {
+      return payload.state.reported.itinerary;
+    }
+
+    return Promise.reject(new Error('404 No Active Itinerary'));
+  });
+}
+
+function setActiveLeg(identityId, itinerary, legId, timestamp) {
   if (!legId) {
-    return Promise.reject(new Error('400 legId is required'));
+    return Promise.reject(new Error('400 id is required'));
   }
 
   if (!timestamp) {
@@ -17,9 +32,11 @@ function setActiveRouteLeg(identityId, legId, timestamp) {
   var payload = JSON.stringify({
     state: {
       reported: {
-        activeRoute: {
-          activeLeg: {
-            legId: legId,
+        itinerary: {
+          id: itinerary.id,
+          timestamp: itinerary.timestamp,
+          leg: {
+            id: legId,
             timestamp: timestamp,
           },
         },
@@ -33,17 +50,20 @@ function setActiveRouteLeg(identityId, legId, timestamp) {
   })
   .then(function (response) {
     var payload = JSON.parse(response.payload);
-    return payload.state.reported.activeRoute && payload.state.reported.activeRoute.activeLeg || null;
+    return payload.state.reported.itinerary && payload.state.reported.itinerary.leg || null;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveRouteLeg('' + event.identityId, event.legId, event.timestamp)
-  .then(function (response) {
+  getActiveItinerary(event.identityId)
+  .then(itinerary => {
+    return setActiveLeg(event.identityId, itinerary, event.leg.id, event.leg.timestamp);
+  })
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+  .catch(err => {
+    console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
     callback(err);
   });
 };
