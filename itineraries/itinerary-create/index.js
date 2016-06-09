@@ -85,6 +85,8 @@ function validateSignatures(itinerary) {
     return Promise.resolve(itinerary);
   }
 
+  console.log(`Validation failed. Current: ${originalSignature} Expected: ${computedSignature}`);
+
   // FIXME change routeId term
   return Promise.reject(new MaaSError('Itinerary validation failed.', 400));
 }
