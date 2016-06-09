@@ -34,14 +34,14 @@
   "definitions": {
     "favoriteLocation": {
       "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "address", "lat", "lon"],
       "properties": {
         "name":{
-          "type": "string",
-          "required": true
+          "type": "string"
         },
         "address":{
-          "type": "string",
-          "required": true
+          "type": "string"
         },
         "lat":{
           "$ref": "units.json#definitions/latitude"
