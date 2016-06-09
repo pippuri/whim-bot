@@ -6,6 +6,7 @@ module.exports = {
   target: 'node',
   externals: [
     'aws-sdk',
+    'pg',
   ],
   resolve: {
     extensions: ['', '.js'],

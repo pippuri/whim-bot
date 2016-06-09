@@ -4,5 +4,6 @@ describe('API', function () {
   require('./profile-endpoint/test.js');
   require('./routes-endpoint/test.js');
   require('./geocoding-endpoint/test.js');
+  require('./itineraries-endpoint/test.js');
 });
 

@@ -1,0 +1,58 @@
+{
+  "name": "itinerary-create",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [
+    {
+      "path": "itineraries",
+      "method": "POST",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {},
+      "requestTemplates": {
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "itinerary": "$input.json('$.itinerary')"
+        }
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400"
+        },
+        "^403.*": {
+          "statusCode": "403"
+        },
+        "^500.*": {
+          "statusCode": "500"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {},
+          "responseModels": {
+            "application/json;charset=UTF-8": "Empty"
+          },
+          "responseTemplates": {
+            "application/json;charset=UTF-8": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

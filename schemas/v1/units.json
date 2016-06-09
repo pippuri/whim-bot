@@ -6,7 +6,7 @@
     "time": {
       "type": "integer",
       "maximum": 9007199254740991,
-      "minimum": 1463039460167
+      "minimum": 1451606400
     },
     "latitude": {
       "type": "number",
@@ -20,11 +20,13 @@
     },
     "location": {
       "type": "object",
-      "lat": {
-        "$ref": "#/definitions/latitude"
-      },
-      "lon": {
-        "$ref": "#/definitions/longitude"
+      "properties": {
+        "lat": {
+          "$ref": "#/definitions/latitude"
+        },
+        "lon": {
+          "$ref": "#/definitions/longitude"
+        }
       }
     },
     "shortLocation": {
@@ -43,6 +45,25 @@
     },
     "email": {
       "type": "string"
-    }    
+    },
+    "address": {
+      "type": "string"
+    },
+    "place": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/location"
+        }
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "address": {
+            "$ref": "#/definitions/address"
+          }
+        }
+      }
+    }
   }
 }

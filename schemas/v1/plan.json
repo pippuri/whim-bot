@@ -1,8 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://api.maas.global/v1/plan",
-  "description": "OpenTripPlanner compatible format for plans",
-  "type": "object",
+  "id": "https://api.maas.global/v1/internal/plan",
+  "description": "OpenTripPlanner compatible format for plans, extended with id for legs and itineraries",
   "properties": {
     "from": {
       "$ref": "#/definitions/place"
@@ -11,11 +10,6 @@
       "$ref": "#/definitions/itineraries"
     }
   },
-  "required": [
-    "from",
-    "itineraries"
-  ],
-  "additionalProperties": true,
   "definitions": {
     "itineraries": {
       "type": "array",
@@ -27,6 +21,9 @@
     "itinerary": {
       "type": "object",
       "properties": {
+        "signature": {
+          "type": "string"
+        },
         "startTime": {
           "$ref": "units.json#/definitions/time"
         },
@@ -43,19 +40,21 @@
         "legs": {
           "type": "array",
           "minItems": 0,
-          "items": {
-            "anyOf": [
-              {
-                "$ref": "#/definitions/leg"
-              },
-              {
-                "$ref": "#/definitions/waitingLeg"
-              },
-              {
-                "$ref": "#/definitions/transferLeg"
-              }
-            ]
-          }
+          "items": [
+            {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/leg"
+                },
+                {
+                  "$ref": "#/definitions/waitingLeg"
+                },
+                {
+                  "$ref": "#/definitions/transferLeg"
+                }
+              ]
+            }
+          ]
         }
       },
       "required": [
@@ -68,6 +67,9 @@
       "type": "object",
       "additionalProperties": true,
       "properties": {
+        "signature": {
+          "type": "string"
+        },
         "from": {
           "$ref": "#/definitions/place"
         },
@@ -173,13 +175,10 @@
       "additionalProperties": true,
       "allOf": [
         {
-          "$ref": "units.json#/definitions/location"
+          "$ref": "units.json#/definitions/place"
         }
       ],
       "properties": {
-        "name": {
-          "type": "string"
-        },
         "stopId": {
           "type": "string"
         },
@@ -203,7 +202,12 @@
       }
     },
     "fare": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "points": {
+          "type": "number"
+        }
+      }
     },
     "mode": {
       "type": "string",
@@ -220,6 +224,7 @@
         "GONDOLA",
         "FUNICULAR",
         "TRANSIT",
+        "TRAIN",
         "TRAINISH",
         "BUSISH",
         "LEG_SWITCH",
