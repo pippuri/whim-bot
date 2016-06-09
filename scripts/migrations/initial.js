@@ -2,20 +2,23 @@ exports.up = function (knex) {
   return knex.schema
     .createTable('Itinerary', function (table) {
       table.uuid('id').primary();
-      table.string('identityId');
+      table.string('identityId').index().notNullable();
 
       // OTP specific
-      table.timestamp('startTime');
+      table.timestamp('startTime').index();
       table.timestamp('endTime');
       table.jsonb('fare');
     })
     .createTable('Booking', function (table) {
       table.uuid('id').primary();
 
+      // TSP generated foreign key (primary from their viewpoint)
+      table.string('tspId').index().notNullable();
+
       // TODO Find alter tabel syntax where to create the leg reference
       //table.uuid('legId').references('Leg.id');
 
-      table.string('state');
+      table.string('state').notNullable();
       table.jsonb('leg');
       table.jsonb('customer');
       table.jsonb('token');
@@ -47,7 +50,7 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
-    .dropTableIfExists('Itinerary')
     .dropTableIfExists('Leg')
+    .dropTableIfExists('Itinerary')
     .dropTableIfExists('Booking');
 };

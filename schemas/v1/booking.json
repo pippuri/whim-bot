@@ -1,14 +1,18 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "id": "https://api.maas.global/v1/units",
-  "description": "MaaS Booking object",
+  "description": "MaaS Booking schema (what we give out to mobile clients)",
   "definitions": {
     "bookingCore": {
       "type": "object",
       "description": "The basic booking, not containing leg or customer info",
       "properties": {
         "id": {
-          "description": "The id that TSP uses for the booking",
+          "description": "The id that MaaS uses for the booking",
+          "type": "string"
+        },
+        "tspId": {
+          "description": "The id that a TSP uses for the booking",
           "type": "string"
         },
         "state": {
@@ -32,6 +36,8 @@
       "type": "object",
       "description": "A new booking, created by MaaS POST request in 'new' state",
       "required": [
+        "id",
+        "state",
         "leg",
         "customer"
       ],

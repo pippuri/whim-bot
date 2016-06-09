@@ -16,27 +16,38 @@ function findProvider(leg) {
 
 function createBooking(leg, profile) {
   const customer = {
+    // TODO Maybe we should not leak identity if
     id: profile.identityId,
     firstName: profile.firstName,
     lastName: profile.lastName,
     phone: profile.phone,
   };
   const booking = {
-    id: maasUtils.createId(),
+    bookingId: maasUtils.createId(),
     state: 'NEW',
     leg: leg,
     customer: customer,
   };
 
   return findProvider(leg)
-    .then((tsp) => {
+    .then(tsp => {
       const url = URL.resolve(tsp.adapter.baseUrl, 'bookings');
       const options = Object.assign({
         json: true,
         body: booking,
       }, tsp.adapter.options);
 
-      return request.post(url, options);
+      return request.post(url, options)
+        .then(booking => {
+          // Parse a few fields to MaaS specific encoding
+          const transformedBooking = Object.assign({}, booking, {
+            id: booking.bookingId,
+            tspId: booking.id,
+          });
+          delete transformedBooking.bookingId;
+
+          return transformedBooking;
+        });
     });
 }
 
