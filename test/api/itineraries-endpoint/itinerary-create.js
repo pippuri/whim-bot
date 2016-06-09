@@ -13,9 +13,9 @@ module.exports = function (lambda) {
 
     before(done => {
       // Sign the event data (Travis seems to have problems repeating the signatures)
-      const newEvent = Object.assign({}, event);
-      delete newEvent.signature;
-      newEvent.signature = maasUtils.sign(newEvent, process.env.MAAS_SIGNING_SECRET);
+      const newItinerary = Object.assign({}, event.itinerary);
+      delete newItinerary.signature;
+      event.itinerary.signature = maasUtils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
 
       wrap(lambda).run(event, (_error, _response) => {
         error = _error;
