@@ -22,6 +22,27 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
       },
+      "swaggerExport": {
+        "summary": "Edit an user profile attribute(s)",
+        "description": "Set one or multiple attribute of a profile by providing key-value pairs in the body payload",
+        "security": [{"Bearer":[]}],
+        "parameter": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/profile.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
       "responses": {
         "^400.*": {
           "statusCode": "400",

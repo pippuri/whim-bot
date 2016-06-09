@@ -34,10 +34,7 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "$ref": "profile/profile-favoriteLocations-add/request-schema.json#properties"
-              }
+              "$ref": "profile/profile-favoriteLocations-add/request-schema.json"
             }
           }
         ],
@@ -46,11 +43,14 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "profile/profile-favoriteLocations-add/response-schema.json#properties"
+              "$ref": "profile/profile-favoriteLocations-add/response-schema.json"
             }
           },
-          "405": {
+          "400": {
             "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       },

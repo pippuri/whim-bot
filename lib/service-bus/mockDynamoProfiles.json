@@ -1,7 +1,7 @@
 [
-  {  
-    "plans":[  
-      {  
+  {
+    "plans":[
+      {
         "id":"payg",
         "invoiceName":"Pay as You Go",
         "price":0,
@@ -9,24 +9,24 @@
         "formattedPrice":"EUR0",
         "name":"Pay-As-You-Go",
         "chargeModel":"flat_fee",
-        "provider":[  
-          {  
+        "provider":[
+          {
             "icon":"https://google.com/image/gimmesomething",
             "desc":"Pay with points",
             "name":"taxi"
           },
-          {  
+          {
             "icon":"https://google.com/image/gimmesomething",
             "desc":"Pay with points",
             "name":"uber"
           },
-          {  
+          {
             "icon":"https://google.com/image/gimmesomething",
             "desc":"Pay with points",
             "name":"chopper"
           }
         ],
-        "feature":[  
+        "feature":[
 
         ],
         "period":1,
@@ -36,18 +36,18 @@
     ],
     "balance":0,
     "phone":"10983012",
-    "favoriteLocations":[  
-      {  
-        "lon":231232,
+    "favoriteLocations":[
+      {
+        "lon":23.1232,
         "address":"Great Chott salt flat, Tatooine",
         "name":"work",
-        "lat":123123
+        "lat":12.3123
       },
-      {  
-        "lon":231232,
+      {
+        "lon":23.1232,
         "address":"Great Chott salt flat, Tatooine",
         "name":"somewhere",
-        "lat":123123
+        "lat":12.3123
       }
     ],
     "email":"abcd@gmail.com",

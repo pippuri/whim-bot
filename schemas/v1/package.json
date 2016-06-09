@@ -63,19 +63,36 @@
         "feature": {
           "type": "array",
           "items": {
-            "name": {
-              "type": "string"
-            },
-            "desc": {
-              "type": "string"
-            },
-            "icon": {
-              "type": "string"
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "desc": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              }
             }
           }
         },
         "provider": {
-          "$ref": "#/definitions/plan/feature"
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "desc": {
+                "type": "string"
+              },
+              "icon": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     },

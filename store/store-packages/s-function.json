@@ -23,6 +23,27 @@
       "requestTemplates": {
         "application/json": ""
       },
+      "swaggerExport": {
+        "summary": "Retrieve all available packages in store",
+        "description": "Retrieve all public plans and addons available for purchase from MaaS store.",
+        "security": [{"Bearer":[]}],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/package.json"
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
       "responses": {
         "^400.*": {
           "statusCode": "400",

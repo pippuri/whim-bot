@@ -13,18 +13,135 @@
   },
   "endpoints": [
     {
-      "path": "store/packages/{type}/{id}",
+      "path": "store/packages/plan/{id}",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.path.id": "method.request.path.id",
-        "integration.request.path.type": "method.request.path.type"
+        "integration.request.path.id": "method.request.path.id"
       },
       "requestTemplates": {
-        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"$input.params('type')\"}"
+        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"plan\"}"
+      },
+      "swaggerExport": {
+        "summary": "Retrieve one available plan",
+        "description": "Retrieve one plan available for public purchase from MaaS store",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the plan",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/package.json#definitions/plan"
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+         "^403.*": {
+          "statusCode": "403",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "[^0-9].*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    },
+    {
+      "path": "store/packages/addon/{id}",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {
+        "integration.request.path.id": "method.request.path.id"
+      },
+      "requestTemplates": {
+        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"addon\"}"
+      },
+      "swaggerExport": {
+        "summary": "Retrieve one available addon",
+        "description": "Retrieve one addon available for public purchase from MaaS store",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the addon",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/package.json#definitions/addon"
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       },
       "responses": {
         "^400.*": {
