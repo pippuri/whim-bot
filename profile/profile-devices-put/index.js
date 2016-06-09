@@ -27,24 +27,21 @@ function saveDeviceToken(event) {
     IdentityId: event.identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
   })
-  .then(function (response) {
+  .then(response => {
     syncSessionToken = response.SyncSessionToken;
     var oldRecords = {};
-    response.Records.map(function (record) {
+    response.Records.map(record => {
       oldRecords[record.Key] = record;
     });
 
     var device = {};
     device[event.deviceToken] = event.deviceName;
 
-    Object.keys(device).map(function (key) {
+    Object.keys(device).map(key => {
       var oldRecord = oldRecords[key];
       var newValue;
-      if (typeof device[key] === 'object') {
-        newValue = JSON.stringify(device[key]);
-      } else {
-        newValue = '' + device[key];
-      }
+
+      newValue = typeof device[key] === 'object' ? JSON.stringify(device[key]) : '' + device[key];
 
       // Check if changed
       if (!oldRecord || newValue !== oldRecord.Value) {
@@ -74,14 +71,14 @@ function saveDeviceToken(event) {
 
 }
 
-module.exports.respond = function (event, callback) {
+module.exports.respond = (event, callback) => {
   saveDeviceToken(event)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(error => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+    callback(error);
   });
 
 };
