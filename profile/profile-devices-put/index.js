@@ -14,12 +14,16 @@ function saveDeviceToken(event) {
     return Promise.reject(new Error('400 Missing identityId'));
   }
 
-  if (!event.hasOwnProperty('deviceToken') || event.deviceToken === '') {
-    return Promise.reject(new Error('400 deviceToken missing from input'));
+  if (!event.hasOwnProperty('payload')) {
+    return Promise.reject(new Error('400 Missing Payload'));
   }
 
-  if (!event.hasOwnProperty('deviceName')) {
-    return Promise.reject(new Error('400 deviceName missing from input'));
+  if (!event.payload.hasOwnProperty('deviceToken') || event.payload.deviceToken === '') {
+    return Promise.reject(new Error('400 deviceToken missing from payload'));
+  }
+
+  if (!event.payload.hasOwnProperty('deviceName')) {
+    return Promise.reject(new Error('400 deviceName missing from payload'));
   }
 
   return cognitoSync.listRecordsAsync({
@@ -35,7 +39,7 @@ function saveDeviceToken(event) {
     });
 
     var device = {};
-    device[event.deviceToken] = event.deviceName;
+    device[event.payload.deviceToken.replace(/\s/g, '')] = event.payload.deviceName;
 
     Object.keys(device).map(key => {
       var oldRecord = oldRecords[key];
@@ -65,7 +69,7 @@ function saveDeviceToken(event) {
       });
     }
 
-    return Promise.reject(new Error('500: Device existed, abort'));
+    return Promise.resolve('Device existed, nothing changed');
 
   });
 
