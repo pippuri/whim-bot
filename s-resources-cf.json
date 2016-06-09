@@ -295,7 +295,7 @@
         "TableName": "${project}-scheduled-functions-${stage}"
       }
     },
-    "S3IamRole": {
+    "IamRoleS3": {
       "Type": "AWS::IAM::Role",
       "Properties": {
         "AssumeRolePolicyDocument": {
@@ -317,7 +317,7 @@
         "Path": "/"
       }
     },
-    "S3IamPolicy": {
+    "IamPolicyS3": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": "Static-MaaS-Bucket",
@@ -329,19 +329,20 @@
               "Action": [
                 "*"
               ],
-              "Resource": "*"
+              "Resource": "arn:aws:s3:::staticfiles.maas.global"
             }
           ]
         },
         "Roles": [
           {
-            "Ref": "S3IamRole"
+            "Ref": "IamRoleS3"
           }
         ]
       }
     },
     "StaticFilesBucket" : {
       "Type" : "AWS::S3::Bucket",
+      "DeletionPolicy": "${deletionPolicy}",
       "Properties" : {
         "BucketName": "staticfiles.maas.global" ,
         "AccessControl" : "PublicRead",
@@ -349,11 +350,11 @@
           "IndexDocument" : "index.html",
           "ErrorDocument" : "error.html"
         }
-      },
-      "DeletionPolicy" : "Retain"
+      }
     },
     "StaticFilesCDN" : {
       "Type" : "AWS::CloudFront::Distribution",
+      "DeletionPolicy": "${deletionPolicy}",
       "Properties" : {
          "DistributionConfig" : {
            "Comment" : "CloudFront distibution for Static FIles S3 buceket",
