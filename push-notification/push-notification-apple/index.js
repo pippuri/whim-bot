@@ -12,7 +12,6 @@ function sendPushNotification(event) {
 
   };
   const subject = 'MaaS';
-  var sendingStatus = [];
 
   const apnMessage = {
     aps: {
