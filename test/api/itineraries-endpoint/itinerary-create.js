@@ -19,6 +19,11 @@ module.exports = function (lambda) {
     });
 
     it('should succeed without errors', () => {
+      if (error) {
+        console.log(error);
+        console.log(error.stack);
+      }
+
       expect(error).to.be.null;
     });
 

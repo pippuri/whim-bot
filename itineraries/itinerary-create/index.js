@@ -9,6 +9,8 @@ const models = require('../../lib/models');
 const tsp = require('../lib/tsp.js');
 
 function initKnex() {
+  console.log('Initialize knex');
+
   // FIXME Change variable names to something that tells about MaaS in general
   const connection = URL.format({
     protocol: 'postgres:',
@@ -34,6 +36,8 @@ function initKnex() {
 }
 
 function fetchCustomerProfile(identityId) {
+  console.log(`Fetch customer profile ${identityId}`);
+
   // FIXME The 'Item' envelope is unnecessary in profile
   return bus.call('MaaS-profile-info', {
     identityId: identityId,
@@ -45,6 +49,8 @@ function fetchCustomerProfile(identityId) {
 }
 
 function filterBookableLegs(legs) {
+  console.log(`Filter ${legs.length} bookable legs`);
+
   // Filter away the legs that do not need a TSP
   return legs.filter(leg => {
     switch (leg.mode) {
@@ -66,6 +72,8 @@ function filterBookableLegs(legs) {
 }
 
 function validateSignatures(itinerary) {
+  console.log(`Validating itinerary signature ${itinerary.signature}`);
+
   // Verify that the data matches the signature
   const originalSignature = itinerary.signature;
   const withoutSignature = Object.assign({}, itinerary);
@@ -82,6 +90,8 @@ function validateSignatures(itinerary) {
 }
 
 function removeSignatures(itinerary) {
+  console.log('Remove all signatures');
+
   // Remove old signatures and assign new ones
   delete itinerary.signature;
   itinerary.legs.forEach(leg => {
@@ -92,10 +102,14 @@ function removeSignatures(itinerary) {
 }
 
 function computeBalance(itinerary, profile) {
+  console.log(`Computing balance for ${profile.identityId}`);
+
   // Check that the user has sufficient balance
   const cost = itinerary.fare.points;
   const balance = profile.balance;
   const message = `Insufficent balance (required: ${cost}, actual: ${balance})`;
+
+  console.log(`Balance ${profile.identityId}`);
 
   if (balance > cost) {
     return balance - cost;
@@ -105,6 +119,8 @@ function computeBalance(itinerary, profile) {
 }
 
 function updateBalance(identityId, newBalance) {
+  console.log(`Update new balance ${newBalance}`);
+
   return bus.call('MaaS-profile-edit', {
     identityId: identityId,
     payload: {
@@ -136,9 +152,13 @@ function createAndAppendBookings(itinerary, profile) {
   const cancelled = [];
 
   function appendOneBooking(leg) {
+    console.log(`Create booking for ${leg.id}`);
+
     return tsp.createBooking(leg, profile)
       .then(
         booking => {
+          console.log(`Booking for ${leg.id} succeeded`);
+
           completed.push(leg);
           leg.booking = booking;
         },
@@ -180,12 +200,16 @@ function createAndAppendBookings(itinerary, profile) {
 }
 
 function saveItinerary(itinerary) {
+  console.log(`Save itinerary ${itinerary.id} into db`);
+
   return models.Itinerary
     .query()
     .insertWithRelated(itinerary);
 }
 
 function wrapToEnvelope(itinerary) {
+  console.log(`Wrap itinerary ${itinerary.id} into response`);
+
   return {
     itinerary: itinerary,
     maas: {},
