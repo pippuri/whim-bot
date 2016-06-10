@@ -16,8 +16,8 @@
   "endpoints": [
     {
       "swaggerExport": {
-        "summary": "Set active route leg",
-        "description": "Sets the currently active route leg. A route must already have been activated earlier, and the leg must be a leg in that route.",
+        "summary": "Set active itinerary leg",
+        "description": "Sets the currently active itinerary leg. An itinerary must already have been activated earlier, and the leg must be a leg in that itinerary.",
         "security": [{"Bearer":[]}],
         "parameters": [
           {
@@ -27,9 +27,9 @@
             "schema": {
               "type": "object",
               "properties": {
-                "legId": {
+                "id": {
                   "type": "string",
-                  "description": "Identifier of currently active route leg"
+                  "description": "Identifier of currently active itinerary leg"
                 },
                 "timestamp": {
                   "type": "number",
@@ -45,20 +45,20 @@
             "schema": {
               "type": "object",
               "properties": {
-                "legId": {
+                "id": {
                   "type": "string",
-                  "description": "Identifier of currently active route leg"
+                  "description": "Identifier of currently active itinerary leg"
                 },
                 "timestamp": {
                   "type": "number",
-                  "description": "Time when leg was activated (JavaScript timestamp)"
+                  "description": "Time when the leg was activated (JavaScript timestamp)"
                 }
               }
             }
           }
         }
       },
-      "path": "tracking/active-route/active-leg",
+      "path": "tracking/active-itinerary/active-leg",
       "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
@@ -66,7 +66,7 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"timestamp\":$input.json('$.timestamp')}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"leg\":$input.json('$')}"
       },
       "responses": {
         "^400.*": {
