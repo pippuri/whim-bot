@@ -28,7 +28,7 @@ module.exports.respond = function (event, callback) {
   })
   .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn('Error:', err.errors);
+    console.warn('Error:', err.stack);
 
     // TODO Process the error
     callback(err);
