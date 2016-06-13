@@ -1,6 +1,6 @@
 'use strict';
 
-var wrap = require('lambda-wrapper').wrap;
+const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
 const schema = require('../../../itineraries/itinerary-create/response-schema.json');

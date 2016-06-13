@@ -3,7 +3,7 @@
 /**
  * Routing results adapter from Digitransit to MaaS. Returns promise for JSON object.
  */
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 function convertMode(mode) {
   return mode;

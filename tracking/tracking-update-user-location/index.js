@@ -1,7 +1,7 @@
 'use strict';
 
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
+const Promise = require('bluebird');
+const AWS = require('aws-sdk');
 
 var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);

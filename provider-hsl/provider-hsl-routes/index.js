@@ -1,8 +1,8 @@
 'use strict';
 
-var request = require('request-promise-lite');
-var proj4 = require('proj4');
-var adapter = require('./adapter');
+const request = require('request-promise-lite');
+const proj4 = require('proj4');
+const adapter = require('./adapter');
 
 proj4.defs('EPSG:2392', '+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +units=m +no_defs');
 

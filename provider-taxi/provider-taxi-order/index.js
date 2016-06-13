@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var ec = require('../lib/ec'); // TODO: Error handling based on codes
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 function orderTaxi(order) {
 

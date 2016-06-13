@@ -1,7 +1,7 @@
 'use strict';
 
-var fs = require('fs');
-var path = require('path');
+const fs = require('fs');
+const path = require('path');
 var pfxFile = path.resolve(__dirname, 'maas_maasfinland.p12');
 
 module.exports = Object.freeze({

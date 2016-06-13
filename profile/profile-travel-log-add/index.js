@@ -1,9 +1,9 @@
 'use strict';
 
-var Promise = require('bluebird');
-var lib = require('../../lib/utilities/index');
-var bus = require('../../lib/service-bus/index');
-var moment = require('moment');
+const Promise = require('bluebird');
+const lib = require('../../lib/utilities/index');
+const bus = require('../../lib/service-bus/index');
+const moment = require('moment');
 
 /**
  * Save route and time start of route onto DyanomoDB
