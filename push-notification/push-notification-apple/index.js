@@ -9,9 +9,8 @@ Promise.promisifyAll(sns);
 Promise.promisifyAll(cognitoSync);
 
 function sendPushNotification(event) {
-  var params = {
+  const params = {
     PlatformApplicationArn: process.env.APNS_ARN,
-
   };
   const subject = 'MaaS';
 
@@ -30,7 +29,7 @@ function sendPushNotification(event) {
   })
   .then(response => {
     response.Records.map(record => {
-      var platformEndpointList = [];
+      const platformEndpointList = [];
       params.Token = record.Key.replace(/\s/g, '');
       console.log('Message is being sent to : ' + params.Token);
 

@@ -9,8 +9,8 @@ Promise.promisifyAll(cognitoSync);
 
 function saveDeviceToken(event) {
 
-  var syncSessionToken;
-  var patches = [];
+  let syncSessionToken;
+  const patches = [];
 
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
     return Promise.reject(new Error('400 Missing identityId'));
@@ -35,19 +35,18 @@ function saveDeviceToken(event) {
   })
   .then(response => {
     syncSessionToken = response.SyncSessionToken;
-    var oldRecords = {};
+    const oldRecords = {};
     response.Records.map(record => {
       oldRecords[record.Key] = record;
     });
 
-    var device = {};
+    const device = {};
     device[event.payload.deviceToken.replace(/\s/g, '')] = event.payload.deviceName;
 
     Object.keys(device).map(key => {
-      var oldRecord = oldRecords[key];
-      var newValue;
+      const oldRecord = oldRecords[key];
 
-      newValue = typeof device[key] === 'object' ? JSON.stringify(device[key]) : '' + device[key];
+      const newValue = typeof device[key] === 'object' ? JSON.stringify(device[key]) : '' + device[key];
 
       // Check if changed
       if (!oldRecord || newValue !== oldRecord.Value) {
