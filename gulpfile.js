@@ -13,6 +13,15 @@ const gutil = require('gulp-util');
 const jsoncFiles = ['.jshintrc', '.eslintrc', '.jscsrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
 const jsFiles = ['**/*.js', '!**/node_modules/**/*.js', '!www/**/*.js', '!_meta/**/*.js'];
+let jsPipe;
+
+function getJSPipe() {
+  if (!jsPipe) {
+    jsPipe = gulp.src(jsFiles);
+  }
+
+  return jsPipe;
+}
 
 gulp.task('jsonclint', () => {
 
@@ -32,21 +41,22 @@ gulp.task('jsonlint', () => {
 });
 
 gulp.task('jshint', () => {
-  return gulp.src(jsFiles)
+
+  return getJSPipe()
   .pipe(jshint())
   .pipe(jshint.reporter('jshint-stylish'))
   .pipe(jshint.reporter('fail'));
 });
 
 gulp.task('eslint', () => {
-  return gulp.src(jsFiles)
+  return getJSPipe()
     .pipe(eslint())
     .pipe(eslint.format())
     .pipe(eslint.failAfterError());
 });
 
 gulp.task('jscs', () => {
-  return gulp.src(jsFiles)
+  return getJSPipe()
     .pipe(jscs())
     .pipe(jscs.reporter())
     .pipe(jscs.reporter('fail'));
