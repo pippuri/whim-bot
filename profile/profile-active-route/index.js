@@ -58,6 +58,7 @@ function savesUserActiveRoute(identityId, timestamp, activeroute) {
       });
     }
 
+    return Promise.resolve();
   });
 }
 

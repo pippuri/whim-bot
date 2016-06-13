@@ -1,4 +1,5 @@
-var request = require('request-promise-lite');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
 
 function findLeg(legs, legId) {
   var foundLeg;
@@ -32,8 +33,7 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
   if (!leg) {
 
     // Invalid route! Should cancel it
-    console.log('Leg not found:', activeRoute.activeLeg.legId);
-    return;
+    return Promise.reject(new Error('Leg not found:' + activeRoute.activeLeg.legId));
   }
 
   var legNumber = activeRoute.legs.indexOf(leg) + 1;
@@ -44,7 +44,10 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
   // Proceed to next leg when reached endTime (or for simulation, also when travelled leg for 1 min or more)
   if (legTimeLeft > 0 && legTimeElapsed < 0) {
     console.log('Leg [' + legNumber + '/' + activeRoute.legs.length + '] active for', legTimeElapsed, 'min, ', legTimeLeft, 'min left:', leg);
-  } else if (nextLeg) {
+    return Promise.resolve();
+  }
+
+  if (nextLeg) {
     var nextLegNumber = activeRoute.legs.indexOf(nextLeg) + 1;
     console.log('Leg [' + nextLegNumber + '/' + activeRoute.legs.length + '] activating now:', nextLeg);
     return request.put('https://api.dev.maas.global/tracking/active-route/active-leg', {
@@ -57,29 +60,31 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
       },
     })
     .then(() => {
-      if (nextLeg.from) {
-        return request.put('https://api.dev.maas.global/tracking/user-location', {
-          json: {
-            legId: nextLeg.legId,
-            lat: nextLeg.from.lat,
-            lon: nextLeg.from.lon,
-            timestamp: Date.now(),
-          },
-          headers: {
-            Authorization: 'Bearer ' + idToken,
-          },
-        });
+      if (!nextLeg.from) {
+        return Promise.reject(new Error('Invalid leg.'));
       }
-    });
-  } else {
-    console.log('No more legs left. Route completed!');
-    return request.delete('https://api.dev.maas.global/tracking/active-route', {
-      json: true,
-      headers: {
-        Authorization: 'Bearer ' + idToken,
-      },
+
+      return request.put('https://api.dev.maas.global/tracking/user-location', {
+        json: {
+          legId: nextLeg.legId,
+          lat: nextLeg.from.lat,
+          lon: nextLeg.from.lon,
+          timestamp: Date.now(),
+        },
+        headers: {
+          Authorization: 'Bearer ' + idToken,
+        },
+      });
     });
   }
+
+  console.log('No more legs left. Route completed!');
+  return request.delete('https://api.dev.maas.global/tracking/active-route', {
+    json: true,
+    headers: {
+      Authorization: 'Bearer ' + idToken,
+    },
+  });
 }
 
 module.exports.continueExistingRoute = continueExistingRoute;
