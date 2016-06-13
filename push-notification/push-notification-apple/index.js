@@ -1,3 +1,5 @@
+'use strict';
+
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const sns = new AWS.SNS({ region: process.env.AWS_REGION });
@@ -28,9 +30,12 @@ function sendPushNotification(event) {
   })
   .then(response => {
     response.Records.map(record => {
+      var platformEndpointList = [];
       params.Token = record.Key.replace(/\s/g, '');
-      console.log('Message sent to : ' + params.Token);
-      return sns.createPlatformEndpointAsync(params)
+      console.log('Message is being sent to : ' + params.Token);
+
+      // Queue all user devices ( Apple ) to the list
+      platformEndpointList.push(sns.createPlatformEndpointAsync(params)
         .then((response, error) => {
           if (error) {
             console.log('abc', error);
@@ -48,12 +53,23 @@ function sendPushNotification(event) {
         })
         .then((response, error) => {
           if (error) {
-            console.log('def', error);
             return Promise.reject(error);
           }
 
-          return Promise.resolve('done');
-        });
+          return Promise.resolve(`Push notification has been sent to ${response}`);
+        })
+      );
+
+      return Promise.all(platformEndpointList.map(promise => {
+        return promise.reflect();
+      }))
+      .each(inspection => {
+        if (inspection.isFulfilled()) {
+          console.log('This request was fulfilled with response: ', inspection.value());
+        } else {
+          console.error('One request has been rejected with error: ', inspection.reason());
+        }
+      });
     });
   });
 }
@@ -62,9 +78,9 @@ module.exports.respond = (event, callback) => {
   sendPushNotification(event)
     .then(response => {
       if (response === undefined) {
-        callback(null, 'Successfully sent message to all user devices');
+        callback(null, 'The function has finished');
       } else {
-        callback(null, response);
+        callback(response);
       }
     })
     .catch(error => {
