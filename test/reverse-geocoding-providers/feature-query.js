@@ -10,8 +10,8 @@ module.exports = (lambda, schema, fixture) => {
       lat: 660.16732510000001,
       lon: 24.9306569,
     };
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {
@@ -35,8 +35,8 @@ module.exports = (lambda, schema, fixture) => {
   fixture.forEach(item => {
     describe(['Search:', item.input.lat, item.input.lon, item.pass].join(','),
       function () {
-      var error;
-      var response;
+      let error;
+      let response;
 
       before(done => {
         wrap(lambda).run(item.input, (err, data) => {

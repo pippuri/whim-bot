@@ -4,7 +4,7 @@ const URL = require('url');
 const Templates = (new (require('serverless'))()).classes.Templates;
 
 function loadEnvironment() {
-  var values;
+  let values;
   try {
     values = require('../_meta/variables/s-variables-dev.json');
   } catch (e) {
@@ -12,7 +12,7 @@ function loadEnvironment() {
   }
 
   const variables = (new Templates(values, '../s-templates.json')).toObject();
-  for (var key of Object.keys(variables)) {
+  for (let key of Object.keys(variables)) { // eslint-disable-line prefer-const
     process.env[key] = variables[key];
   }
 }

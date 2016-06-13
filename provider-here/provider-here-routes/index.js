@@ -4,12 +4,12 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 
-var HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
+const HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
 
 // Docs: https://developer.here.com/rest-apis/documentation/routing/topics/resource-calculate-route.html
 
 function getHereRoutes(from, to, leaveAt, arriveBy, format) {
-  var qs = {
+  const qs = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     waypoint0: 'geo!' + from,

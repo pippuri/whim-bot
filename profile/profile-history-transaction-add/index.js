@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 const lib = require('../../lib/utilities/index');
 const moment = require('moment');
 
-var docClient = new AWS.DynamoDB.DocumentClient();
+const docClient = new AWS.DynamoDB.DocumentClient();
 
 Promise.promisifyAll(docClient);
 
@@ -29,12 +29,12 @@ function saveTransaction(event) {
         return Promise.reject(new Error('User not existed'));
       }
 
-      var item = {
+      const item = {
         identityId: event.identityId,
         timeEpoch: moment().unix(),
         transactionId: event.payload.transactionId,
       };
-      var params = {
+      const params = {
         TableName: process.env.DYNAMO_USER_ROUTE_HISTORY,
         Item: item,
         ReturnValues: 'ALL_NEW',

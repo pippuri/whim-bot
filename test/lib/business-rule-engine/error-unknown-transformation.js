@@ -16,8 +16,8 @@ module.exports = (engine) => {
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
     };
 
-    var calls = [];
-    var error;
+    const calls = [];
+    let error;
 
     const serviceBusDummy = {
       call: serviceName => new Promise((resolve, reject) => {

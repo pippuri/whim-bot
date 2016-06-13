@@ -25,8 +25,8 @@ module.exports = (lambda, options) => {
       arriveBy: '',
     };
 
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {
@@ -52,7 +52,7 @@ module.exports = (lambda, options) => {
     });
 
     it('response should not have legs from the past', function () {
-      var waitingTimes = [];
+      const waitingTimes = [];
       response.plan.itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
           const waitingTime = (leg.startTime - parseInt(event.leaveAt, 10));
@@ -88,8 +88,8 @@ module.exports = (lambda, options) => {
     });
 
     it('response itineraries should contain co2 cost', function () {
-      var itinerariesWithoutCo2Cost = [];
-      for (var itinerary of response.plan.itineraries) {
+      const itinerariesWithoutCo2Cost = [];
+      for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
         if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('co2') && typeof itinerary.fare.co2 === typeof 123) {
           // no problem
         } else {
@@ -102,8 +102,8 @@ module.exports = (lambda, options) => {
     });
 
     it('response itineraries should contain point cost', function () {
-      var itinerariesWithoutPointsCost = [];
-      for (var itinerary of response.plan.itineraries) {
+      const itinerariesWithoutPointsCost = [];
+      for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
         if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('points') && typeof itinerary.fare.points === typeof 123) {
           // no problem
         } else {

@@ -3,12 +3,12 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 
-var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
+const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 function updateUserLocation(identityId, legId, lat, lon, timestamp) {
-  var thingName = identityId.replace(/:/, '-');
-  var payload = JSON.stringify({
+  const thingName = identityId.replace(/:/, '-');
+  const payload = JSON.stringify({
     state: {
       reported: {
         location: {

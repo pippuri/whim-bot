@@ -5,8 +5,8 @@ const lib = require('../../lib/utilities/index');
 const bus = require('../../lib/service-bus/index');
 
 function setActivePlan(event) {
-  var oldBalance;
-  var newPlan;
+  let oldBalance;
+  let newPlan;
 
   if (Object.keys(event).length === 0) {
     return Promise.reject(new Error('400: Input missing'));

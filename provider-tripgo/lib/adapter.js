@@ -34,7 +34,7 @@ function convertFromTo(from) {
 }
 
 function convertLeg(segment, original, templates, taxiProvider) {
-  var template = templates[segment.segmentTemplateHashCode] || {};
+  const template = templates[segment.segmentTemplateHashCode] || {};
   const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
   return {
     startTime: segment.startTime * 1000,
@@ -63,9 +63,9 @@ function convertItinerary(trip, original, templates, taxiProvider) {
 }
 
 function convertPlanFrom(original) {
-  var from;
+  let from;
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
-    var hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
+    const hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(function (segmentTemplate) {
       if (segmentTemplate.hashCode === hashCode) {
 
@@ -88,10 +88,10 @@ function compareItinerary(a, b) {
 }
 
 module.exports = function (original, taxiProvider) {
-  var allTrips = [];
+  let allTrips = [];
 
   // Build template hashmap
-  var templates = {};
+  const templates = {};
   (original.segmentTemplates || []).map(function (template) {
     templates[template.hashCode] = template;
   });

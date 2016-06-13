@@ -4,8 +4,8 @@ const mgr = require('../../../lib/subscription-manager');
 const expect = require('chai').expect;
 
 describe('store products', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.getProducts().then(data => {
@@ -27,8 +27,8 @@ describe('store products', function () {
 });
 
 describe('user by ID', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.getUser('IG5rynMPlZaTwQ1nSg').then(data => {
@@ -46,8 +46,8 @@ describe('user by ID', function () {
 });
 
 describe('user by ID not found', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.getUser('eagegeagehehaehae').then(data => {
@@ -65,8 +65,8 @@ describe('user by ID not found', function () {
 });
 
 describe('Update user', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
@@ -95,8 +95,8 @@ describe('Update user', function () {
 });
 
 describe('Update User card', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.updateUserCreditCard('ergaegeaeageagrseg', {
@@ -122,8 +122,8 @@ describe('Update User card', function () {
 });
 
 describe('List the user plan', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {

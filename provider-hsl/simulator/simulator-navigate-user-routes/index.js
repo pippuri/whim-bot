@@ -6,12 +6,12 @@ const request = require('request-promise-lite');
 const routeRandomizer = require('./route-randomizer');
 const routeNavigator = require('./route-navigator');
 
-var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
+const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 // Simulate this user range
-var START_USER = 29210000;
-var END_USER = 29210009;
+const START_USER = 29210000;
+const END_USER = 29210009;
 
 function loginSimulatedUser(phone) {
   return request.get('https://api.dev.maas.global/auth/sms-login', {
@@ -24,10 +24,10 @@ function loginSimulatedUser(phone) {
 }
 
 function simulateUser(phone) {
-  var thingName;
-  var state;
-  var identityId;
-  var idToken;
+  let thingName;
+  let state;
+  let identityId;
+  let idToken;
 
   return loginSimulatedUser(phone)
   .then(function (response) {
@@ -41,7 +41,7 @@ function simulateUser(phone) {
     });
   })
   .then(function (response) {
-    var payload = JSON.parse(response.payload);
+    const payload = JSON.parse(response.payload);
     state = payload.state.reported || {};
   })
   .then(null, function (err) {

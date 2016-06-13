@@ -4,17 +4,16 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 
-var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
+const ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
 
 function parseResults(response) {
-  var suggestions;
 
   if (!util.isArray(response.predictions)) {
-    var error = new Error('Invalid response from Google - invalid format.');
+    const error = new Error('Invalid response from Google - invalid format.');
     return Promise.reject(error);
   }
 
-  suggestions = response.predictions.map(function (item) {
+  const suggestions = response.predictions.map(function (item) {
     return item.description;
   });
 
@@ -33,7 +32,7 @@ function slice(numItems) {
 function adapt(input) {
 
   // Customise query by the hints given
-  var query = {
+  const query = {
     key: process.env.GOOGLE_API_KEY,
     input: input.name,
     components: 'country:' + input.country,

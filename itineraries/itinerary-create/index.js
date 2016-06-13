@@ -217,9 +217,9 @@ function wrapToEnvelope(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  var knex;
-  var profile;
-  var itinerary;
+  let knex;
+  let profile;
+  let itinerary;
 
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.

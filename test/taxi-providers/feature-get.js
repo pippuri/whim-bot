@@ -7,8 +7,8 @@ module.exports = () => {
   const lambda = require('../../provider-taxi/provider-taxi-get/handler.js');
 
   describe('get order status request', function () {
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       const event = {

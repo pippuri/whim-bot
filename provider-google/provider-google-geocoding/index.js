@@ -4,21 +4,21 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 
-var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
+const ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 function parseResults(response) {
-  var result = {
+  const result = {
     type: 'FeatureCollection',
     features: [],
   };
-  var items = response;
+  const items = response;
   if (!util.isArray(items.results)) {
-    var error = new Error('Invalid response from Google - invalid format.');
+    const error = new Error('Invalid response from Google - invalid format.');
     return Promise.reject(error);
   }
 
   items.results.forEach(function (item) {
-    var feature = {
+    const feature = {
       type: 'Feature',
       properties: {
         name: item.formatted_address,
@@ -37,7 +37,7 @@ function parseResults(response) {
 
 function adapt(input) {
   // Customise query by the hints given
-  var query = {
+  const query = {
     key: process.env.GOOGLE_API_KEY,
     address: input.name,
   };

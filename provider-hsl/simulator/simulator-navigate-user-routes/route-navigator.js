@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 
 function findLeg(legs, legId) {
-  var foundLeg;
+  let foundLeg;
   legs.map(leg => {
     if (!foundLeg && leg.legId === legId) {
       foundLeg = leg;
@@ -14,8 +14,8 @@ function findLeg(legs, legId) {
 }
 
 function findNextLeg(legs, legId) {
-  var foundLeg;
-  var nextLeg;
+  let foundLeg;
+  let nextLeg;
   legs.map(leg => {
     if (foundLeg && !nextLeg) {
       nextLeg = leg;
@@ -30,18 +30,18 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
   console.log('Continue existing route:', activeRoute.routeId, 'leg', activeRoute.activeLeg.legId);
 
   // Check if leg has been completed
-  var now = Date.now();
-  var leg = findLeg(activeRoute.legs, activeRoute.activeLeg.legId);
+  const now = Date.now();
+  const leg = findLeg(activeRoute.legs, activeRoute.activeLeg.legId);
   if (!leg) {
 
     // Invalid route! Should cancel it
     return Promise.reject(new Error('Leg not found:' + activeRoute.activeLeg.legId));
   }
 
-  var legNumber = activeRoute.legs.indexOf(leg) + 1;
-  var legTimeLeft = Math.floor((leg.endTime - now) / 60000);
-  var legTimeElapsed = Math.floor((now - activeRoute.activeLeg.timestamp) / 60000);
-  var nextLeg = findNextLeg(activeRoute.legs, activeRoute.activeLeg.legId);
+  const legNumber = activeRoute.legs.indexOf(leg) + 1;
+  const legTimeLeft = Math.floor((leg.endTime - now) / 60000);
+  const legTimeElapsed = Math.floor((now - activeRoute.activeLeg.timestamp) / 60000);
+  const nextLeg = findNextLeg(activeRoute.legs, activeRoute.activeLeg.legId);
 
   // Proceed to next leg when reached endTime (or for simulation, also when travelled leg for 1 min or more)
   if (legTimeLeft > 0 && legTimeElapsed < 0) {
@@ -50,7 +50,7 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
   }
 
   if (nextLeg) {
-    var nextLegNumber = activeRoute.legs.indexOf(nextLeg) + 1;
+    const nextLegNumber = activeRoute.legs.indexOf(nextLeg) + 1;
     console.log('Leg [' + nextLegNumber + '/' + activeRoute.legs.length + '] activating now:', nextLeg);
     return request.put('https://api.dev.maas.global/tracking/active-route/active-leg', {
       json: {

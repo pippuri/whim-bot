@@ -4,23 +4,23 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 
-var DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';
+const DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';
 
 function getOTPDate(timestamp) {
-  var time = new Date(timestamp);
-  var zeros = '0000';
-  var yyyy = ( zeros + time.getUTCFullYear()    ).slice(0 - 'YYYY'.length);
-  var mm =   ( zeros + (time.getUTCMonth() + 1) ).slice(0 - 'MM'.length);
-  var dd =   ( zeros + time.getUTCDate()        ).slice(0 - 'DD'.length);
+  const time = new Date(timestamp);
+  const zeros = '0000';
+  const yyyy = ( zeros + time.getUTCFullYear()    ).slice(0 - 'YYYY'.length);
+  const mm =   ( zeros + (time.getUTCMonth() + 1) ).slice(0 - 'MM'.length);
+  const dd =   ( zeros + time.getUTCDate()        ).slice(0 - 'DD'.length);
   return [yyyy, mm, dd].join('-');
 }
 
 function getOTPTime(timestamp) {
-  var time = new Date(timestamp);
-  var zeros = '00';
-  var hh =   ( zeros + time.getUTCHours()       ).slice(0 - 'HH'.length);
-  var mm =   ( zeros + time.getUTCMinutes()     ).slice(0 - 'mm'.length);
-  var ss =   ( zeros + time.getUTCSeconds()     ).slice(0 - 'ss'.length);
+  const time = new Date(timestamp);
+  const zeros = '00';
+  const hh =   ( zeros + time.getUTCHours()       ).slice(0 - 'HH'.length);
+  const mm =   ( zeros + time.getUTCMinutes()     ).slice(0 - 'mm'.length);
+  const ss =   ( zeros + time.getUTCSeconds()     ).slice(0 - 'ss'.length);
   return [hh, mm, ss].join(':');
 }
 
@@ -28,7 +28,7 @@ function getOTPTime(timestamp) {
 
 function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
 
-  var qs = {
+  const qs = {
     fromPlace: from,
     toPlace: to,
   };

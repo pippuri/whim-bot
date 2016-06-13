@@ -9,8 +9,8 @@ const event = require('../../../profile/profile-edit/event.json');
 module.exports = (lambda) => {
 
   describe('edit an existing user', function () {
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {

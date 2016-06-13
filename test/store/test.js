@@ -5,8 +5,8 @@ const expect = require('chai').expect;
 const lambda = require('../../store/store-packages/handler.js');
 
 describe('Store packages', function () {
-  var error;
-  var response;
+  let error;
+  let response;
 
   before(done => {
     const event = {

@@ -4,7 +4,7 @@ const request = require('request-promise-lite');
 const Promise = require('bluebird');
 
 // Create random routes within this area
-var area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
+const area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
 
 function activateRoute(identityId, idToken, activeRoute) {
   console.log('Activating route:', identityId, activeRoute);
@@ -39,11 +39,11 @@ function activateRoute(identityId, idToken, activeRoute) {
 }
 
 function startRandomRoute(identityId, idToken) {
-  var from = {
+  const from = {
     lat: area[0] + Math.random() * (area[2] - area[0]),
     lon: area[1] + Math.random() * (area[3] - area[1]),
   };
-  var to = {
+  const to = {
     lat: area[0] + Math.random() * (area[2] - area[0]),
     lon: area[1] + Math.random() * (area[3] - area[1]),
   };
@@ -61,8 +61,8 @@ function startRandomRoute(identityId, idToken) {
     }
 
     // Found some routes, pick one
-    var activeRoute;
-    var now = Date.now();
+    let activeRoute;
+    const now = Date.now();
     response.plan.itineraries.map(route => {
       if (!activeRoute && route.startTime >= now && route.legs && route.legs.length > 0 && route.legs[0].from && route.legs[0].from.lat && route.legs[0].from.lon) {
         activeRoute = route;

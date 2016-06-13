@@ -4,21 +4,21 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 
-var ENDPOINT_URL = 'http://nominatim.openstreetmap.org/search';
+const ENDPOINT_URL = 'http://nominatim.openstreetmap.org/search';
 
 function parseResults(response) {
   console.log(response);
-  var locations = [];
+  const locations = [];
 
   if (!util.isArray(response)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
+    const error = new Error('Invalid response from HERE - invalid format.');
     return Promise.reject(error);
   }
 
   response.forEach(function (item) {
     console.log(item);
 
-    var location = {
+    const location = {
       name: item.display_name,
       lat: parseFloat(item.lat),
       lon: parseFloat(item.lon),
@@ -37,7 +37,7 @@ function parseResults(response) {
 function adapt(input) {
 
   // Customise query by the hints given
-  var query = {
+  const query = {
     format: 'json',
     addressdetails: 1,
     limit: input.count,
@@ -45,37 +45,44 @@ function adapt(input) {
   };
 
   switch (input.hint) {
-    case 'latlon':
+    case 'latlon': {
 
       // In absence of full circle, use bounding box. Use
       // http://stackoverflow.com/questions/1253499/simple-calculations-for-working-with-lat-lon-km-distance
       // Latitude: 1 deg = 110.574 km
       // Longitude: 1 deg = 111.320*cos(latitude) km
       // for conversion rule
-      var latRadians = input.lat * Math.PI / 180;
+      const latRadians = input.lat * Math.PI / 180;
 
-      // var lonRadians = input.lon * Math.PI / 180; - not in use
-      var left = input.lon - input.radius / 111.320 * Math.cos(latRadians);
-      var top = input.lat + input.radius / 110.574;
-      var right = input.lon + input.radius / 111.320 * Math.cos(latRadians);
-      var bottom = input.lat - input.radius / 110.574;
+      // const lonRadians = input.lon * Math.PI / 180; - not in use
+      const left = input.lon - input.radius / 111.320 * Math.cos(latRadians);
+      const top = input.lat + input.radius / 110.574;
+      const right = input.lon + input.radius / 111.320 * Math.cos(latRadians);
+      const bottom = input.lat - input.radius / 110.574;
 
       query.viewbox = [left, top, right, bottom].join(',');
 
       // Force the boundaries
       //query.bounded = 1;
       break;
-    case 'country':
+    }
+
+    case 'country': {
       if (typeof input.city !== 'undefined') {
         query.q += ' ' + input.city;
       }
 
       query.q += ' ' + input.country;
       break;
-    case 'none':
+    }
+
+    case 'none': {
       break;
-    default:
+    }
+
+    default: {
       throw new Error('Location hint not given');
+    }
   }
 
   return request.get(ENDPOINT_URL, {

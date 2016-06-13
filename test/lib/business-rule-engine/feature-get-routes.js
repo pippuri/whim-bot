@@ -16,9 +16,9 @@ module.exports = (engine) => {
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
     };
 
-    var calls = [];
-    var error;
-    var response;
+    const calls = [];
+    let error;
+    let response;
 
     const serviceBusDummy = {
       call: serviceName => new Promise((resolve, reject) => {
@@ -90,8 +90,8 @@ module.exports = (engine) => {
     });
 
     it('should return routes annotated with co2 cost for each itinerary', function () {
-      var itinerariesWithoutCo2Cost = [];
-      for (var itinerary of response.plan.itineraries) {
+      const itinerariesWithoutCo2Cost = [];
+      for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
         if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('co2') && typeof itinerary.fare.co2 === typeof 123) {
           // no problem
         } else {

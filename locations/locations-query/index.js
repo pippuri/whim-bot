@@ -6,8 +6,8 @@ const ajvFactory = require('ajv');
 
 // Input schema
 const schema = require('./schema.json');
-var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
-var validate;
+const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
+let validate;
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 // Initialization work
@@ -15,7 +15,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Initialise AJV with the option to use defaults supplied in the schema
   // Note: Types must be coerced as current API Gateway request templates pass them
   // as strings
-  var ajv = ajvFactory({ verbose: true, inject: true, coerceTypes: true });
+  const ajv = ajvFactory({ verbose: true, inject: true, coerceTypes: true });
 
   // Add a new handler
   ajv.addKeyword('inject', {
@@ -23,7 +23,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
       if (!this._opts.inject) return function () { return true; };
 
       return function (data, dataPath, parentData, parentDataProperty) {
-        for (var key in schema) {
+        for (let key in schema) { // eslint-disable-line prefer-const
           if (typeof data[key] === 'undefined') {
             data[key] = schema[key];
           }
@@ -37,16 +37,13 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Compile schema
   validate = ajv.compile(schema);
 
-  // Promisify Lambda helpers
-  var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
-  Promise.promisifyAll(lambda, { suffix: 'Promise' });
 })();
 
 function delegate(event) {
-  var provider = 'MaaS-provider-nominatim-locations';
+  const provider = 'MaaS-provider-nominatim-locations';
 
   // Replace local stage name with dev (no 'local' in AWS side);
-  var stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
+  const stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
 
   //console.log('Invoking provider', provider, "with input",
   //  JSON.stringify(event, null, 2));
@@ -57,7 +54,7 @@ function delegate(event) {
     Payload: JSON.stringify(event),
   })
   .then(function (response) {
-    var payload = JSON.parse(response.Payload);
+    const payload = JSON.parse(response.Payload);
 
     if (payload.error) {
       return Promise.reject(new Error(payload.error));
@@ -77,7 +74,7 @@ module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
   new Promise(function (resolve, reject) {
-      var valid = validate(event.query);
+      const valid = validate(event.query);
 
       if (!valid) {
         return reject(new Error(JSON.stringify(validate.errors)));

@@ -6,7 +6,7 @@ const maasUtils = require('../../lib/utils');
 // Add route and leg identifiers that are unique and also act as
 // a signature for the response.
 function addRouteAndLegIdentifiersToResponse(response) {
-  var itineraries = response.plan.itineraries || [];
+  const itineraries = response.plan.itineraries || [];
 
   itineraries.map(function (itinerary) {
     (itinerary.legs || []).map(function (leg) {
@@ -39,7 +39,7 @@ function filterPastRoutes(leaveAt, response) {
     return response;
   }
 
-  var filtered = response.plan.itineraries.filter(itinerary => {
+  const filtered = response.plan.itineraries.filter(itinerary => {
     const waitingTimes = itinerary.legs.map(leg => {
       const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
       return waitingTime;
@@ -60,12 +60,12 @@ function filterPastRoutes(leaveAt, response) {
 
 function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
 
-  var options = {};
+  const options = {};
   if (typeof provider !== typeof undefined && provider !== '') {
     options.provider = provider;
   }
 
-  var event = {
+  const event = {
     from: from,
     to: to,
     leaveAt: leaveAt,

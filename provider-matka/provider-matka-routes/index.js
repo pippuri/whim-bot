@@ -10,18 +10,18 @@ Promise.promisifyAll(xml2js);
 
 proj4.defs('EPSG:2393', '+proj=tmerc +lat_0=0 +lon_0=27 +k=1 +x_0=3500000 +y_0=0 +ellps=intl +towgs84=-96.062,-82.428,-121.753,4.801,0.345,-1.376,1.496 +units=m +no_defs');
 
-var MATKA_BASE_URL = 'http://api.matka.fi/';
+const MATKA_BASE_URL = 'http://api.matka.fi/';
 
 /**
  * Convert Google (WGS84) coordinates to KKJ3 (EPSG:2393)
  */
 function convertWGS84ToKKJ3(coords) {
-  var from = coords.split(',').reverse().map(parseFloat);
-  var to = proj4('WGS84', 'EPSG:2393', from);
-  to = to.map(Math.floor).join(',');
+  const from = coords.split(',').reverse().map(parseFloat);
+  const to = proj4('WGS84', 'EPSG:2393', from);
+  const converted = to.map(Math.floor).join(',');
 
-  //console.log('Converted from', from, 'to', to);
-  return to;
+  //console.log('Converted from', from, 'to', converted);
+  return converted;
 }
 
 function getMatkaRoutes(from, to, format) {

@@ -6,14 +6,14 @@ const lib = require('../../lib/utilities/index');
 
 function formatResponse(input) {
 
-  var output = {
+  const output = {
     plans: [],
     addons: [],
   };
 
   // Parse plans
-  for (var i = 0; i < input[0].list.length; i++) {
-    var planContext = input[0].list[i];
+  for (let i = 0; i < input[0].list.length; i++) {
+    const planContext = input[0].list[i];
     if (planContext.plan.meta_data.hasOwnProperty('invisible')) {
       continue;
     }
@@ -22,8 +22,8 @@ function formatResponse(input) {
   }
 
   // Parse addons
-  for (var j = 0; j < input[1].list.length; j++) {
-    var addonContext = input[1].list[j];
+  for (let j = 0; j < input[1].list.length; j++) {
+    const addonContext = input[1].list[j];
     output.addons.push(lib.parseSingleChargebeeAddon(addonContext));
   }
 

@@ -6,7 +6,7 @@
 
 module.exports.respond = function (event, cb) {
 
-  var response = {
+  const response = {
     message: 'Your Serverless function ran successfully!',
   };
 

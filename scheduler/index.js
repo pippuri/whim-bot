@@ -6,7 +6,7 @@ const bus = require('../lib/service-bus/index');
 const _ = require('lodash');
 const aws = require('aws-sdk');
 
-var docClient = new aws.DynamoDB.DocumentClient();
+const docClient = new aws.DynamoDB.DocumentClient();
 
 function updateFunctionStatus(functionId, status, FnResponse) {
   if (_.isEmpty(functionId)) {
@@ -21,7 +21,7 @@ function updateFunctionStatus(functionId, status, FnResponse) {
         return Promise.reject(new Error('Function Not Existed'));
       }
 
-      var params = {
+      const params = {
         TableName: process.env.MAAS_SCHEDULER,
         Key: {
           functionId: functionId,
@@ -45,7 +45,7 @@ function updateFunctionStatus(functionId, status, FnResponse) {
 
 function getScheduledFunction() {
 
-  var params = {
+  const params = {
     TableName: process.env.MAAS_SCHEDULER,
 
     FilterExpression: 'flag = :Flag AND invokeTime <= :nvkTime',

@@ -8,8 +8,8 @@ const event = require('../../provider-twilio/provider-twilio-send-sms/event.json
 module.exports = (lambda) => {
 
   describe('send-sms request', function () {
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {

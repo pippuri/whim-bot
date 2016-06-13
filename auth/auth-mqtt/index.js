@@ -3,14 +3,14 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 
-var cognitoIdentity = new AWS.CognitoIdentity();
-var cognitoSync = new AWS.CognitoSync();
+const cognitoIdentity = new AWS.CognitoIdentity();
+const cognitoSync = new AWS.CognitoSync();
 Promise.promisifyAll(cognitoIdentity);
 Promise.promisifyAll(cognitoSync);
 
 function getMqttCredentials(principalId) {
 
-  // var token = ''; - not in use
+  // const token = ''; - not in use
   return Promise.resolve()
   .then(function () {
 
@@ -22,7 +22,7 @@ function getMqttCredentials(principalId) {
     });
   })
   .then(function (response) {
-    var plainPhone = '';
+    let plainPhone = '';
     response.Records.map(function (record) {
       console.log('Considering', record);
       if (record.Key === 'phone') {
@@ -31,7 +31,7 @@ function getMqttCredentials(principalId) {
     });
 
     // Get cognito token
-    var logins = {};
+    const logins = {};
     logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + plainPhone;
     console.log('Identity logins:', logins);
     return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync({

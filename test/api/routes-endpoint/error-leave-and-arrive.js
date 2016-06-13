@@ -16,8 +16,8 @@ module.exports = (lambda) => {
       arriveBy: '' + moment().isoWeekday(8).hour(21).valueOf(), // Monday one week forward around nine
     };
 
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {

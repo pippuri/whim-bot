@@ -7,8 +7,8 @@ module.exports = () => {
   const lambda = require('../../provider-taxi/provider-taxi-cancel/handler.js');
 
   describe('cancel order request', function () {
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       const event = {
