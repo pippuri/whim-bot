@@ -1,3 +1,4 @@
+'use strict';
 
 const Promise = require('bluebird');
 const lib = require('../../lib/utilities/index');

@@ -1,3 +1,4 @@
+'use strict';
 
 const testUnknownTransformation = require('./error-unknown-transformation.js');
 const testGetRoutes = require('./feature-get-routes.js');

@@ -1,3 +1,5 @@
+'use strict';
+
 var AWS = require('aws-sdk');
 var Promise = require('bluebird');
 var lib = require('../../lib/utilities/index');

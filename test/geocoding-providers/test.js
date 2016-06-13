@@ -1,3 +1,5 @@
+'use strict';
+
 const testQuery = require('./feature-query');
 
 describe('geocoding provider', function () {

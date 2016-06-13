@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Routing results adapter from TripGo to MaaS. Returns promise for JSON object.
  */

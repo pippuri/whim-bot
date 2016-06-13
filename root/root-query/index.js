@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require('bluebird');
 
 // Respond with a API version info at root

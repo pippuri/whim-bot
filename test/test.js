@@ -1,3 +1,4 @@
+'use strict';
 
 var Templates = (new (require('serverless'))()).classes.Templates;
 

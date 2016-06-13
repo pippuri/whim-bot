@@ -1,3 +1,4 @@
+'use strict';
 
 const testLeaveAt = require('./feature-leave-at.js');
 const testArriveBy = require('./feature-arrive-by.js');

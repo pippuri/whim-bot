@@ -1,3 +1,5 @@
+'use strict';
+
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../store/store-packages/handler.js');

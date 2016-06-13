@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require('bluebird');
 var crypto = require('crypto');
 var AWS = require('aws-sdk');

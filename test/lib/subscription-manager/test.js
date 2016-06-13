@@ -1,3 +1,4 @@
+'use strict';
 
 const mgr = require('../../../lib/subscription-manager');
 const expect = require('chai').expect;

@@ -1,3 +1,5 @@
+'use strict';
+
 const testQuery = require('./feature-query.js');
 
 describe('autocomplete endpoint', function () {

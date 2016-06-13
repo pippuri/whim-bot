@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * GeoJSON format compatible implementation of places, using HERE places API.
  * Sample:

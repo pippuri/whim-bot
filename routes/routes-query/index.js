@@ -1,3 +1,5 @@
+'use strict';
+
 var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
 var maasUtils = require('../../lib/utils');
 

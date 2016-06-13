@@ -1,3 +1,4 @@
+'use strict';
 
 const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');

@@ -1,3 +1,4 @@
+'use strict';
 
 const testGetProfile = require('./feature-get-profile.js');
 const testGetUnknownProfile = require('./error-unknown-profile.js');

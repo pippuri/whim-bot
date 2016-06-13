@@ -1,3 +1,5 @@
+'use strict';
+
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const validator = require('../../../lib/validator');

@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Routing results adapter from Matka to MaaS. Returns promise for JSON object.
  */

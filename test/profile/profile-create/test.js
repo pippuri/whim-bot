@@ -1,3 +1,4 @@
+'use strict';
 
 const testCreateProfile = require('./feature-create-profile.js');
 const testCreateDuplicateProfile = require('./error-profile-already-exists.js');

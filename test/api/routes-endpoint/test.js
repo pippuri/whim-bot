@@ -1,3 +1,4 @@
+'use strict';
 
 const testMissingidentityId = require('./error-missing-principal-id.js');
 const testLeaveAndArrive = require('./error-leave-and-arrive.js');

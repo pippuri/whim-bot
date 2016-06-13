@@ -1,3 +1,4 @@
+'use strict';
 
 const gulp = require('gulp');
 const jsonlint = require('gulp-jsonlint');

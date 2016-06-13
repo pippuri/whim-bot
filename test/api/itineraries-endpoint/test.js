@@ -1,3 +1,5 @@
+'use strict';
+
 var testCreateItinerary = require('./itinerary-create.js');
 
 describe('itineraries endpoint', function () {

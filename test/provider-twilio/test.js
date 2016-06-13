@@ -1,3 +1,5 @@
+'use strict';
+
 const testSendSMS = require('./feature-send-sms.js');
 
 describe('Twilio (SMS) provider', () => {

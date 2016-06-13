@@ -1,3 +1,5 @@
+'use strict';
+
 const Promise = require('bluebird');
 const swaggerJson = require('./maas-api.json');
 
