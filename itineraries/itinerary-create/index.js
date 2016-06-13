@@ -23,10 +23,6 @@ function initKnex() {
   const config = {
     client: 'postgresql',
     connection: connection,
-    pool: {
-      min: 1,
-      max: 1,
-    },
   };
 
   const knex = knexFactory(config);
