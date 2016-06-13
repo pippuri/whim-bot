@@ -1,10 +1,10 @@
 'use strict';
 
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
-var request = require('request-promise-lite');
-var routeRandomizer = require('./route-randomizer');
-var routeNavigator = require('./route-navigator');
+const Promise = require('bluebird');
+const AWS = require('aws-sdk');
+const request = require('request-promise-lite');
+const routeRandomizer = require('./route-randomizer');
+const routeNavigator = require('./route-navigator');
 
 var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);

@@ -1,10 +1,10 @@
 'use strict';
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var proj4 = require('proj4');
-var xml2js = require('xml2js');
-var adapter = require('./adapter');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const proj4 = require('proj4');
+const xml2js = require('xml2js');
+const adapter = require('./adapter');
 
 Promise.promisifyAll(xml2js);
 

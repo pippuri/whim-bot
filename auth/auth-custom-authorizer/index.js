@@ -1,7 +1,7 @@
 'use strict';
 
-var Promise = require('bluebird');
-var jwt = require('jsonwebtoken');
+const Promise = require('bluebird');
+const jwt = require('jsonwebtoken');
 
 // This is the main custom authorizer that can be attached to any API
 // that's limited to logged in users.

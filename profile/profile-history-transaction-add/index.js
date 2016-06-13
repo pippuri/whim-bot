@@ -1,9 +1,9 @@
 'use strict';
 
-var AWS = require('aws-sdk');
-var Promise = require('bluebird');
-var lib = require('../../lib/utilities/index');
-var moment = require('moment');
+const AWS = require('aws-sdk');
+const Promise = require('bluebird');
+const lib = require('../../lib/utilities/index');
+const moment = require('moment');
 
 var docClient = new AWS.DynamoDB.DocumentClient();
 

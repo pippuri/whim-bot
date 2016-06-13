@@ -18,9 +18,9 @@
  * @see https://en.wikipedia.org/wiki/GeoJSON
  */
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var util = require('util');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const util = require('util');
 
 var ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
 

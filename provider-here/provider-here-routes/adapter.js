@@ -3,7 +3,7 @@
 /**
  * Routing results adapter from Here to MaaS. Returns promise for JSON object.
  */
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 var nextStartTime = 0;
 var nextEndTime = 0;
 var constructTo = [];

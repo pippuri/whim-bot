@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 // Respond with a API version info at root
 function getApiVersion() {

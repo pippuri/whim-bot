@@ -3,8 +3,8 @@
 /**
  * Routing results adapter from HSL to MaaS. Returns promise for JSON object.
  */
-var Promise = require('bluebird');
-var proj4 = require('proj4');
+const Promise = require('bluebird');
+const proj4 = require('proj4');
 
 proj4.defs('EPSG:2392', '+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +units=m +no_defs');
 

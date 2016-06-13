@@ -1,8 +1,8 @@
 'use strict';
 
 // Library
-var SubscriptionMgr = require('../../lib/subscription-manager');
-var lib = require('../../lib/utilities/index');
+const SubscriptionMgr = require('../../lib/subscription-manager');
+const lib = require('../../lib/utilities/index');
 
 function formatResponse(input) {
 

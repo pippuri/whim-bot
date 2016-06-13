@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var util = require('util');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const util = require('util');
 
 var ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/json';
 

@@ -1,11 +1,11 @@
 'use strict';
 
 // Dependency
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 // Library
-var SubscriptionMgr = require('../../lib/subscription-manager');
-var lib = require('../../lib/utilities/index');
+const SubscriptionMgr = require('../../lib/subscription-manager');
+const lib = require('../../lib/utilities/index');
 
 function getSingleProduct(event) {
   if (event.type === 'plan') {

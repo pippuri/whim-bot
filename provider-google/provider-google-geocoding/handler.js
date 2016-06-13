@@ -8,11 +8,11 @@
  */
 
 // Require Serverless ENV vars
-var ServerlessHelpers = require('serverless-helpers-js');
+const ServerlessHelpers = require('serverless-helpers-js');
 ServerlessHelpers.loadEnv();
 
 // Require Logic
-var lib = require('./index');
+const lib = require('./index');
 
 // Lambda Handler
 module.exports.handler = function (event, context) {

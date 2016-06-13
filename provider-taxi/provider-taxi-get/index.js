@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var ec = require('../lib/ec');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const ec = require('../lib/ec');
 
 function getOrder(orderId) {
 

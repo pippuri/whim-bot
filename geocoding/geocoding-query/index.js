@@ -1,11 +1,11 @@
 'use strict';
 
-var Promise = require('bluebird');
-var AWS = require('aws-sdk');
-var ajvFactory = require('ajv');
+const Promise = require('bluebird');
+const AWS = require('aws-sdk');
+const ajvFactory = require('ajv');
 
 // Input schema
-var schema = require('./schema.json');
+const schema = require('./schema.json');
 var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 var validate;
 Promise.promisifyAll(lambda, { suffix: 'Promise' });

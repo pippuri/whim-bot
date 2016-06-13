@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
-var request = require('request-promise-lite');
-var adapter = require('./adapter');
+const Promise = require('bluebird');
+const request = require('request-promise-lite');
+const adapter = require('./adapter');
 
 var DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';
 

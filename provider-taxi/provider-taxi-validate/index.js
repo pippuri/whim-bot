@@ -1,7 +1,7 @@
 'use strict';
 
-var request = require('request-promise-lite');
-var ec = require('../lib/ec'); // TODO: Error handling based on codes
+const request = require('request-promise-lite');
+const ec = require('../lib/ec'); // TODO: Error handling based on codes
 
 function validateOrder(order) {
 

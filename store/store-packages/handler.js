@@ -1,7 +1,7 @@
 'use strict';
 
 // Require logic
-var lib = require('./index');
+const lib = require('./index');
 
 // Lamba handler
 module.exports.handler = function (event, context) {

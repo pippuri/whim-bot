@@ -1,7 +1,7 @@
 'use strict';
 
-var businessRuleEngine = require('../../lib/business-rule-engine/index.js');
-var maasUtils = require('../../lib/utils');
+const businessRuleEngine = require('../../lib/business-rule-engine/index.js');
+const maasUtils = require('../../lib/utils');
 
 // Add route and leg identifiers that are unique and also act as
 // a signature for the response.

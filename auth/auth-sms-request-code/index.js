@@ -1,8 +1,8 @@
 'use strict';
 
-var Promise = require('bluebird');
-var crypto = require('crypto');
-var AWS = require('aws-sdk');
+const Promise = require('bluebird');
+const crypto = require('crypto');
+const AWS = require('aws-sdk');
 var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
