@@ -4,24 +4,24 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 
-var ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
+const ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
 
 function parseResults(response) {
-  var locations = [];
-  var view = response.Response.View;
+  const locations = [];
+  const view = response.Response.View;
 
   if (!util.isArray(view)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
+    const error = new Error('Invalid response from HERE - invalid format.');
     return Promise.reject(error);
   }
 
-  view.forEach(function (item) {
-    var results = item.Result;
+  view.forEach(function (i) {
+    const results = i.Result;
 
     results.forEach(function (result) {
-      var item = result.Location;
+      const item = result.Location;
 
-      var location = {
+      const location = {
         name: item.Address.Label,
         lat: result.Location.DisplayPosition.Latitude,
         lon: result.Location.DisplayPosition.Longitude,
@@ -40,7 +40,7 @@ function parseResults(response) {
 
 function adapt(input) {
   // Customise query by the hints given
-  var query = {
+  const query = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     searchtext: input.name,

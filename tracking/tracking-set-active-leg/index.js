@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 
-var iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
+const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
 function getActiveItinerary(identityId) {
@@ -30,8 +30,8 @@ function setActiveLeg(identityId, itinerary, legId, timestamp) {
     return Promise.reject(new Error('400 timestamp is required'));
   }
 
-  var thingName = identityId.replace(/:/, '-');
-  var payload = JSON.stringify({
+  const thingName = identityId.replace(/:/, '-');
+  const payload = JSON.stringify({
     state: {
       reported: {
         itinerary: {
@@ -51,7 +51,7 @@ function setActiveLeg(identityId, itinerary, legId, timestamp) {
     payload: payload,
   })
   .then(function (response) {
-    var payload = JSON.parse(response.payload);
+    const payload = JSON.parse(response.payload);
     return payload.state.reported.itinerary && payload.state.reported.itinerary.leg || null;
   });
 }

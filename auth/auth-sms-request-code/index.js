@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
-var lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
+const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
 /**
@@ -15,18 +15,18 @@ function smsRequestCode(phone, provider) {
   }
 
   // Clean up phone number to only contain digits
-  var plainPhone = phone.replace(/[^\d]/g, '');
+  const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
   }
 
-  var shasum = crypto.createHash('sha1');
-  var salt = '' + (100 + Math.floor(Math.random() * 900));
+  const shasum = crypto.createHash('sha1');
+  const salt = '' + (100 + Math.floor(Math.random() * 900));
   shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-  var hash = shasum.digest('hex');
-  var verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
-  var verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
-  var functionName = 'MaaS-provider-' + provider + '-send-sms';
+  const hash = shasum.digest('hex');
+  const verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
+  const verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
+  const functionName = 'MaaS-provider-' + provider + '-send-sms';
   console.log('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
   return lambda.invokePromise({
     FunctionName: functionName,

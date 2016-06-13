@@ -22,22 +22,22 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 
-var ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
+const ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
 
 function parseResults(response) {
-  var result = {
+  const result = {
     type: 'FeatureCollection',
     features: [],
   };
-  var items = response.results.items;
+  const items = response.results.items;
 
   if (!util.isArray(items)) {
-    var error = new Error('Invalid response from HERE - invalid format.');
+    const error = new Error('Invalid response from HERE - invalid format.');
     return Promise.reject(error);
   }
 
   items.forEach(function (item) {
-    var feature = {
+    const feature = {
       type: 'Feature',
       properties: {
         name: item.title,
@@ -57,7 +57,7 @@ function parseResults(response) {
 function adapt(input) {
 
   // Customise query by the hints given
-  var query = {
+  const query = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     q: input.name,

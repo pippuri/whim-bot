@@ -6,18 +6,18 @@ const adapter = require('./adapter');
 
 proj4.defs('EPSG:2392', '+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0 +ellps=intl +units=m +no_defs');
 
-var HSL_BASE_URL = 'http://api.reittiopas.fi/hsl/prod/';
+const HSL_BASE_URL = 'http://api.reittiopas.fi/hsl/prod/';
 
 /**
  * Convert Google (WGS84) coordinates to KKJ2 (EPSG:2392)
  */
 function convertWGS84ToKKJ2(coords) {
-  var from = coords.split(',').reverse().map(parseFloat);
-  var to = proj4('WGS84', 'EPSG:2392', from);
-  to = to.map(Math.floor).join(',');
+  const from = coords.split(',').reverse().map(parseFloat);
+  const to = proj4('WGS84', 'EPSG:2392', from);
+  const converted = to.map(Math.floor).join(',');
 
-  //console.log('Converted from', from, 'to', to);
-  return to;
+  //console.log('Converted from', from, 'to', converted);
+  return converted;
 }
 
 function getHslRoutes(from, to, format) {

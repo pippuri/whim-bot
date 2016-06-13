@@ -10,8 +10,8 @@ module.exports = (lambda) => {
 
   describe('basic query', function () {
 
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {

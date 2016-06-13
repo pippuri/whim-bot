@@ -3,14 +3,14 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 
-var cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
+const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
 Promise.promisifyAll(cognitoSync);
 
 function savesUserActiveRoute(identityId, timestamp, activeroute) {
 
-  var syncSessionToken;
-  var patches = [];
+  let syncSessionToken;
+  const patches = [];
 
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
@@ -19,19 +19,19 @@ function savesUserActiveRoute(identityId, timestamp, activeroute) {
   })
   .then(function (response) {
     syncSessionToken = response.SyncSessionToken;
-    var oldRecords = {};
+    const oldRecords = {};
     response.Records.map(function (record) {
       oldRecords[record.Key] = record;
     });
 
-    var activeroutes = {
+    const activeroutes = {
       timestamp: timestamp,
       activeroute: activeroute,
     };
 
     Object.keys(activeroutes).map(function (key) {
-      var oldRecord = oldRecords[key];
-      var newValue;
+      const oldRecord = oldRecords[key];
+      let newValue;
       if (typeof activeroutes[key] === 'object') {
         newValue = JSON.stringify(activeroutes[key]);
       } else {

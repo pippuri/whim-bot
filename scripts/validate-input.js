@@ -5,10 +5,10 @@ const Promise = require('bluebird');
 const fs = Promise.promisifyAll(require('fs'));
 const path = require('path');
 
-var input;
-var schema;
-var inputFile = process.argv[2];
-var schemaFile = process.argv[3];
+let input;
+let schema;
+const inputFile = process.argv[2];
+const schemaFile = process.argv[3];
 
 if (typeof inputFile !== 'string') {
   console.error('Error: No input file given');

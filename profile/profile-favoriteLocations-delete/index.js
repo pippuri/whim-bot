@@ -31,7 +31,7 @@ function removefavoriteLocations(event) {
       return bus.call('Dynamo-get', params);
     })
     .then((response) => {
-      for (var i = response.Item.favoriteLocations.length - 1; i > -1; i--) {
+      for (let i = response.Item.favoriteLocations.length - 1; i > -1; i--) {
         if (response.Item.favoriteLocations[i].name === event.payload.name) {
           response.Item.favoriteLocations.splice(i, 1);
         }

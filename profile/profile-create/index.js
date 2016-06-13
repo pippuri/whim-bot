@@ -10,7 +10,7 @@ const _ = require('lodash');
  */
 function persistUserData(event) {
 
-  var defaultPlan;
+  let defaultPlan;
 
   if (_.isEmpty(event)) {
     return Promise.reject(new Error('Input missing'));

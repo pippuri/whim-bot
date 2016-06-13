@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 
-var cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
+const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 Promise.promisifyAll(cognitoSync);
 
 function getMe(principalId) {
@@ -13,7 +13,7 @@ function getMe(principalId) {
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
   })
   .then(function (response) {
-    var user = {
+    const user = {
       principalId: principalId,
     };
     response.Records.map(function (record) {

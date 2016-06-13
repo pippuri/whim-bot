@@ -17,8 +17,8 @@ module.exports = (lambda) => {
       },
     };
 
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {

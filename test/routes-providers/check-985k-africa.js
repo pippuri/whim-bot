@@ -20,8 +20,8 @@ module.exports = (lambda) => {
       leaveAt: '' + moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(14).minute(45).valueOf(), // Tuesday one week forward around 15:15
     };
 
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {
@@ -48,7 +48,7 @@ module.exports = (lambda) => {
 
     // FIXME change to another bus route, tripgo doesn't return proper route for 985K, 30.5
     xit('response should contain a leg with bus 985K leaving at 15:35', function () {
-      var leg985KTimes = [];
+      const leg985KTimes = [];
       response.plan.itineraries.map(i => {
         i.legs.map(l => {
           if (('' + l.route).includes('985')) {

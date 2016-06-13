@@ -39,13 +39,13 @@ function addfavoriteLocations(event) {
     .then(response => {
       const favoriteLocations = response.Items[0].favoriteLocations;
 
-      for (var i = 0; i < favoriteLocations.length; i++) {
+      for (let i = 0; i < favoriteLocations.length; i++) {
         if (favoriteLocations[i].name === event.payload.name) {
           return Promise.reject(new Error('favoriteLocations name existed'));
         }
       }
 
-      var params = {
+      const params = {
         TableName: process.env.DYNAMO_USER_PROFILE,
         Key: {
           identityId: event.identityId,

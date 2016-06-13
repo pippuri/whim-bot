@@ -2,7 +2,7 @@
 
 const fs = require('fs');
 const path = require('path');
-var pfxFile = path.resolve(__dirname, 'maas_maasfinland.p12');
+const pfxFile = path.resolve(__dirname, 'maas_maasfinland.p12');
 
 module.exports = Object.freeze({
   TAXI_API_URL: 'https://maas.valopilkkupalvelu.fi',

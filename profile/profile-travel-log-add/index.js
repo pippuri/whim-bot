@@ -25,12 +25,12 @@ function saveRoute(event) {
         return Promise.reject(new Error('User not existed'));
       }
 
-      var item = {
+      const item = {
         identityId: event.identityId,
         timeEpoch: moment().unix(),
         route: event.route,
       };
-      var params = {
+      const params = {
         TableName: process.env.DYNAMO_USER_TRAVEL_LOG,
         Item: item,
       };

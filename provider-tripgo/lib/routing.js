@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 
-var TRIPGO_PUBLIC_MODES = [
+const TRIPGO_PUBLIC_MODES = [
   'pt_pub',
 
   //'ps_tax',
@@ -15,19 +15,19 @@ var TRIPGO_PUBLIC_MODES = [
   //'wa_wal',
 ];
 
-var TRIPGO_MIXED_MODES = [
+const TRIPGO_MIXED_MODES = [
   'pt_pub',
   'ps_tax',
 ];
 
-var TRIPGO_TAXI_MODES = [
+const TRIPGO_TAXI_MODES = [
   'ps_tax',
 ];
 
 // Docs: http://planck.buzzhives.com/swagger/index.html#!/Routing/get_routing_json
 
 function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
-  var qs = {
+  const qs = {
     v: '11',
     from: '(' + from + ')',
     to: '(' + to + ')',
@@ -67,7 +67,7 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
 }
 
 function mergeResults(results) {
-  var response;
+  let response;
   results.forEach( result => {
     if (typeof response === typeof undefined) {
       response = result;
@@ -98,7 +98,7 @@ function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format, t
     getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
   ])
   .then(function (results) {
-    var response = mergeResults(results);
+    const response = mergeResults(results);
 
     if (format === 'original') {
       return response;

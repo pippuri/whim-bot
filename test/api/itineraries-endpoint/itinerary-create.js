@@ -10,8 +10,8 @@ const maasUtils = require('../../../lib/utils');
 module.exports = function (lambda) {
 
   describe('create itinerary', () => {
-    var error;
-    var response;
+    let error;
+    let response;
 
     before(done => {
       // Sign the event data (Travis seems to have problems repeating the signatures)

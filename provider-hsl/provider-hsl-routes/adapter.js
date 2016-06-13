@@ -12,7 +12,7 @@ proj4.defs('EPSG:2392', '+proj=tmerc +lat_0=0 +lon_0=24 +k=1 +x_0=2500000 +y_0=0
  * Convert KKJ2 (EPSG:2392) coordinates to Google (WGS84)
  */
 function convertKKJ2ToWGS84(x, y) {
-  var to = proj4('EPSG:2392', 'WGS84', [x, y]);
+  const to = proj4('EPSG:2392', 'WGS84', [x, y]);
   return {
     lon: to[0],
     lat: to[1],
@@ -31,7 +31,7 @@ function convertMode(type) {
 }
 
 function convertFromTo(from) {
-  var coords = convertKKJ2ToWGS84(from.coord.x, from.coord.y);
+  const coords = convertKKJ2ToWGS84(from.coord.x, from.coord.y);
   return {
     name: from.name,
     stopId: from.shortCode,
@@ -42,7 +42,7 @@ function convertFromTo(from) {
 }
 
 function convertDateTime(str) {
-  var d = new Date();
+  const d = new Date();
   d.setFullYear(str.slice(0, 4));
   d.setMonth(parseInt(str.slice(4, 6), 10) - 1);
   d.setDate(str.slice(6, 8));
@@ -54,8 +54,8 @@ function convertDateTime(str) {
 }
 
 function convertLeg(leg) {
-  var startTime = convertDateTime(leg.locs[0].depTime);
-  var endTime = startTime + leg.duration * 1000;
+  const startTime = convertDateTime(leg.locs[0].depTime);
+  const endTime = startTime + leg.duration * 1000;
   return {
     startTime: startTime,
     endTime: endTime,
@@ -71,8 +71,8 @@ function convertLeg(leg) {
 }
 
 function convertItinerary(route) {
-  var startTime = convertDateTime(route.legs[0].locs[0].depTime);
-  var endTime = startTime + route.duration * 1000;
+  const startTime = convertDateTime(route.legs[0].locs[0].depTime);
+  const endTime = startTime + route.duration * 1000;
   return {
     startTime: startTime,
     endTime: endTime,
@@ -81,7 +81,7 @@ function convertItinerary(route) {
 }
 
 module.exports = function (original) {
-  var allRoutes = [];
+  const allRoutes = [];
   original.map(function (routes) {
     routes.map(function (route) {
       allRoutes.push(route);

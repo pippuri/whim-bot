@@ -8,14 +8,14 @@ const jwt = require('jsonwebtoken');
 
 function customAuthorize(event) {
   console.log('Custom authorizer checking', event);
-  var m = ('' + event.authorizationToken).match(/^Bearer +([^ ]+)$/);
+  const m = ('' + event.authorizationToken).match(/^Bearer +([^ ]+)$/);
   if (!m) {
     // Invalid authorization
     return Promise.reject('Unauthorized');
   }
 
-  var token = m[1];
-  var user;
+  const token = m[1];
+  let user;
 
   try {
     user = jwt.verify(token, process.env.JWT_SECRET);
