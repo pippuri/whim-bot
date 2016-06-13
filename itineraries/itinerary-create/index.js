@@ -22,7 +22,7 @@ function initKnex() {
   });
   const config = {
     client: 'postgresql',
-    connection: connection
+    connection: connection,
   };
 
   const knex = knexFactory(config);
