@@ -1,3 +1,5 @@
+'use strict';
+
 // Require Logic
 var lib = require('./index');
 

@@ -1,3 +1,5 @@
+'use strict';
+
 const routing = require('../lib/routing');
 
 const BASE_URL = 'https://hadron-fi-middlefinland.tripgo.skedgo.com/satapp/routing.json';

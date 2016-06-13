@@ -1,3 +1,5 @@
+'use strict';
+
 const testAutocomplete = require('./feature-query.js');
 
 describe('autocomplete provider', function () {

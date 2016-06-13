@@ -1,3 +1,5 @@
+'use strict';
+
 var request = require('request-promise-lite');
 var ec = require('../lib/ec'); // TODO: Error handling based on codes
 

@@ -1,3 +1,5 @@
+'use strict';
+
 var testReverseGeocoding = require('./feature-reverse-geocoding.js');
 
 describe('reverse geocoding endpoint', function () {

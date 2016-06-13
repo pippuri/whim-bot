@@ -1,3 +1,4 @@
+'use strict';
 
 /**
  * Serverless Module: Lambda Handler

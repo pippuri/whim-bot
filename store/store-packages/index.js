@@ -1,3 +1,5 @@
+'use strict';
+
 // Library
 var SubscriptionMgr = require('../../lib/subscription-manager');
 var lib = require('../../lib/utilities/index');

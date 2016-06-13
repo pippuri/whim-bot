@@ -15,7 +15,7 @@
   "undef": true,
   "unused": "vars",
 
-  "strict": "implied",
+  "strict": "global",
   "maxdepth": 2,
 
   "expr": true // support chai expects

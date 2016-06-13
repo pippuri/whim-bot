@@ -1,3 +1,5 @@
+'use strict';
+
 exports.up = function (knex) {
   return knex.schema
     .createTable('Itinerary', function (table) {

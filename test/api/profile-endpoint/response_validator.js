@@ -1,3 +1,5 @@
+'use strict';
+
 const ajvFactory = require('ajv');
 
 const schema = require('./response_schema.json');

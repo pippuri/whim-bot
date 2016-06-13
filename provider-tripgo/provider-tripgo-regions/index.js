@@ -1,3 +1,5 @@
+'use strict';
+
 var request = require('request-promise-lite');
 
 var TRIPGO_REGIONS_URL = 'https://tripgo.skedgo.com/satapp/regions.json';

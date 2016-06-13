@@ -1,3 +1,5 @@
+'use strict';
+
 // Dependency
 var Promise = require('bluebird');
 

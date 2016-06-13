@@ -1,3 +1,5 @@
+'use strict';
+
 process.env.TAXI_ORDER_ID = null;
 
 const testValidate = require('./feature-validate.js');

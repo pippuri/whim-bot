@@ -1,3 +1,4 @@
+'use strict';
 
 describe('API', function () {
   require('./autocomplete-endpoint/test.js');

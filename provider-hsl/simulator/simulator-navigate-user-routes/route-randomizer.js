@@ -1,3 +1,5 @@
+'use strict';
+
 const request = require('request-promise-lite');
 const Promise = require('bluebird');
 

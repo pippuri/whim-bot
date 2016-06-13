@@ -1,3 +1,5 @@
+'use strict';
+
 var Promise = require('bluebird');
 var jwt = require('jsonwebtoken');
 
