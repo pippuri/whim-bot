@@ -87,32 +87,32 @@ module.exports = (lambda, options) => {
       expect(directTaxiRoutes).to.not.be.empty;
     });
 
-    it('response itineraries should contain co2 cost', function () {
-      const itinerariesWithoutCo2Cost = [];
-      for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
-        if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('co2') && typeof itinerary.fare.co2 === typeof 123) {
-          // no problem
-        } else {
-          itinerariesWithoutCo2Cost.push(itinerary);
+    it('all response itineraries should contain fare', function () {
+      const itinerariesWithoutFare = response.plan.itineraries.filter(itinerary => {
+        if (itinerary.hasOwnProperty('fare')) {
+          return false;
         }
 
-      }
+        return true;
+      });
 
-      expect(itinerariesWithoutCo2Cost).to.be.empty;
+      expect(itinerariesWithoutFare).to.be.empty;
     });
 
-    it('response itineraries should contain point cost', function () {
-      const itinerariesWithoutPointsCost = [];
-      for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
-        if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('points') && typeof itinerary.fare.points === typeof 123) {
-          // no problem
-        } else {
-          itinerariesWithoutPointsCost.push(itinerary);
+    it('some response itineraries should contain point cost', function () {
+
+      // It is OK for some routes to have null cost but we should be able to provide
+      // some route from SC5 Office to Gallows Bird Pub for a point cost.
+
+      const itinerariesWithPointsCost = response.plan.itineraries.filter(itinerary => {
+        if (itinerary.fare.points !== null) {
+          return true;
         }
 
-      }
+        return false;
+      });
 
-      expect(itinerariesWithoutPointsCost).to.be.empty;
+      expect(itinerariesWithPointsCost).to.not.be.empty;
     });
 
   });

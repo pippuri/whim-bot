@@ -204,10 +204,24 @@
     "fare": {
       "type": "object",
       "properties": {
-        "points": {
+        "co2": {
           "type": "number"
+        },
+        "points": {
+          "anyOf" : [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ]
         }
-      }
+      },
+      "required": [
+        "co2",
+        "points"
+      ]
     },
     "mode": {
       "type": "string",
