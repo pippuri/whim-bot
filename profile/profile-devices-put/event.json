@@ -1,7 +1,7 @@
 {
   "identityId": "eu-west-1:02346987-8670-4cbd-813f-33b54b0ad01f",
   "payload": {
-    "deviceToken": "7ba016a6 b6af74fa deb4d7f6 80eb6a3f 26333a6a 26e0b6e8 7496690f 518006b4",
-    "deviceName": "Sony Xperia 12356"
+    "devicePushToken": "d6185efe 1e20cf57 263cb47e 8b4f2d11 e3db2c19 5d2ae1dd 4ee57a77 992d3711",
+    "deviceIdentifier": "rn8n80c4n80340cm0we90m8wem9"
   }
 }

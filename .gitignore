@@ -41,6 +41,7 @@ admin.env
 _meta/_tmp
 _meta/variables/s-variables-dev.json
 _meta/variables/s-variables-prod.json
+_serverless_handler.js
 
 #VIM STUFF
 *.swp

@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
+const MaasError = require('../../lib/errors/MaaSError');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
@@ -13,19 +14,19 @@ function saveDeviceToken(event) {
   const patches = [];
 
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new Error('400 Missing identityId'));
+    return Promise.reject(new MaasError('Missing identityId', 400));
   }
 
   if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new Error('400 Missing Payload'));
+    return Promise.reject(new MaasError('Missing Payload', 400));
   }
 
-  if (!event.payload.hasOwnProperty('deviceToken') || event.payload.deviceToken === '') {
-    return Promise.reject(new Error('400 deviceToken missing from payload'));
+  if (!event.payload.hasOwnProperty('devicePushToken') || event.payload.devicePushToken === '') {
+    return Promise.reject(new MaasError('devicePushToken missing from payload', 400));
   }
 
-  if (!event.payload.hasOwnProperty('deviceName')) {
-    return Promise.reject(new Error('400 deviceName missing from payload'));
+  if (!event.payload.hasOwnProperty('deviceIdentifier')) {
+    return Promise.reject(new MaasError('deviceIdentifier missing from payload', 400));
   }
 
   return cognitoSync.listRecordsAsync({
@@ -41,7 +42,7 @@ function saveDeviceToken(event) {
     });
 
     const device = {};
-    device[event.payload.deviceToken.replace(/\s/g, '')] = event.payload.deviceName;
+    device[event.payload.deviceIdentifier] = event.payload.devicePushToken.replace(/\s/g, '');
 
     Object.keys(device).map(key => {
       const oldRecord = oldRecords[key];
@@ -49,7 +50,7 @@ function saveDeviceToken(event) {
       const newValue = typeof device[key] === 'object' ? JSON.stringify(device[key]) : '' + device[key];
 
       // Check if changed
-      if (!oldRecord || newValue !== oldRecord.Value) {
+      if (!oldRecord || newValue !== oldRecord.Key) {
         patches.push({
           Op: 'replace',
           Key: key,

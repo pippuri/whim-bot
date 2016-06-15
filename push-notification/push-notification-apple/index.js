@@ -30,7 +30,7 @@ function sendPushNotification(event) {
   .then(response => {
     response.Records.map(record => {
       const platformEndpointList = [];
-      params.Token = record.Key.replace(/\s/g, '');
+      params.Token = record.Value.replace(/\s/g, '');
       console.log('Message is being sent to : ' + params.Token);
 
       // Queue all user devices ( Apple ) to the list
@@ -55,7 +55,7 @@ function sendPushNotification(event) {
             return Promise.reject(error);
           }
 
-          return Promise.resolve(`Push notification has been sent to ${response}`);
+          return Promise.resolve(`Push notification has been sent, response: ${JSON.stringify(response)}`);
         })
       );
 
