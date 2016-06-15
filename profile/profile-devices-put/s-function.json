@@ -22,7 +22,7 @@
       "requestParameters": {
       },
       "requestTemplates": {
-        "application/json": "\"identityId\": \"$context.authorizer.principalId\", \"payload\": {\"deviceToken\":\"$input.json('$.deviceToken')\", \"deviceName\":\"$input.json('$.deviceName')\"}"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"devicePushToken\":$input.json('$.devicePushToken'), \"deviceIdentifier\": $input.json('$.deviceIdentifier')}}"
       },
       "responses": {
         "^400.*": {
