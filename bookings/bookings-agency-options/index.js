@@ -47,7 +47,7 @@ function getAgencyProductOptions(event) {
   });
 
   console.log(queryString);
-  return request.get(tspData[event.agencyId].adapter.baseUrl + '/bookings' + queryString)
+  return request.get(tspData[event.agencyId].adapter.baseUrl + '/options' + queryString)
     .then(options => {
       if (!_.isArray(options)) {
         options = [options];
