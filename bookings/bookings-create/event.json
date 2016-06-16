@@ -1,0 +1,23 @@
+{
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "leg": {
+    "to": null,
+    "from": null,
+    "mode": "BUS",
+    "endTime": null,
+    "agencyId": "HSL",
+    "startTime": 1464947100000,
+    "legGeometry": null
+  },
+  "terms": {
+    "price": {
+      "amount": 1234,
+      "currency": "EUR"
+    }
+  },
+  "meta": {
+    "name": "110T",
+    "description": "This bus starts from Kamppi and goes to Leppavaara"
+  },
+  "signature": "cbb1c8f230d3cc5ad622bdb81fa76905c2202ab7cb6c454a22355c35e83a5f79"
+}
