@@ -4,6 +4,9 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 
+const serviceBus = require('../../lib/service-bus/index');
+const _ = require('lodash');
+
 const TRIPGO_PUBLIC_MODES = [
   'pt_pub',
 
@@ -24,9 +27,17 @@ const TRIPGO_TAXI_MODES = [
   'ps_tax',
 ];
 
+function isInsideRegion(coords, area) {
+  const parts = coords.split(',');
+  const lat = parts[0];
+  const lon = parts[1];
+  return (area[0] <= lat && lat <= area[2] &&
+    area[1] <= lon && lon <= area[3]);
+}
+
 // Docs: http://planck.buzzhives.com/swagger/index.html#!/Routing/get_routing_json
 
-function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
+function getTripGoRoutesByUrl(baseUrl, from, to, leaveAt, arriveBy, modes) {
   const qs = {
     v: '11',
     from: '(' + from + ')',
@@ -63,7 +74,36 @@ function getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, modes) {
     }
 
     return result;
+  })
+  .catch(e => {
+    if (e.message === 'Destination lies outside covered area.') {
+      return null;
+    }
+
+    throw e;
   });
+}
+
+function getTripGoRoutes(regions, from, to, leaveAt, arriveBy, modes) {
+
+  const applicableRegions = regions.filter(region => {
+    const area = region.area;
+    if (_.intersection(region.modes, modes).length !== modes.length) {
+      return false;
+    }
+
+    if (!isInsideRegion(from, area)) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const selectedRegion = _.sample(applicableRegions);
+  const selectedURL = _.sample(selectedRegion.urls);
+
+  const routingURL = selectedURL + '/routing.json';
+  return getTripGoRoutesByUrl(routingURL, from, to, leaveAt, arriveBy, modes);
 }
 
 function mergeResults(results) {
@@ -91,20 +131,34 @@ function mergeResults(results) {
   return response;
 }
 
-function getCombinedTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, format, taxiProvider) {
-  return Promise.all([
-    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
-    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
-    getTripGoRoutes(baseUrl, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
-  ])
-  .then(function (results) {
-    const response = mergeResults(results);
+function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format, taxiProvider) {
+  return serviceBus.call('MaaS-provider-tripgo-regions').then(regionsResponse => {
 
-    if (format === 'original') {
-      return response;
-    }
+    const regions = regionsResponse.regions;
+    return regions;
 
-    return adapter(response, taxiProvider);
+  }).then(regions => {
+
+    return Promise.all([
+      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
+      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
+      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
+    ])
+    .then(function (results) {
+      const actualResults = results.filter(r => (r !== null));
+      if (actualResults.length < 1) {
+        return null;
+      }
+
+      const response = mergeResults(actualResults);
+
+      if (format === 'original') {
+        return response;
+      }
+
+      return adapter(response, taxiProvider);
+    });
+
   });
 }
 

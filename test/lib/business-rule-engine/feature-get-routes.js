@@ -31,7 +31,7 @@ module.exports = (engine) => {
           });
         }
 
-        if (serviceName === 'MaaS-provider-tripgo-routes-southfinland') {
+        if (serviceName === 'MaaS-provider-tripgo-routes') {
           return resolve({
             plan: {
               itineraries: [
@@ -86,7 +86,7 @@ module.exports = (engine) => {
     });
 
     it('should call context and routes service', function () {
-      expect(calls).to.deep.equal(['MaaS-profile-info', 'MaaS-provider-tripgo-routes-southfinland']);
+      expect(calls).to.deep.equal(['MaaS-profile-info', 'MaaS-provider-tripgo-routes']);
     });
 
     it('should return routes annotated with co2 cost for each itinerary', function () {

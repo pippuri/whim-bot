@@ -1,5 +1,5 @@
 {
-  "name": "provider-tripgo-routes-middlefinland",
+  "name": "provider-tripgo-routes",
   "runtime": "nodejs4.3",
   "customName": false,
   "customRole": false,
@@ -15,7 +15,7 @@
   },
   "endpoints": [
     {
-      "path": "providers/tripgo/routes-middlefinland",
+      "path": "providers/tripgo/routes",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "none",

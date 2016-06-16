@@ -1,12 +1,12 @@
 'use strict';
 
-const routing = require('../lib/routing');
+const routing = require('./routing');
 
-const BASE_URL = 'https://hadron-fi-middlefinland.tripgo.skedgo.com/satapp/routing.json';
 const TAXI_PROVIDER = 'Valopilkku';
 
 module.exports.respond = function (event, callback) {
-  routing.getCombinedTripGoRoutes(BASE_URL, event.from, event.to, event.leaveAt, event.arriveBy, event.format, TAXI_PROVIDER)
+
+  routing.getCombinedTripGoRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format, TAXI_PROVIDER)
   .then(function (response) {
     callback(null, response);
   })
@@ -14,4 +14,5 @@ module.exports.respond = function (event, callback) {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
+
 };
