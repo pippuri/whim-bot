@@ -40,10 +40,6 @@ function saveBooking(booking) {
     });
 }
 
-function delegateBooking() {
-
-}
-
 /**
  * Create a booking for a leg OR an individual booking ( Go on a whim)
  * If event has leg then create a booking with that leg, if not use the agencyId from event
@@ -72,12 +68,11 @@ function createBooking(event) {
     return Promise.reject(new MaasError('Missing leg input'));
   }
 
-  return Promise.all(
-    [
+  return Promise.all([
       lib.fetchCustomerProfile(event.identityId), // Get customer information
       lib.validateSignatures(event), // Validate request signature
-    ]
-  ).spread((profile, validatedInput)  => {
+    ])
+    .spread((profile, validatedInput)  => {
 
       customer = {
         firstName: profile.firstName ? profile.firstName : null,
