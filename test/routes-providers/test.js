@@ -16,7 +16,7 @@ describe('routes provider', function () {
     testArriveBy(lambda);
     testToAntarctica(lambda);
     testFromAntarctica(lambda);
-    testRovaniemi(lambda);
+    testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
 
