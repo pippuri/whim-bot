@@ -8,7 +8,7 @@
   "Valopilkku": {
     "agencyId": "Valopilkku",
     "adapter": {
-      "baseUrl": "https://d68h2d9nyf.execute-api.eu-west-1.amazonaws.com/dev/taxi/",
+      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/dev/taxi/",
       "options": {
         "headers": {
           "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
