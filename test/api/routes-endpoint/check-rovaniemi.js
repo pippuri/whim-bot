@@ -3,27 +3,21 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const moment = require('moment');
-const validator = require('../../lib/validator');
-const schema = require('../../routes/routes-query/response-schema.json');
 
-module.exports = (lambda, options) => {
+const validator = require('../../../lib/validator');
+const schema = require('../../../routes/routes-query/response-schema.json');
 
-  if (typeof options === typeof undefined) {
-    options = {};
-  }
+module.exports = (lambda) => {
 
-  const describeOrSkip = (options.skip === true) ? (
-    describe.skip
-  ) : (
-    describe
-  );
-
-  describeOrSkip('request for a route to Rovaniemi', function () {
+  describe.skip('request for a route to Rovaniemi', function () {
 
     const event = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      provider: '',
       from: '60.1684126,24.9316739', // SC5 Office, Helsinki
       to: '66.5436144,25.8470606', // Santa Claus Village, Rovaniemi
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+      arriveBy: '',
     };
 
     let error;

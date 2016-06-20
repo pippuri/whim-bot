@@ -4,7 +4,6 @@ const testLeaveAt = require('./feature-leave-at.js');
 const testArriveBy = require('./feature-arrive-by.js');
 const testFromUnsupported = require('./error-from-unsupported.js');
 const testToUnsupported = require('./error-to-unsupported.js');
-const testRovaniemi = require('./check-rovaniemi.js');
 const test985kAfrica = require('./check-985k-africa.js');
 
 describe('routes provider', function () {
@@ -16,7 +15,6 @@ describe('routes provider', function () {
     testArriveBy(lambda);
     testFromUnsupported(lambda);
     testToUnsupported(lambda);
-    testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
 
@@ -26,7 +24,6 @@ describe('routes provider', function () {
     testArriveBy(lambda);
     testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda, { skip: true });
-    testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
 
@@ -35,7 +32,6 @@ describe('routes provider', function () {
     testLeaveAt(lambda);
     testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda, { skip: true });
-    testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
 
