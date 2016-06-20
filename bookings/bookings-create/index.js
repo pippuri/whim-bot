@@ -73,7 +73,7 @@ function createBooking(event) {
       console.log(booking);
 
       // TODO delegate this to maas tsp functions
-      const url = tsp.adapter.baseUrl + tsp.adapter.post.book;
+      const url = tsp.adapter.baseUrl + tsp.adapter.endpoints.post.book;
       const options = Object.assign({
         json: true,
         body: booking,
