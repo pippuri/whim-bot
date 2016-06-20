@@ -3,7 +3,6 @@
 const Promise = require('bluebird');
 const maasUtils = require('../../lib/utils');
 const request = require('request-promise-lite');
-const URL = require('url');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
 
@@ -25,7 +24,6 @@ function saveBooking(booking) {
 
 /**
  * Create a booking for a leg OR an individual booking ( Go on a whim)
- * If event has leg then create a booking with that leg, if not use the agencyId from event
  */
 function createBooking(event) {
 
@@ -61,7 +59,7 @@ function createBooking(event) {
       };
       const booking = {
         bookingId: maasUtils.createId(),
-        state: 'NEWs',
+        state: 'NEW',
         leg: validatedInput.leg,
         customer: customer,
         term: validatedInput.term,
@@ -75,12 +73,13 @@ function createBooking(event) {
       console.log(booking);
 
       // TODO delegate this to maas tsp functions
-      const url = URL.resolve(tsp.adapter.baseUrl, 'bookings');
+      const url = tsp.adapter.baseUrl + tsp.adapter.endpoints.book;
       const options = Object.assign({
         json: true,
         body: booking,
       }, tsp.adapter.options);
 
+      console.log('url ', url);
       return request.post(url, options); // Delegate booking call to specific TSP api endpoint
     })
     .then(booking => {
