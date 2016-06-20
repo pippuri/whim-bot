@@ -1,13 +1,14 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "leg": {
-    "to": null,
-    "from": null,
-    "mode": "BUS",
-    "endTime": null,
-    "agencyId": "HSL",
     "startTime": 1464947100000,
-    "legGeometry": null
+    "endTime": null,
+    "mode": "BUS",
+    "from": null,
+    "to": null,
+    "legGeometry": null,
+    "agencyId": "HSL"
+
   },
   "terms": {
     "price": {

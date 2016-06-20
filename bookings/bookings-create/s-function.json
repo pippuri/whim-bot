@@ -13,11 +13,11 @@
   },
   "endpoints": [
     {
-      "path": "booking-create",
-      "method": "GET",
+      "path": "bookings",
+      "method": "POST",
       "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {

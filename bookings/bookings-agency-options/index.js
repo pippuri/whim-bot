@@ -6,26 +6,12 @@ const tspData = require('../lib/tspData.json');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 const maasUtils = require('../../lib/utils');
+const lib = require();
 
 function getAgencyProductOptions(event) {
-  const tspIdList = Object.keys(tspData).map(tspDatum => {
-    return tspData[tspDatum].agencyId;
-  });
-
-  const tspIdListUpperCase = tspIdList.map(id => {
-    return id.toUpperCase();
-  });
 
   if (!event.hasOwnProperty('agencyId')) {
     return Promise.reject(new MaasError('Missing input agencyId', 400));
-  }
-
-  if (!_.includes(tspIdListUpperCase, event.agencyId.toUpperCase())) {
-    return Promise.reject(new MaasError(`AgencyId "${event.agencyId}" not exist`, 500));
-  }
-
-  if (!_.includes(tspIdListUpperCase, event.agencyId.toUpperCase())) {
-    return Promise.reject(new MaasError(`Invalid input agencyId, do you mean "${tspIdList[tspIdListUpperCase.indexOf(event.agencyId.toUpperCase())]}"?`, 400));
   }
 
   if (!event.queryString.hasOwnProperty('startTime') || event.queryString.startTime === '') {
@@ -47,7 +33,8 @@ function getAgencyProductOptions(event) {
   });
 
   console.log(queryString);
-  return request.get(tspData[event.agencyId].adapter.baseUrl + '/options' + queryString)
+  return lib.findAgency(event.agencyId)
+    .then(agencyId => {return request.get(tspData[agencyId].adapter.baseUrl + '/options' + queryString);})
     .then(options => {
       if (!_.isArray(options)) {
         options = [options];

@@ -2,27 +2,10 @@
 
 const Promise = require('bluebird');
 const maasUtils = require('../../lib/utils');
-const tspData = require('../lib/tspData.json');
 const request = require('request-promise-lite');
 const URL = require('url');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
-const _  = require('lodash');
-
-/**
- * Find agency by their id
- */
-function findAgency(agencyId) {
-  const agencyIdList = Object.keys(tspData).map(key => {
-    return tspData[key].agencyId;
-  });
-
-  if (_.includes(agencyIdList, agencyId)) {
-    return Promise.resolve(tspData[agencyId]);
-  }
-
-  return Promise.reject('No suitable TSP found with id ' + agencyId);
-}
 
 /**
  * Save booking to Postgre
@@ -48,8 +31,6 @@ function createBooking(event) {
 
   let agencyId;
   let leg;
-  let customer;
-  let booking;
 
   // Require identityId and phone in input user profile
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
@@ -71,15 +52,14 @@ function createBooking(event) {
   return Promise.all([
       lib.fetchCustomerProfile(event.identityId), // Get customer information
       lib.validateSignatures(event), // Validate request signature
-    ])
-    .spread((profile, validatedInput)  => {
+    ]).spread((profile, validatedInput)  => {
 
-      customer = {
+      const customer = {
         firstName: profile.firstName ? profile.firstName : null,
         lastName: profile.lastName ? profile.lastName : null,
         phone: profile.phone,
       };
-      booking = {
+      const booking = {
         bookingId: maasUtils.createId(),
         state: 'NEWs',
         leg: validatedInput.leg,
@@ -89,9 +69,11 @@ function createBooking(event) {
         signature: validatedInput.signature,
       };
       booking.leg.id = maasUtils.createId();
-      return findAgency(agencyId);
+      return [lib.findAgency(agencyId), Promise.resolve(booking)];
     })
-    .then(tsp => {
+    .spread((tsp, booking) => {
+      console.log(booking);
+
       // TODO delegate this to maas tsp functions
       const url = URL.resolve(tsp.adapter.baseUrl, 'bookings');
       const options = Object.assign({
