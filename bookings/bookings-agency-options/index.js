@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 const maasUtils = require('../../lib/utils');
-const lib = require();
+const lib = require('../lib/index');
 
 function getAgencyProductOptions(event) {
 
