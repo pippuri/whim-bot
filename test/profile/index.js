@@ -1,6 +1,6 @@
 'use strict';
 
 describe('profile tools', function () {
-  require('./profile-create/test.js');
+  require('./profile-create/index.js');
 });
 

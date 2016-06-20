@@ -24,13 +24,13 @@ loadEnvironment();
 process.env.maas_test_run = true;
 
 describe('MaaS.fi backend', function () {
-  require('./api/test.js');
-  require('./routes-providers/test.js');
-  require('./geocoding-providers/test.js');
-  require('./reverse-geocoding-providers/test.js');
-  require('./autocomplete-providers/test.js');
-  require('./taxi-providers/test.js');
-  require('./provider-twilio/test.js');
-  require('./profile/test.js');
-  require('./lib/test.js');
+  require('./api/index.js');
+  require('./routes-providers/index.js');
+  require('./geocoding-providers/index.js');
+  require('./reverse-geocoding-providers/index.js');
+  require('./autocomplete-providers/index.js');
+  require('./taxi-providers/index.js');
+  require('./provider-twilio/index.js');
+  require('./profile/index.js');
+  require('./lib/index.js');
 });
