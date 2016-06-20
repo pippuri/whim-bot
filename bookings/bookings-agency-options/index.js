@@ -2,7 +2,6 @@
 
 const request = require('request-promise-lite');
 const Promise = require('bluebird');
-const tspData = require('../lib/tspData.json');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 const maasUtils = require('../../lib/utils');
@@ -32,9 +31,8 @@ function getAgencyProductOptions(event) {
     }
   });
 
-  console.log(queryString);
   return lib.findAgency(event.agencyId)
-    .then(agencyId => {return request.get(tspData[agencyId].adapter.baseUrl + '/options' + queryString);})
+    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options + queryString))
     .then(options => {
       if (!_.isArray(options)) {
         options = [options];
