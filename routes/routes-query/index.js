@@ -45,12 +45,7 @@ function filterPastRoutes(leaveAt, response) {
   return response;
 }
 
-function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
-
-  const options = {};
-  if (typeof provider !== typeof undefined && provider !== '') {
-    options.provider = provider;
-  }
+function getRoutes(identityId, from, to, leaveAt, arriveBy) {
 
   const event = {
     from: from,
@@ -64,8 +59,7 @@ function getRoutes(identityId, provider, from, to, leaveAt, arriveBy) {
       rule: 'get-routes',
       identityId: identityId,
       parameters: event,
-    },
-    options
+    }
   )
   .then(response => filterPastRoutes(leaveAt, response))
   .then(response => addRouteAndLegIdentifiersToResponse(response));
@@ -81,7 +75,7 @@ module.exports.respond = function (event, callback) {
   } else if (event.leaveAt && event.arriveBy) {
     callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
   } else {
-    getRoutes(event.identityId, event.provider, event.from, event.to, event.leaveAt, event.arriveBy)
+    getRoutes(event.identityId, event.from, event.to, event.leaveAt, event.arriveBy)
     .then(function (response) {
       callback(null, response);
     })
