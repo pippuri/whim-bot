@@ -19,8 +19,8 @@ module.exports = (lambda, options) => {
   describeOrSkip('request for a route from Antarctica', function () {
 
     const event = {
-      to: '-66.6630267,140.0016841', // Dumont d'Urville Station, Antarctica
-      from: '60.1684126,24.9316739', // SC5 Office, Helsinki
+      from: '-66.6630267,140.0016841', // Dumont d'Urville Station, Antarctica
+      to: '60.1684126,24.9316739', // SC5 Office, Helsinki
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
     };
 

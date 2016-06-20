@@ -99,6 +99,10 @@ function getTripGoRoutes(regions, from, to, leaveAt, arriveBy, modes) {
     return true;
   });
 
+  if (applicableRegions.length < 1) {
+    return null;
+  }
+
   const selectedRegion = _.sample(applicableRegions);
   const selectedURL = _.sample(selectedRegion.urls);
 
