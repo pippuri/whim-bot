@@ -2,8 +2,8 @@
 
 const testLeaveAt = require('./feature-leave-at.js');
 const testArriveBy = require('./feature-arrive-by.js');
-const testToUnsupported = require('./error-to-unsupported.js');
 const testFromUnsupported = require('./error-from-unsupported.js');
+const testToUnsupported = require('./error-to-unsupported.js');
 const testRovaniemi = require('./check-rovaniemi.js');
 const test985kAfrica = require('./check-985k-africa.js');
 
@@ -14,8 +14,8 @@ describe('routes provider', function () {
     const lambda = require('../../provider-tripgo/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
-    testToUnsupported(lambda);
     testFromUnsupported(lambda);
+    testToUnsupported(lambda);
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
@@ -24,8 +24,8 @@ describe('routes provider', function () {
     const lambda = require('../../provider-digitransit/provider-digitransit-routes/handler.js');
     testLeaveAt(lambda);
     testArriveBy(lambda);
-    testToUnsupported(lambda, { skip: true });
     testFromUnsupported(lambda, { skip: true });
+    testToUnsupported(lambda, { skip: true });
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
@@ -33,8 +33,8 @@ describe('routes provider', function () {
   describe('HERE', function () {
     const lambda = require('../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
-    testToUnsupported(lambda, { skip: true });
     testFromUnsupported(lambda, { skip: true });
+    testToUnsupported(lambda, { skip: true });
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
