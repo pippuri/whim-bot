@@ -14,12 +14,12 @@ module.exports = (lambda, options) => {
     options = {};
   }
 
-  describe('leaveAt request', function () {
+  describe('route request from Orsa to Mora', function () {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
-      from: '60.1684126,24.9316739', // SC5 Office
-      to: '60.170779,24.7721584', // Gallows Bird Pub
+      from: '61.0104906,14.5614225', // Hotell Kung Gösta, Mora
+      to: '61.1192448,14.6194989', // Systembolaget, Orsa
       leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
       arriveBy: '',
     };
@@ -50,21 +50,7 @@ module.exports = (lambda, options) => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
-    it('response should not have legs from the past', function () {
-      const waitingTimes = [];
-      response.plan.itineraries.forEach(itinerary => {
-        itinerary.legs.forEach(leg => {
-          const waitingTime = (leg.startTime - parseInt(event.leaveAt, 10));
-          waitingTimes.push(waitingTime);
-        });
-      });
-      const shortest = Math.min.apply(null, waitingTimes);
-      const inMinutes = ((shortest / 1000) / 60);
-      const margin = 1;
-      expect(inMinutes).to.be.above(-margin);
-    });
-
-    it('response should have direct Valopilkku taxi route', function () {
+    it('response should have direct taxi route', function () {
       const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
         const modes = _.map(itinerary.legs, 'mode');
         if (_.includes(modes, 'BUS')) {
@@ -82,45 +68,33 @@ module.exports = (lambda, options) => {
 
         return false;
       });
-      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
-        const agencyIds = _.map(itinerary.legs, 'agencyId');
-        if (_.includes(agencyIds, 'Valopilkku')) {
-          return true;
-        }
 
-        return false;
-
-      });
-
-      expect(valopilkkuTaxiRoutes).to.not.be.empty;
+      expect(directTaxiRoutes).to.not.be.empty;
     });
 
-    it('all response itineraries should contain fare', function () {
-      const itinerariesWithoutFare = response.plan.itineraries.filter(itinerary => {
-        if (itinerary.hasOwnProperty('fare')) {
+    it.skip('itineraries with taxi legs should not have agencyId Valopilkku', function () {
+
+      // Valopilkku does not provide taxis in Sweden at the moment
+
+      const taxiLegs = _.flatten(response.plan.itineraries.map(itinerary => {
+        return itinerary.legs.filter(leg => {
+          if (leg.mode === 'TAXI') {
+            return true;
+          }
+
           return false;
-        }
+        });
+      }));
 
-        return true;
-      });
-
-      expect(itinerariesWithoutFare).to.be.empty;
-    });
-
-    it('some response itineraries should contain point cost', function () {
-
-      // It is OK for some routes to have null cost but we should be able to provide
-      // some route from SC5 Office to Gallows Bird Pub for a point cost.
-
-      const itinerariesWithPointsCost = response.plan.itineraries.filter(itinerary => {
-        if (itinerary.fare.points !== null) {
+      const valopilkkuTaxiLegs = taxiLegs.filter(leg => {
+        if (leg.agencyId === 'Valopilkku') {
           return true;
         }
 
         return false;
       });
 
-      expect(itinerariesWithPointsCost).to.not.be.empty;
+      expect(valopilkkuTaxiLegs).to.be.empty;
     });
 
   });
