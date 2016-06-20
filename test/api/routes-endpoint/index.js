@@ -5,6 +5,7 @@ const testLeaveAndArrive = require('./error-leave-and-arrive.js');
 const testMissingFrom = require('./error-missing-from.js');
 const testMissingTo = require('./error-missing-to.js');
 const testLeaveAt = require('./feature-leave-at.js');
+const testRovaniemi = require('./check-rovaniemi.js');
 
 describe('routes endpoint', function () {
   this.timeout(20000);
@@ -15,5 +16,6 @@ describe('routes endpoint', function () {
   testMissingTo(lambda);
   testLeaveAndArrive(lambda);
   testLeaveAt(lambda);
+  testRovaniemi(lambda);
 
 });
