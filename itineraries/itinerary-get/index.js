@@ -5,6 +5,7 @@ const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const knexFactory = require('knex');
 const Model = require('objection').Model;
+const utils = require('../../lib/utils/index.js');
 
 function initKnex() {
   //console.log('Initialize knex');
@@ -49,17 +50,23 @@ function retrieveItinerary(event) {
     .where('id', event.itineraryId)
     .andWhere('identityId', event.identityId)
     .then(itineraries => {
-      output = itineraries;
       const promiseQueue = [];
+      output = Object.assign([], itineraries);
       output.map(itinerary => {
         promiseQueue.push(
-          knex.from('Leg').select('*').where('itineraryId', itinerary.id)
+          knex.from('Leg')
+            .select('*')
+            .where('itineraryId', itinerary.id)
             .then(legs => {
               itinerary.legs = legs;
+              itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
+              legs.map(leg => {
+                leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
+              });
             })
         );
-
       });
+
       return Promise.all(promiseQueue);
     })
     .then(response => {
