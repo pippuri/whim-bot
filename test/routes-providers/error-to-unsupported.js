@@ -16,7 +16,7 @@ module.exports = (lambda, options) => {
     describe
   );
 
-  describeOrSkip('request for a route to Antarctica', function () {
+  describeOrSkip('request for a route to an unsupported region', function () {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office, Helsinki
