@@ -16,7 +16,7 @@ module.exports = (lambda, options) => {
     describe
   );
 
-  describeOrSkip('request for a route from Antarctica', function () {
+  describeOrSkip('request for a route from an unsupported region', function () {
 
     const event = {
       from: '-66.6630267,140.0016841', // Dumont d'Urville Station, Antarctica

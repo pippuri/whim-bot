@@ -3,7 +3,7 @@
 const testLeaveAt = require('./feature-leave-at.js');
 const testArriveBy = require('./feature-arrive-by.js');
 const testToAntarctica = require('./error-to-antarctica.js');
-const testFromAntarctica = require('./error-from-antarctica.js');
+const testFromUnsupported = require('./error-from-unsupported.js');
 const testRovaniemi = require('./check-rovaniemi.js');
 const test985kAfrica = require('./check-985k-africa.js');
 
@@ -15,7 +15,7 @@ describe('routes provider', function () {
     testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
     testToAntarctica(lambda);
-    testFromAntarctica(lambda);
+    testFromUnsupported(lambda);
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
@@ -25,7 +25,7 @@ describe('routes provider', function () {
     testLeaveAt(lambda);
     testArriveBy(lambda);
     testToAntarctica(lambda, { skip: true });
-    testFromAntarctica(lambda, { skip: true });
+    testFromUnsupported(lambda, { skip: true });
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
@@ -34,7 +34,7 @@ describe('routes provider', function () {
     const lambda = require('../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     testToAntarctica(lambda, { skip: true });
-    testFromAntarctica(lambda, { skip: true });
+    testFromUnsupported(lambda, { skip: true });
     testRovaniemi(lambda, { skip: true });
     test985kAfrica(lambda);
   });
