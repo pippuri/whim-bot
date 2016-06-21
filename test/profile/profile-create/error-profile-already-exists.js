@@ -3,7 +3,7 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('for an existing user', () => {
 

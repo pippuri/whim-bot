@@ -6,7 +6,7 @@ const validator = require('../../../lib/validator');
 const schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
 const event = require('../../../autocomplete/autocomplete-query/event.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('basic query', () => {
 

@@ -5,7 +5,7 @@ const expect = chai.expect;
 const wrap = require('lambda-wrapper').wrap;
 const event = require('../../provider-twilio/provider-twilio-send-sms/event.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('send-sms request', () => {
     let error;

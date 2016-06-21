@@ -7,7 +7,7 @@ const wrap = require('lambda-wrapper').wrap;
 const validator = require('../../lib/validator');
 const schema = require('../../autocomplete/autocomplete-query/response-schema.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('autocomplete request', () => {
 

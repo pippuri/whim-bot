@@ -4,7 +4,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const moment = require('moment');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('request without "to"', () => {
 

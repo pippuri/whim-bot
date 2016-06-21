@@ -6,7 +6,7 @@ const moment = require('moment');
 const validator = require('../../lib/validator');
 const schema = require('../../routes/routes-query/response-schema.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('arriveBy request', () => {
 

@@ -6,7 +6,7 @@ const validator = require('../../../lib/validator');
 const schema = require('../../../profile/profile-edit/response-schema.json');
 const event = require('../../../profile/profile-edit/event.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('edit an existing user', () => {
     let error;

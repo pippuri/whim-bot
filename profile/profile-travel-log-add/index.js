@@ -20,7 +20,7 @@ function saveRoute(event) {
   }
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then((response) => {
+    .then(response => {
       if (response === false) { // True if existed
         return Promise.reject(new Error('User not existed'));
       }
@@ -40,10 +40,10 @@ function saveRoute(event) {
 
 module.exports.respond = function (event, callback) {
   return saveRoute(event)
-    .then((response) => {
+    .then(response => {
       callback(null, response);
     })
-    .catch((error) => {
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });

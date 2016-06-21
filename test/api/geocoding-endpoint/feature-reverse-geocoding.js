@@ -6,7 +6,7 @@ const validator = require('../../../lib/validator');
 const schema = require('../../../geocoding/geocoding-query/response-schema.json');
 const event = require('../../../geocoding/reverse-geocoding-query/event.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
   describe('basic query', () => {
 

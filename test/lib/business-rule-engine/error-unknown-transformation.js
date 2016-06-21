@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const expect = require('chai').expect;
 const moment = require('moment');
 
-module.exports = (engine) => {
+module.exports = function (engine) {
 
   describe('unknown transformation', () => {
 
