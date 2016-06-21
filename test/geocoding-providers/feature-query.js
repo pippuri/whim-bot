@@ -37,8 +37,7 @@ module.exports = (lambda, schema, fixture) => {
   });
 
   fixture.forEach(item => {
-    describe(['Search:', item.input.name, item.pass].join(' '),
-      () => {
+    describe(['Search:', item.input.name, item.pass].join(' '), () => {
       let error;
       let response;
 

@@ -75,29 +75,29 @@ module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
   new Promise((resolve, reject) => {
-      const valid = validate(event.query);
+    const valid = validate(event.query);
 
-      if (!valid) {
-        console.log('errors', event.query, validate.errors);
-        return reject(new Error(JSON.stringify(validate.errors)));
-      }
+    if (!valid) {
+      console.log('errors', event.query, validate.errors);
+      return reject(new Error(JSON.stringify(validate.errors)));
+    }
 
-      return resolve(valid);
-    })
-    .then(() => {
-      return delegate(event.query);
-    })
-    .then(results => {
+    return resolve(valid);
+  })
+  .then(() => {
+    return delegate(event.query);
+  })
+  .then(results => {
 
-      // Replace the delegate query info with our own query
-      results.query = event.query;
-      callback(null, results);
-    })
-    .catch(err => {
-      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn('Error:', err.errors);
+    // Replace the delegate query info with our own query
+    results.query = event.query;
+    callback(null, results);
+  })
+  .catch(err => {
+    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn('Error:', err.errors);
 
-      // TODO Process the error
-      callback(err);
-    });
+    // TODO Process the error
+    callback(err);
+  });
 };
