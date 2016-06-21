@@ -19,9 +19,11 @@
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.path.bookingId": "method.request.path.bookingId"
+      },
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"bookingId\":\"$input.params('bookingId')\",\"payload\":$input.json('$')}"
       },
       "responses": {
         "400": {

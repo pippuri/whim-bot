@@ -1,1 +1,7 @@
-{}
+{
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "bookingId": "01480841-2E53-11E6-AE49-2175557A41CB",
+  "payload": {
+    "state": "CANCELLED"
+  }
+}
