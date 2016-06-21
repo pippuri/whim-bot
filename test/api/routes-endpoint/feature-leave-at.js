@@ -65,16 +65,24 @@ module.exports = (lambda, options) => {
     });
 
     it('response should have direct Valopilkku taxi route', function () {
-      const itinerariesWithoutBus = response.plan.itineraries.filter(itinerary => {
+
+      const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
+
+      const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
         const modes = _.map(itinerary.legs, 'mode');
-        if (_.includes(modes, 'BUS')) {
-          return false;
+
+        for (let mode of modes) { // eslint-disable-line prefer-const
+
+          if (!_.includes(allowed, mode)) {
+            return false;
+          }
+
         }
 
         return true;
       });
 
-      const directTaxiRoutes = itinerariesWithoutBus.filter(itinerary => {
+      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
         const modes = _.map(itinerary.legs, 'mode');
         if (_.includes(modes, 'TAXI')) {
           return true;
