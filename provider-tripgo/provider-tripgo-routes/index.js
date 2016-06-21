@@ -2,11 +2,9 @@
 
 const routing = require('./routing');
 
-const TAXI_PROVIDER = 'Valopilkku';
-
 module.exports.respond = function (event, callback) {
 
-  routing.getCombinedTripGoRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format, TAXI_PROVIDER)
+  routing.getCombinedTripGoRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
   .then(response => {
     callback(null, response);
   })

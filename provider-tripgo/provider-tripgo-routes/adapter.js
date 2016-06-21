@@ -9,11 +9,7 @@ function convertMode(mode) {
   return mode ? mode.toUpperCase() : undefined;
 }
 
-function convertAgencyId(mode, serviceOperator, taxiProvider) {
-
-  if (mode === 'TAXI') {
-    return taxiProvider;
-  }
+function convertAgencyId(mode, serviceOperator) {
 
   if (serviceOperator === 'Helsingin seudun liikenne') {
     return 'HSL';
@@ -33,7 +29,7 @@ function convertFromTo(from) {
   };
 }
 
-function convertLeg(segment, original, templates, taxiProvider) {
+function convertLeg(segment, original, templates) {
   const template = templates[segment.segmentTemplateHashCode] || {};
   const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
   return {
@@ -48,16 +44,16 @@ function convertLeg(segment, original, templates, taxiProvider) {
     route: segment.serviceNumber,
     routeShortName: segment.serviceNumber,
     routeLongName: segment.serviceName,
-    agencyId: convertAgencyId(mode, template.serviceOperator, taxiProvider),
+    agencyId: convertAgencyId(mode, template.serviceOperator),
   };
 }
 
-function convertItinerary(trip, original, templates, taxiProvider) {
+function convertItinerary(trip, original, templates) {
   return {
     startTime: trip.depart * 1000,
     endTime: trip.arrive * 1000,
     legs: trip.segments.map(segment => {
-      return convertLeg(segment, original, templates, taxiProvider);
+      return convertLeg(segment, original, templates);
     }),
   };
 }
@@ -87,7 +83,7 @@ function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
 
-module.exports = function (original, taxiProvider) {
+module.exports = function (original) {
   let allTrips = [];
 
   // Build template hashmap
@@ -105,7 +101,7 @@ module.exports = function (original, taxiProvider) {
     plan: {
       from: convertPlanFrom(original),
       itineraries: allTrips.map(trip => {
-        return convertItinerary(trip, original, templates, taxiProvider);
+        return convertItinerary(trip, original, templates);
       }).sort(compareItinerary),
     },
   });

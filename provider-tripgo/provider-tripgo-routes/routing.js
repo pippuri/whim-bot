@@ -135,7 +135,7 @@ function mergeResults(results) {
   return response;
 }
 
-function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format, taxiProvider) {
+function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format) {
   return serviceBus.call('MaaS-provider-tripgo-regions').then(regionsResponse => {
 
     const regions = regionsResponse.regions;
@@ -160,7 +160,7 @@ function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format, taxiProvid
         return response;
       }
 
-      return adapter(response, taxiProvider);
+      return adapter(response);
     });
 
   });
