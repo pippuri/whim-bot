@@ -5,21 +5,22 @@ const maasUtils = require('../../lib/utils');
 const request = require('request-promise-lite');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
+const knex = lib.initKnex();
 
 /**
  * Save booking to Postgre
  */
 function saveBooking(booking) {
-  const knex = lib.initKnex();
-
   return knex
     .insert(booking)
-    .into('Booking')
-    .finally(() => {
-      if (knex) {
-        knex.destroy();
-      }
-    });
+    .into('Booking');
+}
+
+function getBooking(bookingId) {
+  return knex
+    .select()
+    .from('Booking')
+    .where('id', bookingId);
 }
 
 /**
@@ -69,16 +70,15 @@ function createBooking(event) {
       return [lib.findAgency(agencyId), Promise.resolve(booking)];
     })
     .spread((tsp, booking) => {
-      console.log(booking);
+      console.log('Booking with this order information: ', booking);
 
-      // TODO delegate this to maas tsp functions
       const url = tsp.adapter.baseUrl + tsp.adapter.endpoints.post.book;
       const options = Object.assign({
         json: true,
         body: booking,
       }, tsp.adapter.options);
 
-      console.log('url ', url);
+      // TODO determine whether to use Lambda or API !?
       return request.post(url, options); // Delegate booking call to specific TSP api endpoint
     })
     .then(booking => {
@@ -90,9 +90,7 @@ function createBooking(event) {
       delete transformedBooking.bookingId;
       transformedBooking = lib.removeSignatures(transformedBooking);
       return saveBooking(transformedBooking)
-        .then(knexResponse => {
-          return transformedBooking;
-        });
+        .return(getBooking(booking.bookingId));
     });
 }
 
@@ -105,5 +103,10 @@ module.exports.respond = (event, callback) => {
     .catch(error => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
+    })
+    .finally(() => {
+      if (knex) {
+        knex.destroy();
+      }
     });
 };
