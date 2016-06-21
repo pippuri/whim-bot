@@ -63,7 +63,7 @@ function convertPlanFrom(original) {
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     const hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
     (original.segmentTemplates || []).map(segmentTemplate => {
-      if (segmentTemplate.hashCode === hashCode) {
+      if (segmentTemplate.hashCode === hashCode && typeof segmentTemplate.from === 'object') {
 
         // Found the starting point
         from = {
