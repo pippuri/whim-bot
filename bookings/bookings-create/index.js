@@ -14,7 +14,7 @@ function saveBooking(booking) {
 
   return knex
     .insert(booking)
-    .into(process.env.MAAS_PGTABLE_BOOKING)
+    .into('Booking')
     .finally(() => {
       if (knex) {
         knex.destroy();
@@ -39,7 +39,6 @@ function createBooking(event) {
     return Promise.reject(new MaasError('Missing signature', 400));
   }
 
-  // If event not contain leg, it shoulda has at least agencyId
   if (event.hasOwnProperty('leg') && Object.keys(event.leg).length !== 0 && event.leg.hasOwnProperty('agencyId') && event.leg.agencyId !== '') {
     leg = event.leg;
     agencyId = event.leg.agencyId;
@@ -53,8 +52,8 @@ function createBooking(event) {
     ]).spread((profile, validatedInput)  => {
 
       const customer = {
-        firstName: profile.firstName ? profile.firstName : null,
-        lastName: profile.lastName ? profile.lastName : null,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
         phone: profile.phone,
       };
       const booking = {
@@ -90,15 +89,18 @@ function createBooking(event) {
       });
       delete transformedBooking.bookingId;
       transformedBooking = lib.removeSignatures(transformedBooking);
-      return Promise.all([saveBooking(transformedBooking), Promise.resolve(transformedBooking)]);
+      return saveBooking(transformedBooking)
+        .then(knexResponse => {
+          return transformedBooking;
+        });
     });
 }
 
 module.exports.respond = (event, callback) => {
 
   return createBooking(event)
-    .spread((knexResponse, transformedBooking) => {
-      callback(null, transformedBooking);
+    .then(response => {
+      callback(null, response);
     })
     .catch(error => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
