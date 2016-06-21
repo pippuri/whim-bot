@@ -11,7 +11,7 @@ module.exports = (lambda) => {
 
   // Afrikantie bus stop schedule http://aikataulut.reittiopas.fi/pysakit/fi/9219204.html
 
-  describe('request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at 15:15', function () {
+  describe('request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at 15:15', () => {
     const timeZone = +3;
 
     const event = {
@@ -31,23 +31,23 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
 
-    it('response should have route', function () {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
     // FIXME change to another bus route, tripgo doesn't return proper route for 985K, 30.5
-    xit('response should contain a leg with bus 985K leaving at 15:35', function () {
+    xit('response should contain a leg with bus 985K leaving at 15:35', () => {
       const leg985KTimes = [];
       response.plan.itineraries.map(i => {
         i.legs.map(l => {

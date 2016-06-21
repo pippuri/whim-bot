@@ -56,7 +56,7 @@ function getScheduledFunction() {
     },
   };
 
-  return new Promise(function (resolve, reject) {
+  return new Promise((resolve, reject) => {
 
     // TODO move this to service-bus
     docClient.scan(params, (err, data) => {

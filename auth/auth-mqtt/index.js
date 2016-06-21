@@ -12,7 +12,7 @@ function getMqttCredentials(principalId) {
 
   // const token = ''; - not in use
   return Promise.resolve()
-  .then(function () {
+  .then(() => {
 
     // Get identity login token
     return cognitoSync.listRecordsAsync({
@@ -21,9 +21,9 @@ function getMqttCredentials(principalId) {
       DatasetName: process.env.COGNITO_PROFILE_DATASET,
     });
   })
-  .then(function (response) {
+  .then(response => {
     let plainPhone = '';
-    response.Records.map(function (record) {
+    response.Records.map(record => {
       console.log('Considering', record);
       if (record.Key === 'phone') {
         plainPhone = record.Value.replace(/[^\d]/g, '');
@@ -40,7 +40,7 @@ function getMqttCredentials(principalId) {
       Logins: logins,
     });
   })
-  .then(function (response) {
+  .then(response => {
 
     // Get credentials using the token
     return cognitoIdentity.getCredentialsForIdentityAsync({
@@ -50,7 +50,7 @@ function getMqttCredentials(principalId) {
       },
     });
   })
-  .then(function (response) {
+  .then(response => {
     response.IotEndpoint = process.env.IOT_ENDPOINT;
     response.ThingName = principalId.replace(/:/g, '-');
     return response;
@@ -59,10 +59,10 @@ function getMqttCredentials(principalId) {
 
 module.exports.respond = function (event, callback) {
   getMqttCredentials('' + event.principalId)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

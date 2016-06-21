@@ -2,7 +2,7 @@
 
 exports.up = function (knex) {
   return knex.schema
-    .createTable('Itinerary', function (table) {
+    .createTable('Itinerary', table => {
       table.uuid('id').primary();
       table.string('identityId').index().notNullable();
 
@@ -11,7 +11,7 @@ exports.up = function (knex) {
       table.timestamp('endTime');
       table.jsonb('fare');
     })
-    .createTable('Booking', function (table) {
+    .createTable('Booking', table => {
       table.uuid('id').primary();
 
       // TSP generated foreign key (primary from their viewpoint)
@@ -27,7 +27,7 @@ exports.up = function (knex) {
       table.jsonb('terms');
       table.jsonb('meta');
     })
-    .createTable('Leg', function (table) {
+    .createTable('Leg', table => {
       table.uuid('id').primary();
       table.uuid('itineraryId').references('Itinerary.id');
       table.uuid('bookingId').references('Booking.id');

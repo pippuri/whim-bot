@@ -50,7 +50,7 @@ function setActiveLeg(identityId, itinerary, legId, timestamp) {
     thingName: thingName,
     payload: payload,
   })
-  .then(function (response) {
+  .then(response => {
     const payload = JSON.parse(response.payload);
     return payload.state.reported.itinerary && payload.state.reported.itinerary.leg || null;
   });

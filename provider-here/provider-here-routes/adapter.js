@@ -86,7 +86,7 @@ function createEncodedPolyline(points) {
 
   let encoded_point = '';
 
-  points.forEach(function (val, key) {
+  points.forEach((val, key) => {
     const lat = val[0];
     const lon = val[1];
 
@@ -107,7 +107,7 @@ function createEncodedPolyline(points) {
 function convertToLegGeometry(shapes) {
 
   // Output: [[12.12,34.23],[11.12,33.23],...]
-  const points = shapes.map(function (val) {
+  const points = shapes.map(val => {
     return JSON.parse('[' + val + ']');
   });
 
@@ -172,8 +172,8 @@ function convertItinerary(route) {
   let tempRoute = 0;
   let PTL = '';
   let tempType = '';
-  route.leg.map(function (leg) {
-    leg.maneuver.forEach(function (data, index) {
+  route.leg.map(leg => {
+    leg.maneuver.forEach((data, index) => {
       if (data._type === 'PublicTransportManeuverType') {
         tempRoute < route.publicTransportLine.length ? PTL = route.publicTransportLine[tempRoute].lineName : PTL = '';
         tempRoute < route.publicTransportLine.length ? tempType = route.publicTransportLine[tempRoute].type : tempType = '';

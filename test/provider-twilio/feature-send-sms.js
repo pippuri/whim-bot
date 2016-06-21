@@ -7,7 +7,7 @@ const event = require('../../provider-twilio/provider-twilio-send-sms/event.json
 
 module.exports = (lambda) => {
 
-  describe('send-sms request', function () {
+  describe('send-sms request', () => {
     let error;
     let response;
 
@@ -19,7 +19,7 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should be successful', function () {
+    it('should be successful', () => {
       expect(error).to.be.null;
     });
   });

@@ -36,7 +36,7 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  items.forEach(function (item) {
+  items.forEach(item => {
     const feature = {
       type: 'Feature',
       properties: {
@@ -84,7 +84,7 @@ function adapt(input) {
     qs: query,
   })
   .then(parseResults)
-  .then(function (response) {
+  .then(response => {
 
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
@@ -101,10 +101,10 @@ module.exports.respond = function (event, callback) {
     callback(new Error('Missing HERE_APP_CODE'));
   } else {
     adapt(event)
-    .then(function (response) {
+    .then(response => {
       return callback(null, response);
     })
-    .catch(function (err) {
+    .catch(err => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       return callback(err);
     });

@@ -2,7 +2,7 @@
 
 const testQuery = require('./feature-query');
 
-describe('geocoding provider', function () {
+describe('geocoding provider', () => {
   describe('HERE', function () {
     const lambda = require('../../provider-here/provider-here-geocoding/handler.js');
     const schema = require('../../geocoding/geocoding-query/response-schema.json');

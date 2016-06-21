@@ -54,7 +54,7 @@ function delegate(event) {
     Qualifier: stage,
     Payload: JSON.stringify(event),
   })
-  .then(function (response) {
+  .then(response => {
     const payload = JSON.parse(response.Payload);
 
     if (payload.error) {
@@ -74,7 +74,7 @@ function delegate(event) {
 module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
-  new Promise(function (resolve, reject) {
+  new Promise((resolve, reject) => {
       const valid = validate(event.query);
 
       if (!valid) {
@@ -84,16 +84,16 @@ module.exports.respond = function (event, callback) {
 
       return resolve(valid);
     })
-    .then(function valid() {
+    .then(() => {
       return delegate(event.query);
     })
-    .then(function (results) {
+    .then(results => {
 
       // Replace the delegate query info with our own query
       results.query = event.query;
       callback(null, results);
     })
-    .catch(function (err) {
+    .catch(err => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn('Error:', err.errors);
 

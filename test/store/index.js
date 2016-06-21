@@ -4,7 +4,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../store/store-packages/handler.js');
 
-describe('Store packages', function () {
+describe('Store packages', () => {
   let error;
   let response;
 
@@ -20,7 +20,7 @@ describe('Store packages', function () {
     });
   });
 
-  it('gets valid packages', function () {
+  it('gets valid packages', () => {
     expect(response).to.be.not.null;
   });
 });

@@ -37,7 +37,7 @@ function getHereRoutes(from, to, leaveAt, arriveBy, format) {
     headers: {},
     qs: qs,
   })
-  .then(function (result) {
+  .then(result => {
     if (format === 'original') {
       return result;
     }
@@ -54,10 +54,10 @@ module.exports.respond = function (event, callback) {
     callback(new Error('Missing HERE_APP_CODE'));
   } else {
     getHereRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
-    .then(function (response) {
+    .then(response => {
       callback(null, response);
     })
-    .catch(function (err) {
+    .catch(err => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(err);
     });

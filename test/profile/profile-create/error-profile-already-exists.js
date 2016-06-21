@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 
 module.exports = (lambda) => {
 
-  describe('for an existing user', function () {
+  describe('for an existing user', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -27,12 +27,12 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should raise an error', function () {
+    it('should raise an error', () => {
       const errorMessage = '' + error;
       expect(errorMessage).to.contain('User Existed');
     });
 
-    it('should not return a response', function () {
+    it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
 

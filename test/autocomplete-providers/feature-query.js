@@ -9,7 +9,7 @@ const schema = require('../../autocomplete/autocomplete-query/response-schema.js
 
 module.exports = (lambda) => {
 
-  describe('autocomplete request', function () {
+  describe('autocomplete request', () => {
 
     const event = {
       hint: 'latlon',
@@ -32,11 +32,11 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should be successful', function () {
+    it('should be successful', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;

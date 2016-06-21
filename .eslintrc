@@ -13,6 +13,7 @@
     "comma-dangle": [2, "always-multiline"],
     "strict": [2, "global"],
     "prefer-const": 2,
+    "prefer-arrow-callback": 2,
     "consistent-return": 2,
     "no-else-return": 2,
     "no-lonely-if": 2,

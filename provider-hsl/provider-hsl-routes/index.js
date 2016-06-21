@@ -31,7 +31,7 @@ function getHslRoutes(from, to, format) {
       pass: process.env.HSL_PASSPHRASE,
     },
   })
-  .then(function (result) {
+  .then(result => {
     if (format === 'original') {
       return result;
     }
@@ -42,10 +42,10 @@ function getHslRoutes(from, to, format) {
 
 module.exports.respond = function (event, callback) {
   getHslRoutes(event.from, event.to, event.format)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

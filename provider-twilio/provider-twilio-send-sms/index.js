@@ -21,7 +21,7 @@ function sendSmsMessage(phone, message) {
       sendImmediately: true,
     },
   })
-  .then(function (response) {
+  .then(response => {
     return {
       response: response,
     };

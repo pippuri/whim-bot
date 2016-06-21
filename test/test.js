@@ -23,7 +23,7 @@ loadEnvironment();
 // Handle AWS Lambda calls locally
 process.env.maas_test_run = true;
 
-describe('MaaS.fi backend', function () {
+describe('MaaS.fi backend', () => {
   require('./api/index.js');
   require('./routes-providers/index.js');
   require('./geocoding-providers/index.js');

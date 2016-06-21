@@ -13,7 +13,7 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  const suggestions = response.predictions.map(function (item) {
+  const suggestions = response.predictions.map(item => {
     return item.description;
   });
 
@@ -57,7 +57,7 @@ function adapt(input) {
   })
   .then(parseResults)
   .then(slice(input.count))
-  .then(function (suggestions) {
+  .then(suggestions => {
     return {
       suggestions: suggestions,
       maas: {
@@ -69,10 +69,10 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   adapt(event)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

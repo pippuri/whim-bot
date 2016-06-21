@@ -6,7 +6,7 @@ const moment = require('moment');
 
 module.exports = (lambda) => {
 
-  describe('unauthorized request', function () {
+  describe('unauthorized request', () => {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office
@@ -25,15 +25,15 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should raise an error', function () {
+    it('should raise an error', () => {
       expect(error).not.to.be.null;
     });
 
-    it('should provide the expected error message', function () {
+    it('should provide the expected error message', () => {
       expect(error.message).to.equal('Authorization error.');
     });
 
-    it('should not return a response', function () {
+    it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
 

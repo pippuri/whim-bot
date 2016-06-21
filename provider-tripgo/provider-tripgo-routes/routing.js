@@ -68,7 +68,7 @@ function getTripGoRoutesByUrl(baseUrl, from, to, leaveAt, arriveBy, modes) {
     qs: qs,
     useQuerystring: true,
   })
-  .then(function (result) {
+  .then(result => {
     if (result.error) {
       return Promise.reject(new Error(result.error));
     }
@@ -117,13 +117,13 @@ function mergeResults(results) {
       response = result;
     } else {
       if (result && result.groups) {
-        result.groups.map(function (group) {
+        result.groups.map(group => {
           response.groups.push(group);
         });
       }
 
       if (result && result.segmentTemplates) {
-        result.segmentTemplates.map(function (segmentTemplate) {
+        result.segmentTemplates.map(segmentTemplate => {
           response.segmentTemplates.push(segmentTemplate);
         });
       }
@@ -148,7 +148,7 @@ function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format, taxiProvid
       getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
       getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
     ])
-    .then(function (results) {
+    .then(results => {
       const actualResults = results.filter(r => (r !== null));
       if (actualResults.length < 1) {
         return null;

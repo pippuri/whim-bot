@@ -6,7 +6,7 @@ const moment = require('moment');
 
 module.exports = (engine) => {
 
-  describe('unknown transformation', function () {
+  describe('unknown transformation', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -47,11 +47,11 @@ module.exports = (engine) => {
       });
     });
 
-    it('should raise an error', function () {
+    it('should raise an error', () => {
       expect(error).to.not.be.undefined;
     });
 
-    it('should not call any services', function () {
+    it('should not call any services', () => {
       expect(calls).to.deep.equal([]);
     });
 

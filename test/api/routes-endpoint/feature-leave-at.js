@@ -14,7 +14,7 @@ module.exports = (lambda, options) => {
     options = {};
   }
 
-  describe('leaveAt request', function () {
+  describe('leaveAt request', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
@@ -35,22 +35,22 @@ module.exports = (lambda, options) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
 
-    it('response should have route', function () {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
-    it('response should not have legs from the past', function () {
+    it('response should not have legs from the past', () => {
       const waitingTimes = [];
       response.plan.itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
@@ -64,7 +64,7 @@ module.exports = (lambda, options) => {
       expect(inMinutes).to.be.above(-margin);
     });
 
-    it('response should have direct Valopilkku taxi route', function () {
+    it('response should have direct Valopilkku taxi route', () => {
 
       const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
 
@@ -103,7 +103,7 @@ module.exports = (lambda, options) => {
       expect(valopilkkuTaxiRoutes).to.not.be.empty;
     });
 
-    it('all response itineraries should contain fare', function () {
+    it('all response itineraries should contain fare', () => {
       const itinerariesWithoutFare = response.plan.itineraries.filter(itinerary => {
         if (itinerary.hasOwnProperty('fare')) {
           return false;
@@ -115,7 +115,7 @@ module.exports = (lambda, options) => {
       expect(itinerariesWithoutFare).to.be.empty;
     });
 
-    it('some response itineraries should contain point cost', function () {
+    it('some response itineraries should contain point cost', () => {
 
       // It is OK for some routes to have null cost but we should be able to provide
       // some route from SC5 Office to Gallows Bird Pub for a point cost.

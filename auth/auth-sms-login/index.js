@@ -29,7 +29,7 @@ function getCognitoDeveloperIdentity(plainPhone) {
   };
   console.log('Getting cognito developer identity with', JSON.stringify(options, null, 2));
   return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options)
-  .then(function (response) {
+  .then(response => {
     return {
       identityId: response.IdentityId,
       cognitoToken: response.Token,
@@ -48,14 +48,14 @@ function updateCognitoProfile(identityId, profile) {
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
   })
-  .then(function (response) {
+  .then(response => {
     syncSessionToken = response.SyncSessionToken;
     const oldRecords = {};
-    response.Records.map(function (record) {
+    response.Records.map(record => {
       oldRecords[record.Key] = record;
     });
 
-    Object.keys(profile).map(function (key) {
+    Object.keys(profile).map(key => {
       const oldRecord = oldRecords[key];
       let newValue;
       if (typeof profile[key] === 'object') {
@@ -106,7 +106,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       },
     },
   })
-  .then(null, function (err) {
+  .then(null, err => {
     // Ignore already exists errors
     if (err.code === 'ResourceAlreadyExistsException') {
       return iot.updateThingAsync({
@@ -124,14 +124,14 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
     console.log('ERROR:', err.code, err);
     return Promise.reject(err);
   })
-  .then(function (response) {
+  .then(response => {
     // Attach the cognito identity to the thing
     return iot.attachThingPrincipalAsync({
       principal: identityId,
       thingName: thingName,
     });
   })
-  .then(function (response) {
+  .then(response => {
     console.log('AttachThingPrincipal response:', response);
 
     // Attach the cognito policy to the default policy
@@ -140,19 +140,19 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       principal: identityId,
     });
   })
-  .then(function (response) {
+  .then(response => {
     console.log('AttachPrincipalPolicy response:', response);
     return iot.listPrincipalPoliciesAsync({
       principal: identityId,
     });
   })
-  .then(function (response) {
+  .then(response => {
     console.log('Attached policies:', response);
     return iot.listPrincipalThingsAsync({
       principal: identityId,
     });
   })
-  .then(function (response) {
+  .then(response => {
     console.log('Attached things:', response);
   });
 }
@@ -191,7 +191,7 @@ function smsLogin(phone, code) {
   }
 
   return getCognitoDeveloperIdentity(plainPhone)
-  .then(function (response) {
+  .then(response => {
     identityId = response.identityId;
     cognitoToken = response.cognitoToken;
     return updateCognitoProfile(identityId, {
@@ -199,7 +199,7 @@ function smsLogin(phone, code) {
       verificationCode: code,
     });
   })
-  .then(function () {
+  .then(() => {
     return createUserThing(identityId, plainPhone, isSimulationUser);
   })
   .then(() => {
@@ -236,10 +236,10 @@ function smsLogin(phone, code) {
 
 module.exports.respond = function (event, callback) {
   smsLogin('' + event.phone, '' + event.code)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

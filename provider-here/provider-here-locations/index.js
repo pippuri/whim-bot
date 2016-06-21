@@ -15,10 +15,10 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  view.forEach(function (i) {
+  view.forEach(i => {
     const results = i.Result;
 
-    results.forEach(function (result) {
+    results.forEach(result => {
       const item = result.Location;
 
       const location = {
@@ -70,7 +70,7 @@ function adapt(input) {
     qs: query,
   })
   .then(parseResults)
-  .then(function (locations) {
+  .then(locations => {
     return {
       locations: locations,
       query: query,
@@ -82,10 +82,10 @@ module.exports.respond = function (event, callback) {
   console.log(event);
 
   adapt(event)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

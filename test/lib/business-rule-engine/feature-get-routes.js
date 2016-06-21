@@ -6,7 +6,7 @@ const moment = require('moment');
 
 module.exports = (engine) => {
 
-  describe('query for routes', function () {
+  describe('query for routes', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -81,15 +81,15 @@ module.exports = (engine) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.undefined;
     });
 
-    it('should call context and routes service', function () {
+    it('should call context and routes service', () => {
       expect(calls).to.deep.equal(['MaaS-profile-info', 'MaaS-provider-tripgo-routes']);
     });
 
-    it('should return routes annotated with co2 cost for each itinerary', function () {
+    it('should return routes annotated with co2 cost for each itinerary', () => {
       const itinerariesWithoutCo2Cost = [];
       for (let itinerary of response.plan.itineraries) { // eslint-disable-line prefer-const
         if (itinerary.hasOwnProperty('fare') && itinerary.fare.hasOwnProperty('co2') && typeof itinerary.fare.co2 === typeof 123) {

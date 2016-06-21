@@ -33,10 +33,10 @@ function getMatkaRoutes(from, to, format) {
       pass: process.env.MATKA_PASSPHRASE,
     },
   })
-  .then(function (response) {
+  .then(response => {
     return xml2js.parseStringAsync(response, { explicitChildren: true, preserveChildrenOrder: true });
   })
-  .then(function (result) {
+  .then(result => {
     console.log('Format:', format);
     if (format === 'original') {
       return result;
@@ -48,10 +48,10 @@ function getMatkaRoutes(from, to, format) {
 
 module.exports.respond = function (event, callback) {
   getMatkaRoutes(event.from, event.to, event.format)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

@@ -8,7 +8,7 @@ const event = require('../../../profile/profile-edit/event.json');
 
 module.exports = (lambda) => {
 
-  describe('edit an existing user', function () {
+  describe('edit an existing user', () => {
     let error;
     let response;
 
@@ -20,7 +20,7 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should not raise an error', function () {
+    it('should not raise an error', () => {
       if (error) {
         console.warn(error.message);
         console.warn(error.stack);
@@ -29,7 +29,7 @@ module.exports = (lambda) => {
       expect(error).to.be.null;
     });
 
-    it('should return a valid response', function () {
+    it('should return a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;

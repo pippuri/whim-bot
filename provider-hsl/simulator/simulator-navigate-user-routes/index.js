@@ -30,7 +30,7 @@ function simulateUser(phone) {
   let idToken;
 
   return loginSimulatedUser(phone)
-  .then(function (response) {
+  .then(response => {
     //console.log('Simulating user', phone, response.cognito_id);
     // Read the current state from user's Thing Shadow
     thingName = response.cognito_id.replace(/:/, '-');
@@ -40,11 +40,11 @@ function simulateUser(phone) {
       thingName: thingName,
     });
   })
-  .then(function (response) {
+  .then(response => {
     const payload = JSON.parse(response.payload);
     state = payload.state.reported || {};
   })
-  .then(null, function (err) {
+  .then(null, err => {
     if (err.code === 'ResourceNotFoundException') {
       console.log('Note: Thing', thingName, 'does not have a thing shadow yet');
       state = {};
@@ -53,7 +53,7 @@ function simulateUser(phone) {
 
     return Promise.reject(err);
   })
-  .then(function () {
+  .then(() => {
     if (state.activeRoute) {
       // Route is active, continue it.
       return routeNavigator.continueExistingRoute(identityId, idToken, state.activeRoute);
@@ -80,10 +80,10 @@ function simulateUserRoutes() {
 
 module.exports.respond = function (event, callback) {
   simulateUserRoutes()
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

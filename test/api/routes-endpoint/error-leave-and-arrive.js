@@ -6,7 +6,7 @@ const moment = require('moment');
 
 module.exports = (lambda) => {
 
-  describe('request with both "leaveAt" and "arriveBy"', function () {
+  describe('request with both "leaveAt" and "arriveBy"', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // test user
@@ -27,15 +27,15 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should raise an error', function () {
+    it('should raise an error', () => {
       expect(error).not.to.be.null;
     });
 
-    it('should provide the expected error message', function () {
+    it('should provide the expected error message', () => {
       expect(error.message).to.equal('Both "leaveAt" and "arriveBy" provided.');
     });
 
-    it('should not return a response', function () {
+    it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
 

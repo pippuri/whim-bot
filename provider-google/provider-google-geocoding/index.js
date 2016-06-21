@@ -17,7 +17,7 @@ function parseResults(response) {
     return Promise.reject(error);
   }
 
-  items.results.forEach(function (item) {
+  items.results.forEach(item => {
     const feature = {
       type: 'Feature',
       properties: {
@@ -57,7 +57,7 @@ function adapt(input) {
     qs: query,
   })
   .then(parseResults)
-  .then(function (response) {
+  .then(response => {
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
     // the call parameter. Should be ok in this case, though.
@@ -68,10 +68,10 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   adapt(event)
-  .then(function (response) {
+  .then(response => {
     return callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     return callback(err);
   });

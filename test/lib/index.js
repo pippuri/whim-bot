@@ -1,6 +1,6 @@
 'use strict';
 
-describe('library', function () {
+describe('library', () => {
   require('./business-rule-engine/index.js');
   require('./subscription-manager/index.js');
 });

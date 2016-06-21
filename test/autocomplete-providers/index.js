@@ -2,7 +2,7 @@
 
 const testAutocomplete = require('./feature-query.js');
 
-describe('autocomplete provider', function () {
+describe('autocomplete provider', () => {
 
   describe('Google Places', function () {
     this.timeout(20000);

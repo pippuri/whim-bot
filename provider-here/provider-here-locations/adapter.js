@@ -40,7 +40,7 @@ function convertItinerary(route) {
   return {
     startTime: undefined,
     endTime: undefined,
-    legs: route.leg.map(function (leg) {
+    legs: route.leg.map(leg => {
       return convertLeg(leg, route);
     }),
   };

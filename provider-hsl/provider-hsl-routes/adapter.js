@@ -82,8 +82,8 @@ function convertItinerary(route) {
 
 module.exports = function (original) {
   const allRoutes = [];
-  original.map(function (routes) {
-    routes.map(function (route) {
+  original.map(routes => {
+    routes.map(route => {
       allRoutes.push(route);
     });
   });

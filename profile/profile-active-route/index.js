@@ -17,10 +17,10 @@ function savesUserActiveRoute(identityId, timestamp, activeroute) {
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_ACTIVEROUTES_DATASET,
   })
-  .then(function (response) {
+  .then(response => {
     syncSessionToken = response.SyncSessionToken;
     const oldRecords = {};
-    response.Records.map(function (record) {
+    response.Records.map(record => {
       oldRecords[record.Key] = record;
     });
 
@@ -29,7 +29,7 @@ function savesUserActiveRoute(identityId, timestamp, activeroute) {
       activeroute: activeroute,
     };
 
-    Object.keys(activeroutes).map(function (key) {
+    Object.keys(activeroutes).map(key => {
       const oldRecord = oldRecords[key];
       let newValue;
       if (typeof activeroutes[key] === 'object') {
@@ -66,10 +66,10 @@ function savesUserActiveRoute(identityId, timestamp, activeroute) {
 
 module.exports.respond = function (event, callback) {
   savesUserActiveRoute('' + event.identityId, event.timestamp, event.active_route)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
