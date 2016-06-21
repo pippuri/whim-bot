@@ -8,7 +8,7 @@ const bus = require('../../lib/service-bus');
 const maasUtils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models');
-const tsp = require('../lib/tsp.js');
+const tsp = require('../../lib/tsp');
 
 function initKnex() {
   //console.log('Initialize knex');

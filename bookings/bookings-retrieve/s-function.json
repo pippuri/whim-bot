@@ -1,5 +1,5 @@
 {
-  "name": "bookings-get",
+  "name": "bookings-retrieve",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: maas-transport-booking",
   "customName": false,
