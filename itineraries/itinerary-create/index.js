@@ -217,41 +217,41 @@ function wrapToEnvelope(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  let knex;
-  let profile;
-  let itinerary;
+
+  const context = {};
 
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
-  return Promise.props({
-      knex: initKnex(),
-      valid: validateSignatures(event.itinerary),
-      profile: fetchCustomerProfile(event.identityId),
-    })
-    .then(_input => {
+  return Promise.all([
+      initKnex(),
+      validateSignatures(event.itinerary),
+      fetchCustomerProfile(event.identityId),
+    ])
+    .spread((knex, valid, profile) => {
+
+      context.knex = knex;
+      context.profile = profile;
 
       // Assign our inputs
-      itinerary = event.itinerary;
-      knex = _input.knex;
-      profile = _input.profile;
+      context.itinerary = event.itinerary;
 
       // Update itinerary for storable form
-      removeSignatures(itinerary);
-      annotateIdentifiers(itinerary);
-      annotateIdentityId(itinerary, profile.identityId);
+      removeSignatures(context.itinerary);
+      annotateIdentifiers(context.itinerary);
+      annotateIdentityId(context.itinerary, context.profile.identityId);
 
-      return createAndAppendBookings(itinerary, profile);
+      return createAndAppendBookings(context.itinerary, context.profile);
     })
     .then(saveItinerary)
-    .then(_itinerary  => {
+    .then(itinerary  => {
 
       // Update input, update balance
-      itinerary = _itinerary;
-      const balance = computeBalance(itinerary, profile);
+      context.itinerary = itinerary;
+      const balance = computeBalance(context.itinerary, context.profile);
 
-      return updateBalance(profile.identityId, balance);
+      return updateBalance(context.profile.identityId, balance);
     })
-    .then(profile => callback(null, wrapToEnvelope(itinerary)))
+    .then(profile => callback(null, wrapToEnvelope(context.itinerary)))
     .catch(MaaSError, callback)
     .catch(_error => {
 
@@ -260,8 +260,8 @@ module.exports.respond = function (event, callback) {
     })
     .finally(() => {
       // Close all db connections
-      if (knex) {
-        knex.destroy();
+      if (context.knex) {
+        context.knex.destroy();
       }
     });
 };
