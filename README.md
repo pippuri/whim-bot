@@ -95,10 +95,19 @@ Select "Apply these changes to the local version" at the prompt.
 ```
 sls function autoinstall -a # Installs module dependencies to lambdas
 ```
+
+IMPORTANT: If you selected the wrong option at the prompt you may have
+accidentally deleted the API keys from the cloud. Do not panic however. Take a
+deep breath and have a chat with someone else who is working in the project.
+The chances are that the API keys are still available on another deployment or
+a developer workstation, which will make it possible to upload them back to the
+deployment where they got deleted.
+
+
 ### Deploying static files/images to S3 Bucket
 ```
 Add files/folders to client/dist folder
-``` 
+```
 Then run the following command:
 ```
 sls client deploy -s dev #stage should be specified
@@ -123,13 +132,29 @@ mocha -g leaveAt
 mocha -g "TripGo \(South Finland\) leaveAt request response"
 ```
 
+### Running a Serverless Function In The Cloud
+
+You can run the *routes-query* function in the cloud as follows
+```
+AWS_PROFILE=maas sls function run routes-query -d -s dev
+```
+Example data from file `routes/routes-query/event.json` is used.
+
 ### Running a Serverless Function Locally
 
-You can run the *query* function of *locations* component as follows
+You can run the *routes-query* function locally as follows
 ```
 AWS_PROFILE=maas sls function run routes-query -s dev
 ```
 Example data from file `routes/routes-query/event.json` is used.
+
+Even though the function runs locally all calls to other lambdas will go to the
+actual cloud deployment. To run the entire operation locally, you will need to
+use the mocha tests and make sure all AWS calls go through the maas-backend
+service bus. The service-bus will then redirect the related calls to local
+lambdas and mock services as needed. At the moment some components call AWS
+services directly without using the service bus. These need to be modified to
+use the service bus before they can be run without the cloud deployment.
 
 Since we'll be doing lots of `sls` commands you may feel the desire to set the
 AWS_PROFILE variable more permanently instead of providing it with each command
@@ -137,6 +162,8 @@ separately. However, by doing this you will loose control over which commands
 are allowed to deploy stuff to the AWS cloud. For example creating a new test
 project with Serverless will automatically deploy some parts of the app to AWS
 given that it finds suitable credentials to do so.
+
+
 
 ### Starting a New Local Branch
 
@@ -180,10 +207,10 @@ since there might be edit conflicts.  In this case git will give you further
 instructions on what to do. If you get lost you can use `git status` to find
 out what git is expecting you to do next.
 
-### Removing Local Changes From Master
+### Removing Local Changes From Local Master
 
-It is easy to accidentally commit something into master. You can move your
-changes out of local master branch as follows.
+It is easy to accidentally commit something into your local master branch. You
+can move your changes out of local master branch as follows.
 
 ```
 git checkout master
@@ -214,12 +241,25 @@ git push origin <local_branch_name>
 
 ### Working with Travis
 
-Before deploying or merging a pull request, you should check Travis tests are passing. You should note that Travis environment differs from your local environment:
+The project is using Travis continuous integration service to run the basic set
+of tests on pull requests. Before deploying or merging a pull request, you
+should check Travis tests are passing. You should note that Travis environment
+differs from your local environment:
 
    * Travis does not see your Serverless environment settings at *_meta/variables/**; if you add a new env variable, also add it to [Travis settings](https://travis-ci.com/maasglobal/maas-backend/settings).
    * Travis is running on Node 4.2 (sufficiently similar to AWS), whereas you may locally run something else.
 
 When things run safely in Travis, we can be sufficiently confident they run on AWS.
+
+Travis can not retrieve the API keys from S3 because since it does not have
+credentials for our AWS cloud. Instead Travis uses API keys provided through
+environment variables which can be modified through the Travis web interface at
+https://travis-ci.com/maasglobal/maas-backend/settings Note however, that the
+environment variables here can not be protected since Travis refuses to give
+protected keys to pull requests comming from developer forks. As far as we know
+there is no way of white listing trusted repositories.  See
+https://docs.travis-ci.com/user/environment-variables/#Encrypted-Variables for
+more details.
 
 ### Modifying PostgreSQL Database
 
@@ -250,17 +290,28 @@ When working with production data (where you need to migrate):
 
 ### Deploying To Dev
 
-You can init deploying a component (e.g. provider-tripgo ) to development environment as follows.
-After you init the process you need to select the endpoints and functions you wish to deploy.
-
+You can deploy the *routes-query* function to development environemnt as follows
 ```
-cd <component_folder>
-npm install
-AWS_PROFILE=maas sls dash deploy -s dev
+AWS_PROFILE=maas sls function deploy routes-query -s dev
 ```
 
-Note that *dash deploy* doesn't currently deploy CORS headers as expected, so in case you made
-changes that require new CORS headers to be rolled out you need to call `sls endpoint deploy --all`
-in the project root directory. This will deploy all endpoints. There is no way to do this only
-for the endpoints of a single component.
+You can deploy the corresponding endpoint by commanding
+```
+AWS_PROFILE=maas sls endpoint deploy routes~GET -s dev
+```
+
+If you get confused about what kind of functions and endpoints exist you can
+use *dash deploy* to find out. For example, you could find out the names of the
+*routes-query* function and the *routes* GET endpoint as follows.
+```
+(cd routes; AWS_PROFILE=maas sls dash deploy -s dev)
+```
+
+Note that deploying a single endpoint doesn't currently deploy CORS headers as
+expected, so in case you made changes that require new CORS headers to be
+rolled out you need to call `sls endpoint deploy --all` in the project root
+directory. This will deploy all endpoints. There is no way to do this only for
+the endpoints of a single component. See
+https://github.com/joostfarla/serverless-cors-plugin/issues/22 for discussion
+on the subject.
 
