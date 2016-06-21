@@ -1,7 +1,7 @@
 {
-  "name": "bookings-get",
+  "name": "bookings-update",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: maas-transport-booking",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -13,17 +13,15 @@
   },
   "endpoints": [
     {
-      "path": "booking/{bookingId}",
-      "method": "GET",
+      "path": "bookings/{bookingId}",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.path.bookingId": "method.request.path.bookingId"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": "\"identityId\": \"$context.authorizer.principalId\", \"payload\":{\"bookingId\":\"$input.params('bookingId')\"}"
+        "application/json": ""
       },
       "responses": {
         "400": {
@@ -40,8 +38,13 @@
           }
         }
       }
+
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }
