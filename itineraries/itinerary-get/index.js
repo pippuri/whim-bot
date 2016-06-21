@@ -70,7 +70,11 @@ function retrieveItinerary(event) {
       return Promise.all(promiseQueue);
     })
     .then(response => {
-      return output;
+      if (output.length !== 1) {
+        return Promise.reject(new MaasError('Response contain more than 1 result!', 500));
+      }
+
+      return output[0];
     });
 
 }
