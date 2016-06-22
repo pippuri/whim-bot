@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 const lambda = require('../../store/store-packages/handler.js');
 
 describe('Store packages', () => {
-  let error;
+  // let error;
   let response;
 
   before(done => {
@@ -14,7 +14,7 @@ describe('Store packages', () => {
     };
 
     wrap(lambda).run(event, (err, data) => {
-      error = err;
+      // error = err;
       response = data;
       done();
     });

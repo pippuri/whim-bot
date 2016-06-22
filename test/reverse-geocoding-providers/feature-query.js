@@ -34,13 +34,13 @@ module.exports = (lambda, schema, fixture) => {
 
   fixture.forEach(item => {
     describe(['Search:', item.input.lat, item.input.lon, item.pass].join(','), () => {
-      let error;
-      let response;
+      // let error;
+      // let response;
 
       before(done => {
         wrap(lambda).run(item.input, (err, data) => {
-          error = err;
-          response = data;
+          // error = err;
+          // response = data;
           done();
         });
       });

@@ -27,7 +27,7 @@ describe('store products', () => {
 });
 
 describe('user by ID', () => {
-  let error;
+  // let error;
   let response;
 
   before(done => {
@@ -35,7 +35,7 @@ describe('user by ID', () => {
       response = data;
       done();
     }).catch(data => {
-      error = data;
+      // error = data;
       done();
     });
   });
@@ -46,7 +46,7 @@ describe('user by ID', () => {
 });
 
 describe('user by ID not found', () => {
-  let error;
+  // let error;
   let response;
 
   before(done => {
@@ -54,7 +54,7 @@ describe('user by ID not found', () => {
       response = data;
       done();
     }).catch(data => {
-      error = data;
+      // error = data;
       done();
     });
   });
@@ -95,7 +95,7 @@ describe('Update user', () => {
 });
 
 describe('Update User card', () => {
-  let error;
+  //let error;
   let response;
 
   before(done => {
@@ -111,7 +111,7 @@ describe('Update User card', () => {
       response = data;
       done();
     }).catch(data => {
-      error = data;
+      //error = data;
       done();
     });
   });

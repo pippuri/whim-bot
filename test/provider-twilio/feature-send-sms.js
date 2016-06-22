@@ -9,12 +9,12 @@ module.exports = function (lambda) {
 
   describe('send-sms request', () => {
     let error;
-    let response;
+    // let response;
 
     before(done => {
       wrap(lambda).run(event, (err, data) => {
         error = err;
-        response = data;
+        // response = data;
         done();
       });
     });

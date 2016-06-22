@@ -223,45 +223,45 @@ module.exports.respond = function (event, callback) {
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
   return Promise.all([
-      initKnex(),
-      validateSignatures(event.itinerary),
-      fetchCustomerProfile(event.identityId),
-    ])
-    .spread((knex, valid, profile) => {
+    initKnex(),
+    validateSignatures(event.itinerary),
+    fetchCustomerProfile(event.identityId),
+  ])
+  .spread((knex, valid, profile) => {
 
-      context.knex = knex;
-      context.profile = profile;
+    context.knex = knex;
+    context.profile = profile;
 
-      // Assign our inputs
-      context.itinerary = event.itinerary;
+    // Assign our inputs
+    context.itinerary = event.itinerary;
 
-      // Update itinerary for storable form
-      removeSignatures(context.itinerary);
-      annotateIdentifiers(context.itinerary);
-      annotateIdentityId(context.itinerary, context.profile.identityId);
+    // Update itinerary for storable form
+    removeSignatures(context.itinerary);
+    annotateIdentifiers(context.itinerary);
+    annotateIdentityId(context.itinerary, context.profile.identityId);
 
-      return createAndAppendBookings(context.itinerary, context.profile);
-    })
-    .then(saveItinerary)
-    .then(itinerary  => {
+    return createAndAppendBookings(context.itinerary, context.profile);
+  })
+  .then(saveItinerary)
+  .then(itinerary  => {
 
-      // Update input, update balance
-      context.itinerary = itinerary;
-      const balance = computeBalance(context.itinerary, context.profile);
+    // Update input, update balance
+    context.itinerary = itinerary;
+    const balance = computeBalance(context.itinerary, context.profile);
 
-      return updateBalance(context.profile.identityId, balance);
-    })
-    .then(profile => callback(null, wrapToEnvelope(context.itinerary)))
-    .catch(MaaSError, callback)
-    .catch(_error => {
+    return updateBalance(context.profile.identityId, balance);
+  })
+  .then(profile => callback(null, wrapToEnvelope(context.itinerary)))
+  .catch(MaaSError, callback)
+  .catch(_error => {
 
-      // Uncaught, unexpected error
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    })
-    .finally(() => {
-      // Close all db connections
-      if (context.knex) {
-        context.knex.destroy();
-      }
-    });
+    // Uncaught, unexpected error
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+  })
+  .finally(() => {
+    // Close all db connections
+    if (context.knex) {
+      context.knex.destroy();
+    }
+  });
 };
