@@ -1,0 +1,37 @@
+{
+  "HSL": {
+    "agencyId": "HSL",
+    "adapter": {
+      "baseUrl": "https://a523hzmaj7.execute-api.eu-west-1.amazonaws.com/dev/",
+      "endpoints": {
+        "post": {
+          "book": "/bookings"
+        },
+        "get": {
+          "options": "/options",
+          "retrieve": "/orders"
+        }
+      }
+    }
+  },
+  "Valopilkku": {
+    "agencyId": "Valopilkku",
+    "adapter": {
+      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/dev/taxi",
+      "endpoints": {
+        "post": {
+          "book": "/bookings"
+        },
+        "get": {
+          "options": "/options",
+          "retrieve": "/orders"
+        }
+      },
+      "config": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      }
+    }
+  }
+}

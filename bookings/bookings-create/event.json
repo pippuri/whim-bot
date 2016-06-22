@@ -1,0 +1,33 @@
+{
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "state": "NEW",
+  "leg": {
+    "startTime": 1464947100000,
+    "endTime": null,
+    "mode": "BUS",
+    "from": {
+      "name": "Vihdintie & Lakistontie",
+      "lon": 24.6471,
+      "lat": 60.32626
+    },
+    "to": {
+      "name": "Nuuksiontie",
+      "lon": 24.558,
+      "lat": 60.29377
+    },
+    "legGeometry": null,
+    "agencyId": "HSL"
+
+  },
+  "terms": {
+    "price": {
+      "amount": 1234,
+      "currency": "EUR"
+    }
+  },
+  "meta": {
+    "name": "110T",
+    "description": "This bus starts from Kamppi and goes to Leppavaara"
+  },
+  "signature": "9134dbc787c376813a1cc7de2b0382c3f0af31536dde37f69cff77b1c9ecb0f2"
+}
