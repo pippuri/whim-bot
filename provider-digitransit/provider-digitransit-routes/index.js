@@ -51,7 +51,7 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
     json: true,
     qs: qs,
   })
-  .then(function (result) {
+  .then(result => {
     if (format === 'original') {
       return result;
     }
@@ -62,10 +62,10 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
 
 module.exports.respond = function (event, callback) {
   getDigitransitRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

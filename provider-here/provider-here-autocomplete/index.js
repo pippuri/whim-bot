@@ -51,7 +51,7 @@ function adapt(input) {
   })
   .then(parseResults)
   .then(slice(input.count))
-  .then(function (suggestions) {
+  .then(suggestions => {
     return {
       suggestions: suggestions,
       maas: {
@@ -68,10 +68,10 @@ module.exports.respond = function (event, callback) {
     callback(new Error('Missing HERE_APP_CODE'));
   } else {
     adapt(event)
-    .then(function (response) {
+    .then(response => {
       callback(null, response);
     })
-    .catch(function (err) {
+    .catch(err => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(err);
     });

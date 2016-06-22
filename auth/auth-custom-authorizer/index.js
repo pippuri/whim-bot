@@ -28,7 +28,7 @@ function customAuthorize(event) {
   console.log('Token contents:', user);
 
   return Promise.resolve()
-  .then(function () {
+  .then(() => {
     return {
       principalId: user.id,
       policyDocument: {
@@ -47,10 +47,10 @@ function customAuthorize(event) {
 
 module.exports.respond = function (event, callback) {
   customAuthorize(event)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

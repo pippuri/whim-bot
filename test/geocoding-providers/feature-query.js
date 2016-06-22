@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 const ajv = require('ajv')({ verbose: true });
 
 module.exports = (lambda, schema, fixture) => {
-  describe('basic tests of a simple query', function () {
+  describe('basic tests of a simple query', () => {
     const event = {
       hint: 'latlon',
       name: 'Kamppi Bus Station',
@@ -25,11 +25,11 @@ module.exports = (lambda, schema, fixture) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       const valid = ajv.validate(schema, response);
       const validationError = valid ? null : JSON.stringify(ajv.errors);
       expect(validationError).to.be.null;
@@ -37,8 +37,7 @@ module.exports = (lambda, schema, fixture) => {
   });
 
   fixture.forEach(item => {
-    describe(['Search:', item.input.name, item.pass].join(' '),
-      function () {
+    describe(['Search:', item.input.name, item.pass].join(' '), () => {
       let error;
       let response;
 
@@ -50,7 +49,7 @@ module.exports = (lambda, schema, fixture) => {
         });
       });
 
-      it('should have a valid answer', function () {
+      it('should have a valid answer', () => {
         if (!item.pass) {
           expect(error).to.not.be.null;
           return;

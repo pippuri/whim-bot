@@ -14,7 +14,7 @@ module.exports = (lambda, options) => {
     options = {};
   }
 
-  describe('route request from Orsa to Mora', function () {
+  describe('route request from Orsa to Mora', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
@@ -35,22 +35,22 @@ module.exports = (lambda, options) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
 
-    it('response should have route', function () {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
-    it('response should have direct taxi route', function () {
+    it('response should have direct taxi route', () => {
 
       const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
 
@@ -80,7 +80,7 @@ module.exports = (lambda, options) => {
       expect(directTaxiRoutes).to.not.be.empty;
     });
 
-    it.skip('itineraries with taxi legs should not have agencyId Valopilkku', function () {
+    it.skip('itineraries with taxi legs should not have agencyId Valopilkku', () => {
 
       // Valopilkku does not provide taxis in Sweden at the moment
 

@@ -67,7 +67,7 @@ module.exports.respond = (event, callback) => {
   return updateUserData(event)
     .then(response => wrapToEnvelope(response.Attributes, event))
     .then(envelope => callback(null, envelope))
-    .catch((error) => {
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });

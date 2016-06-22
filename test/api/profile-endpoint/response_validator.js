@@ -4,7 +4,7 @@ const ajvFactory = require('ajv');
 
 const schema = require('./response_schema.json');
 
-module.exports = (response) => {
+module.exports = function (response) {
   const ajv = ajvFactory({ verbose: true });
   const validate = ajv.compile(schema);
   const valid = validate(response);

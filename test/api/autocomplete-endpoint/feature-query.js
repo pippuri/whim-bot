@@ -6,9 +6,9 @@ const validator = require('../../../lib/validator');
 const schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
 const event = require('../../../autocomplete/autocomplete-query/event.json');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
-  describe('basic query', function () {
+  describe('basic query', () => {
 
     let error;
     let response;
@@ -21,11 +21,11 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;

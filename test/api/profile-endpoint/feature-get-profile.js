@@ -4,9 +4,9 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('./response_validator');
 
-module.exports = (lambda) => {
+module.exports = function (lambda) {
 
-  describe('query for an existing user', function () {
+  describe('query for an existing user', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
     const event = {
@@ -24,11 +24,11 @@ module.exports = (lambda) => {
       });
     });
 
-    it('should not raise an error', function () {
+    it('should not raise an error', () => {
       expect(error).to.be.null;
     });
 
-    it('should return a valid response', function () {
+    it('should return a valid response', () => {
       const validationError = validator(response);
       expect(validationError).to.be.null;
     });

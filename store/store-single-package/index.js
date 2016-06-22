@@ -19,14 +19,14 @@ function getSingleProduct(event) {
 
 module.exports.respond = function (event, callback) {
   getSingleProduct(event)
-    .then(function (response) {
+    .then(response => {
       if (event.type === 'plan') {
         callback(null, lib.parseSingleChargebeePlan(response));
       } else if (event.type === 'addon') {
         callback(null, lib.parseSingleChargebeeAddon(response));
       }
     })
-    .catch(function (error) {
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn('Error: ' + error.message);
       callback(error);

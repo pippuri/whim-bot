@@ -3,7 +3,7 @@
 const mgr = require('../../../lib/subscription-manager');
 const expect = require('chai').expect;
 
-describe('store products', function () {
+describe('store products', () => {
   let error;
   let response;
 
@@ -17,16 +17,16 @@ describe('store products', function () {
     });
   });
 
-  it('should find products', function () {
+  it('should find products', () => {
     expect(response).to.be.not.empty;
   });
 
-  it('should not have errored', function () {
+  it('should not have errored', () => {
     expect(error).to.be.empty;
   });
 });
 
-describe('user by ID', function () {
+describe('user by ID', () => {
   let error;
   let response;
 
@@ -40,12 +40,12 @@ describe('user by ID', function () {
     });
   });
 
-  it('should find the user', function () {
+  it('should find the user', () => {
     expect(response).to.be.not.empty;
   });
 });
 
-describe('user by ID not found', function () {
+describe('user by ID not found', () => {
   let error;
   let response;
 
@@ -59,12 +59,12 @@ describe('user by ID not found', function () {
     });
   });
 
-  it('should not find the user', function () {
+  it('should not find the user', () => {
     expect(response).to.be.empty;
   });
 });
 
-describe('Update user', function () {
+describe('Update user', () => {
   let error;
   let response;
 
@@ -85,16 +85,16 @@ describe('Update user', function () {
     });
   });
 
-  it('should have changed the user', function () {
+  it('should have changed the user', () => {
     expect(response).to.be.not.empty;
   });
 
-  it('should have no error', function () {
+  it('should have no error', () => {
     expect(error).to.be.empty;
   });
 });
 
-describe('Update User card', function () {
+describe('Update User card', () => {
   let error;
   let response;
 
@@ -116,12 +116,12 @@ describe('Update User card', function () {
     });
   });
 
-  it('Should not work since Stripe isnt configured', function () {
+  it('Should not work since Stripe isnt configured', () => {
     expect(response).to.be.empty;
   });
 });
 
-describe('List the user plan', function () {
+describe('List the user plan', () => {
   let error;
   let response;
 
@@ -135,11 +135,11 @@ describe('List the user plan', function () {
     });
   });
 
-  it('should have a subscription', function () {
+  it('should have a subscription', () => {
     expect(response).to.be.not.empty;
   });
 
-  it('should not have an error', function () {
+  it('should not have an error', () => {
     expect(error).to.be.empty;
   });
 });

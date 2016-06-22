@@ -1,6 +1,6 @@
 'use strict';
 
-describe('API', function () {
+describe('API', () => {
   require('./autocomplete-endpoint/index.js');
   require('./profile-endpoint/index.js');
   require('./routes-endpoint/index.js');

@@ -21,22 +21,22 @@ if (typeof schemaFile !== 'string') {
 }
 
 fs.readFileAsync(path.resolve(process.cwd(), inputFile))
-  .then((data) => {
+  .then(data => {
     input = JSON.parse(data.toString());
   })
   .then(() => fs.readFileAsync(path.resolve(process.cwd(), schemaFile)))
-  .then((data) => {
+  .then(data => {
     schema = JSON.parse(data.toString());
   })
   .then(() => validator.validate(input, schema))
-  .then((errors) => {
+  .then(errors => {
     if (!errors) {
       console.log(inputFile, 'matches', schemaFile);
       return;
     }
 
     console.warn(inputFile, ' had the following errors:');
-    errors.forEach((error) => {
+    errors.forEach(error => {
       console.warn(JSON.stringify(error, null, 2));
       console.warn(error.message);
     });

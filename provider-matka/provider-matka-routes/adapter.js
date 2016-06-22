@@ -71,7 +71,7 @@ function convertItinerary(route) {
   return {
     startTime: startTime,
     endTime: endTime,
-    legs: route.$$.filter(function (leg) { return leg['#name'] !== 'LENGTH';}).map(convertLeg),
+    legs: route.$$.filter(leg => { return leg['#name'] !== 'LENGTH';}).map(convertLeg),
   };
 }
 

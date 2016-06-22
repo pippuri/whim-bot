@@ -1,6 +1,6 @@
 'use strict';
 
-describe('profile tools', function () {
+describe('profile tools', () => {
   require('./profile-create/index.js');
 });
 

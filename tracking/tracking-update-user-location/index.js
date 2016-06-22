@@ -28,10 +28,10 @@ function updateUserLocation(identityId, lat, lon, timestamp) {
 
 module.exports.respond = function (event, callback) {
   updateUserLocation('' + event.identityId, '' + event.lat, event.lon, event.timestamp)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

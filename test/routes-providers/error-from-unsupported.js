@@ -16,7 +16,7 @@ module.exports = (lambda, options) => {
     describe
   );
 
-  describeOrSkip('request for a route from an unsupported region', function () {
+  describeOrSkip('request for a route from an unsupported region', () => {
 
     const event = {
       from: '-66.6630267,140.0016841', // Dumont d'Urville Station, Antarctica
@@ -35,11 +35,11 @@ module.exports = (lambda, options) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a null response', function () {
+    it('should trigger a null response', () => {
       expect(response).to.be.null;
     });
 

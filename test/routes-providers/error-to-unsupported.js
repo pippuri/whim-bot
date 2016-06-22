@@ -16,7 +16,7 @@ module.exports = (lambda, options) => {
     describe
   );
 
-  describeOrSkip('request for a route to an unsupported region', function () {
+  describeOrSkip('request for a route to an unsupported region', () => {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office, Helsinki
@@ -35,11 +35,11 @@ module.exports = (lambda, options) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a null response', function () {
+    it('should trigger a null response', () => {
       expect(response).to.be.null;
     });
 

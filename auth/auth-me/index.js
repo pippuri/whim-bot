@@ -12,11 +12,11 @@ function getMe(principalId) {
     IdentityId: principalId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
   })
-  .then(function (response) {
+  .then(response => {
     const user = {
       principalId: principalId,
     };
-    response.Records.map(function (record) {
+    response.Records.map(record => {
       user[record.Key] = record.Value;
     });
 
@@ -26,10 +26,10 @@ function getMe(principalId) {
 
 module.exports.respond = function (event, callback) {
   getMe('' + event.principalId)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

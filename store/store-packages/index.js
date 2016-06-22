@@ -32,10 +32,10 @@ function formatResponse(input) {
 
 module.exports.respond = function (event, callback) {
   SubscriptionMgr.getProducts()
-  .then(function (response) {
+  .then(response => {
     callback(null, formatResponse(response));
   })
-  .catch(function (error) {
+  .catch(error => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(error);
   });

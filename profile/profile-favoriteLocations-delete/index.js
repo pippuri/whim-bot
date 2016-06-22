@@ -17,7 +17,7 @@ function removefavoriteLocations(event) {
   }
 
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then((response) => {
+    .then(response => {
       if (response === false) { // True means Existed
         return Promise.reject(new Error('User Not Existed'));
       }
@@ -30,7 +30,7 @@ function removefavoriteLocations(event) {
       };
       return bus.call('Dynamo-get', params);
     })
-    .then((response) => {
+    .then(response => {
       for (let i = response.Item.favoriteLocations.length - 1; i > -1; i--) {
         if (response.Item.favoriteLocations[i].name === event.payload.name) {
           response.Item.favoriteLocations.splice(i, 1);

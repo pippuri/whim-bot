@@ -37,7 +37,7 @@ function smsRequestCode(phone, provider) {
       message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink,
     }),
   })
-  .then(function (response) {
+  .then(response => {
     return Promise.resolve({
       message: 'Verification code sent to ' + phone,
       response: JSON.parse(response.Payload),
@@ -47,10 +47,10 @@ function smsRequestCode(phone, provider) {
 
 module.exports.respond = function (event, callback) {
   smsRequestCode('' + event.phone, '' + event.provider)
-  .then(function (response) {
+  .then(response => {
     callback(null, response);
   })
-  .catch(function (err) {
+  .catch(err => {
     console.log('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });

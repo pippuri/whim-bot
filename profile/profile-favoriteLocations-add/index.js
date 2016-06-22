@@ -65,7 +65,7 @@ function addfavoriteLocations(event) {
 module.exports.respond = (event, callback) => {
   return addfavoriteLocations(event)
     .then(response => callback(null, response))
-    .catch((error) => {
+    .catch(error => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });

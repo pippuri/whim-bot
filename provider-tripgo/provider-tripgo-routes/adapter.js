@@ -56,7 +56,7 @@ function convertItinerary(trip, original, templates, taxiProvider) {
   return {
     startTime: trip.depart * 1000,
     endTime: trip.arrive * 1000,
-    legs: trip.segments.map(function (segment) {
+    legs: trip.segments.map(segment => {
       return convertLeg(segment, original, templates, taxiProvider);
     }),
   };
@@ -66,7 +66,7 @@ function convertPlanFrom(original) {
   let from;
   if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
     const hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
-    (original.segmentTemplates || []).map(function (segmentTemplate) {
+    (original.segmentTemplates || []).map(segmentTemplate => {
       if (segmentTemplate.hashCode === hashCode) {
 
         // Found the starting point
@@ -92,19 +92,19 @@ module.exports = function (original, taxiProvider) {
 
   // Build template hashmap
   const templates = {};
-  (original.segmentTemplates || []).map(function (template) {
+  (original.segmentTemplates || []).map(template => {
     templates[template.hashCode] = template;
   });
 
   // Combine groups
-  original.groups.map(function (group) {
+  original.groups.map(group => {
     allTrips = allTrips.concat(group.trips);
   });
 
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
-      itineraries: allTrips.map(function (trip) {
+      itineraries: allTrips.map(trip => {
         return convertItinerary(trip, original, templates, taxiProvider);
       }).sort(compareItinerary),
     },

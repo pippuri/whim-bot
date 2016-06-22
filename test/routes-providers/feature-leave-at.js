@@ -13,7 +13,7 @@ module.exports = (lambda, options) => {
     options = {};
   }
 
-  describe('leaveAt request', function () {
+  describe('leaveAt request', () => {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office
@@ -32,23 +32,23 @@ module.exports = (lambda, options) => {
       });
     });
 
-    it('should succeed without errors', function () {
+    it('should succeed without errors', () => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', function () {
+    it('should trigger a valid response', () => {
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
     });
 
-    it('response should have route', function () {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
     if (options.taxiSupport === true) {
-      it('response should have direct taxi route', function () {
+      it('response should have direct taxi route', () => {
 
         const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
 

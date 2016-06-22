@@ -8,8 +8,8 @@ const maasUtils = require('../../lib/utils');
 function addRouteAndLegIdentifiersToResponse(response) {
   const itineraries = response.plan.itineraries || [];
 
-  itineraries.map(function (itinerary) {
-    (itinerary.legs || []).map(function (leg) {
+  itineraries.map(itinerary => {
+    (itinerary.legs || []).map(leg => {
       if (!leg.signature) {
         leg.signature = maasUtils.sign(leg, process.env.MAAS_SIGNING_SECRET);
       }
@@ -76,10 +76,10 @@ module.exports.respond = function (event, callback) {
     callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
   } else {
     getRoutes(event.identityId, event.from, event.to, event.leaveAt, event.arriveBy)
-    .then(function (response) {
+    .then(response => {
       callback(null, response);
     })
-    .catch(function (err) {
+    .catch(err => {
       console.log('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(err);
     });
