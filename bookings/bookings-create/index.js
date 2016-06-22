@@ -6,21 +6,26 @@ const request = require('request-promise-lite');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
 const knex = lib.initKnex();
+const _ = require('lodash');
 
 /**
  * Save booking to Postgre
  */
 function saveBooking(booking) {
   return knex
-    .insert(booking)
-    .into('Booking');
-}
+    .insert(booking, ['*'])
+    .into('Booking')
+    .then(booking => {
+      if (_.isArray(booking) && booking.length !== 1) {
+        return Promise.reject(new MaasError('Booking failed', 500));
+      }
 
-function getBooking(bookingId) {
-  return knex
-    .select()
-    .from('Booking')
-    .where('id', bookingId);
+      if (booking[0].tspId) {
+        delete booking[0].tspId;
+      }
+
+      return booking[0];
+    });
 }
 
 /**
@@ -89,8 +94,7 @@ function createBooking(event) {
       });
       delete transformedBooking.bookingId;
       transformedBooking = lib.removeSignatures(transformedBooking);
-      return saveBooking(transformedBooking)
-        .return(getBooking(booking.bookingId));
+      return saveBooking(transformedBooking);
     });
 }
 
