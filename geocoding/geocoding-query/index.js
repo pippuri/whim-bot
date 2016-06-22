@@ -38,7 +38,7 @@ Promise.promisifyAll(lambda, { suffix: 'Promise' });
   // Compile schema
   validate = ajv.compile(schema);
 
-})();
+}());
 
 function delegate(event) {
   const provider = 'MaaS-provider-here-geocoding';

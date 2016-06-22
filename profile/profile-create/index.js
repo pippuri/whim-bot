@@ -34,13 +34,13 @@ function persistUserData(event) {
     }
 
     const record = {
-        identityId: event.identityId,
-        balance: 0,
-        plans: [defaultPlan],
-        favoriteLocations: [],
-        phone: event.payload.phone,
-        profileImage: 'http://maas.fi/wp-content/uploads/2016/01/mugshot-sampo.png',
-      };
+      identityId: event.identityId,
+      balance: 0,
+      plans: [defaultPlan],
+      favoriteLocations: [],
+      phone: event.payload.phone,
+      profileImage: 'http://maas.fi/wp-content/uploads/2016/01/mugshot-sampo.png',
+    };
 
     const params = {
       Item: record,
