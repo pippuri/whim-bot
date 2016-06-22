@@ -10,7 +10,6 @@
   "extends": ["eslint:recommended", "airbnb"],
   "rules": {
     "no-console": 0,
-    "no-unused-vars": 0,
 
     // airbnb reset
     "prefer-template": 0,
@@ -32,7 +31,9 @@
     "no-restricted-syntax": 0,
     "import/no-unresolved": 0, // fails in Travis
 
+    "no-unused-vars": [2, { "vars": "all", "args": "none" }],
     "max-len": [2, 256],
+    "max-depth": [2, 2],
     "comma-dangle": [2, "always-multiline"],
     "strict": [2, "global"],
     "arrow-parens": [2, "as-needed"],
@@ -46,9 +47,13 @@
     "no-lonely-if": 2,
     "no-return-assign": 2,
     "no-self-compare": 2,
+    "no-use-before-define": 2,
+    "no-extend-native": 2,
+    "guard-for-in": 2,
     "no-var": 2,
     "radix": 2,
     "eol-last": 2,
+    "no-caller": 2,
     "no-bitwise": 2
   }
 }

@@ -34,7 +34,6 @@ function saveBooking(booking) {
 function createBooking(event) {
 
   let agencyId;
-  let leg;
 
   // Require identityId and phone in input user profile
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
@@ -46,7 +45,6 @@ function createBooking(event) {
   }
 
   if (event.hasOwnProperty('leg') && Object.keys(event.leg).length !== 0 && event.leg.hasOwnProperty('agencyId') && event.leg.agencyId !== '') {
-    leg = event.leg;
     agencyId = event.leg.agencyId;
   } else {
     return Promise.reject(new MaasError('Missing leg input'));
