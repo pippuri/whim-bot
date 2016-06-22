@@ -30,6 +30,7 @@
     "camelcase": 0,
     "space-in-parens": 0,
     "no-restricted-syntax": 0,
+    "import/no-unresolved": 0, // fails in Travis
 
     "max-len": [2, 256],
     "comma-dangle": [2, "always-multiline"],
