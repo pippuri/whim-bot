@@ -5,12 +5,11 @@ const jsonlint = require('gulp-jsonlint');
 const jsonclint = require('gulp-json-lint');
 const jshint = require('gulp-jshint');
 const eslint = require('gulp-eslint');
-const jscs = require('gulp-jscs');
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
 const gutil = require('gulp-util');
 
-const jsoncFiles = ['.jshintrc', '.eslintrc', '.jscsrc']; // json with comments
+const jsoncFiles = ['.jshintrc', '.eslintrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
 const jsFiles = ['**/*.js', '!**/node_modules/**/*.js', '!www/**/*.js', '!_meta/**/*.js'];
 let jsPipe;
@@ -55,20 +54,13 @@ gulp.task('eslint', () => {
     .pipe(eslint.failAfterError());
 });
 
-gulp.task('jscs', () => {
-  return getJSPipe()
-    .pipe(jscs())
-    .pipe(jscs.reporter())
-    .pipe(jscs.reporter('fail'));
-});
-
 gulp.task('mocha', () => {
   return gulp.src('test/test.js', { read: false })
     .pipe(gmocha())
     .on('error', gutil.log);
 });
 
-gulp.task('validate', ['jsonclint', 'jsonlint', 'jshint', 'eslint', 'jscs']);
+gulp.task('validate', ['jsonclint', 'jsonlint', 'jshint', 'eslint']);
 
 gulp.task('test', gulpSequence('validate', 'mocha'));
 
