@@ -80,7 +80,7 @@ module.exports = (lambda, options) => {
       expect(directTaxiRoutes).to.not.be.empty;
     });
 
-    it.skip('itineraries with taxi legs should not have agencyId Valopilkku', () => {
+    it('itineraries with taxi legs should not have agencyId Valopilkku', () => {
 
       // Valopilkku does not provide taxis in Sweden at the moment
 
