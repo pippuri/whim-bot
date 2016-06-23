@@ -44,20 +44,26 @@ function retrieveItinerary(event) {
     return Promise.reject(new MaasError('Missing identityId input', 400));
   }
 
-  if (!event.hasOwnProperty('itineraryId') || event.itineraryId === '' || !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
-    return Promise.reject(new MaasError('Missing or invalid itineraryId', 400));
+  if (event.itineraryId !== '' && !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
+    return Promise.reject(new MaasError('Invalid itineraryId format', 400));
   }
 
   let output;
 
-  return knex.select().from('Itinerary')
-    .where('id', event.itineraryId)
-    .andWhere('identityId', event.identityId)
-    .then(itineraries => {
-      const promiseQueue = [];
-      output = Object.assign([], itineraries);
-      output.map(itinerary => {
-        promiseQueue.push(
+  const withoutItineraryId = knex.select().from('Itinerary')
+    .where('identityId', event.identityId);
+
+  const withItineraryId = knex.select().from('Itinerary')
+    .where('identityId', event.identityId)
+    .andWhere('id', event.itineraryId);
+
+  const resolve = (event.itineraryId === '') ? withoutItineraryId : withItineraryId;
+
+  return resolve.then(itineraries => {
+    const promiseQueue = [];
+    output = Object.assign([], itineraries);
+    output.map(itinerary => {
+      promiseQueue.push(
           knex.from('Leg')
             .select('*')
             .where('itineraryId', itinerary.id)
@@ -69,16 +75,16 @@ function retrieveItinerary(event) {
               });
             })
         );
-      });
+    });
 
-      return Promise.all(promiseQueue);
-    })
+    return Promise.all(promiseQueue);
+  })
     .then(response => {
-      if (output.length !== 1) {
-        return Promise.reject(new MaasError('Response contain more than 1 result!', 500));
-      }
+      // if (output.length !== 1) {
+      //   return Promise.reject(new MaasError('Response contain more than 1 result!', 500));
+      // }
 
-      return output[0];
+      return output;
     });
 
 }
