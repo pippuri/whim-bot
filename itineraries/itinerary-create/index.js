@@ -1,37 +1,11 @@
 'use strict';
 
-const URL = require('url');
 const Promise = require('bluebird');
-const knexFactory = require('knex');
-const Model = require('objection').Model;
 const bus = require('../../lib/service-bus');
 const maasUtils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models');
 const tsp = require('../../lib/tsp');
-
-function initKnex() {
-  //console.log('Initialize knex');
-
-  // FIXME Change variable names to something that tells about MaaS in general
-  const connection = URL.format({
-    protocol: 'postgres:',
-    slashes: true,
-    hostname: process.env.MAAS_PGHOST,
-    port: process.env.MAAS_PGPORT,
-    auth: process.env.MAAS_PGUSER + ':' + process.env.MAAS_PGPASSWORD,
-    pathname: '/' + process.env.MAAS_PGDATABASE,
-  });
-  const config = {
-    client: 'postgresql',
-    connection: connection,
-  };
-
-  const knex = knexFactory(config);
-  Model.knex(knex);
-
-  return knex;
-}
 
 function fetchCustomerProfile(identityId) {
   //console.log(`Fetch customer profile ${identityId}`);
@@ -223,7 +197,7 @@ module.exports.respond = function (event, callback) {
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
   return Promise.all([
-    initKnex(),
+    models.init(),
     validateSignatures(event.itinerary),
     fetchCustomerProfile(event.identityId),
   ])

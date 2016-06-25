@@ -37,7 +37,7 @@
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
     "json-schema-deref": "^0.3.2",
-    "knex": "^0.11.4",
+    "knex": "^0.11.5",
     "lodash": "^4.13.1",
     "moment": "^2.13.0",
     "node-uuid": "^1.4.7",
@@ -74,8 +74,9 @@
     "serverless-plugin-autoprune": "^0.5.3",
     "serverless-plugin-revision": "^0.5.6",
     "serverless-plugin-swagger-export": "^0.5.0",
-    "serverless-webpack-plugin": "^0.4.3",
-    "webpack": "^1.13.0"
+    "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
+    "webpack": "^1.12.4",
+    "webpack-node-externals": "^1.2.0"
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",
   "license": "MIT",
