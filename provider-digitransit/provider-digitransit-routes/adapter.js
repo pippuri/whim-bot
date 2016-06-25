@@ -66,8 +66,25 @@ function compareItinerary(a, b) {
 }
 
 module.exports = function (original) {
+
   if (typeof original.plan === typeof undefined) {
-    return Promise.reject(new Error('No Digitransit plan received for these parameters'));
+
+    // Handle 404 - no routes found
+    if (original.error && original.error.id === 404) {
+      const coords = original.requestParameters.fromPlace
+        .split(',')
+        .map(parseFloat);
+
+      return Promise.resolve({
+        plan: {
+          from: { lat: coords[0], lon: coords[1] },
+          itineraries: [],
+        },
+      });
+    }
+
+    // Throw Error on all other cases
+    return Promise.reject(new Error('Invalid Digitransit query'));
   }
 
   return Promise.resolve({
