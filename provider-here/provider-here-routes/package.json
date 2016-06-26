@@ -13,6 +13,6 @@
   "devDependencies": {},
   "dependencies": {
     "bluebird": "^3.3.4",
-    "request-promise-lite": "^0.3.0"
+    "request-promise-lite": "^0.5.1"
   }
 }
