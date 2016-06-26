@@ -9,6 +9,8 @@ module.exports = {
   externals: [
     'aws-sdk',
     'pg',
+    'knex',
+    'objection',
   ],
   resolve: {
     extensions: ['', '.js'],
@@ -18,14 +20,15 @@ module.exports = {
   },
   devtool: '',
   plugins: [
-    new webpack.optimize.DedupePlugin(),
+
+    //new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
 
     // Unnecessary Objection deps
-    new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    //new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
 
     // Unnecessary Knex deps
-    new webpack.IgnorePlugin(/(commander|liftoff)/),
+    //new webpack.IgnorePlugin(/(commander|liftoff)/),
   ],
   module: {
     loaders: [
