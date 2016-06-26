@@ -7,6 +7,10 @@ const knexFactory = require('knex');
 const Model = require('objection').Model;
 const utils = require('../../lib/utils/index.js');
 
+// Require postgres, so that it will be bundled
+// eslint-disable-next-line no-unused-vars
+const pg = require('pg');
+
 function initKnex() {
   //console.log('Initialize knex');
 

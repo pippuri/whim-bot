@@ -6,6 +6,10 @@ const knex = lib.initKnex();
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 
+// Require postgres, so that it will be bundled
+// eslint-disable-next-line no-unused-vars
+const pg = require('pg');
+
 function updatePostgre(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
     return Promise.reject(new MaasError('Missing or empty identityId', 401));

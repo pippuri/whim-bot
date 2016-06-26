@@ -8,6 +8,10 @@ const lib = require('../lib/index');
 const knex = lib.initKnex();
 const _ = require('lodash');
 
+// Require postgres, so that it will be bundled
+// eslint-disable-next-line no-unused-vars
+const pg = require('pg');
+
 /**
  * Save booking to Postgre
  */
