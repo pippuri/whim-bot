@@ -1,9 +1,9 @@
 {
-  "name": "",
+  "name": "itinerary-get",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
+  "description": "Itinerary retrieval endpoint",
   "author": "James Nguyen",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,7 +12,5 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4",
-    "knex": "^0.11.7"
   }
 }

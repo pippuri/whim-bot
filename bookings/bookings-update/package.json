@@ -1,8 +1,8 @@
 {
-  "name": "tracking-get-active-itinerary",
+  "name": "bookings-update",
   "version": "0.0.1",
-  "description": "Tracking get active itinerary endpoint",
-  "author": "Lauri Svan",
+  "description": "Bookings update endpoint",
+  "author": "James Nguyen",
   "license": "UNLICENSED",
   "private": true,
   "repository": {

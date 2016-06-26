@@ -1,8 +1,8 @@
 {
-  "name": "tracking-get-active-itinerary",
+  "name": "",
   "version": "0.0.1",
-  "description": "Tracking get active itinerary endpoint",
-  "author": "Lauri Svan",
+  "description": "Serverless module dependencies",
+  "author": "Karl Viiburg",
   "license": "UNLICENSED",
   "private": true,
   "repository": {

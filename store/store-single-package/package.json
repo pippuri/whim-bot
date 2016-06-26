@@ -1,7 +1,7 @@
 {
-  "name": "store-packages",
+  "name": "store-single-package",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
+  "description": "Serverless single package retrieval",
   "author": "James Nguyen",
   "license": "UNLICENSED",
   "private": true,

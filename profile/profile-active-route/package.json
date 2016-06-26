@@ -1,9 +1,9 @@
 {
-  "name": "",
+  "name": "profile-active-route",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
+  "description": "Active route retrieval endpoint",
   "author": "Musie Kebede",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,6 +12,5 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4"
   }
 }

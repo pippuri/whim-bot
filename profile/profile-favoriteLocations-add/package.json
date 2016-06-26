@@ -1,8 +1,8 @@
 {
-  "name": "tracking-get-active-itinerary",
+  "name": "profile-favouriteLocations-add",
   "version": "0.0.1",
-  "description": "Tracking get active itinerary endpoint",
-  "author": "Lauri Svan",
+  "description": "Favourite locations creation endpoint",
+  "author": "James Nguyen",
   "license": "UNLICENSED",
   "private": true,
   "repository": {

@@ -2,8 +2,8 @@
   "name": "",
   "version": "0.0.1",
   "description": "Serverless module dependencies",
-  "author": "me",
-  "license": "MIT",
+  "author": "Kenneth Falck",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,6 +12,5 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.3"
   }
 }

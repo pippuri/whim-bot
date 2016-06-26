@@ -1,9 +1,9 @@
 {
-  "name": "",
+  "name": "auth-me",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
+  "description": "Web authorization endpoint",
   "author": "me",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,7 +12,6 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4",
     "jsonwebtoken": "^5.7.0"
   }
 }

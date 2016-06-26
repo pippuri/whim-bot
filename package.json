@@ -77,10 +77,10 @@
     "webpack": "^1.12.4"
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "name": "MaaS",
   "optionalDependencies": {},
-  "private": false,
+  "private": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maasglobal/maas-backend.git"
