@@ -1,8 +1,9 @@
 {
-  "name": "",
+  "name": "bookings-retrieve",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
-  "license": "MIT",
+  "description": "Bookings retrieve endpoint",
+  "author": "Lauri Svan",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -11,8 +12,5 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.4.0",
-    "knex": "^0.11.5",
-    "request-promise-lite": "^0.5.0"
   }
 }

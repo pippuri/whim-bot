@@ -1,9 +1,9 @@
 {
-  "name": "",
+  "name": "auth-sms-login",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
-  "author": "me",
-  "license": "MIT",
+  "description": "SMS login endpoint",
+  "author": "Kenneth Falck, Lauri Svan",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,7 +12,6 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4",
     "jsonwebtoken": "^5.7.0"
   }
 }

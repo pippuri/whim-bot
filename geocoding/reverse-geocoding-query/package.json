@@ -1,8 +1,8 @@
 {
-  "name": "tracking-get-active-itinerary",
+  "name": "geocoding-query",
   "version": "0.0.1",
-  "description": "Tracking get active itinerary endpoint",
-  "author": "Lauri Svan",
+  "description": "Geocoding endpoint",
+  "author": "Mohammed Shahwan, Lauri Svan",
   "license": "UNLICENSED",
   "private": true,
   "repository": {

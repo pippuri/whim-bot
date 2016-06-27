@@ -1,9 +1,9 @@
 {
-  "name": "",
+  "name": "profile-info",
   "version": "0.0.1",
-  "description": "Serverless module dependencies",
+  "description": "Profile info endpoint",
   "author": "Musie Kebede, James Nguyen",
-  "license": "MIT",
+  "license": "UNLICENSED",
   "private": true,
   "repository": {
     "type": "git",
@@ -12,7 +12,5 @@
   "keywords": [],
   "devDependencies": {},
   "dependencies": {
-    "bluebird": "^3.3.4",
-    "lodash": "^4.12.0"
   }
 }
