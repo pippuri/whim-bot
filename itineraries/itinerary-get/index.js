@@ -44,7 +44,7 @@ function retrieveItinerary(event) {
     return Promise.reject(new MaasError('Missing identityId input', 400));
   }
 
-  if (event.itineraryId !== '' && !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
+  if (event.itineraryId !== '' && !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/i)) {
     return Promise.reject(new MaasError('Invalid itineraryId format', 400));
   }
 
