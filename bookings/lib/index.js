@@ -3,7 +3,6 @@
 const bus = require('../../lib/service-bus');
 const maasUtils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
-const URL = require('url');
 const Promise = require('bluebird');
 const knexFactory = require('knex');
 const Model = require('objection').Model;
@@ -48,16 +47,20 @@ function initKnex() {
   //console.log('Initialize knex');
 
   // FIXME Change variable names to something that tells about MaaS in general
-  const connection = URL.format({
-    protocol: 'postgres:',
-    slashes: true,
-    hostname: process.env.MAAS_PGHOST,
-    port: process.env.MAAS_PGPORT,
-    auth: process.env.MAAS_PGUSER + ':' + process.env.MAAS_PGPASSWORD,
-    pathname: '/' + process.env.MAAS_PGDATABASE,
-  });
+  const connection = {
+    host: process.env.MAAS_PGHOST,
+    user: process.env.MAAS_PGUSER,
+    password: process.env.MAAS_PGPASSWORD,
+    database: process.env.MAAS_PGDATABASE,
+  };
   const config = {
-    client: 'postgresql',
+    debug: true,
+    client: 'pg',
+    pool: {
+      min: 1,
+      max: 7,
+    },
+    acquireConnectionTimeout: 10000,
     connection: connection,
   };
 

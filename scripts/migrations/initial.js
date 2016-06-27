@@ -71,8 +71,5 @@ exports.down = function (knex) {
   return knex.schema
     .dropTableIfExists('Leg')
     .dropTableIfExists('Itinerary')
-    .dropTableIfExists('Booking')
-    .dropTableIfExists('Leg')
-    .dropTableIfExists('Itinerary')
     .dropTableIfExists('Booking');
 };
