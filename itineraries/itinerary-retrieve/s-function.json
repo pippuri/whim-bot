@@ -25,7 +25,8 @@
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
-          "itineraryId": "$input.params('itineraryId')"
+          "itineraryId": "$input.params('itineraryId')",
+          "filter": "$input.params('filter')"
         }
       },
       "responses": {
