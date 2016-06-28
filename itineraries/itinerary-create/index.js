@@ -38,7 +38,12 @@ function filterBookableLegs(legs) {
 
       // All the rest (MaaS should provide a ride)
       default:
-        return true;
+        if (tsp.findProvider(leg.agencyId)) {
+          return true;
+        }
+
+        console.warn(`Could not find a TSP for ${leg.agencyId}`);
+        return false;
     }
   });
 }

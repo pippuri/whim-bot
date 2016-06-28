@@ -19,5 +19,4 @@ describe('routes endpoint', function () {
   testLeaveAt(lambda);
   testOrsa(lambda);
   testRovaniemi(lambda);
-
 });
