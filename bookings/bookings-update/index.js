@@ -2,13 +2,19 @@
 
 const Promise = require('bluebird');
 const lib = require('../lib/index');
-const knex = lib.initKnex();
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
 const pg = require('pg');
+
+// Variable to hold knex connection
+let knex;
+
+// Allowed data
+const allowedFields = ['state', 'token', 'leg'];
+const returnField = ['tspId', 'id'];
 
 function updatePostgre(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
@@ -23,9 +29,6 @@ function updatePostgre(event) {
     return Promise.reject(new MaasError('Missing or empty payload', 400));
   }
 
-  const allowedFields = ['state', 'token', 'leg'];
-  const allowedReturn = ['tspId'];
-
   // Compare input key vs allowed keys
   Object.keys(event.payload).map(key => { // eslint-disable-line consistent-return
     if (!_.includes(allowedFields, key.toLowerCase())) {
@@ -34,23 +37,27 @@ function updatePostgre(event) {
   });
 
   return knex
-    .update(event.payload, allowedReturn.concat(Object.keys(event.payload)))
+    .update(event.payload, returnField.concat(Object.keys(event.payload)))
     .into('Booking')
     .where({
       id: event.bookingId,
     })
     .then(response => {
-      if (response.length > 1) {
-        return Promise.reject(new MaasError('Database returns more than 1 result, server error', 500));
+      if (response.length !== 1) {
+        return Promise.reject(new MaasError('Database returns more or less than 1 result, server error', 500));
       }
-
+      console.warn(response);
       const booking = response[0];
       return booking;
     });
 }
 
 module.exports.respond = (event, callback) => {
-  updatePostgre(event)
+  return lib.initKnex()
+    .then(_knex => {
+      knex = _knex;
+      return updatePostgre(event);
+    })
     .then(response => {
       callback(null, response);
     })

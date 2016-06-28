@@ -5,12 +5,14 @@ const maasUtils = require('../../lib/utils');
 const request = require('request-promise-lite');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
-const knex = lib.initKnex();
 const _ = require('lodash');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
 const pg = require('pg');
+
+// Global knex connection variable
+let knex;
 
 /**
  * Save booking to Postgre
@@ -102,7 +104,11 @@ function createBooking(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return createBooking(event)
+  return lib.initKnex()
+    .then(_knex => {
+      knex = _knex;
+      return createBooking(event);
+    })
     .then(response => {
       callback(null, response);
     })
