@@ -5,7 +5,7 @@ const Promise = require('bluebird');
 
 // Library
 const SubscriptionMgr = require('../../lib/subscription-manager');
-const lib = require('../../lib/utilities/index');
+const lib = require('../../lib/utils/index');
 
 function getSingleProduct(event) {
   if (event.type === 'plan') {

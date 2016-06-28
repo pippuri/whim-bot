@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 
-//const lib = require('../../lib/utilities');
+//const lib = require('../../lib/utils');
 const bus = require('../../lib/service-bus');
 
 function updateUserData(event) {

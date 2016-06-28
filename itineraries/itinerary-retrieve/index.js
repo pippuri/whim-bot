@@ -3,8 +3,8 @@
 const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils/index');
-const lib = require('../../bookings/lib/index');
 const moment = require('moment');
+const models = require('../../lib/models/index');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
@@ -46,8 +46,12 @@ function recoverLegFromItinerary(itinerary) {
    .where('itineraryId', itinerary.id)
    .then(legs => {
      itinerary.legs = legs;
+     itinerary.startTime = new Date(itinerary.startTime).valueOf();
+     itinerary.endTime = new Date(itinerary.endTime).valueOf();
      itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
      legs.map(leg => {
+       leg.startTime = new Date(leg.startTime).valueOf();
+       leg.endTime = new Date(leg.endTime).valueOf();
        leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
      });
    });
@@ -110,7 +114,7 @@ function retrieveItinerary(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return lib.initKnex()
+  return models.init()
     .then(_knex => {
       knex = _knex;
       return retrieveItinerary(event);

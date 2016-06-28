@@ -1,11 +1,11 @@
 {
-  "name": "bookings-retrieve",
+  "name": "itinerary-update",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: maas-transport-booking",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
-  "timeout": 6,
+  "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
   "custom": {
@@ -13,20 +13,15 @@
   },
   "endpoints": [
     {
-      "path": "bookings/{bookingId}",
-      "method": "GET",
+      "path": "itinerary",
+      "method": "PUT",
       "type": "AWS",
-      "authorizationType": "CUSTOM",
-      "authorizerFunction": "auth-custom-authorizer",
+      "authorizationType": "none",
+      "authorizerFunction": false,
       "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.path.bookingId": "method.request.path.bookingId"
-      },
+      "requestParameters": {},
       "requestTemplates": {
-        "application/json": {
-          "identityId": "$context.authorizer.principalId",
-          "bookingId": "$input.params('bookingId')"
-        }
+        "application/json": ""
       },
       "responses": {
         "400": {
@@ -46,5 +41,9 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

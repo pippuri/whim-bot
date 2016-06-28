@@ -1,9 +1,9 @@
 'use strict';
 
 const Promise = require('bluebird');
-const lib = require('../lib/index');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
+const models = require('../../lib/models/index');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
@@ -16,7 +16,7 @@ let knex;
 const allowedFields = ['state', 'token', 'leg'];
 const returnField = ['tspId', 'id'];
 
-function updatePostgre(event) {
+function updateBooking(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
     return Promise.reject(new MaasError('Missing or empty identityId', 401));
   }
@@ -44,19 +44,18 @@ function updatePostgre(event) {
     })
     .then(response => {
       if (response.length !== 1) {
-        return Promise.reject(new MaasError('Database returns more or less than 1 result, server error', 500));
+        return Promise.reject(new MaasError(`Database returns more or less than 1 result with id ${event.bookingId}, server error`, 500));
       }
-      console.warn(response);
       const booking = response[0];
       return booking;
     });
 }
 
 module.exports.respond = (event, callback) => {
-  return lib.initKnex()
+  return models.init()
     .then(_knex => {
       knex = _knex;
-      return updatePostgre(event);
+      return updateBooking(event);
     })
     .then(response => {
       callback(null, response);
