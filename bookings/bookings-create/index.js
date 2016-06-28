@@ -1,11 +1,13 @@
 'use strict';
 
 const Promise = require('bluebird');
-const maasUtils = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const request = require('request-promise-lite');
 const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
 const _ = require('lodash');
+const tsp = require('../../lib/tsp/index');
+const models = require('../../lib/models/index');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
@@ -67,7 +69,7 @@ function createBooking(event) {
       phone: profile.phone,
     };
     const booking = {
-      bookingId: maasUtils.createId(),
+      bookingId: utils.createId(),
       state: 'NEW',
       leg: validatedInput.leg,
       customer: customer,
@@ -75,8 +77,8 @@ function createBooking(event) {
       meta: validatedInput.meta,
       signature: validatedInput.signature,
     };
-    booking.leg.id = maasUtils.createId();
-    return [lib.findAgency(agencyId), Promise.resolve(booking)];
+    booking.leg.id = utils.createId();
+    return [tsp.findAgency(agencyId), Promise.resolve(booking)];
   })
   .spread((tsp, booking) => {
     console.log('Booking with this order information: ', booking);
@@ -104,7 +106,7 @@ function createBooking(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return lib.initKnex()
+  return models.init()
     .then(_knex => {
       knex = _knex;
       return createBooking(event);

@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
-const lib = require('../../lib/utilities/index');
+const lib = require('../../lib/utils/index');
 const bus = require('../../lib/service-bus/index');
 
 function setActivePlan(event) {

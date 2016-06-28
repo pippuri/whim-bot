@@ -23,7 +23,10 @@
         "integration.request.path.bookingId": "method.request.path.bookingId"
       },
       "requestTemplates": {
-        "application/json": "\"identityId\": \"$context.authorizer.principalId\", \"payload\":{\"bookingId\":\"$input.params('bookingId')\"}"
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "bookingId": "$input.params('bookingId')"
+        }
       },
       "responses": {
         "400": {

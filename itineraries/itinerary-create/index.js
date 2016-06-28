@@ -2,10 +2,10 @@
 
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
-const maasUtils = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
-const models = require('../../lib/models');
-const tsp = require('../../lib/tsp');
+const models = require('../../lib/models/index');
+const tsp = require('../../lib/tsp/index');
 
 function fetchCustomerProfile(identityId) {
   //console.log(`Fetch customer profile ${identityId}`);
@@ -56,7 +56,7 @@ function validateSignatures(itinerary) {
   const withoutSignature = Object.assign({}, itinerary);
   delete withoutSignature.signature;
 
-  const computedSignature = maasUtils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
+  const computedSignature = utils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
 
   if (originalSignature === computedSignature) {
     return Promise.resolve(itinerary);
@@ -110,9 +110,9 @@ function updateBalance(identityId, newBalance) {
 
 function annotateIdentifiers(itinerary) {
   // Assign fresh identifiers for the itinerary and legs
-  itinerary.id = maasUtils.createId();
+  itinerary.id = utils.createId();
   itinerary.legs.forEach(leg => {
-    leg.id = maasUtils.createId();
+    leg.id = utils.createId();
   });
 
   return itinerary;

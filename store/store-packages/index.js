@@ -2,7 +2,7 @@
 
 // Library
 const SubscriptionMgr = require('../../lib/subscription-manager');
-const lib = require('../../lib/utilities/index');
+const lib = require('../../lib/utils/index');
 
 function formatResponse(input) {
 

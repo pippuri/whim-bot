@@ -1,9 +1,9 @@
 'use strict';
 
 const Promise = require('bluebird');
-const lib = require('../lib/index');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
+const models = require('../../lib/models/index');
 
 // Require postgres, so that it will be bundled
 // eslint-disable-next-line no-unused-vars
@@ -53,7 +53,7 @@ function updatePostgre(event) {
 }
 
 module.exports.respond = (event, callback) => {
-  return lib.initKnex()
+  return models.init()
     .then(_knex => {
       knex = _knex;
       return updatePostgre(event);

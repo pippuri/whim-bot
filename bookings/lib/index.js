@@ -1,70 +1,9 @@
 'use strict';
 
 const bus = require('../../lib/service-bus');
-const maasUtils = require('../../lib/utils');
+const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const Promise = require('bluebird');
-const knexFactory = require('knex');
-const Model = require('objection').Model;
-const _ = require('lodash');
-const tspData = require('../lib/tspData.json');
-const MaasError = require('../../lib/errors/MaaSError');
-
-/**
- * Find agency by their id
- * Note: It's easier to have this returning a Promise <-Easier to read->
- */
-function findAgency(agencyId) {
-
-  const tspIdList = Object.keys(tspData).map(tspDatum => {
-    return tspData[tspDatum].agencyId;
-  });
-
-  const tspIdListUpperCase = tspIdList.map(id => {
-    return id.toUpperCase();
-  });
-
-  if (!_.includes(tspIdListUpperCase, agencyId.toUpperCase())) {
-    return Promise.reject(new MaasError(`AgencyId "${agencyId}" not exist`, 500));
-  }
-
-  if (!_.includes(tspIdListUpperCase, agencyId.toUpperCase())) {
-    return Promise.reject(new MaasError(`Invalid input agencyId, do you mean "${tspIdList[tspIdListUpperCase.indexOf(agencyId.toUpperCase())]}"?`, 400));
-  }
-
-  const agencyIdList = Object.keys(tspData).map(key => {
-    return tspData[key].agencyId;
-  });
-
-  if (_.includes(agencyIdList, agencyId)) {
-    return Promise.resolve(tspData[agencyId]);
-  }
-
-  return Promise.reject('No suitable TSP found with id ' + agencyId);
-}
-
-function initKnex() {
-  //console.log('Initialize knex');
-
-  // FIXME Change variable names to something that tells about MaaS in general
-  const connection = {
-    host: process.env.MAAS_PGHOST,
-    user: process.env.MAAS_PGUSER,
-    password: process.env.MAAS_PGPASSWORD,
-    database: process.env.MAAS_PGDATABASE,
-  };
-  const config = {
-    debug: true,
-    client: 'pg',
-    acquireConnectionTimeout: 10000,
-    connection: connection,
-  };
-
-  const knex = knexFactory(config);
-  Model.knex(knex);
-
-  return Promise.resolve(knex);
-}
 
 function fetchCustomerProfile(identityId) {
   //console.log(`Fetch customer profile ${identityId}`);
@@ -87,7 +26,7 @@ function validateSignatures(input) {
   const withoutSignature = Object.assign({}, input);
   delete withoutSignature.signature;
 
-  const computedSignature = maasUtils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
+  const computedSignature = utils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
 
   if (originalSignature === computedSignature) {
     return Promise.resolve(input);
@@ -135,8 +74,6 @@ function updateBalance(identityId, newBalance) {
 }
 
 module.exports = {
-  findAgency: findAgency,
-  initKnex: initKnex,
   fetchCustomerProfile: fetchCustomerProfile,
   validateSignatures: validateSignatures,
   removeSignatures: removeSignatures,

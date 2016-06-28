@@ -4,8 +4,8 @@ const request = require('request-promise-lite');
 const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
-const maasUtils = require('../../lib/utils');
-const lib = require('../lib/index');
+const utils = require('../../lib/utils/index');
+const tsp = require('../../lib/tsp/index');
 
 function getAgencyProductOptions(event) {
 
@@ -31,7 +31,7 @@ function getAgencyProductOptions(event) {
     }
   });
 
-  return lib.findAgency(event.agencyId)
+  return tsp.findAgency(event.agencyId)
     .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options + queryString))
     .then(options => {
       if (!_.isArray(options)) {
@@ -40,7 +40,7 @@ function getAgencyProductOptions(event) {
 
       options.forEach(option => {
         if (typeof option === typeof {}) {
-          option.signature = maasUtils.sign(option, process.env.MAAS_SIGNING_SECRET);
+          option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
         }
       });
     });
