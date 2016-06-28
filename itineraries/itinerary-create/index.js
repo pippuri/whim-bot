@@ -38,7 +38,7 @@ function filterBookableLegs(legs) {
 
       // All the rest (MaaS should provide a ride)
       default:
-        if (tsp.findProvider(leg.agencyId)) {
+        if (tsp.findAgency(leg.agencyId)) {
           return true;
         }
 

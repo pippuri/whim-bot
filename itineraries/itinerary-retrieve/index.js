@@ -46,8 +46,12 @@ function recoverLegFromItinerary(itinerary) {
    .where('itineraryId', itinerary.id)
    .then(legs => {
      itinerary.legs = legs;
+     itinerary.startTime = new Date(itinerary.startTime).valueOf();
+     itinerary.endTime = new Date(itinerary.endTime).valueOf();
      itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
      legs.map(leg => {
+       leg.startTime = new Date(leg.startTime).valueOf();
+       leg.endTime = new Date(leg.endTime).valueOf();
        leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
      });
    });
