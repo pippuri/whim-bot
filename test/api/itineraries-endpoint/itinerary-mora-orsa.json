@@ -1,0 +1,70 @@
+{  
+  "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "itinerary": {  
+    "startTime":1485413653000,
+    "endTime":1485415333000,
+    "legs":[  
+      {  
+        "startTime":1485413653000,
+        "endTime":1485414300000,
+        "mode":"WALK",
+        "from":{  
+          "lon":14.56142,
+          "lat":61.01049
+        },
+        "to":{  
+          "name":"Mora station",
+          "lon":14.55874,
+          "lat":61.0088
+        },
+        "legGeometry":{  
+          "points":"qbksJ{_{wAgBoC??v@BfBCt@D^FbAT??m@vVMzH??|@BT\\JXHX\\MHKRkNV?"
+        },
+        "signature":"e9f9957581378eba88f75c9f272b3527a8f1010114d9a7d6edc363a1be16c3fe"
+      },
+      {  
+        "startTime":1485414300000,
+        "endTime":1485415200000,
+        "mode":"BUS",
+        "from":{  
+          "name":"Mora station",
+          "lon":14.55874,
+          "lat":61.0088
+        },
+        "to":{  
+          "name":"Orsa busstation",
+          "lon":14.61986,
+          "lat":61.11794
+        },
+        "route":"46",
+        "routeShortName":"46",
+        "routeLongName":"",
+        "signature":"45168c1d8d149a41e9913d7a857aaf5378161e2a9cab60b65bffb63b0acdf84a"
+      },
+      {  
+        "startTime":1485415200000,
+        "endTime":1485415333000,
+        "mode":"WALK",
+        "from":{  
+          "name":"Orsa busstation",
+          "lon":14.61986,
+          "lat":61.11794
+        },
+        "to":{  
+          "name":"Centralgatan",
+          "lon":14.6195,
+          "lat":61.11924
+        },
+        "legGeometry":{  
+          "points":"cb`tJamfxADOi@aBK?oAGs@z@?lA?V"
+        },
+        "signature":"55e662e4b99f26f4e1d17da72f3fb2470562cb72e7157ad71135fd92b633170c"
+      }
+    ],
+    "fare":{  
+      "points":null,
+      "co2":0
+    },
+    "signature":"904fddb7e1855a13fd32485c3b4264539972a7d998040cda297157dbb8f159c7"
+  }
+}
