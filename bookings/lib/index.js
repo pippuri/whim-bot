@@ -56,10 +56,6 @@ function initKnex() {
   const config = {
     debug: true,
     client: 'pg',
-    pool: {
-      min: 1,
-      max: 7,
-    },
     acquireConnectionTimeout: 10000,
     connection: connection,
   };
@@ -67,7 +63,7 @@ function initKnex() {
   const knex = knexFactory(config);
   Model.knex(knex);
 
-  return knex;
+  return Promise.resolve(knex);
 }
 
 function fetchCustomerProfile(identityId) {
