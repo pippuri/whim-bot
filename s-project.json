@@ -15,6 +15,15 @@
     },
     "client": {
         "bucketName": "staticfiles.maas.global"
+    },
+    "slack": {
+      "token": "xoxb-55270714182-UY7cMnTgSTucKTnnzOvW4Gcl",
+      "channel": "serverless",
+      "endpoints": true,
+      "functions": {
+        "deployed": true,
+        "removed": true
+      }
     }
   },
   "plugins": [
@@ -26,7 +35,8 @@
     "serverless-meta-sync",
     "serverless-plugin-revision",
     "serverless-plugin-autoinstall",
-    "serverless-client-s3"
+    "serverless-client-s3",
+    "serverless-slack-plugin"
   ],
   "swaggerExport": {
     "host": "api.dev.maas.global",
