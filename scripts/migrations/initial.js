@@ -5,7 +5,7 @@ exports.up = function (knex) {
     .createTable('Itinerary', table => {
       table.uuid('id').primary();
       table.string('identityId').index().notNullable();
-      table.string('state').notNullable();
+      table.string('state');
 
       // OTP specific
       table.timestamp('startTime').index();
@@ -25,7 +25,7 @@ exports.up = function (knex) {
       // TODO Find alter tabel syntax where to create the leg reference
       //table.uuid('legId').references('Leg.id');
 
-      table.string('state').notNullable();
+      table.string('state');
       table.jsonb('leg');
       table.jsonb('customer');
       table.jsonb('token');
@@ -55,7 +55,7 @@ exports.up = function (knex) {
       table.uuid('id').primary();
       table.uuid('itineraryId').references('Itinerary.id');
       table.uuid('bookingId').references('Booking.id');
-      table.string('state').notNullable();
+      table.string('state');
 
       // OTP specific
       table.jsonb('from');
@@ -76,6 +76,14 @@ exports.up = function (knex) {
       // Extra
       table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
       table.timestamp('modified');
+    })
+    .createTable('StateLog', table => {
+      table.uuid('id').primary();
+      table.string('tableName');
+      table.uuid('itemId').notNullable();
+      table.string('from').notNullable();
+      table.string('to').notNullable();
+      table.timestamp('created').notNullable();
     });
 };
 
@@ -83,5 +91,6 @@ exports.down = function (knex) {
   return knex.schema
     .dropTableIfExists('Leg')
     .dropTableIfExists('Itinerary')
-    .dropTableIfExists('Booking');
+    .dropTableIfExists('Booking')
+    .dropTableIfExists('StateLog');
 };
