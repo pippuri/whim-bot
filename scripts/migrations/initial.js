@@ -5,11 +5,16 @@ exports.up = function (knex) {
     .createTable('Itinerary', table => {
       table.uuid('id').primary();
       table.string('identityId').index().notNullable();
+      table.string('state').notNullable();
 
       // OTP specific
       table.timestamp('startTime').index();
       table.timestamp('endTime');
       table.jsonb('fare');
+
+      // Extra
+      table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
+      table.timestamp('modified');
     })
     .createTable('Booking', table => {
       table.uuid('id').primary();
@@ -26,6 +31,8 @@ exports.up = function (knex) {
       table.jsonb('token');
       table.jsonb('terms');
       table.jsonb('meta');
+
+      // Extra
       table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
       table.timestamp('modified');
     })
@@ -48,6 +55,7 @@ exports.up = function (knex) {
       table.uuid('id').primary();
       table.uuid('itineraryId').references('Itinerary.id');
       table.uuid('bookingId').references('Booking.id');
+      table.string('state').notNullable();
 
       // OTP specific
       table.jsonb('from');
@@ -64,6 +72,10 @@ exports.up = function (knex) {
       table.string('routeLongName');
       table.string('agencyId');
       table.jsonb('legGeometry');
+
+      // Extra
+      table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
+      table.timestamp('modified');
     });
 };
 
