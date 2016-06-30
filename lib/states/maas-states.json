@@ -1,0 +1,88 @@
+{
+  "Booking": {
+    "PLANNED": {
+      "description": "The booking has been planned for purchase.",
+      "nested": ["PENDING"]
+    },
+    "PENDING": {
+      "description": "The booking is pending for availability response from tsp. This state can be skipped depends on the tsp.",
+      "nested": ["BOOKED", "REJECTED"]
+    },
+    "BOOKED": {
+      "description": "Ticket/ride reserved from tsp, waiting to go into active.",
+      "nested": ["ACTIVATED", "CANCELLED"]
+    },
+    "ACTIVATED": {
+      "description": "Booking is activated, cannot be CANCELLED, but can be ABANDONED.",
+      "nested": ["CANCELLED", "EXPIRED"]
+    },
+    "CANCELLED": {
+      "description": "Booking is cancelled, will try to go into REFUNDING state.",
+      "nested": ["REFUNDING"]
+    },
+    "EXPIRED": {
+      "description": "The activated booking has expired.",
+      "nested": []
+    },
+    "REFUNDING": {
+      "description": "Issusing for a refund due to a CANCELLED or ABANDONED booking.",
+      "nested": ["REFUNDED", "REJECTED"]
+    },
+    "REFUNDED": {
+      "description": "The issued refund has been accepted and refunded.",
+      "nested": []
+    },
+    "REJECTED": {
+      "description": "The issued refund has been rejected.",
+      "nested": []
+    }
+  },
+  "Leg": {
+    "PLANNED": {
+      "description": "The leg has been planned and saved.",
+      "nested": ["BOOKED"]
+    },
+    "BOOKED": {
+      "description": "The leg has been BOOKED",
+      "nested": ["ACTIVATED"]
+    },
+    "ACTIVATED": {
+      "description": "The leg has been ACTIVATED",
+      "nested": ["CANCELLED", "FINISHED"]
+    },
+    "CANCELLED": {
+      "description": "The leg has been CANCELLED",
+      "nested": []
+    },
+    "FINISHED": {
+      "description": "The leg has been FINISHED",
+      "nested": []
+    }
+  },
+  "Itinerary": {
+    "PLANNED": {
+      "description": "The Itinerary has been planned and saved",
+      "nested": ["BOOKED"]
+    },
+    "BOOKED": {
+      "description": "The Itinerary has been booked",
+      "nested": ["ACTIVATED"]
+    },
+    "ACTIVATED": {
+      "description": "The Itinerary has been ACTIVATED",
+      "nested": ["CANCELLED", "FINISHED", "ABANDONED"]
+    },
+    "CANCELLED": {
+      "description": "The Itinerary has been CANCELLED",
+      "nested": []
+    },
+    "FINISHED": {
+      "description": "The Itinerary has been FINISHED",
+      "nested": []
+    },
+    "ABANDONED": {
+      "description": "The Itinerary has been ABANDONED, one or more leg has been ABANDONED",
+      "nested": []
+    }
+  }
+}
