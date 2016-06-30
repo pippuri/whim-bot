@@ -40,7 +40,7 @@
   "Leg": {
     "PLANNED": {
       "description": "The leg has been planned and saved.",
-      "nested": ["BOOKED"]
+      "nested": ["BOOKED", "CANCELLED"]
     },
     "BOOKED": {
       "description": "The leg has been BOOKED",
@@ -62,7 +62,7 @@
   "Itinerary": {
     "PLANNED": {
       "description": "The Itinerary has been planned and saved",
-      "nested": ["BOOKED"]
+      "nested": ["BOOKED", "CANCELLED"]
     },
     "BOOKED": {
       "description": "The Itinerary has been booked",

@@ -81,8 +81,8 @@ exports.up = function (knex) {
       table.uuid('id').primary();
       table.string('tableName');
       table.uuid('itemId').notNullable();
-      table.string('from').notNullable();
-      table.string('to').notNullable();
+      table.string('oldState').notNullable();
+      table.string('newState').notNullable();
       table.timestamp('created').notNullable();
     });
 };
