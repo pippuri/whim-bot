@@ -36,6 +36,9 @@ function updateBooking(event) {
     }
   });
 
+  const modifiedTime = new Date().getTime();
+  event.payload.modified = new Date(modifiedTime).toISOString();
+
   return knex
     .update(event.payload, returnField.concat(Object.keys(event.payload)))
     .into('Booking')
