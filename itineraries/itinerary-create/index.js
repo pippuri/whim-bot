@@ -6,6 +6,10 @@ const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const tsp = require('../../lib/tsp/index');
+const stateLib = require('../../lib/states/index');
+
+// Variable to store knex connection information
+let knex;
 
 function fetchCustomerProfile(identityId) {
   //console.log(`Fetch customer profile ${identityId}`);
@@ -124,6 +128,36 @@ function annotateIdentityId(itinerary, identityId) {
   return itinerary;
 }
 
+function annotateLegsState(itinerary, state) {
+  const queue = [];
+  itinerary.legs.map(leg => {
+
+    // Starting state
+    leg.state = 'START';
+    queue.push(stateLib.changeState('Leg', knex, leg.id, leg.state, state));
+  });
+  return Promise.all(queue)
+   .then(response => {
+     itinerary.legs.map(leg => {
+       leg.state = state;
+     });
+     return itinerary;
+   });
+}
+
+function annotateItineraryState(itinerary, state) {
+  // Starting state
+  itinerary.state = 'START';
+  return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, state)
+    .then(_response => {
+      itinerary.state = state;
+      return annotateLegsState(itinerary, state);
+    })
+    .then(itinerary => {
+      return itinerary;
+    });
+}
+
 function createAndAppendBookings(itinerary, profile) {
 
   const completed = [];
@@ -138,8 +172,12 @@ function createAndAppendBookings(itinerary, profile) {
         booking => {
           //console.log(`Booking for ${leg.id} succeeded`);
 
-          completed.push(leg);
-          leg.booking = booking;
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'BOOKED')
+            .then(response => {
+              completed.push(leg);
+              leg.state = 'BOOKED';
+              leg.booking = booking;
+            });
         },
 
         error => {
@@ -153,10 +191,14 @@ function createAndAppendBookings(itinerary, profile) {
   function cancelOneBooking(leg) {
     return tsp.cancelBooking(leg.booking)
       .then(
-        booking => cancelled.push(leg),
+        booking => {
+          cancelled.push(leg);
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'CANCELLED');
+        },
 
         error => {
           console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'BOOKED');
         }
       );
   }
@@ -167,7 +209,8 @@ function createAndAppendBookings(itinerary, profile) {
       // In case of success, return the itinerary. In case of failure,
       // cancel the completed bookings.
       if (failed.length === 0) {
-        return Promise.resolve(itinerary);
+        return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, 'BOOKED')
+          .then(response => Promise.resolve(itinerary));
       }
 
       return Promise.map(completed, cancelOneBooking)
@@ -206,9 +249,9 @@ module.exports.respond = function (event, callback) {
     validateSignatures(event.itinerary),
     fetchCustomerProfile(event.identityId),
   ])
-  .spread((knex, valid, profile) => {
+  .spread((_knex, valid, profile) => {
 
-    context.knex = knex;
+    knex = _knex;
     context.profile = profile;
 
     // Assign our inputs
@@ -218,8 +261,9 @@ module.exports.respond = function (event, callback) {
     removeSignatures(context.itinerary);
     annotateIdentifiers(context.itinerary);
     annotateIdentityId(context.itinerary, context.profile.identityId);
+    return annotateItineraryState(context.itinerary, 'PLANNED')
+      .then(itinerary => createAndAppendBookings(itinerary, context.profile));
 
-    return createAndAppendBookings(context.itinerary, context.profile);
   })
   .then(saveItinerary)
   .then(itinerary  => {
@@ -231,16 +275,17 @@ module.exports.respond = function (event, callback) {
     return updateBalance(context.profile.identityId, balance);
   })
   .then(profile => callback(null, wrapToEnvelope(context.itinerary)))
-  .catch(MaaSError, callback)
+  // .catch(MaaSError, callback)
   .catch(_error => {
 
     // Uncaught, unexpected error
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    // callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    callback(_error);
   })
   .finally(() => {
     // Close all db connections
-    if (context.knex) {
-      context.knex.destroy();
+    if (knex) {
+      knex.destroy();
     }
   });
 };
