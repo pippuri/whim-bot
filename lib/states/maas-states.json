@@ -1,5 +1,9 @@
 {
   "Booking": {
+    "START": {
+      "description": "Start point",
+      "nested": ["PLANNED"]
+    },
     "PLANNED": {
       "description": "The booking has been planned for purchase.",
       "nested": ["PENDING"]
@@ -38,6 +42,10 @@
     }
   },
   "Leg": {
+    "START": {
+      "description": "Start point",
+      "nested": ["PLANNED"]
+    },
     "PLANNED": {
       "description": "The leg has been planned and saved.",
       "nested": ["BOOKED", "CANCELLED"]
@@ -60,6 +68,10 @@
     }
   },
   "Itinerary": {
+    "START": {
+      "description": "Start point",
+      "nested": ["PLANNED"]
+    },
     "PLANNED": {
       "description": "The Itinerary has been planned and saved",
       "nested": ["BOOKED", "CANCELLED"]
