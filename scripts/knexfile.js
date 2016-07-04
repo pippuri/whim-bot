@@ -3,12 +3,16 @@
 const URL = require('url');
 const Templates = (new (require('serverless'))()).classes.Templates;
 
-function loadEnvironment() {
+/**
+ * Note: Run the script like this
+ * SERVERLESS_STAGE = ${stage} knex migrate:latest
+ */
+function loadEnvironment(stage) {
   let values;
   try {
-    values = require('../_meta/variables/s-variables-dev.json');
+    values = require(`../_meta/variables/s-variables-${stage}.json`);
   } catch (e) {
-    console.log('Failed to read _meta/variables/s-variables-dev.json');
+    console.log(`Failed to read _meta/variables/s-variables-${stage}.json`);
   }
 
   const variables = (new Templates(values, '../s-templates.json')).toObject();
@@ -17,7 +21,7 @@ function loadEnvironment() {
   }
 }
 
-loadEnvironment();
+loadEnvironment(process.env.SERVERLESS_STAGE);
 
 const connection = URL.format({
   protocol: 'postgres:',
