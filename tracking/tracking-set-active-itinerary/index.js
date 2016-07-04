@@ -2,9 +2,18 @@
 
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
+const stateLib = require('../../lib/states/index');
+const models = require('../../lib/models/index');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
+
+// Global knex connection variable
+let knex;
+
+function annotateState(itinerary) {
+  return Object.assign({ state: 'ACTIVATED' }, itinerary);
+}
 
 function setActiveItinerary(identityId, itinerary) {
   if (!itinerary.id) {
@@ -20,29 +29,43 @@ function setActiveItinerary(identityId, itinerary) {
   const payload = JSON.stringify({
     state: {
       reported: {
-        itinerary: itinerary,
+        itinerary: annotateState(itinerary),
       },
     },
   });
 
   console.log(`Thing shadow payload: ${payload}`);
-  return iotData.updateThingShadowAsync({
-    thingName: thingName,
-    payload: payload,
-  })
-  .then(response => {
-    const payload = JSON.parse(response.payload);
+  return stateLib.getState('Itinerary', knex, itinerary.id)
+    .then(state => Promise.all([
+      iotData.updateThingShadowAsync({
+        thingName: thingName,
+        payload: payload,
+      }),
+      stateLib.changeState('Itinerary', knex, itinerary.id, state, 'ACTIVATED'),
+    ]))
+  .spread((iotResponse, newState) => {
+    console.log('iotResponse', iotResponse);
+    const payload = JSON.parse(iotResponse.payload);
     return payload.state.reported.itinerary;
   });
 }
 
 module.exports.respond = function (event, callback) {
-  setActiveItinerary(event.identityId, event.itinerary)
-  .then(response => {
-    callback(null, response);
-  })
-  .catch(err => {
-    console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
-    callback(err);
-  });
+  return models.init()
+    .then(_knex => {
+      knex = _knex;
+      return setActiveItinerary(event.identityId, event.itinerary);
+    })
+    .then(response => {
+      callback(null, response);
+    })
+    .catch(err => {
+      console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
+      callback(err);
+    })
+    .finally(() => {
+      if (knex) {
+        knex.destroy();
+      }
+    });
 };
