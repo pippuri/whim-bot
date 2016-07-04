@@ -38,16 +38,25 @@ function updateItinerary(event) {
   event.payload.modified = new Date(modifiedTime).toISOString();
 
   // Get old state
-  return knex.select('state')
+  return knex.select()
     .from('Itinerary')
     .where('id', event.itineraryId)
-    .then(_oldState => {
-      const oldState = _oldState[0];
-      if (typeof oldState === typeof undefined) {
-        return Promise.reject(new MaasError(`No oldState found for itineraryId ${event.itineraryId}, server error`, 500));
+    .then(_itinerary => {
+      console.log(_itinerary);
+      const itinerary = _itinerary[0];
+      const oldState = _itinerary.state;
+
+      // Handle item not exist
+      if (typeof itinerary === typeof undefined) {
+        return Promise.reject(new MaasError(`No item found for itineraryId ${event.itineraryId}, item might not exist`, 500));
       }
 
-      // Double check if oldState on database is still valid
+      // Handle item not having oldState
+      if (typeof oldState === typeof undefined) {
+        return Promise.reject(new MaasError(`oldState not found for itineraryId ${event.itineraryId}, item might not exist`, 500));
+      }
+
+      // Double check if oldState of the responded item is still valid
       if (event.payload.state || !stateLib.validNewState('Itinerary', oldState, event.payload.state)) {
         return Promise.reject('State unavailable');
       }
@@ -55,7 +64,7 @@ function updateItinerary(event) {
 
       // Queue up state change process
       if (event.payload.state) {
-        promiseQueue.push(stateLib.changeState('Itinerary', knex, event.itineraryId, _oldState, event.payload.state));
+        promiseQueue.push(stateLib.changeState('Itinerary', knex, event.itineraryId, oldState, event.payload.state));
         delete event.payload.state;
       }
 
@@ -69,13 +78,16 @@ function updateItinerary(event) {
       // Process the queue
       return Promise.all(promiseQueue);
     })
-    .spread(response => {
-      // if (response.length === 0) {
-      //   return Promise.reject(new MaasError(`Itinerary id ${event.bookingId} not updated, server error`, 500));
-      // } else if (response.length !== 1) {
-      //   return Promise.reject(new MaasError(`Database returns more than 1 result with id ${event.bookingId}, server error`, 500));
-      // }
+    .then(response => {
+      if (response.length === 0) {
+        return Promise.reject(new MaasError(`Itinerary id ${event.bookingId} not updated, server error`, 500));
+      } else if (response.length !== 1 || response.length !== 2) { // There could be maximum 2 task queued which is state change task, and item update task
+        return Promise.reject(new MaasError(`Task queue for id ${event.bookingId} failed, if payload contained 'state' input, please check if its validity!`, 500));
+      }
       console.warn(response);
+
+      // Update state will always be the first task on the queue
+      // Update others will always be the last.
       const booking = response[response.length - 1];
       return booking;
     });

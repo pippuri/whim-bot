@@ -149,8 +149,8 @@ function annotateItineraryState(itinerary, state) {
   // Starting state
   itinerary.state = 'START';
   return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, state)
-    .then(_response => {
-      itinerary.state = state;
+    .then(newState => {
+      itinerary.state = newState;
       return annotateLegsState(itinerary, state);
     })
     .then(itinerary => {
@@ -172,10 +172,10 @@ function createAndAppendBookings(itinerary, profile) {
         booking => {
           //console.log(`Booking for ${leg.id} succeeded`);
 
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'BOOKED')
-            .then(response => {
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'PAID')
+            .then(newState => {
               completed.push(leg);
-              leg.state = 'BOOKED';
+              leg.state = newState;
               leg.booking = booking;
             });
         },
@@ -192,13 +192,20 @@ function createAndAppendBookings(itinerary, profile) {
     return tsp.cancelBooking(leg.booking)
       .then(
         booking => {
-          cancelled.push(leg);
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'CANCELLED');
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'CANCELLED')
+            .then(newState => {
+              cancelled.push(leg);
+              leg.state = newState;
+            });
         },
 
         error => {
           console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'BOOKED');
+          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'PAID')
+            .then(newState => {
+              cancelled.push(leg);
+              leg.state = newState;
+            });
         }
       );
   }
@@ -209,8 +216,11 @@ function createAndAppendBookings(itinerary, profile) {
       // In case of success, return the itinerary. In case of failure,
       // cancel the completed bookings.
       if (failed.length === 0) {
-        return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, 'BOOKED')
-          .then(response => Promise.resolve(itinerary));
+        return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, 'PAID')
+          .then(newState => {
+            itinerary.state = newState;
+            return Promise.resolve(itinerary);
+          });
       }
 
       return Promise.map(completed, cancelOneBooking)
@@ -223,10 +233,14 @@ function createAndAppendBookings(itinerary, profile) {
 
 function saveItinerary(itinerary) {
   //console.log(`Save itinerary ${itinerary.id} into db`);
-
+  console.log(itinerary);
   return models.Itinerary
     .query()
-    .insertWithRelated(itinerary);
+    .insertWithRelated(itinerary)
+    .then(response => {
+      console.log(response);
+      return Promise.resolve(response);
+    });
 }
 
 function wrapToEnvelope(itinerary) {
