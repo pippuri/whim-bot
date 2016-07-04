@@ -13,15 +13,17 @@
   },
   "endpoints": [
     {
-      "path": "itinerary",
+      "path": "itineraries/{itineraryId}",
       "method": "PUT",
       "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.path.itineraryId": "method.request.path.itineraryId"
+      },
       "requestTemplates": {
-        "application/json": ""
+        "application/json": "{\"itineraryId\": \"$input.params('itineraryId')\",\"payload\": $input.json()}"
       },
       "responses": {
         "400": {

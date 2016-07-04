@@ -1,4 +1,4 @@
-{  
+{
   "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "itinerary":{
     "startTime": 1475314020000,
@@ -88,8 +88,8 @@
         }
     ],
     "fare": {
-        "points": 290,
-        "co2": 0
+      "points": 290,
+      "co2": 0
     },
     "signature": "394d0621c88d585ce0ea9464181e894f484a342550f02a83e1c6b4dfc4bd03f5"
   }

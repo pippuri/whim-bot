@@ -48,3 +48,6 @@ _serverless_handler.js
 
 # SWAGGER OUTPUT
 swagger/swagger-maas-api-json/maas-api.json
+
+// Map file
+*.mdj
