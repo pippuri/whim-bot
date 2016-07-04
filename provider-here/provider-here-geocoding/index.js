@@ -30,6 +30,7 @@ function parseResults(response) {
     features: [],
   };
   const items = response.results.items;
+  const context = response.search.context;
 
   if (!util.isArray(items)) {
     const error = new Error('Invalid response from HERE - invalid format.');
@@ -37,10 +38,17 @@ function parseResults(response) {
   }
 
   items.forEach(item => {
+    const address = context.location.address;
+
     const feature = {
       type: 'Feature',
       properties: {
         name: item.title,
+        country: address.country,
+        countryCode: address.countryCode,
+        city: address.city,
+        zipCode: address.postalCode,
+        streetName: item.vicinity && item.vicinity.split('<br/>')[0],
       },
       geometry: {
         type: 'Point',

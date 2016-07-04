@@ -3,43 +3,17 @@
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
+const lib = require('../lib');
 
 const ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
-function getCityAddress(Address) {
-  let tempAddress = [];
-  tempAddress = Address.split(',');
-  return ((tempAddress[tempAddress.length - 2]).replace(/\d+/g, '')).trim();
-}
-
 function parseResults(response) {
-  const result = {
-    type: 'FeatureCollection',
-    features: [],
-  };
-
-  const items = response;
-  if (!util.isArray(items.results)) {
+  if (!util.isArray(response.results)) {
     const error = new Error('Invalid response from Google - invalid format.');
     return Promise.reject(error);
   }
 
-  items.results.forEach(item => {
-    const feature = {
-      type: 'Feature',
-      properties: {
-        name: item.formatted_address,
-        city: getCityAddress(item.formatted_address),
-      },
-      geometry: {
-        type: 'Point',
-        coordinates: [item.geometry.location.lat, item.geometry.location.lng],
-      },
-    };
-    result.features.push(feature);
-  });
-
-  return Promise.resolve(result);
+  return Promise.resolve(lib.parseFeatures(response.results));
 }
 
 function adapt(input) {

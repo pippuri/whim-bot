@@ -16,10 +16,12 @@
             "properties": {
               "name": { "type": "string" },
               "city": { "type": "string" },
+              "country": { "type": "string" },
+              "countryCode": { "type": "string" },
               "street": { "type": "string" },
               "houseNumber": { "type": "integer" }
             },
-            "required": [ "name" ]
+            "required": [ "name", "city", "country", "countryCode" ]
           },
           "geometry": {
             "type": "object",
