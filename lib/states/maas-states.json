@@ -30,7 +30,7 @@
     },
     "RECONCILING": {
       "description": "Issusing for a refund due to a CANCELLED or ABANDONED booking.",
-      "nested": ["REFUNDED", "REJECTED"]
+      "nested": ["RESOLVED", "REJECTED"]
     },
     "RESOLVED": {
       "description": "The reconsilation has been RESOLVED.",
@@ -78,11 +78,11 @@
     },
     "PAID": {
       "description": "The Itinerary has been booked",
-      "nested": ["ACTIVATED"]
+      "nested": ["ACTIVATED", "CANCELLED"]
     },
     "ACTIVATED": {
       "description": "The Itinerary has been ACTIVATED",
-      "nested": ["CANCELLED", "FINISHED", "ABANDONED"]
+      "nested": ["FINISHED", "ABANDONED"]
     },
     "CANCELLED": {
       "description": "The Itinerary has been CANCELLED",
