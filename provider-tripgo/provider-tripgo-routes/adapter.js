@@ -32,20 +32,37 @@ function convertFromTo(from) {
 function convertLeg(segment, original, templates) {
   const template = templates[segment.segmentTemplateHashCode] || {};
   const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
-  return {
+  const leg = {
     startTime: segment.startTime * 1000,
     endTime: segment.endTime * 1000,
     mode: mode,
     from: convertFromTo(template.from),
     to: convertFromTo(template.to),
-    legGeometry: template.streets && template.streets[0] ? {
-      points: template.streets[0].encodedWaypoints,
-    } : undefined,
     route: segment.serviceNumber,
     routeShortName: segment.serviceNumber,
     routeLongName: segment.serviceName,
     agencyId: convertAgencyId(mode, template.serviceOperator),
   };
+
+  // Handle the case of different ways TripGo reports leg geometries
+  const streets = template.streets;
+  const shapes = template.shapes;
+  if (streets && streets[0] && streets[0].encodedWaypoints.length > 0) {
+    leg.legGeometry = {
+      points: template.streets[0].encodedWaypoints,
+    };
+  } else if (shapes) {
+    const route = shapes.find(s => s.travelled);
+
+    if (route && route.encodedWaypoints.length > 0) {
+      leg.legGeometry = {
+        points: route.encodedWaypoints,
+      };
+    }
+  }
+
+
+  return leg;
 }
 
 function convertItinerary(trip, original, templates) {
