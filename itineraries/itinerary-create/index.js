@@ -233,12 +233,10 @@ function createAndAppendBookings(itinerary, profile) {
 
 function saveItinerary(itinerary) {
   //console.log(`Save itinerary ${itinerary.id} into db`);
-  console.log(itinerary);
   return models.Itinerary
     .query()
     .insertWithRelated(itinerary)
     .then(response => {
-      console.log(response);
       return Promise.resolve(response);
     });
 }

@@ -42,7 +42,6 @@ function updateItinerary(event) {
     .from('Itinerary')
     .where('id', event.itineraryId)
     .then(_itinerary => {
-      console.log(_itinerary);
       const itinerary = _itinerary[0];
       const oldState = _itinerary.state;
 
@@ -57,7 +56,7 @@ function updateItinerary(event) {
       }
 
       // Double check if oldState of the responded item is still valid
-      if (event.payload.state || !stateLib.validNewState('Itinerary', oldState, event.payload.state)) {
+      if (event.payload.state || !stateLib.isStateValid('Itinerary', oldState, event.payload.state)) {
         return Promise.reject('State unavailable');
       }
       const promiseQueue = [];

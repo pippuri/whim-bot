@@ -2,99 +2,99 @@
   "Booking": {
     "START": {
       "description": "Start point",
-      "nested": ["PENDING"]
+      "transition": ["PENDING"]
     },
     "PENDING": {
       "description": "The booking is pending for available reservation response from tsp. This state can be skipped depends on the tsp.",
-      "nested": ["RESERVED", "REJECTED"]
+      "transition": ["RESERVED", "REJECTED"]
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
-      "nested": ["PAID", "CANCELLED"]
+      "transition": ["PAID", "CANCELLED"]
     },
     "PAID": {
       "description": "Ticket/ride has been paid, waiting to go into active. Can be CANCELLED here",
-      "nested": ["ACTIVATED", "CANCELLED"]
+      "transition": ["ACTIVATED", "CANCELLED"]
     },
     "ACTIVATED": {
       "description": "Booking is activated. Can be CANCELLED and will go EXPIRED if not",
-      "nested": ["CANCELLED", "EXPIRED"]
+      "transition": ["CANCELLED", "EXPIRED"]
     },
     "CANCELLED": {
       "description": "Booking is cancelled, will be reconsiled, or directly RESOLVED base on terms",
-      "nested": ["RECONCILING", "RESOLVED"]
+      "transition": ["RECONCILING", "RESOLVED"]
     },
     "EXPIRED": {
       "description": "The activated booking has expired. Can be reconsiled or be bought again",
-      "nested": ["RECONCILING", "RESERVED"]
+      "transition": ["RECONCILING", "RESERVED"]
     },
     "RECONCILING": {
       "description": "Issusing for a refund due to a CANCELLED or ABANDONED booking.",
-      "nested": ["RESOLVED", "REJECTED"]
+      "transition": ["RESOLVED", "REJECTED"]
     },
     "RESOLVED": {
       "description": "The reconsilation has been RESOLVED.",
-      "nested": []
+      "transition": []
     },
     "REJECTED": {
       "description": "The reconsilation has been RESOLVED or the reservation PENDING has been REJECTED.",
-      "nested": []
+      "transition": []
     }
   },
   "Leg": {
     "START": {
       "description": "Start point",
-      "nested": ["PLANNED"]
+      "transition": ["PLANNED"]
     },
     "PLANNED": {
       "description": "The leg has been planned and saved.",
-      "nested": ["PAID", "CANCELLED", "ACTIVATED"]
+      "transition": ["PAID", "CANCELLED", "ACTIVATED"]
     },
     "PAID": {
       "description": "The leg has been PAID",
-      "nested": ["ACTIVATED"]
+      "transition": ["ACTIVATED"]
     },
     "ACTIVATED": {
       "description": "The leg has been ACTIVATED",
-      "nested": ["CANCELLED", "FINISHED"]
+      "transition": ["CANCELLED", "FINISHED"]
     },
     "CANCELLED": {
       "description": "The leg has been CANCELLED",
-      "nested": []
+      "transition": []
     },
     "FINISHED": {
       "description": "The leg has been FINISHED",
-      "nested": []
+      "transition": []
     }
   },
   "Itinerary": {
     "START": {
       "description": "Start point",
-      "nested": ["PLANNED"]
+      "transition": ["PLANNED"]
     },
     "PLANNED": {
       "description": "The Itinerary has been planned and saved",
-      "nested": ["PAID", "CANCELLED"]
+      "transition": ["PAID", "CANCELLED"]
     },
     "PAID": {
       "description": "The Itinerary has been booked",
-      "nested": ["ACTIVATED", "CANCELLED"]
+      "transition": ["ACTIVATED", "CANCELLED"]
     },
     "ACTIVATED": {
       "description": "The Itinerary has been ACTIVATED",
-      "nested": ["FINISHED", "ABANDONED"]
+      "transition": ["FINISHED", "ABANDONED"]
     },
     "CANCELLED": {
       "description": "The Itinerary has been CANCELLED",
-      "nested": []
+      "transition": []
     },
     "FINISHED": {
       "description": "The Itinerary has been FINISHED",
-      "nested": []
+      "transition": []
     },
     "ABANDONED": {
       "description": "The Itinerary has been ABANDONED, one or more leg has been ABANDONED",
-      "nested": []
+      "transition": []
     }
   }
 }
