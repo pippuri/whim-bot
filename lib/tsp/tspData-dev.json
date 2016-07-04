@@ -12,7 +12,7 @@
           "retrieve": "/orders"
         },
         "put": {
-          "update": "update"
+          "update": "/update"
         }
       }
     }
@@ -30,7 +30,7 @@
           "retrieve": "/orders"
         },
         "put": {
-          "update": "update"
+          "update": "/update"
         }
       },
       "config": {
