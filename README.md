@@ -279,8 +279,9 @@ When working with development data (that can be deleted):
 
 ```
 cd scripts
-knex migrate:latest
+SERVERLESS_STAGE=stage knex migrate:latest
 ```
+Whereas stage is `dev` / `prod`
 
 When working with production data (where you need to migrate):
 
@@ -314,4 +315,3 @@ directory. This will deploy all endpoints. There is no way to do this only for
 the endpoints of a single component. See
 https://github.com/joostfarla/serverless-cors-plugin/issues/22 for discussion
 on the subject.
-
