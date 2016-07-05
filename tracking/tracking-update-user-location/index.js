@@ -15,7 +15,7 @@ function updateUserLocation(identityId, lat, lon, timestamp, legId) {
           lat: lat,
           lon: lon,
           timestamp: timestamp,
-          legId: legId
+          legId: legId,
         },
       },
     },
