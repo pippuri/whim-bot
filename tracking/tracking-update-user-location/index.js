@@ -6,7 +6,7 @@ const AWS = require('aws-sdk');
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-function updateUserLocation(identityId, lat, lon, timestamp) {
+function updateUserLocation(identityId, lat, lon, timestamp, legId) {
   const thingName = identityId.replace(/:/, '-');
   const payload = JSON.stringify({
     state: {
@@ -15,6 +15,7 @@ function updateUserLocation(identityId, lat, lon, timestamp) {
           lat: lat,
           lon: lon,
           timestamp: timestamp,
+          legId: legId
         },
       },
     },
@@ -27,7 +28,7 @@ function updateUserLocation(identityId, lat, lon, timestamp) {
 }
 
 module.exports.respond = function (event, callback) {
-  updateUserLocation('' + event.identityId, '' + event.lat, event.lon, event.timestamp)
+  updateUserLocation(event.identityId, event.lat, event.lon, event.timestamp, event.legId)
   .then(response => {
     callback(null, response);
   })
