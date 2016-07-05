@@ -52,7 +52,7 @@
     },
     "PAID": {
       "description": "The leg has been PAID",
-      "transition": ["ACTIVATED"]
+      "transition": ["ACTIVATED", "CANCELLED"]
     },
     "ACTIVATED": {
       "description": "The leg has been ACTIVATED",
