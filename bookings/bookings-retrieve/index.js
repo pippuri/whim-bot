@@ -1,18 +1,14 @@
 'use strict';
 
-const models = require('../../lib/models/index');
+const Database = require('../../lib/models').Database;
 const tsp = require('../../lib/tsp/index');
 const _ = require('lodash');
-
-// Variable for knex connection
-let knex;
 
 module.exports.respond = (event, callback) => {
 
   let storedBooking;
-  return models.init()
-    .then(_knex => {
-      knex = _knex;
+  return Database.init()
+    .then(() => {
       return models.Booking
       .query()
       .findById(event.bookingId);

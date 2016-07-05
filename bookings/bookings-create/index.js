@@ -7,20 +7,13 @@ const MaasError = require('../../lib/errors/MaaSError');
 const lib = require('../lib/index');
 const _ = require('lodash');
 const tsp = require('../../lib/tsp/index');
-const models = require('../../lib/models/index');
-
-// Require postgres, so that it will be bundled
-// eslint-disable-next-line no-unused-vars
-const pg = require('pg');
-
-// Global knex connection variable
-let knex;
+const Database = require('../../lib/models').Database;
 
 /**
  * Save booking to Postgre
  */
 function saveBooking(booking) {
-  return knex
+  return Database.getKnex()
     .insert(booking, ['*'])
     .into('Booking')
     .then(booking => {
@@ -106,9 +99,8 @@ function createBooking(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return models.init()
-    .then(_knex => {
-      knex = _knex;
+  return Database.init()
+    .then(() => {
       return createBooking(event);
     })
     .then(response => {
@@ -119,8 +111,7 @@ module.exports.respond = (event, callback) => {
       callback(error);
     })
     .finally(() => {
-      if (knex) {
-        knex.destroy();
+        Database.cleanup();
       }
     });
 };

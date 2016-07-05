@@ -63,7 +63,7 @@ function updateItinerary(event) {
 
       // Queue up state change process
       if (event.payload.state) {
-        promiseQueue.push(stateLib.changeState('Itinerary', knex, event.itineraryId, oldState, event.payload.state));
+        promiseQueue.push(stateLib.changeState('Itinerary', event.itineraryId, oldState, event.payload.state));
         delete event.payload.state;
       }
 
