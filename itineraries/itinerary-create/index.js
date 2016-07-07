@@ -128,7 +128,7 @@ function annotateIdentityId(itinerary, identityId) {
 
 function annotateLegsState(itinerary, state) {
   const queue = [];
-  itinerary.legs.map(leg => {
+  itinerary.legs.forEach(leg => {
     // Starting state
     leg.state = 'START';
     queue.push(stateLib.changeState('Leg', leg.id, leg.state, state));
@@ -139,6 +139,7 @@ function annotateLegsState(itinerary, state) {
      itinerary.legs.map(leg => {
        leg.state = state;
      });
+
      return itinerary;
    });
 }
@@ -146,9 +147,11 @@ function annotateLegsState(itinerary, state) {
 function annotateItineraryState(itinerary, state) {
   // Starting state
   itinerary.state = 'START';
+
   return stateLib.changeState('Itinerary', itinerary.id, itinerary.state, state)
     .then(newState => {
       itinerary.state = newState;
+
       return annotateLegsState(itinerary, state);
     })
     .then(itinerary => {
@@ -259,7 +262,7 @@ module.exports.respond = function (event, callback) {
     validateSignatures(event.itinerary),
     fetchCustomerProfile(event.identityId),
   ])
-  .spread((valid, profile) => {
+  .spread((none, valid, profile) => {
     // Assign our inputs
     context.profile = profile;
     context.itinerary = event.itinerary;
@@ -268,7 +271,7 @@ module.exports.respond = function (event, callback) {
     removeSignatures(context.itinerary);
     annotateIdentifiers(context.itinerary);
     annotateIdentityId(context.itinerary, context.profile.identityId);
-    return annotateItineraryState(context.itinerary, 'PLANNED')
+    return annotateItineraryState(context.itinerary, 'PLANNED');
   })
   .then(itinerary => createAndAppendBookings(itinerary, context.profile))
   .then(saveItinerary)
@@ -284,11 +287,16 @@ module.exports.respond = function (event, callback) {
       .then(() => callback(null, wrapToEnvelope(context.itinerary)));
   })
   .catch(_error => {
-    console.log(_error.stack);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    let error = _error;
+    if (!(error instanceof MaaSError)) {
+      error = new MaaSError(`Internal server error: ${_error.toString()}`, 500);
+    }
+
     // Uncaught, unexpected error
     Database.cleanup()
     .then(() => {
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    })
+      callback(error);
+    });
   });
 };

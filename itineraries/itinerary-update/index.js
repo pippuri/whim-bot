@@ -3,11 +3,10 @@
 const Promise = require('bluebird');
 const allowedFields = require('../../lib/models/editableFields.json');
 const models = require('../../lib/models/index');
-const MaasError = require('../../lib/errors/MaaSError');
+const MaaSError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
 const stateLib = require('../../lib/states/index');
-
-let knex;
+const Database = models.Database;
 
 const allowedItineraryFields = allowedFields.Itinerary;
 const returnFields = ['id'];
@@ -15,21 +14,21 @@ const returnFields = ['id'];
 function updateItinerary(event) {
 
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaasError('Missing identityId input', 401));
+    return Promise.reject(new MaaSError('Missing identityId input', 401));
   }
 
   if (!event.hasOwnProperty('itineraryId') || !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
-    return Promise.reject(new MaasError('Missing or invalid itineraryId'));
+    return Promise.reject(new MaaSError('Missing or invalid itineraryId'));
   }
 
   if (!event.hasOwnProperty('payload') || Object.keys('payload').length === 0) {
-    return Promise.reject(new MaasError('Payload empty. No update was processed'));
+    return Promise.reject(new MaaSError('Payload empty. No update was processed'));
   }
 
   // Compare input key vs allowed keys
   Object.keys(event.payload).map(key => { // eslint-disable-line consistent-return
     if (!_.includes(allowedItineraryFields, key.toLowerCase())) {
-      return Promise.reject(new MaasError(`Request contains unallowed field(s), allow only [${allowedItineraryFields}]`));
+      return Promise.reject(new MaaSError(`Request contains unallowed field(s), allow only [${allowedItineraryFields}]`));
     }
   });
 
@@ -38,7 +37,7 @@ function updateItinerary(event) {
   event.payload.modified = new Date(modifiedTime).toISOString();
 
   // Get old state
-  return knex.select()
+  return Database.knex.select()
     .from('Itinerary')
     .where('id', event.itineraryId)
     .then(_itinerary => {
@@ -47,12 +46,12 @@ function updateItinerary(event) {
 
       // Handle item not exist
       if (typeof itinerary === typeof undefined) {
-        return Promise.reject(new MaasError(`No item found for itineraryId ${event.itineraryId}, item might not exist`, 500));
+        return Promise.reject(new MaaSError(`No item found for itineraryId ${event.itineraryId}, item might not exist`, 500));
       }
 
       // Handle item not having oldState
       if (typeof oldState === typeof undefined) {
-        return Promise.reject(new MaasError(`oldState not found for itineraryId ${event.itineraryId}, item might not exist`, 500));
+        return Promise.reject(new MaaSError(`oldState not found for itineraryId ${event.itineraryId}, item might not exist`, 500));
       }
 
       // Double check if oldState of the responded item is still valid
@@ -69,7 +68,7 @@ function updateItinerary(event) {
 
       // Queue up other fields update
       promiseQueue.push(
-        knex.update(event.payload, returnFields.concat(Object.keys(event.payload)))
+        Database.knex.update(event.payload, returnFields.concat(Object.keys(event.payload)))
           .into('Itinerary')
           .where('id', event.itineraryId)
       );
@@ -79,9 +78,9 @@ function updateItinerary(event) {
     })
     .then(response => {
       if (response.length === 0) {
-        return Promise.reject(new MaasError(`Itinerary id ${event.bookingId} not updated, server error`, 500));
+        return Promise.reject(new MaaSError(`Itinerary id ${event.bookingId} not updated, server error`, 500));
       } else if (response.length !== 1 || response.length !== 2) { // There could be maximum 2 task queued which is state change task, and item update task
-        return Promise.reject(new MaasError(`Task queue for id ${event.bookingId} failed, if payload contained 'state' input, please check if its validity!`, 500));
+        return Promise.reject(new MaaSError(`Task queue for id ${event.bookingId} failed, if payload contained 'state' input, please check if its validity!`, 500));
       }
       console.warn(response);
 
@@ -93,20 +92,19 @@ function updateItinerary(event) {
 }
 
 module.exports.respond = (event, callback) => {
-  return models.init()
-    .then(_knex => {
-      knex = _knex;
-      return updateItinerary(event);
-    })
+  return Database.init()
+    .then(() => updateItinerary(event))
     .then(response => {
-      callback(null, response);
+      Database.cleanup()
+        .then(() => callback(null, response));
     })
-    .then(error => {
-      callback(error);
-    })
-    .finally(() => {
-      if (knex) {
-        knex.destroy();
-      }
+    .catch(_error => {
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+
+      // Uncaught, unexpected error
+      Database.cleanup()
+      .then(() => {
+        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      });
     });
 };

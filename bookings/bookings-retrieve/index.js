@@ -1,41 +1,49 @@
 'use strict';
 
-const Database = require('../../lib/models').Database;
-const tsp = require('../../lib/tsp/index');
 const _ = require('lodash');
+const Promise = require('bluebird');
+const MaaSError = require('../../lib/errors/MaaSError');
+const models = require('../../lib/models');
+const tsp = require('../../lib/tsp');
+const Database = models.Database;
 
 module.exports.respond = (event, callback) => {
 
-  let storedBooking;
-  return Database.init()
-    .then(() => {
-      return models.Booking
-      .query()
-      .findById(event.bookingId);
-    })
+  return Promise.resolve(Database.init())
+    .then(() => models.Booking.query().findById(event.bookingId))
     .then(booking => {
       if (!booking) {
-        return Promise.reject(new Error('No booking found with bookingId'));
+        const message = `No booking found with bookingId '${event.bookingId}'`;
+        return Promise.reject(new MaaSError(message, 404));
       }
-      storedBooking = booking;
-      return tsp.retrieveBooking(booking.tspId, booking.leg.agencyId);
+
+      return Promise.all([
+        tsp.retrieveBooking(booking.tspId, booking.leg.agencyId),
+        booking,
+      ]);
     })
-    .then(tspBooking => {
-      const updatedBooking = _.merge({}, storedBooking, tspBooking);
+    .spread((tspBooking, booking) => {
+      const updatedBooking = _.merge({}, booking, tspBooking);
 
       // TODO Verify that the data we have received is still valid
-      return models.Booking
-        .query()
-        .updateAndFetchById(storedBooking.id, updatedBooking);
+      return models.Booking.query()
+        .updateAndFetchById(booking.id, updatedBooking);
     })
-    .then(response => callback(null, response))
-    .catch(error => {
+    .then(response => {
+      Database.cleanup()
+        .then(() => callback(null, response));
+    })
+    .catch(_error => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(error);
-    })
-    .finally(() => {
-      if (knex) {
-        knex.destroy();
-      }
+
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

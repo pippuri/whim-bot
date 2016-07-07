@@ -5,13 +5,7 @@ const MaasError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils/index');
 const moment = require('moment');
 const models = require('../../lib/models/index');
-
-// Require postgres, so that it will be bundled
-// eslint-disable-next-line no-unused-vars
-const pg = require('pg');
-
-// Knex variable, referred to from within functions
-let knex;
+const Database = models.Database;
 
 /**
 * Return past itineraries from the full set
@@ -41,7 +35,7 @@ function filterFutureRoutes(itineraries) {
 * Recover leg data from itinerary info
 */
 function recoverLegFromItinerary(itinerary) {
-  return knex.from('Leg')
+  return Database.knex.from('Leg')
    .select('*')
    .where('itineraryId', itinerary.id)
    .then(legs => {
@@ -72,11 +66,11 @@ function retrieveItinerary(event) {
   let output;
 
  // Query for all itinerary of an identityId
-  const withoutItineraryId = knex.select().from('Itinerary')
+  const withoutItineraryId = Database.knex.select().from('Itinerary')
    .where('identityId', event.identityId);
 
  // Query for an itinerary with an itineraryId for an identityId
-  const withItineraryId = knex.select().from('Itinerary')
+  const withItineraryId = Database.knex.select().from('Itinerary')
    .where('identityId', event.identityId)
    .andWhere('id', event.itineraryId);
 
@@ -114,21 +108,16 @@ function retrieveItinerary(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return models.init()
-    .then(_knex => {
-      knex = _knex;
+  return Database.init()
+    .then(() => {
       return retrieveItinerary(event);
     })
     .then(response => {
-      callback(null, response);
+      Database.cleanup()
+        .then(() => callback(null, response));
     })
     .catch(error => {
-      callback(error);
-    })
-    .finally(() => {
-     // Close all db connections
-      if (knex) {
-        knex.destroy();
-      }
+      Database.cleanup()
+        .then(() => callback(null, error));
     });
 };

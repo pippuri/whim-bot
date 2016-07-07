@@ -1,30 +1,42 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
-const stateLib = require('../../lib/states/index');
-const models = require('../../lib/models/index');
+const Promise = require('bluebird');
+const MaaSError = require('../../lib/errors/MaaSError');
+const models = require('../../lib/models');
+const stateLib = require('../../lib/states');
+const Database = models.Database;
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
-// Global knex connection variable
-let knex;
-
 function annotateState(itinerary) {
-  return Object.assign({ state: 'ACTIVATED' }, itinerary);
+  return Object.assign({}, itinerary, { state: 'ACTIVATED' });
+}
+
+function validateInput(event) {
+  if (!event.identityId) {
+    return Promise.reject(new Error('400 identityId is required'));
+  }
+
+  if (!event.itinerary) {
+    return Promise.reject(new Error('400 itinerary is required'));
+  }
+
+  if (!event.itinerary.id) {
+    return Promise.reject(new Error('400 itinerary.id is required'));
+  }
+
+  if (!event.itinerary.timestamp) {
+    return Promise.reject(new Error('400 itinerary.timestamp is required'));
+  }
+
+  return Promise.resolve();
 }
 
 function setActiveItinerary(identityId, itinerary) {
-  if (!itinerary.id) {
-    return Promise.reject(new Error('400 id is required'));
-  }
 
-  if (!itinerary.timestamp) {
-    return Promise.reject(new Error('400 timestamp is required'));
-  }
-
-  console.log(`Activating user ${identityId} itinerary ${itinerary}`);
+  console.log(`Activating user ${identityId} itinerary ${JSON.stringify(itinerary)}`);
   const thingName = identityId.replace(/:/, '-');
   const payload = JSON.stringify({
     state: {
@@ -34,38 +46,41 @@ function setActiveItinerary(identityId, itinerary) {
     },
   });
 
-  console.log(`Thing shadow payload: ${payload}`);
-  return stateLib.getState('Itinerary', knex, itinerary.id)
-    .then(state => Promise.all([
+  console.log(`Thing shadow itinerary: ${payload}`);
+  // TODO Query with ID and identityId would be more secure bet
+  return models.Itinerary.query().findById(itinerary.id)
+    .then(oldItinerary => Promise.all([
+      stateLib.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
+      models.Itinerary.query().update({ state: 'ACTIVATED' }).where('id', itinerary.id),
       iotData.updateThingShadowAsync({
         thingName: thingName,
         payload: payload,
       }),
-      stateLib.changeState('Itinerary', knex, itinerary.id, state, 'ACTIVATED'),
     ]))
-  .spread((iotResponse, newState) => {
-    console.log('iotResponse', iotResponse);
-    const payload = JSON.parse(iotResponse.payload);
-    return payload.state.reported.itinerary;
-  });
+    .spread((changedState, newItinerary, iotResponse) => {
+      console.log('iotResponse', iotResponse);
+      return iotResponse;
+    });
 }
 
 module.exports.respond = function (event, callback) {
-  return models.init()
-    .then(_knex => {
-      knex = _knex;
-      return setActiveItinerary(event.identityId, event.itinerary);
-    })
+  return Promise.all([Database.init(), validateInput(event)])
+    .then(() => setActiveItinerary(event.identityId, event.itinerary))
     .then(response => {
-      callback(null, response);
+      Database.cleanup()
+        .then(() => callback(null, response));
     })
-    .catch(err => {
-      console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
-      callback(err);
-    })
-    .finally(() => {
-      if (knex) {
-        knex.destroy();
-      }
+    .catch(_error => {
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

@@ -1,61 +1,52 @@
 'use strict';
 
 const Promise = require('bluebird');
-const utils = require('../../lib/utils');
 const request = require('request-promise-lite');
-const MaasError = require('../../lib/errors/MaaSError');
-const lib = require('../lib/index');
-const _ = require('lodash');
-const tsp = require('../../lib/tsp/index');
-const Database = require('../../lib/models').Database;
+const lib = require('../lib');
+const MaaSError = require('../../lib/errors/MaaSError');
+const models = require('../../lib/models');
+const tsp = require('../../lib/tsp');
+const utils = require('../../lib/utils');
+const Database = models.Database;
 
 /**
- * Save booking to Postgre
+ * Validate event input
  */
-function saveBooking(booking) {
-  return Database.getKnex()
-    .insert(booking, ['*'])
-    .into('Booking')
-    .then(booking => {
-      if (_.isArray(booking) && booking.length !== 1) {
-        return Promise.reject(new MaasError('Booking failed', 500));
-      }
+function validateInput(event) {
+  // Require identityId and phone in input user profile
+  if (!event.identityId || event.identityId === '') {
+    return Promise.reject(new MaaSError('Missing identityId', 400));
+  }
 
-      if (booking[0].tspId) {
-        delete booking[0].tspId;
-      }
+  if (!event.signature || event.signature === '') {
+    return Promise.reject(new MaaSError('Missing signature', 400));
+  }
 
-      return booking[0];
-    });
+  if (!event.leg || !event.leg.agencyId || event.leg.agencyId === '') {
+    return Promise.reject(new MaaSError('Missing leg input'));
+  }
+
+  return Promise.resolve();
 }
 
 /**
- * Create a booking for a leg OR an individual booking ( Go on a whim)
+ * Save booking to Postgres
+ */
+function saveBooking(booking) {
+  return models.Booking.query().insert(booking);
+}
+
+/**
+ * Create a booking for a leg OR an individual booking (Go on a whim)
  */
 function createBooking(event) {
-
-  let agencyId;
-
-  // Require identityId and phone in input user profile
-  if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaasError('Missing identityId', 400));
-  }
-
-  if (!event.hasOwnProperty('signature') || event.signature === '') {
-    return Promise.reject(new MaasError('Missing signature', 400));
-  }
-
-  if (event.hasOwnProperty('leg') && Object.keys(event.leg).length !== 0 && event.leg.hasOwnProperty('agencyId') && event.leg.agencyId !== '') {
-    agencyId = event.leg.agencyId;
-  } else {
-    return Promise.reject(new MaasError('Missing leg input'));
-  }
+  const agencyId = event.leg.agencyId;
 
   return Promise.all([
     lib.fetchCustomerProfile(event.identityId), // Get customer information
     lib.validateSignatures(event), // Validate request signature
-  ]).spread((profile, validatedInput)  => {
-
+  ])
+  .spread((profile, validatedInput)  => {
     const customer = {
       firstName: profile.firstName,
       lastName: profile.lastName,
@@ -99,19 +90,26 @@ function createBooking(event) {
 
 module.exports.respond = (event, callback) => {
 
-  return Database.init()
-    .then(() => {
-      return createBooking(event);
-    })
+  return Promise.all([
+    Database.init(),
+    validateInput(event),
+  ])
+    .then(() => createBooking(event))
     .then(response => {
-      callback(null, response);
+      Database.cleanup()
+        .then(() => callback(null, response));
     })
-    .catch(error => {
+    .catch(_error => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(error);
-    })
-    .finally(() => {
-        Database.cleanup();
-      }
+
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };
