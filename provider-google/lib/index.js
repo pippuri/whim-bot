@@ -21,6 +21,7 @@ function parseProperties(result) {
         case 'route':
           properties.streetName = component.long_name;
           break;
+        case 'administrative_area_level_3':
         case 'locality':
           properties.city = component.long_name;
           break;
