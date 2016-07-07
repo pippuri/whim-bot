@@ -7,9 +7,7 @@ const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const tsp = require('../../lib/tsp/index');
 const stateLib = require('../../lib/states/index');
-
-// Variable to store knex connection information
-let knex;
+const Database = models.Database;
 
 function fetchCustomerProfile(identityId) {
   //console.log(`Fetch customer profile ${identityId}`);
@@ -130,17 +128,18 @@ function annotateIdentityId(itinerary, identityId) {
 
 function annotateLegsState(itinerary, state) {
   const queue = [];
-  itinerary.legs.map(leg => {
-
+  itinerary.legs.forEach(leg => {
     // Starting state
     leg.state = 'START';
-    queue.push(stateLib.changeState('Leg', knex, leg.id, leg.state, state));
+    queue.push(stateLib.changeState('Leg', leg.id, leg.state, state));
   });
+
   return Promise.all(queue)
    .then(response => {
      itinerary.legs.map(leg => {
        leg.state = state;
      });
+
      return itinerary;
    });
 }
@@ -148,9 +147,11 @@ function annotateLegsState(itinerary, state) {
 function annotateItineraryState(itinerary, state) {
   // Starting state
   itinerary.state = 'START';
-  return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, state)
+
+  return stateLib.changeState('Itinerary', itinerary.id, itinerary.state, state)
     .then(newState => {
       itinerary.state = newState;
+
       return annotateLegsState(itinerary, state);
     })
     .then(itinerary => {
@@ -172,7 +173,7 @@ function createAndAppendBookings(itinerary, profile) {
         booking => {
           //console.log(`Booking for ${leg.id} succeeded`);
 
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'PAID')
+          return stateLib.changeState('Leg', leg.id, leg.state, 'PAID')
             .then(newState => {
               completed.push(leg);
               leg.state = newState;
@@ -192,7 +193,7 @@ function createAndAppendBookings(itinerary, profile) {
     return tsp.cancelBooking(leg.booking)
       .then(
         booking => {
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'CANCELLED')
+          return stateLib.changeState('Leg', leg.id, leg.state, 'CANCELLED')
             .then(newState => {
               cancelled.push(leg);
               leg.state = newState;
@@ -201,7 +202,7 @@ function createAndAppendBookings(itinerary, profile) {
 
         error => {
           console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-          return stateLib.changeState('Leg', knex, leg.id, leg.state, 'PAID')
+          return stateLib.changeState('Leg', leg.id, leg.state, 'PAID')
             .then(newState => {
               cancelled.push(leg);
               leg.state = newState;
@@ -216,16 +217,25 @@ function createAndAppendBookings(itinerary, profile) {
       // In case of success, return the itinerary. In case of failure,
       // cancel the completed bookings.
       if (failed.length === 0) {
-        return stateLib.changeState('Itinerary', knex, itinerary.id, itinerary.state, 'PAID')
+        return stateLib.changeState('Itinerary', itinerary.id, itinerary.state, 'PAID')
           .then(newState => {
             itinerary.state = newState;
             return Promise.resolve(itinerary);
           });
       }
 
+      const failedLegStack = {
+        failedLeg: failed.map(leg => {
+          return {
+            mode: leg.mode,
+            agencyId: leg.agencyId,
+          };
+        }),
+      };
+
       return Promise.map(completed, cancelOneBooking)
         .then(_empty => {
-          const error = new MaaSError(`${failed.length} bookings failed.`, 500);
+          const error = new MaaSError(`${failed.length} bookings failed.\nFailed legs: ${JSON.stringify(failedLegStack, null, 2)}`, 500);
           return Promise.reject(error);
         });
     });
@@ -257,47 +267,45 @@ module.exports.respond = function (event, callback) {
   // Process & validate the input, then save the itinerary; then do bookings,
   // update balance and save both itinerary and profile.
   return Promise.all([
-    models.init(),
+    Database.init(),
     validateSignatures(event.itinerary),
     fetchCustomerProfile(event.identityId),
   ])
-  .spread((_knex, valid, profile) => {
-
-    knex = _knex;
-    context.profile = profile;
-
+  .spread((none, valid, profile) => {
     // Assign our inputs
+    context.profile = profile;
     context.itinerary = event.itinerary;
 
     // Update itinerary for storable form
     removeSignatures(context.itinerary);
     annotateIdentifiers(context.itinerary);
     annotateIdentityId(context.itinerary, context.profile.identityId);
-    return annotateItineraryState(context.itinerary, 'PLANNED')
-      .then(itinerary => createAndAppendBookings(itinerary, context.profile));
-
+    return annotateItineraryState(context.itinerary, 'PLANNED');
   })
+  .then(itinerary => createAndAppendBookings(itinerary, context.profile))
   .then(saveItinerary)
-  .then(itinerary  => {
-
+  .then(itinerary => {
     // Update input, update balance
     context.itinerary = itinerary;
     const balance = computeBalance(context.itinerary, context.profile);
 
     return updateBalance(context.profile.identityId, balance);
   })
-  .then(profile => callback(null, wrapToEnvelope(context.itinerary)))
-  // .catch(MaaSError, callback)
+  .then(profile => {
+    Database.cleanup()
+      .then(() => callback(null, wrapToEnvelope(context.itinerary)));
+  })
   .catch(_error => {
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    let error = _error;
+    if (!(error instanceof MaaSError)) {
+      error = new MaaSError(`Internal server error: ${_error.toString()}`, 500);
+    }
 
     // Uncaught, unexpected error
-    // callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    callback(_error);
-  })
-  .finally(() => {
-    // Close all db connections
-    if (knex) {
-      knex.destroy();
-    }
+    Database.cleanup()
+    .then(() => {
+      callback(error);
+    });
   });
 };
