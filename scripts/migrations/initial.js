@@ -36,21 +36,6 @@ exports.up = function (knex) {
       table.timestamp('created').notNullable().defaultTo(knex.raw('now()'));
       table.timestamp('modified');
     })
-    .raw(`
-      CREATE OR REPLACE FUNCTION proc_update_timestamp()
-      RETURNS trigger AS
-      $Booking$
-        BEGIN
-          NEW.modified = now();
-          RETURN NEW;
-        END;
-      $Booking$ LANGUAGE plpgsql;
-    `)
-    .raw(`
-      CREATE TRIGGER "trig_update_timestamp" AFTER UPDATE OR INSERT
-      ON "Booking"
-      FOR EACH ROW EXECUTE PROCEDURE proc_update_timestamp();
-    `)
     .createTable('Leg', table => {
       table.uuid('id').primary();
       table.uuid('itineraryId').references('Itinerary.id');
@@ -78,13 +63,70 @@ exports.up = function (knex) {
       table.timestamp('modified');
     })
     .createTable('StateLog', table => {
-      table.uuid('id').primary();
+      table.bigIncrements('id').primary();
       table.string('tableName');
       table.uuid('itemId').notNullable();
       table.string('oldState').notNullable();
       table.string('newState').notNullable();
       table.timestamp('created').notNullable();
-    });
+    })
+    // Import uuid generation extension
+    // .raw('CREATE extension "uuid-ossp"')
+    // Update modified timestamp procedure
+    .raw(`
+      CREATE OR REPLACE FUNCTION proc_update_modified_timestamp()
+      RETURNS trigger AS
+      $modified_timestamp$
+        BEGIN
+          NEW.modified = now();
+          RETURN NEW;
+        END;
+      $modified_timestamp$ LANGUAGE plpgsql;
+    `)
+    // State change logging procedure
+    .raw(`
+      CREATE OR REPLACE FUNCTION proc_log_state_change()
+      RETURNS trigger AS
+      $state_audit$
+        BEGIN
+          INSERT INTO "StateLog" ("tableName", "itemId", "oldState", "newState", "created")
+            VALUES (TG_TABLE_NAME, OLD.id, OLD.state, NEW.state, now());
+          RETURN NULL;
+        END;
+      $state_audit$ LANGUAGE plpgsql;
+    `)
+    // Trigger for "modified timestamp" on Booking, Itinerary and Leg
+    .raw(`
+      CREATE TRIGGER "trig_update_modified_timestamp" BEFORE UPDATE
+      ON "Booking"
+      FOR EACH ROW EXECUTE PROCEDURE proc_update_modified_timestamp();
+    `)
+    .raw(`
+      CREATE TRIGGER "trig_update_modified_timestamp" BEFORE UPDATE
+      ON "Itinerary"
+      FOR EACH ROW EXECUTE PROCEDURE proc_update_modified_timestamp();
+    `)
+    .raw(`
+      CREATE TRIGGER "trig_update_modified_timestamp" BEFORE UPDATE
+      ON "Leg"
+      FOR EACH ROW EXECUTE PROCEDURE proc_update_modified_timestamp();
+    `)
+    // Trigger for logging states
+    .raw(`
+      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
+      ON "Booking"
+      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
+    `)
+    .raw(`
+      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
+      ON "Itinerary"
+      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
+    `)
+    .raw(`
+      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
+      ON "Leg"
+      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
+    `);
 };
 
 exports.down = function (knex) {
