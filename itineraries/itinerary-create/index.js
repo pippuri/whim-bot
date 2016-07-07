@@ -224,9 +224,18 @@ function createAndAppendBookings(itinerary, profile) {
           });
       }
 
+      const failedLegStack = {
+        failedLeg: failed.map(leg => {
+          return {
+            mode: leg.mode,
+            agencyId: leg.agencyId,
+          };
+        }),
+      };
+
       return Promise.map(completed, cancelOneBooking)
         .then(_empty => {
-          const error = new MaaSError(`${failed.length} bookings failed.`, 500);
+          const error = new MaaSError(`${failed.length} bookings failed.\nFailed legs: ${JSON.stringify(failedLegStack, null, 2)}`, 500);
           return Promise.reject(error);
         });
     });
