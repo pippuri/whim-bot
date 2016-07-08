@@ -5,7 +5,7 @@ const allowedFields = require('../../lib/models/editableFields.json');
 const models = require('../../lib/models/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 const _ = require('lodash');
-const stateLib = require('../../lib/states/index');
+const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
 
 const allowedItineraryFields = allowedFields.Itinerary;
@@ -55,14 +55,14 @@ function updateItinerary(event) {
       }
 
       // Double check if oldState of the responded item is still valid
-      if (event.payload.state || !stateLib.isStateValid('Itinerary', oldState, event.payload.state)) {
+      if (event.payload.state || !stateMachine.isStateValid('Itinerary', oldState, event.payload.state)) {
         return Promise.reject('State unavailable');
       }
       const promiseQueue = [];
 
       // Queue up state change process
       if (event.payload.state) {
-        promiseQueue.push(stateLib.changeState('Itinerary', event.itineraryId, oldState, event.payload.state));
+        promiseQueue.push(stateMachine.changeState('Itinerary', event.itineraryId, oldState, event.payload.state));
         delete event.payload.state;
       }
 

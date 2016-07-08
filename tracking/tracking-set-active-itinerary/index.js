@@ -4,7 +4,7 @@ const AWS = require('aws-sdk');
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
-const stateLib = require('../../lib/states');
+const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
@@ -50,7 +50,7 @@ function setActiveItinerary(identityId, itinerary) {
   // TODO Query with ID and identityId would be more secure bet
   return models.Itinerary.query().findById(itinerary.id)
     .then(oldItinerary => Promise.all([
-      stateLib.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
+      stateMachine.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
       models.Itinerary.query().update({ state: 'ACTIVATED' }).where('id', itinerary.id),
       iotData.updateThingShadowAsync({
         thingName: thingName,
