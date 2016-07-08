@@ -5,7 +5,7 @@
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
-  "timeout": 6,
+  "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
   "custom": {
@@ -20,12 +20,19 @@
       "authorizerFunction": false,
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.path.agencyId" : "method.request.path.agencyId",
-        "integration.request.querystring.startTime" : "method.request.querystring.startTime",
-        "integration.request.querystring.from" : "method.request.querystring.from"
+        "integration.request.path.agencyId" : "method.request.path.agencyId"
       },
       "requestTemplates": {
-        "application/json": "$input.json('$')"
+        "application/json": {
+          "agencyId": "$input.params('agencyId')",
+          "payload": {
+            "mode": "$input.params('mode')",
+            "from": "$input.params('from')",
+            "to": "$input.params('to')",
+            "startTime": "$input.params('startTime')",
+            "endTime": "$input.params('endTime')"
+          }
+        }
       },
       "responses": {
         "400": {
