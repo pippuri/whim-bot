@@ -110,7 +110,7 @@ module.exports = function (original) {
   });
 
   // Combine groups
-  original.groups.map(group => {
+  (original.groups || []).map(group => {
     allTrips = allTrips.concat(group.trips);
   });
 
