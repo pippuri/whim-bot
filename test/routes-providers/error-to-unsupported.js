@@ -40,7 +40,7 @@ module.exports = (lambda, options) => {
     });
 
     it('should trigger a null response', () => {
-      expect(response).to.be.null;
+      expect(response.plan.itineraries.length).to.equal(0);
     });
 
   });
