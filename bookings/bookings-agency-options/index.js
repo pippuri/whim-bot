@@ -13,27 +13,25 @@ function getAgencyProductOptions(event) {
   }
 
   if (!event.payload.hasOwnProperty('startTime') || event.payload.startTime === '') {
-    return Promise.reject(new MaasError('startTime querystring empty or missing'));
+    return Promise.reject(new MaasError('startTime querystring empty or missing', 500));
+  }
+
+  if (!event.payload.hasOwnProperty('endTime') || event.payload.endTime === '') {
+    return Promise.reject(new MaasError('endTime querystring empty or missing', 500));
   }
 
   if (!event.payload.hasOwnProperty('from') || event.payload.from === '') {
-    return Promise.reject(new MaasError('from querystring empty or missing'));
+    return Promise.reject(new MaasError('from querystring empty or missing', 500));
   }
 
-  let queryString = '/?';
-  const queryStringKeys = Object.keys(event.payload);
-
-  queryStringKeys.map(queryKey => {
-    queryString += queryKey + '=' + event.payload[queryKey];
-    if (queryStringKeys.indexOf(queryKey) < queryStringKeys.length - 1) {
-      queryString += '&';
-    }
-  });
-
   return tsp.findAgency(event.agencyId)
-    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options + queryString, { json: true }))
+    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options, {
+      qs: event.payload,
+      json: true,
+    }))
     .then(response => {
       // If response.options is undefined, return empty
+      // Most likely happens when some error occur silently
       if (typeof response.options === typeof undefined) {
         return {
           options: [],
