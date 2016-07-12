@@ -39,8 +39,8 @@ module.exports = (lambda, options) => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a null response', () => {
-      expect(response).to.be.null;
+    it('should trigger an empty response', () => {
+      expect(response.plan.itineraries.length).to.equal(0);
     });
 
   });

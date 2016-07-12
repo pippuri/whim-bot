@@ -151,7 +151,7 @@ function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format) {
     .then(results => {
       const actualResults = results.filter(r => (r !== null));
       if (actualResults.length < 1) {
-        return null;
+        return adapter([]);
       }
 
       const response = mergeResults(actualResults);
