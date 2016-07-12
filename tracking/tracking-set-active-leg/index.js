@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
-const stateLib = require('../../lib/states/index');
+const stateMachine = require('../../lib/states/index').StateMachine;
 const models = require('../../lib/models/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Database = models.Database;
@@ -58,7 +58,7 @@ function setActiveLeg(identityId, itinerary, leg) {
   console.log(`Thing shadow payload: ${JSON.stringify(payload)}`);
   return models.Leg.query().findById(leg.id)
     .then(oldLeg => Promise.all([
-      stateLib.changeState('Leg', oldLeg.id, oldLeg.state, 'ACTIVATED'),
+      stateMachine.changeState('Leg', oldLeg.id, oldLeg.state, 'ACTIVATED'),
       models.Leg.query().update({ state: 'ACTIVATED' }).where('id', leg.id),
       iotData.updateThingShadowAsync({
         thingName: thingName,
