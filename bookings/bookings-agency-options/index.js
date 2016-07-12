@@ -3,7 +3,6 @@
 const request = require('request-promise-lite');
 const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
-const _ = require('lodash');
 const utils = require('../../lib/utils/index');
 const tsp = require('../../lib/tsp/index');
 
@@ -13,36 +12,38 @@ function getAgencyProductOptions(event) {
     return Promise.reject(new MaasError('Missing input agencyId', 400));
   }
 
-  if (!event.queryString.hasOwnProperty('startTime') || event.queryString.startTime === '') {
-    return Promise.reject(new MaasError('startTime querystring empty or missing'));
+  if (!event.payload.hasOwnProperty('startTime') || event.payload.startTime === '') {
+    return Promise.reject(new MaasError('startTime querystring empty or missing', 500));
   }
 
-  if (!event.queryString.hasOwnProperty('from') || event.queryString.from === '') {
-    return Promise.reject(new MaasError('from querystring empty or missing'));
+  if (!event.payload.hasOwnProperty('endTime') || event.payload.endTime === '') {
+    return Promise.reject(new MaasError('endTime querystring empty or missing', 500));
   }
 
-  let queryString = '/?';
-  const queryStringKeys = Object.keys(event.queryString);
-
-  queryStringKeys.map(queryKey => {
-    queryString += queryKey + '=' + event.queryString[queryKey];
-    if (queryStringKeys.indexOf(queryKey) < queryStringKeys.length - 1) {
-      queryString += '&';
-    }
-  });
+  if (!event.payload.hasOwnProperty('from') || event.payload.from === '') {
+    return Promise.reject(new MaasError('from querystring empty or missing', 500));
+  }
 
   return tsp.findAgency(event.agencyId)
-    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options + queryString))
-    .then(options => {
-      if (!_.isArray(options)) {
-        options = [options];
+    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options, {
+      qs: event.payload,
+      json: true,
+    }))
+    .then(response => {
+      // If response.options is undefined, return empty
+      // Most likely happens when some error occur silently
+      if (typeof response.options === typeof undefined) {
+        return {
+          options: [],
+          meta: {},
+        };
       }
-
-      options.forEach(option => {
-        if (typeof option === typeof {}) {
+      response.options.forEach(option => {
+        if (typeof option === 'object') {
           option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
         }
       });
+      return response;
     });
 }
 
