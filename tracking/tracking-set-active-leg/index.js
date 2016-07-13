@@ -10,6 +10,11 @@ const Database = models.Database;
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
 Promise.promisifyAll(iotData);
 
+/**
+ * Return active itinerary data from thing shadow
+ * @param  {UUID} identityId
+ * @return {object} iotData response
+ */
 function getActiveItinerary(identityId) {
   const thingName = identityId.replace(/:/, '-');
   return iotData.getThingShadowAsync({
@@ -17,6 +22,11 @@ function getActiveItinerary(identityId) {
   });
 }
 
+/**
+ * check event input
+ * @param  {object} event
+ * @return {Promise -> empty}
+ */
 function validateInput(event) {
   if (!event.identityId) {
     return Promise.reject(new Error('400 identityId is required'));
@@ -37,14 +47,19 @@ function validateInput(event) {
   return Promise.resolve();
 }
 
+/**
+ * Change active leg data to thing shadow
+ * @param {UUID} identityId
+ * @param {object} itinerary
+ * @param {object} leg
+ * @return {object} iotResponse     Response from aws iot
+ */
 function setActiveLeg(identityId, itinerary, leg) {
   const thingName = identityId.replace(/:/, '-');
   const payload = JSON.stringify({
     state: {
       reported: {
         itinerary: {
-          id: itinerary.id,
-          timestamp: itinerary.timestamp,
           leg: {
             id: leg.id,
             timestamp: leg.timestamp,

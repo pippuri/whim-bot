@@ -15,6 +15,18 @@
   },
   "endpoints": [
     {
+      "path": "tracking/active-itinerary",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {},
+      "requestTemplates": {
+        "application/json": {
+          "identityId":"$context.authorizer.principalId"
+        }
+      },
       "swaggerExport": {
         "summary": "Get active itinerary",
         "description": "Gets the currently active itinerary. The response includes both the active itinerary and the active itinerary leg.",
@@ -68,16 +80,6 @@
             }
           }
         }
-      },
-      "path": "tracking/active-itinerary",
-      "method": "GET",
-      "type": "AWS",
-      "authorizationType": "CUSTOM",
-      "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
-      "requestParameters": {},
-      "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\"}"
       },
       "responses": {
         "^400.*": {
