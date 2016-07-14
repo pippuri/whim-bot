@@ -204,7 +204,12 @@ module.exports.respond = function (event, callback) {
     context.itinerary = event.itinerary;
 
     // Update itinerary for storable form
-    utils.removeSignatures(context.itinerary);
+    context.itinerary = utils.removeSignatures(context.itinerary);
+    if (context.itinerary.legs) {
+      context.itinerary.legs.forEach(leg => {
+        utils.removeSignatures(leg);
+      });
+    }
     annotateIdentifiers(context.itinerary);
     annotateIdentityId(context.itinerary, context.profile.identityId);
     return annotateItineraryState(context.itinerary, 'PLANNED');
