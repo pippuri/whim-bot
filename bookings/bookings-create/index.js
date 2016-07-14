@@ -2,11 +2,11 @@
 
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
-const lib = require('../lib');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
 const tsp = require('../../lib/tsp');
 const utils = require('../../lib/utils');
+const maasOperation = require('../../lib/maas-operation/index');
 const Database = models.Database;
 
 /**
@@ -43,8 +43,8 @@ function createBooking(event) {
   const agencyId = event.leg.agencyId;
 
   return Promise.all([
-    lib.fetchCustomerProfile(event.identityId), // Get customer information
-    lib.validateSignatures(event), // Validate request signature
+    maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
+    utils.validateSignatures(event), // Validate request signature
   ])
   .spread((profile, validatedInput)  => {
     const customer = {
@@ -83,7 +83,7 @@ function createBooking(event) {
       tspId: booking.id,
     });
     delete transformedBooking.bookingId;
-    transformedBooking = lib.removeSignatures(transformedBooking);
+    transformedBooking = utils.removeSignatures(transformedBooking);
     return saveBooking(transformedBooking);
   });
 }
