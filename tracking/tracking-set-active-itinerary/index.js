@@ -74,11 +74,11 @@ function getFirstLegId(itineraryId) {
 }
 
 /**
- * Set the first leg that will be activated when the itinerary got activated
+ * Activate the starting leg of the itinerary
  * @default First leg of the itinerary
- * @param {UUID} legId
+ * @param {UUID} legId - Optional - Alternatively start the itinerary at the leg with this id
  */
-function setFirstActiveLeg(identityId, itinerary, legId) {
+function activateStartingLeg(identityId, itinerary, legId) {
 
   // If no input legId is presence
   if (!legId || legId === null || legId === '') {
@@ -137,7 +137,7 @@ function setActiveItinerary(identityId, itinerary) {
     ]))
     .spread((changedState, newItinerary, iotResponse) => {
       console.log('iotResponse', iotResponse);
-      return setFirstActiveLeg(identityId, itinerary, itinerary.legId);
+      return activateStartingLeg(identityId, itinerary, itinerary.legId);
     })
     .then(iotResponse => Promise.resolve({
       payload: JSON.parse(iotResponse.payload),
