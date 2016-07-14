@@ -180,7 +180,16 @@ function saveItinerary(itinerary) {
 
 function wrapToEnvelope(itinerary) {
   //console.log(`Wrap itinerary ${itinerary.id} into response`);
-
+  if (itinerary.legs &&  itinerary.legs.constructor === Array) {
+    itinerary.legs.forEach(leg => {
+      if (leg.booking && leg.booking.leg) {
+        delete leg.booking.leg;
+      }
+      if (leg.bookingId) {
+        delete leg.bookingId;
+      }
+    });
+  }
   return {
     itinerary: itinerary,
     maas: {},
