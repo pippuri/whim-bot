@@ -25,7 +25,7 @@ function getActiveLegId(identityId) {
       return payload.state.reported.location.legId;
     }
 
-    return Promise.reject(new MaaSError('No Active Leg', 500));
+    return Promise.reject(new MaaSError('No Active Leg', 404));
   });
 }
 

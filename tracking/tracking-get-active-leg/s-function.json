@@ -13,15 +13,17 @@
   },
   "endpoints": [
     {
-      "path": "tracking-get-active-leg",
+      "path": "tracking/active-leg",
       "method": "GET",
       "type": "AWS",
-      "authorizationType": "none",
-      "authorizerFunction": false,
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": {
+          "identityId": "$context.authorizer.principalId"
+        }
       },
       "responses": {
         "400": {
@@ -42,8 +44,4 @@
   ],
   "events": [],
   "environment": "$${environment}",
-  "vpc": {
-    "securityGroupIds": [],
-    "subnetIds": []
-  }
 }
