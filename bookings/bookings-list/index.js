@@ -10,9 +10,10 @@ module.exports.respond = (event, callback) => {
     return Promise.reject(new MaaSError('Missing identityId input', 400));
   }
 
-  return Database.knex.select().from('Booking')
-    // TODO: add index CREATE INDEX ON Booking((customer->>'id'));
-    .whereRaw("customer ->> 'id' > ?", event.identityId)
+  // TODO: add index CREATE INDEX ON Booking((customer->>'id'));
+  return Database.init()
+    .then(() => Database.knex.select().from('Booking')
+      .whereRaw("customer ->> 'id' = ?", [event.identityId] ))
     .then( response => {
       Database.cleanup()
         .then(() => callback(null, { bookings: response || [] } ));
