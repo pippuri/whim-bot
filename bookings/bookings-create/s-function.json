@@ -21,7 +21,10 @@
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": ""
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "payload": "$input.json()"
+        }
       },
       "responses": {
         "^400.*": {

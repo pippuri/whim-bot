@@ -20,11 +20,11 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
-  if (!event.signature || event.signature === '') {
+  if (!event.payload.signature || event.payload.signature === '') {
     return Promise.reject(new MaaSError('Missing signature', 400));
   }
 
-  if (!event.leg || !event.leg.agencyId || event.leg.agencyId === '') {
+  if (!event.payload.leg || !event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
     return Promise.reject(new MaaSError('Missing leg input'));
   }
 
