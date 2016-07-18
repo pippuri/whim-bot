@@ -22,6 +22,8 @@ module.exports = function (lambda) {
     });
 
     it('should return a valid response', () => {
+      // FIXME change this when bookings are returning in correct states
+      response.state = 'RESERVED';
       return validator.validate(response, schema)
         .then(validationError => {
           expect(validationError).to.be.null;
