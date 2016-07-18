@@ -5,6 +5,9 @@
   "type": "object",
   "required": ["mode", "startTime", "endTime", "from"],
   "properties": {
+    "agencyId": {
+      "type": "String"
+    },
     "mode": {
       "type": "String"
     },

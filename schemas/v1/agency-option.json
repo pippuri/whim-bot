@@ -6,8 +6,7 @@
   "required": [
     "leg",
     "meta",
-    "terms",
-    "signature"
+    "terms"
   ],
   "properties": {
     "leg": {
@@ -36,7 +35,7 @@
       "description": "Tsp terms of usage / order"
     },
     "signature": {
-      "type": "object",
+      "type": "string",
       "description": "This object's signature"
     }
   },

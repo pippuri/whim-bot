@@ -28,13 +28,11 @@
       "requestTemplates": {
         "application/json": {
           "agencyId": "$input.params('agencyId')",
-          "payload": {
-            "mode": "$input.params('mode')",
-            "from": "$input.params('from')",
-            "to": "$input.params('to')",
-            "startTime": "$input.params('startTime')",
-            "endTime": "$input.params('endTime')"
-          }
+          "mode": "$input.params('mode')",
+          "from": "$input.params('from')",
+          "to": "$input.params('to')",
+          "startTime": "$input.params('startTime')",
+          "endTime": "$input.params('endTime')"
         }
       },
       "swaggerExport": {
@@ -126,7 +124,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-        "[^0-9].*": {
+        "^500.*": {
           "statusCode": "500",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"

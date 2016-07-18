@@ -7,11 +7,12 @@
     "options": {
       "type": "array",
       "items": {
-        "$ref": "../../schemas/v1/agency-option.json"
+        "$ref": "../schemas/v1/agency-option.json"
       }
     },
     "meta": {
       "type": "object"
     }
-  }
+  },
+  "required": ["options"]
 }
