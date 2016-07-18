@@ -40,6 +40,10 @@
         }
       ]
     },
+    "kmDistance": {
+      "type": "number",
+      "minimum": 0
+    },
     "phone": {
       "type": "string"
     },
