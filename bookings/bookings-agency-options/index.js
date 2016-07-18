@@ -70,6 +70,8 @@ function getAgencyProductOptions(event) {
         to: event.to,
         startTime: event.startTime,
         endTime: event.endTime,
+        fromRadius: event.fromRadius,
+        toRadius: event.toRadius,
       },
       json: true,
     }))
