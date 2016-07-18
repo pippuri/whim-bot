@@ -32,7 +32,9 @@
           "from": "$input.params('from')",
           "to": "$input.params('to')",
           "startTime": "$input.params('startTime')",
-          "endTime": "$input.params('endTime')"
+          "endTime": "$input.params('endTime')",
+          "fromRadius": "$input.params('fromRadius')",
+          "toRadius": "$input.params('toRadius')"
         }
       },
       "swaggerExport": {
