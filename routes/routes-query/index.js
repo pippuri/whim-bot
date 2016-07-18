@@ -1,7 +1,7 @@
 'use strict';
 
 const businessRuleEngine = require('../../lib/business-rule-engine/index.js');
-const maasUtils = require('../../lib/utils');
+const utils = require('../../lib/utils');
 
 // Add route and leg identifiers that are unique and also act as
 // a signature for the response.
@@ -11,11 +11,11 @@ function addRouteAndLegIdentifiersToResponse(response) {
   itineraries.map(itinerary => {
     (itinerary.legs || []).map(leg => {
       if (!leg.signature) {
-        leg.signature = maasUtils.sign(leg, process.env.MAAS_SIGNING_SECRET);
+        leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
       }
     });
 
-    itinerary.signature = maasUtils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
+    itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
   });
 
   return response;

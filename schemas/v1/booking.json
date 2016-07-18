@@ -79,17 +79,19 @@
       ]
     },
     "bookingState": {
-      "description": "The life-cycle state of the booking (from NEW to FINISHED)",
+      "description": "The life-cycle state of the booking",
       "type": "string",
       "enum": [
-        "NEW",
-        "BOOKED",
-        "CANCELLED",
+        "START",
+        "PENDING",
+        "RESERVED",
         "PAID",
-        "UPDATE_REQUESTED",
-        "UPDATED",
-        "STARTED",
-        "FINISHED"
+        "ACTIVATED",
+        "CANCELLED",
+        "EXPIRED",
+        "RECONCILING",
+        "RESOLVED",
+        "REJECTED"
       ]
     },
     "token": {
