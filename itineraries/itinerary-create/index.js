@@ -6,7 +6,7 @@ const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const tsp = require('../../lib/tsp/index');
-const stateLib = require('../../lib/states/index');
+const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
 
 function fetchCustomerProfile(identityId) {
@@ -131,7 +131,7 @@ function annotateLegsState(itinerary, state) {
   itinerary.legs.forEach(leg => {
     // Starting state
     leg.state = 'START';
-    queue.push(stateLib.changeState('Leg', leg.id, leg.state, state));
+    queue.push(stateMachine.changeState('Leg', leg.id, leg.state, state));
   });
 
   return Promise.all(queue)
@@ -148,7 +148,7 @@ function annotateItineraryState(itinerary, state) {
   // Starting state
   itinerary.state = 'START';
 
-  return stateLib.changeState('Itinerary', itinerary.id, itinerary.state, state)
+  return stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, state)
     .then(newState => {
       itinerary.state = newState;
 
@@ -173,7 +173,7 @@ function createAndAppendBookings(itinerary, profile) {
         booking => {
           //console.log(`Booking for ${leg.id} succeeded`);
 
-          return stateLib.changeState('Leg', leg.id, leg.state, 'PAID')
+          return stateMachine.changeState('Leg', leg.id, leg.state, 'PAID')
             .then(newState => {
               completed.push(leg);
               leg.state = newState;
@@ -193,7 +193,7 @@ function createAndAppendBookings(itinerary, profile) {
     return tsp.cancelBooking(leg.booking)
       .then(
         booking => {
-          return stateLib.changeState('Leg', leg.id, leg.state, 'CANCELLED')
+          return stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED')
             .then(newState => {
               cancelled.push(leg);
               leg.state = newState;
@@ -202,7 +202,7 @@ function createAndAppendBookings(itinerary, profile) {
 
         error => {
           console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-          return stateLib.changeState('Leg', leg.id, leg.state, 'PAID')
+          return stateMachine.changeState('Leg', leg.id, leg.state, 'PAID')
             .then(newState => {
               cancelled.push(leg);
               leg.state = newState;
@@ -217,7 +217,7 @@ function createAndAppendBookings(itinerary, profile) {
       // In case of success, return the itinerary. In case of failure,
       // cancel the completed bookings.
       if (failed.length === 0) {
-        return stateLib.changeState('Itinerary', itinerary.id, itinerary.state, 'PAID')
+        return stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, 'PAID')
           .then(newState => {
             itinerary.state = newState;
             return Promise.resolve(itinerary);

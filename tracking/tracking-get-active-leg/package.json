@@ -1,0 +1,16 @@
+{
+  "name": "tracking-get-active-leg",
+  "version": "0.0.1",
+  "description": "Tracking get active leg endpoint",
+  "author": "James Nguyen",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "keywords": [],
+  "devDependencies": {},
+  "dependencies": {
+  }
+}

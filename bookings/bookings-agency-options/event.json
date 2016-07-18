@@ -1,8 +1,10 @@
 {
-  "agencyId": "Valopilkku",
-  "queryString": {
-    "startTime": 1513414139,
-    "from": [12, 12],
-    "to": [23, 23]
+  "agencyId": "Sixt",
+  "payload": {
+    "mode": "CAR",
+    "from": "60.3210549,24.9506771",
+    "to": "63.3210549,24.9506771",
+    "startTime": "1488048210000",
+    "endTime": "1488048270000"
   }
 }

@@ -1,7 +1,8 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "itinerary": {
-    "id": "d1580ea0-43a6-11e6-8aa2-3730b2f577a0",
-    "timestamp": "1467627484"
+    "id": "004DC7C0-4462-11E6-9BBC-EB56AEA36D25",
+    "timestamp": "1467627484",
+    "legId": ""
   }
 }

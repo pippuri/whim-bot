@@ -1,0 +1,16 @@
+{
+  "name": "bookings-list",
+  "version": "0.0.1",
+  "description": "Bookings listing endpoint",
+  "author": "Antti Vähäkotamäki",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "keywords": [],
+  "devDependencies": {},
+  "dependencies": {
+  }
+}

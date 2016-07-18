@@ -15,6 +15,26 @@
   },
   "endpoints": [
     {
+      "path": "tracking/active-itinerary",
+      "method": "PUT",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {
+        "integration.request.querystring.id": "method.request.querystring.id",
+        "integration.request.querystring.timestamp": "method.request.querystring.timestamp"
+      },
+      "requestTemplates": {
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "itinerary": {
+            "id": "$input.params('id')",
+            "timestamp": "$input.params('timestamp')",
+            "legId": "$input.params('legId')"
+          }
+        }
+      },
       "swaggerExport": {
         "summary": "Set active itinerary",
         "description": "Sets the currently active itinerary. There can only be one active itinerary per user.",
@@ -57,16 +77,6 @@
             }
           }
         }
-      },
-      "path": "tracking/active-itinerary",
-      "method": "PUT",
-      "type": "AWS",
-      "authorizationType": "CUSTOM",
-      "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
-      "requestParameters": {},
-      "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"itinerary\":$input.json('$')}"
       },
       "responses": {
         "^400.*": {
