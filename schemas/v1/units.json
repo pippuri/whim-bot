@@ -42,8 +42,7 @@
     },
     "kmDistance": {
       "type": "number",
-      "minimum": 0,
-      "maximum": 41000
+      "minimum": 0
     },
     "phone": {
       "type": "string"
