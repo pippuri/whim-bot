@@ -3,6 +3,7 @@
   "id": "https://api.maas.global/v1/bookings-agency-options/request-schema.json",
   "description": "Request schema for bookings-agency-options",
   "type": "object",
+  "required": ["mode", "startTime", "endTime", "from"],
   "properties": {
     "mode": {
       "type": "String"
@@ -18,6 +19,12 @@
     },
     "to": {
       "$ref": "../../schemas/v1/units.json#definitions/location"
+    },
+    "fromRadius":{
+      "$ref": "../../schemas/v1/units.json#definitions/kmDistance"
+    },
+    "toRadius":{
+      "$ref": "../../schemas/v1/units.json#definitions/kmDistance"
     }
   }
 }

@@ -40,6 +40,11 @@
         }
       ]
     },
+    "kmDistance": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 41000
+    },
     "phone": {
       "type": "string"
     },
