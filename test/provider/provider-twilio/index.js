@@ -8,7 +8,7 @@ describe('Twilio (SMS) provider', () => {
   // Skip the SMS sending in normal cases
   describe.skip('Send SMS', () => {
     _this.timeout = 20000;
-    const lambda = require('../../provider-twilio/provider-twilio-send-sms/handler.js');
+    const lambda = require('../../../provider-twilio/provider-twilio-send-sms/handler.js');
     testSendSMS(lambda);
   });
 });

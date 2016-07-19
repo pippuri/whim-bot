@@ -4,8 +4,8 @@ const testQuery = require('./feature-query');
 
 describe('Reverse geocoding provider', () => {
   describe('GOOGLE', function () {
-    const lambda = require('../../provider-google/provider-google-reverse-geocoding/handler.js');
-    const schema = require('../../geocoding/geocoding-query/response-schema.json');
+    const lambda = require('../../../provider-google/provider-google-reverse-geocoding/handler.js');
+    const schema = require('../../../geocoding/geocoding-query/response-schema.json');
     const fixture = require('./fixture.json');
 
     this.timeout(20000);
