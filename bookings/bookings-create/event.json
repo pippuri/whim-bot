@@ -1,35 +1,114 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload": {
-    "state": "NEW",
-    "leg": {
-      "startTime": 1464947100000,
-      "endTime": null,
-      "mode": "BUS",
-      "from": {
-        "name": "Vihdintie & Lakistontie",
-        "lon": 24.6471,
-        "lat": 60.32626
-      },
-      "to": {
-        "name": "Nuuksiontie",
-        "lon": 24.558,
-        "lat": 60.29377
-      },
-      "legGeometry": null,
-      "agencyId": "HSL"
-
+  "leg":{
+    "startTime":1468847945993.779,
+    "endTime":1468934366483.8892,
+    "from":{
+      "lat":60.18948,
+      "lon":24.97213
     },
-    "terms": {
-      "price": {
-        "amount": 1234,
-        "currency": "EUR"
+    "to":{
+      "lat":60.18948,
+      "lon":24.97213
+    },
+    "agencyId": "Sixt"
+  },
+  "meta":{
+    "name":"Citroën C1, Peugeot 108",
+    "description":"2/4 Door Economy, Manual transmission",
+    "image":"https://www.sixt.de/php/fleet/vehicleimage?grp=ECMR&liso=FI&uci=2252",
+    "car":{
+      "passengers":4,
+      "doors":4,
+      "models":[
+        "Citroën C1",
+        "Peugeot 108"
+      ],
+      "transmission":"manual",
+      "airConditioning":true,
+      "navigationSystem":false
+    },
+    "options":{
+      "navigationSystem":true,
+      "additionalMiles":null
+    }
+  },
+  "terms":{
+    "mileageLimit":null,
+    "stations":{
+      "pickup":{
+        "openingHours":[
+          {
+            "Days":[
+              "MO",
+              "TU",
+              "WE",
+              "TH"
+            ],
+            "Times":[
+              {
+                "Open":"08:00:00",
+                "Close":"16:00:00"
+              }
+            ]
+          },
+          {
+            "Days":[
+              "FR"
+            ],
+            "Times":[
+              {
+                "Open":"08:00:00",
+                "Close":"16:30:00"
+              }
+            ]
+          }
+        ],
+        "outOfHours":{
+          "IsAllowed":true,
+          "Information":"Pick-up out of opening hours is possible for an additional charge. This service is bookable on request. Please provide e-mail address and mobile number."
+        }
+      },
+      "dropoff":{
+        "openingHours":[
+          {
+            "Days":[
+              "MO",
+              "TU",
+              "WE",
+              "TH"
+            ],
+            "Times":[
+              {
+                "Open":"08:00:00",
+                "Close":"16:00:00"
+              }
+            ]
+          },
+          {
+            "Days":[
+              "FR"
+            ],
+            "Times":[
+              {
+                "Open":"08:00:00",
+                "Close":"16:30:00"
+              }
+            ]
+          }
+        ],
+        "outOfHours":{
+          "IsAllowed":true,
+          "Information":"The Key box is located next to main entrance. Sixt parking places are available on the backside of the building. During weekends parking also possible on the street in front of the Sixt branch."
+        }
       }
     },
-    "meta": {
-      "name": "110T",
-      "description": "This bus starts from Kamppi and goes to Leppavaara"
-    },
-    "signature": "9134dbc787c376813a1cc7de2b0382c3f0af31536dde37f69cff77b1c9ecb0f2"
-  }
+    "price":{
+      "amount":122.97,
+      "currency":"EUR"
+    }
+  },
+  "signature":"1cf0847d1397756b58d1a16eac132cb5a00c31d54956ad2dc453dae2fa4d0efe"
+}
 }

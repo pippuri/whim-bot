@@ -23,12 +23,18 @@
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
-          "payload": "$input.json()"
+          "payload": "$input.json('$')"
         }
       },
       "responses": {
         "^400.*": {
           "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+         "^403.*": {
+          "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }

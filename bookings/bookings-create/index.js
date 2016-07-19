@@ -59,10 +59,10 @@ function changeBookingState(booking, state) {
 function createBooking(event) {
   return Promise.all([
     maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
-    utils.validateSignatures(event), // Validate request signature
+    utils.validateSignatures(event.payload), // Validate request signature
   ])
-  .spread((profile, event)  => {
-    return tsp.createBooking(event.leg, profile, event.term, event.meta );
+  .spread((profile, payload)  => {
+    return tsp.createBooking(payload.leg, profile, payload.term, payload.meta );
   })
   // TODO: actually reduce points before putting to PAID state
   .then(booking => {
