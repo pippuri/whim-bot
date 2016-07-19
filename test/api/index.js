@@ -7,4 +7,5 @@ describe('API', () => {
   require('./geocoding-endpoint/index.js');
   require('./itineraries-endpoint/index.js');
   require('./bookings-endpoint/index.js');
+  require('./store-endpoint/index.js');
 });

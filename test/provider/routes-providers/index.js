@@ -10,7 +10,7 @@ describe('routes provider', () => {
 
   describe('TripGo', function () {
     this.timeout(20000);
-    const lambda = require('../../provider-tripgo/provider-tripgo-routes/handler.js');
+    const lambda = require('../../../provider-tripgo/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: true });
     testArriveBy(lambda);
     testFromUnsupported(lambda);
@@ -19,7 +19,7 @@ describe('routes provider', () => {
   });
 
   describe('Digitransit', () => {
-    const lambda = require('../../provider-digitransit/provider-digitransit-routes/handler.js');
+    const lambda = require('../../../provider-digitransit/provider-digitransit-routes/handler.js');
     testLeaveAt(lambda);
     testArriveBy(lambda);
     testFromUnsupported(lambda, { skip: true });
@@ -28,7 +28,7 @@ describe('routes provider', () => {
   });
 
   describe('HERE', () => {
-    const lambda = require('../../provider-here/provider-here-routes/handler.js');
+    const lambda = require('../../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda, { skip: true });
