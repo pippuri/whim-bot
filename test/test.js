@@ -25,6 +25,7 @@ process.env.maas_test_run = true;
 
 describe('MaaS.fi backend', () => {
   require('./api/index.js');
+  require('./profile/index.js');
   require('./provider/index.js');
   require('./lib/index.js');
 });

@@ -10,8 +10,10 @@ describe('store products', () => {
   before(done => {
     mgr.getProducts().then(data => {
       response = data;
+      //console.log('products:' + JSON.stringify(data, null, 2));
       done();
     }).catch(data => {
+      console.log('Error', data);
       error = data;
       done();
     });
@@ -31,7 +33,7 @@ describe('user by ID', () => {
   let response;
 
   before(done => {
-    mgr.getUser('IG5rynMPlZaTwQ1nSg').then(data => {
+    mgr.getUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb' /*'IG5rynMPlZaTwQ1nSg'*/).then(data => {
       response = data;
       done();
     }).catch(data => {
@@ -70,12 +72,14 @@ describe('Update user', () => {
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
-      first_name: 'Test',
-      last_name: 'User',
+      firstName: 'Tester' + Math.random() * 100,
+      lastName: 'User',
       email: 'me@maas.fi',
       phone: '+358555666',
-      'billing_address[country]': 'FI',
-      'billing_address[zip]': '00110',
+      address: 'Töölonlahdenkatu 2',
+      country: 'FI',
+      zip: '00110',
+      city: 'Helsinki',
     }).then(data => {
       response = data;
       done();
@@ -95,29 +99,33 @@ describe('Update user', () => {
 });
 
 describe('Update User card', () => {
-  //let error;
   let response;
 
   before(done => {
-    mgr.updateUserCreditCard('ergaegeaeageagrseg', {
-      first_name: 'Test',
-      last_name: 'User',
+    mgr.updateUserCreditCard('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
+      firstName: 'Test',
+      lastName: 'User',
       email: 'me@maas.fi',
-      phone: '+358555666',
-      billing_country: 'FI',
-      billing_zip: '00110',
-      tmp_token: '46y6htbg35b',
+      zip: '02270',
+      city: 'Espoo',
+      country: 'FI',
+      card: {
+        number: '4012888888881881',
+        cvv: '999',
+        expiryMonth: '01',
+        expiryYear: '2017',
+      },
     }).then(data => {
       response = data;
       done();
     }).catch(data => {
-      //error = data;
+      console.log('Error', data);
       done();
     });
   });
 
-  it('Should not work since Stripe isnt configured', () => {
-    expect(response).to.be.empty;
+  it('Should  work since Stripe is configured in test', () => {
+    expect(response).to.not.be.empty;
   });
 });
 
@@ -126,11 +134,12 @@ describe('List the user plan', () => {
   let response;
 
   before(done => {
-    mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {
+    mgr.getUserSubscription('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb').then(data => {
       response = data;
       done();
     }).catch(data => {
       error = data;
+      console.log('Error', data);
       done();
     });
   });
