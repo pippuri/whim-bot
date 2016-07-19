@@ -40,6 +40,10 @@
         }
       ]
     },
+    "distance": {
+      "type": "number",
+      "minimum": 0
+    },
     "kmDistance": {
       "type": "number",
       "minimum": 0

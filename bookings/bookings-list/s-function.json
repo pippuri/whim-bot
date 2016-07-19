@@ -26,17 +26,38 @@
         }
       },
       "responses": {
-        "400": {
-          "statusCode": "400"
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "[^0-9].*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {},
-          "responseModels": {
-            "application/json;charset=UTF-8": "Empty"
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
           },
+          "responseModels": {},
           "responseTemplates": {
-            "application/json;charset=UTF-8": ""
+            "application/json": ""
           }
         }
       }

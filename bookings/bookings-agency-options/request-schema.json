@@ -5,6 +5,9 @@
   "type": "object",
   "required": ["mode", "startTime", "endTime", "from"],
   "properties": {
+    "agencyId": {
+      "type": "String"
+    },
     "mode": {
       "type": "String"
     },
@@ -21,10 +24,10 @@
       "$ref": "../../schemas/v1/units.json#definitions/location"
     },
     "fromRadius":{
-      "$ref": "../../schemas/v1/units.json#definitions/kmDistance"
+      "$ref": "../../schemas/v1/units.json#definitions/distance"
     },
     "toRadius":{
-      "$ref": "../../schemas/v1/units.json#definitions/kmDistance"
+      "$ref": "../../schemas/v1/units.json#definitions/distance"
     }
   }
 }

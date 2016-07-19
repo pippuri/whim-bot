@@ -1,26 +1,13 @@
 'use strict';
 
 const Promise = require('bluebird');
-const bus = require('../../lib/service-bus');
 const utils = require('../../lib/utils');
+const maasOperation = require('../../lib/maas-operation/index');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const tsp = require('../../lib/tsp/index');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
-
-function fetchCustomerProfile(identityId) {
-  //console.log(`Fetch customer profile ${identityId}`);
-
-  // FIXME The 'Item' envelope is unnecessary in profile
-  return bus.call('MaaS-profile-info', {
-    identityId: identityId,
-  })
-  .then(data => {
-    // Append identity ID
-    return Object.assign({ identityId: identityId }, data.Item);
-  });
-}
 
 function filterBookableLegs(legs) {
   //console.log(`Filter ${legs.length} bookable legs`);
@@ -47,66 +34,6 @@ function filterBookableLegs(legs) {
         console.warn(`Could not find a TSP for ${leg.agencyId}`);
         return false;
     }
-  });
-}
-
-function validateSignatures(itinerary) {
-  //console.log(`Validating itinerary signature ${itinerary.signature}`);
-
-  // Verify that the data matches the signature
-  const originalSignature = itinerary.signature;
-  const withoutSignature = Object.assign({}, itinerary);
-  delete withoutSignature.signature;
-
-  const computedSignature = utils.sign(withoutSignature, process.env.MAAS_SIGNING_SECRET);
-
-  if (originalSignature === computedSignature) {
-    return Promise.resolve(itinerary);
-  }
-
-  console.warn(`Validation failed. Current: ${originalSignature} Expected: ${computedSignature}`);
-
-  // FIXME change routeId term
-  return Promise.reject(new MaaSError('Itinerary validation failed.', 400));
-}
-
-function removeSignatures(itinerary) {
-  //console.log('Remove all signatures');
-
-  // Remove old signatures and assign new ones
-  delete itinerary.signature;
-  itinerary.legs.forEach(leg => {
-    delete leg.signature;
-  });
-
-  return itinerary;
-}
-
-function computeBalance(itinerary, profile) {
-  //console.log(`Computing balance for ${profile.identityId}`);
-
-  // Check that the user has sufficient balance
-  const cost = itinerary.fare.points;
-  const balance = profile.balance;
-  const message = `Insufficent balance (required: ${cost}, actual: ${balance})`;
-
-  //console.log(`Balance ${profile.identityId}`);
-
-  if (balance > cost) {
-    return balance - cost;
-  }
-
-  throw new MaaSError(message, 403);
-}
-
-function updateBalance(identityId, newBalance) {
-  console.log(`Update new balance ${newBalance}`);
-
-  return bus.call('MaaS-profile-edit', {
-    identityId: identityId,
-    payload: {
-      balance: newBalance,
-    },
   });
 }
 
@@ -253,7 +180,16 @@ function saveItinerary(itinerary) {
 
 function wrapToEnvelope(itinerary) {
   //console.log(`Wrap itinerary ${itinerary.id} into response`);
-
+  if (itinerary.legs &&  itinerary.legs.constructor === Array) {
+    itinerary.legs.forEach(leg => {
+      if (leg.booking && leg.booking.leg) {
+        delete leg.booking.leg;
+      }
+      if (leg.bookingId) {
+        delete leg.bookingId;
+      }
+    });
+  }
   return {
     itinerary: itinerary,
     maas: {},
@@ -268,8 +204,8 @@ module.exports.respond = function (event, callback) {
   // update balance and save both itinerary and profile.
   return Promise.all([
     Database.init(),
-    validateSignatures(event.itinerary),
-    fetchCustomerProfile(event.identityId),
+    utils.validateSignatures(event.itinerary),
+    maasOperation.fetchCustomerProfile(event.identityId),
   ])
   .spread((none, valid, profile) => {
     // Assign our inputs
@@ -277,7 +213,12 @@ module.exports.respond = function (event, callback) {
     context.itinerary = event.itinerary;
 
     // Update itinerary for storable form
-    removeSignatures(context.itinerary);
+    context.itinerary = utils.removeSignatures(context.itinerary);
+    if (context.itinerary.legs) {
+      context.itinerary.legs.forEach(leg => {
+        utils.removeSignatures(leg);
+      });
+    }
     annotateIdentifiers(context.itinerary);
     annotateIdentityId(context.itinerary, context.profile.identityId);
     return annotateItineraryState(context.itinerary, 'PLANNED');
@@ -287,9 +228,9 @@ module.exports.respond = function (event, callback) {
   .then(itinerary => {
     // Update input, update balance
     context.itinerary = itinerary;
-    const balance = computeBalance(context.itinerary, context.profile);
+    const balance = maasOperation.computeBalance(context.itinerary, context.profile);
 
-    return updateBalance(context.profile.identityId, balance);
+    return maasOperation.updateBalance(context.profile.identityId, balance);
   })
   .then(profile => {
     Database.cleanup()

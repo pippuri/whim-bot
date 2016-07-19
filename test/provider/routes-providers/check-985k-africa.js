@@ -4,8 +4,8 @@ const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');
 const expect = chai.expect;
 const moment = require('moment');
-const validator = require('../../lib/validator');
-const schema = require('../../routes/routes-query/response-schema.json');
+const validator = require('../../../lib/validator');
+const schema = require('../../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda) {
 

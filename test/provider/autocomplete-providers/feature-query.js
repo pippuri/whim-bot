@@ -4,8 +4,8 @@ const chai = require('chai');
 const expect = chai.expect;
 const wrap = require('lambda-wrapper').wrap;
 
-const validator = require('../../lib/validator');
-const schema = require('../../autocomplete/autocomplete-query/response-schema.json');
+const validator = require('../../../lib/validator');
+const schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
 
 module.exports = function (lambda) {
 
