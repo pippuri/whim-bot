@@ -76,7 +76,7 @@ describe('Update user', () => {
       lastName: 'User',
       email: 'me@maas.fi',
       phone: '+358555666',
-      address: 'Töölonlahdenkatu 2',
+      street: 'Töölonlahdenkatu 2',
       country: 'FI',
       zip: '00110',
       city: 'Helsinki',
@@ -98,9 +98,9 @@ describe('Update user', () => {
   });
 });
 
-describe('Update User card', () => {
+describe('Update User card', function () {
   let response;
-
+  this.timeout(5000);
   before(done => {
     mgr.updateUserCreditCard('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
       firstName: 'Test',
