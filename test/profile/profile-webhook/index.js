@@ -2,26 +2,24 @@
 
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
-const lambda = require('../../../profile/profile-payment-put/handler.js');
+const lambda = require('../../../profile/profile-webhook/handler.js');
 
 module.exports = function () {
 
-  describe.skip('profile-card-update', () => {
-    const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
+  describe('profile-webhook', () => {
 
     const event = {
-      identityId: identityId,
+      id: 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM',
       payload: {
-        firstName: 'Test',
-        lastName: 'User',
-        email: 'abcd@gmail.com',
-        phone: '+35810983012',
-        address: 'Varputie 17, 02270 Espoo',
-        zip: '02270',
-        city: 'Espoo',
-        country: 'Finland',
-        type: 'stripe-token',
-        token: 'egroegoiegioehoiheaoghae',
+        event_type: 'customer_created',
+        webhook_status: 'not_configured',
+        content: {
+          customer: {
+            id: 'eu-west-1:6d6ba277-783e-40e1-a05f-bf6794e76d0a',
+            first_name: 'Benjamin',
+            last_name: 'Ross',
+          },
+        },
       },
     };
 
@@ -32,6 +30,7 @@ module.exports = function () {
       wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
+        console.log(data);
         if (err) {
           console.log('Error', err);
         }
@@ -43,8 +42,8 @@ module.exports = function () {
       expect(error).to.be.null;
     });
 
-    it('should return empty', () => {
-      expect(response).to.deep.equal({});
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
     });
   });
 };

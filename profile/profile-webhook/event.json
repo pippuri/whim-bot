@@ -1,48 +1,53 @@
 {
   "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
-  "payload" : {
-    "id": "ev_KyVmypPqxaEGh3",
-    "occurred_at": 1412101835,
-    "source": "system",
-    "object": "event",
-    "api_version": "v2",
-    "content": {
-        "customer": {
-            "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
-            "first_name": "Benjamin",
-            "last_name": "Ross",
-            "email": "Benjamin@test.com",
-            "auto_collection": "on",
-            "allow_direct_debit": false,
-            "created_at": 1412101835,
-            "taxability": "taxable",
-            "object": "customer",
-            "card_status": "valid",
-            "payment_method": {
-                "object": "payment_method",
-                "type": "card",
-                "reference_id": "tok_KyVmypPqxaEF91",
-                "gateway": "chargebee",
-                "status": "valid"
-            },
-            "promotional_credits": 0,
-            "refundable_credits": 0,
-            "excess_payments": 0
+  "payload": {
+  "event_type":"customer_changed",
+  "content": {
+      "customer": {
+        "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+        "first_name": "Test",
+        "last_name": "User",
+        "email": "me@maas.fi",
+        "phone": "+358555666",
+        "auto_collection": "on",
+        "allow_direct_debit": false,
+        "created_at": 1463832386,
+        "taxability": "taxable",
+        "object": "customer",
+        "billing_address": {
+            "country": "FI",
+            "zip": "00110",
+            "object": "billing_address"
         },
-        "card": {
-            "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
-            "status": "valid",
-            "gateway": "chargebee",
-            "iin": "411111",
-            "last4": "1111",
-            "card_type": "visa",
-            "expiry_month": 1,
-            "expiry_year": 2022,
-            "object": "card",
-            "masked_number": "************1111"
-        }
+        "card_status": "valid",
+        "payment_method": {
+            "object": "payment_method",
+            "type": "card",
+            "reference_id": "cus_8qkweJe2hpoCiH/card_18ZEsSGYEY6nE6m4eU4e2iLR",
+            "gateway": "stripe",
+            "status": "valid"
+        },
+        "promotional_credits": 0,
+        "refundable_credits": 0,
+        "excess_payments": 0
     },
-    "event_type": "customer_created",
-    "webhook_status": "not_configured"
+    "card": {
+        "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+        "status": "valid",
+        "gateway": "stripe",
+        "first_name": "Test",
+        "last_name": "User",
+        "iin": "401288",
+        "last4": "1881",
+        "card_type": "visa",
+        "expiry_month": 1,
+        "expiry_year": 2017,
+        "billing_city": "Espoo",
+        "billing_country": "FI",
+        "billing_zip": "02270",
+        "object": "card",
+        "masked_number": "************1881"
+    }
+  }
   }
 }

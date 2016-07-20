@@ -2,13 +2,36 @@
 
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager/index.js');
+const MaaS = require('../../lib/maas-operation/index.js');
+const PROFILE_FIELD = 'profile';
 
-function handleUpdate(event, payload) {
-  return Promise.resolve(Subscription.formatUser(payload.content));
+/*
+ Called when subscription gets renewed, activated etc
+ TODO: update the points total in dynamo
+*/
+function handleSubscriptionUpdate(event, payload) {
+  const profile = Subscription.formatUser(payload.content);
+  const identity = profile.identityId;
+  return MaaS.updateCustomerProfile(identity, PROFILE_FIELD, profile);
 }
 
+/**
+ * Called when Chargebee user details are updated, this updates the profile information
+ */
+function handleDetailsUpdate(event, payload) {
+  const profile = Subscription.formatUser(payload.content);
+  const identity = profile.identityId;
+  return MaaS.updateCustomerProfile(identity, PROFILE_FIELD, profile);
+}
+
+/**
+ * Called when subscription comes to an end.
+ * TODO: update subscription to revert to PAYG
+ */
 function handleCancellation(event, payload) {
-  return Promise.resolve( { Cancelled: true } );
+  const profile = Subscription.formatUser(payload.content);
+  const identity = profile.identityId;
+  return MaaS.updateCustomerProfile(identity, PROFILE_FIELD, profile);
 }
 
 function handleWebhook(event) {
@@ -24,21 +47,23 @@ function handleWebhook(event) {
   }
 
   if (!payload.hasOwnProperty('event_type')) {
-    return Promise.reject(new Error('Payload missing'));
+    return Promise.reject(new Error('event type missing'));
   }
 
   switch (payload.event_type) {
-    case 'customer_created':
-    case 'customer_changed':
     case 'subscription_created':
     case 'subscription_started':
     case 'subscription_changed':
+    case 'subscription_reactivated':
     case 'subscription_renewed':
+      return handleSubscriptionUpdate(event, payload);
+    case 'customer_created':
+    case 'customer_changed':
     case 'card_updated':
     case 'payment_succeeded':
     case 'card_added':
     case 'card_expiry_reminder':
-      return handleUpdate(event, payload);
+      return handleDetailsUpdate(event, payload);
     case 'payment_failed':
     case 'customer_deleted':
     case 'card_expired':

@@ -9,7 +9,6 @@ const VALID_KEYS = {
 
 function handleWebhook(event) {
   const key = event.id;
-  const payload = event.payload;
 
   if (Object.keys(event).length === 0) {
     return Promise.reject(new Error('Input missing'));
@@ -27,18 +26,17 @@ function handleWebhook(event) {
     return Promise.reject(new Error('Unauthorized key'));
   }
 
-  console.log('Event', payload);
-
   switch (VALID_KEYS[key]) {
     case 'chargebee':
       return Chargebee.call(event);
     default:
-      console.info('Unhandled callback', payload.event_type);
+      console.info('Unhandled callback');
       return Promise.reject(new Error('Use of unauthorized key should not get this far'));
   }
 }
 
 function wrapToEnvelope(profile, event) {
+  console.log('Wrapping', profile);
   return {
     response: profile,
     maas: {

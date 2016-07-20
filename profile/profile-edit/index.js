@@ -32,6 +32,7 @@ function updateUserData(event) {
       keys.forEach(key => {
         values[':' + key] = event.payload[key];
       });
+      console.log('update user data:', keys, expressions);
 
       const params = {
         TableName: table,
