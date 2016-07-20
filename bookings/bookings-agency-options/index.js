@@ -32,9 +32,14 @@ function validateInput(event) {
 
   return Promise.resolve();
 }
-
+/**
+ * Convert input price to point based on businessRuleEngine
+ * @param {UUID} identityId
+ * @param {Object} booking
+ * @return {Float} Price (in point)
+ */
 function convertPriceToPoints(identityId, booking) {
-  const currencyAvailable = typeof Object.keys(priceConversionRate).find(currency => currency === booking.terms.price.currency) === typeof undefined;
+  const currencyAvailable = !(typeof Object.keys(priceConversionRate).find(currency => currency === booking.terms.price.currency) === typeof undefined);
   if ( booking.terms.price.currency && currencyAvailable) {
     return businessRuleEngine.call(
       {
@@ -48,9 +53,7 @@ function convertPriceToPoints(identityId, booking) {
     );
   }
 
-  // This should return raw unconverted price as it is input if something went wrong
-  // TODO error handler
-  return Promise.resolve(booking.terms.price.amount);
+  throw new MaasError('Incorrect tsp response format, no price or currency found', 500);
 }
 
 /**
@@ -112,12 +115,8 @@ function getAgencyProductOptions(event) {
       }
 
       response.options.forEach(option => {
-        if (typeof option === 'object') {
-          convertPriceToPoints(event.identityId, option)
-            .then(booking => {
-              option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
-            });
-        }
+        option.terms.price.amount = convertPriceToPoints(event.identityId, option);
+        option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
       });
 
       return Promise.resolve(response);
@@ -130,7 +129,7 @@ module.exports.respond = function (event, callback) {
     Database.init(),
     getAgencyProductOptions(event),
   ])
-  .then(response => {
+  .spread((_knex, response) => {
     Database.cleanup()
       .then(() => callback(null, response));
   })
