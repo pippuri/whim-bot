@@ -26,8 +26,7 @@
           "book": "/bookings"
         },
         "get": {
-          "options": "/options",
-          "retrieve": "/orders"
+          "retrieve": "/bookings"
         },
         "put": {
           "update": "/update"
@@ -36,6 +35,28 @@
       "config": {
         "headers": {
           "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      }
+    }
+  },
+  "Sixt": {
+    "agencyId": "Sixt",
+    "adapter": {
+      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/dev/sixt",
+      "endpoints": {
+        "post": {
+          "book": "/bookings",
+          "complete": "/bookings/complete"
+        },
+        "get": {
+          "retrieve": "/bookings",
+          "options": "/bookings/options"
+        },
+        "put": {
+          "update": "/bookings"
+        },
+        "delete": {
+          "cancel": "/bookings"
         }
       }
     }

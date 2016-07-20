@@ -7,6 +7,7 @@ const testMissingTo = require('./error-missing-to.js');
 const testLeaveAt = require('./feature-leave-at.js');
 const testOrsa = require('./check-orsa.js');
 const testRovaniemi = require('./check-rovaniemi.js');
+const testDelhi = require('./check-delhi.js');
 
 describe('routes endpoint', function () {
   this.timeout(20000);
@@ -19,4 +20,5 @@ describe('routes endpoint', function () {
   testLeaveAt(lambda);
   testOrsa(lambda);
   testRovaniemi(lambda);
+  testDelhi(lambda);
 });

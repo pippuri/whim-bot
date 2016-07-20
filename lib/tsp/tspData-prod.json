@@ -39,5 +39,27 @@
         }
       }
     }
+  },
+  "Sixt": {
+    "agencyId": "Sixt",
+    "adapter": {
+      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/prod/sixt",
+      "endpoints": {
+        "post": {
+          "book": "/bookings",
+          "complete": "/bookings/complete"
+        },
+        "get": {
+          "retrieve": "/bookings",
+          "options": "/bookings/options"
+        },
+        "put": {
+          "update": "/bookings"
+        },
+        "delete": {
+          "cancel": "/bookings"
+        }
+      }
+    }
   }
 }

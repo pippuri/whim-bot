@@ -4,7 +4,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
 const schema = require('../../../itineraries/itinerary-create/response-schema.json');
-const maasUtils = require('../../../lib/utils');
+const utils = require('../../../lib/utils');
 const event = require('../../../itineraries/itinerary-create/event.json');
 const moraEvent = require('./itinerary-mora-orsa.json');
 
@@ -18,7 +18,7 @@ module.exports = function (lambda) {
       // Sign the event data (Travis seems to have problems repeating the signatures)
       const newItinerary = Object.assign({}, event.itinerary);
       delete newItinerary.signature;
-      event.itinerary.signature = maasUtils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
+      event.itinerary.signature = utils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
 
       wrap(lambda).run(event, (_error, _response) => {
         error = _error;
@@ -52,7 +52,7 @@ module.exports = function (lambda) {
       // Sign the event data (Travis seems to have problems repeating the signatures)
       const newItinerary = Object.assign({}, moraEvent.itinerary);
       delete newItinerary.signature;
-      moraEvent.itinerary.signature = maasUtils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
+      moraEvent.itinerary.signature = utils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
 
       wrap(lambda).run(moraEvent, (_error, _response) => {
         error = _error;
