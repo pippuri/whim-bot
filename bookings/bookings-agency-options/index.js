@@ -5,6 +5,9 @@ const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils/index');
 const tsp = require('../../lib/tsp/index');
+const priceConversionRate = require('../../lib/business-rule-engine/lib/priceConversionRate.js');
+const businessRuleEngine = require('../../lib/business-rule-engine/index');
+const Database = require('../../lib/models/index').Database;
 
 /**
  * check input event
@@ -28,6 +31,26 @@ function validateInput(event) {
   }
 
   return Promise.resolve();
+}
+
+function convertPriceToPoints(identityId, booking) {
+  const currencyAvailable = typeof Object.keys(priceConversionRate).find(currency => currency === booking.terms.price.currency) === typeof undefined;
+  if ( booking.terms.price.currency && currencyAvailable) {
+    return businessRuleEngine.call(
+      {
+        rule: 'convert-to-points',
+        identityId: identityId,
+        parameters: {
+          price: booking.terms.price.amount,
+          currency: booking.terms.price.currency,
+        },
+      }
+    );
+  }
+
+  // This should return raw unconverted price as it is input if something went wrong
+  // TODO error handler
+  return Promise.resolve(booking.terms.price.amount);
 }
 
 /**
@@ -82,29 +105,38 @@ function getAgencyProductOptions(event) {
       // If response.options is undefined, return error
       // which is most likely inside the response
       if (typeof response.options === typeof undefined) {
-        console.log(response);
-        return {
+        return Promise.resolve({
           options: [],
           meta: {},
-        };
+        });
       }
+
       response.options.forEach(option => {
         if (typeof option === 'object') {
-          option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
+          convertPriceToPoints(event.identityId, option)
+            .then(booking => {
+              option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
+            });
         }
       });
-      return response;
+
+      return Promise.resolve(response);
 
     });
 }
 
-module.exports.respond = (event, callback) => {
-  return getAgencyProductOptions(event)
-    .then(response => {
-      callback(null, response);
-    })
-    .catch(error => {
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(error);
-    });
+module.exports.respond = function (event, callback) {
+  return Promise.all([
+    Database.init(),
+    getAgencyProductOptions(event),
+  ])
+  .then(response => {
+    Database.cleanup()
+      .then(() => callback(null, response));
+  })
+  .catch(error => {
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    Database.cleanup()
+      .then(() => callback(error));
+  });
 };
