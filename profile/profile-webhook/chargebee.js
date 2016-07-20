@@ -1,6 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
+const _ = require('lodash');
 const Subscription = require('../../lib/subscription-manager/index.js');
 const utils = require('../../lib/utils/index.js');
 const MaaS = require('../../lib/maas-operation/index.js');
@@ -17,23 +18,25 @@ function handleSubscriptionUpdate(event, payload) {
   const profile = Subscription.formatUser(payload.content);
   const identity = profile.identityId;
   const activePlan = profile.plan;
-  
+
   return Subscription.getPlans().then( plans => {
     if (!plans || Object.keys(plans).length < 1 || !plans.hasOwnProperty('list')) {
-       return Promise.reject(new Error('Communication Error with Chargebee plans'));
+      return Promise.reject(new Error('Communication Error with Chargebee plans'));
     }
-
-    for (var i=0; i < plans.list.length; i++ ) {
-      const plan = plans.list[i];
+    let planUpdate = null;
+    _.each(plans.list, plan => {
       // reformat to standard from chargebee
       const userPlan = utils.parseSingleChargebeePlan(plan);
       if (userPlan && (userPlan.id === activePlan.id)) {
-        // update the user profile with the points of this renewal
-        return Promise.all([ 
-          MaaS.updateCustomerProfile(identity, PLAN_FIELD, [userPlan]), 
-          MaaS.updateCustomerProfile(identity, BALANCE_FIELD, userPlan.pointGrant) 
-        ]);
+        planUpdate = userPlan;
       }
+    });
+    if (planUpdate) {
+      // update the user profile with the points of this renewal
+      return Promise.all([
+        MaaS.updateCustomerProfile(identity, PLAN_FIELD, [planUpdate]),
+        MaaS.updateCustomerProfile(identity, BALANCE_FIELD, planUpdate.pointGrant),
+      ]);
     }
     return Promise.reject(new Error('Did not find the active plan'));
   });
@@ -57,7 +60,7 @@ function handleCancellation(event, payload) {
   const identity = profile.identityId;
   return Subscription.getPlanById(WHIM_DEFAULT)
     .then( plan => {
-       return MaaS.updateCustomerProfile(identity, PLAN_FIELD, [plan.plan]);
+      return MaaS.updateCustomerProfile(identity, PLAN_FIELD, [plan.plan]);
     })
     .then( () => {
       return MaaS.updateCustomerProfile(identity, BALANCE_FIELD, 0);
