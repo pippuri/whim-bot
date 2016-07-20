@@ -1,0 +1,48 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload" : {
+    "id": "ev_KyVmypPqxaEGh3",
+    "occurred_at": 1412101835,
+    "source": "system",
+    "object": "event",
+    "api_version": "v2",
+    "content": {
+        "customer": {
+            "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+            "first_name": "Benjamin",
+            "last_name": "Ross",
+            "email": "Benjamin@test.com",
+            "auto_collection": "on",
+            "allow_direct_debit": false,
+            "created_at": 1412101835,
+            "taxability": "taxable",
+            "object": "customer",
+            "card_status": "valid",
+            "payment_method": {
+                "object": "payment_method",
+                "type": "card",
+                "reference_id": "tok_KyVmypPqxaEF91",
+                "gateway": "chargebee",
+                "status": "valid"
+            },
+            "promotional_credits": 0,
+            "refundable_credits": 0,
+            "excess_payments": 0
+        },
+        "card": {
+            "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+            "status": "valid",
+            "gateway": "chargebee",
+            "iin": "411111",
+            "last4": "1111",
+            "card_type": "visa",
+            "expiry_month": 1,
+            "expiry_year": 2022,
+            "object": "card",
+            "masked_number": "************1111"
+        }
+    },
+    "event_type": "customer_created",
+    "webhook_status": "not_configured"
+  }
+}
