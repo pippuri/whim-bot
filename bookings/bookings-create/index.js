@@ -20,11 +20,11 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
-  if (!event.signature || event.signature === '') {
+  if (!event.payload.signature || event.payload.signature === '') {
     return Promise.reject(new MaaSError('Missing signature', 400));
   }
 
-  if (!event.leg || !event.leg.agencyId || event.leg.agencyId === '') {
+  if (!event.payload.leg || !event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
     return Promise.reject(new MaaSError('Missing leg input'));
   }
 
@@ -59,10 +59,10 @@ function changeBookingState(booking, state) {
 function createBooking(event) {
   return Promise.all([
     maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
-    utils.validateSignatures(event), // Validate request signature
+    utils.validateSignatures(event.payload), // Validate request signature
   ])
-  .spread((profile, event)  => {
-    return tsp.createBooking(event.leg, profile, event.term, event.meta );
+  .spread((profile, payload)  => {
+    return tsp.createBooking(payload.leg, profile, payload.term, payload.meta );
   })
   // TODO: actually reduce points before putting to PAID state
   .then(booking => {
