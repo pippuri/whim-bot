@@ -11,138 +11,141 @@
   "custom": {
     "excludePatterns": []
   },
-  "endpoints": [{
-    "path": "bookings/options/{agencyId}",
-    "method": "GET",
-    "type": "AWS",
-    "authorizationType": "CUSTOM",
-    "authorizerFunction": "auth-custom-authorizer",
-    "apiKeyRequired": false,
-    "requestParameters": {
-      "integration.request.path.agencyId": "method.request.path.agencyId",
-      "integration.request.querystring.startTime": "method.request.querystring.startTime",
-      "integration.request.querystring.endTime": "method.request.querystring.endTime",
-      "integration.request.querystring.from": "method.request.querystring.from"
+  "endpoints": [
+    {
+      "path": "bookings/options/{agencyId}",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {
+        "integration.request.path.agencyId": "method.request.path.agencyId",
+        "integration.request.querystring.startTime": "method.request.querystring.startTime",
+        "integration.request.querystring.endTime": "method.request.querystring.endTime",
+        "integration.request.querystring.from": "method.request.querystring.from"
     },
-    "requestTemplates": {
-      "application/json": {
-        "identityId": "$context.authorizer.principalId",
-        "agencyId": "$input.params('agencyId')",
-        "mode": "$input.params('mode')",
-        "from": "$input.params('from')",
-        "to": "$input.params('to')",
-        "startTime": "$input.params('startTime')",
-        "endTime": "$input.params('endTime')",
-        "fromRadius": "$input.params('fromRadius')",
-        "toRadius": "$input.params('toRadius')"
-      }
-    },
-    "swaggerExport": {
-      "summary": "Retrieve agency available options",
-      "description": "Retrieve all agency available options for transportation",
-      "security": [{ "Bearer": [] }],
-      "parameters": [{
-          "name": "agencyId",
-          "in": "path",
-          "description": "ID of the requested agency",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "mode",
-          "in": "query",
-          "description": "Mode of transport",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "from",
-          "in": "query",
-          "description": "Starting location.",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "to",
-          "in": "query",
-          "description": "Destination location",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "name": "startTime",
-          "in": "query",
-          "description": "Starting time of the requested trip",
-          "required": true,
-          "type": "string"
-        },
-        {
-          "name": "endTime",
-          "in": "query",
-          "description": "Ending time of the requested trip",
-          "required": true,
-          "type": "string"
+      "requestTemplates": {
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "agencyId": "$input.params('agencyId')",
+          "mode": "$input.params('mode')",
+          "from": "$input.params('from')",
+          "to": "$input.params('to')",
+          "startTime": "$input.params('startTime')",
+          "endTime": "$input.params('endTime')",
+          "fromRadius": "$input.params('fromRadius')",
+          "toRadius": "$input.params('toRadius')"
         }
-      ],
+      },
+      "swaggerExport": {
+        "summary": "Retrieve agency available options",
+        "description": "Retrieve all agency available options for transportation",
+        "security": [{"Bearer":[]}],
+        "parameters": [
+          {
+            "name": "agencyId",
+            "in": "path",
+            "description": "ID of the requested agency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "Mode of transport",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Starting location.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Destination location",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Starting time of the requested trip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "Ending time of the requested trip",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "bookings/bookings-agency-options/response-schema.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      },
       "responses": {
-        "200": {
-          "application/json": {},
-          "description": "Success",
-          "schema": {
-            "$ref": "bookings/bookings-agency-options/response-schema.json"
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-        "400": {
-          "description": "Invalid input"
+        "^403.*": {
+          "statusCode": "403",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
         },
-        "401": {
-          "description": "Unauthorized"
-        }
-      }
-    },
-    "responses": {
-      "^400.*": {
-        "statusCode": "400",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
-        }
-      },
-      "^403.*": {
-        "statusCode": "403",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
-        }
-      },
-      "^401.*": {
-        "statusCode": "401",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
-        }
-      },
-      "^404.*": {
-        "statusCode": "404",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
-        }
-      },
-      "^500.*": {
-        "statusCode": "500",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
-        }
-      },
-      "default": {
-        "statusCode": "200",
-        "responseParameters": {
-          "method.response.header.Access-Control-Allow-Origin": "'*'"
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
         },
-        "responseModels": {},
-        "responseTemplates": {
-          "application/json": ""
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^500.*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
         }
       }
     }
-  }],
+  ],
   "events": [],
   "environment": "$${environment}",
   "vpc": {
