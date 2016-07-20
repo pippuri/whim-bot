@@ -66,9 +66,10 @@ describe('user by ID not found', () => {
   });
 });
 
-describe('Update user', () => {
+describe('Update user', function () {
   let error;
   let response;
+  this.timeout(5000);
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
