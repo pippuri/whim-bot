@@ -1,114 +1,100 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload": {
-  "leg":{
-    "startTime":1468847945993.779,
-    "endTime":1468934366483.8892,
-    "from":{
-      "lat":60.18948,
-      "lon":24.97213
-    },
-    "to":{
-      "lat":60.18948,
-      "lon":24.97213
-    },
-    "agencyId": "Sixt"
-  },
-  "meta":{
-    "name":"Citroën C1, Peugeot 108",
-    "description":"2/4 Door Economy, Manual transmission",
-    "image":"https://www.sixt.de/php/fleet/vehicleimage?grp=ECMR&liso=FI&uci=2252",
-    "car":{
-      "passengers":4,
-      "doors":4,
-      "models":[
-        "Citroën C1",
-        "Peugeot 108"
-      ],
-      "transmission":"manual",
-      "airConditioning":true,
-      "navigationSystem":false
-    },
-    "options":{
-      "navigationSystem":true,
-      "additionalMiles":null
-    }
-  },
-  "terms":{
-    "mileageLimit":null,
-    "stations":{
-      "pickup":{
-        "openingHours":[
-          {
-            "Days":[
-              "MO",
-              "TU",
-              "WE",
-              "TH"
-            ],
-            "Times":[
-              {
-                "Open":"08:00:00",
-                "Close":"16:00:00"
-              }
-            ]
-          },
-          {
-            "Days":[
-              "FR"
-            ],
-            "Times":[
-              {
-                "Open":"08:00:00",
-                "Close":"16:30:00"
-              }
-            ]
-          }
-        ],
-        "outOfHours":{
-          "IsAllowed":true,
-          "Information":"Pick-up out of opening hours is possible for an additional charge. This service is bookable on request. Please provide e-mail address and mobile number."
-        }
+    "leg": {
+      "startTime":1478927888944,
+      "endTime":1488927897754,
+      "from": {
+        "lat":60.297966,
+        "lon":24.991203
       },
-      "dropoff":{
-        "openingHours":[
-          {
-            "Days":[
-              "MO",
-              "TU",
-              "WE",
-              "TH"
-            ],
-            "Times":[
-              {
-                "Open":"08:00:00",
-                "Close":"16:00:00"
-              }
-            ]
-          },
-          {
-            "Days":[
-              "FR"
-            ],
-            "Times":[
-              {
-                "Open":"08:00:00",
-                "Close":"16:30:00"
-              }
-            ]
-          }
+      "to": {
+        "lat":60.297966,
+        "lon":24.991203
+      }
+    },
+    "meta": {
+      "identifier":"ABNFTHZV0V-QAc2gHDgfgHs3XQaQKnMrM1i7znK9VawOK10jKhNSgq4ocgCsWaJVDKgZf2f8hihnCLgN4FaJqFqSg4qfpwpKatYrk/5dsEc+u+8cyQi1PwbGs5p4UYdir5YbckkgH8zw1zkH5+1eZHxv7zUIwLsFERaBUacNuJkbJfyezMdqYPG8WQSXuotvUGzr5Pi0ANrEKgEDHgF417Wn0Yx3Dk2ye+plRFwx5we+/tcPBp6IdSGQJaJJkG/XYiBISA5s3o9u4WPlkVgdNuuBtbCoO4vkb4xIuJblQ8eHV7S5W2DB3JsADAl3GgST+PtYOSVGJq9Ilksic8E0hR12jngGiZSxVyZHzIrC8l+/cx+1uKvTCBVgPrIf5bztBecNcZOnySbzjgzVlmG9OnaeUhO/JUklqjf0MUd9X0TCNv+CYxDgx9CQrFZgWtZoK9LCvnUgJRo6wA9PmHxQLuubop2zsJL9UFsmiF7NGqnv8JFuMiLPnfVYSBzzvAiQju8KdCEu4TM02QDBegiuq/+wWS/hS9r0VXuK9GYMGCdMqXtyhbCxwGEVDNlSt2EDkq388N85rTdxR2SWK/8BBavYuWAgzlasTvRi+nQhtvxCueFqloa67WF+TAmFy7rxP0p0maacEdPhIb63CHz+rWO1bSmA5YSJkoWel11gBx3zwOPNv3N2RnJ9egxIbozWaFc/V5bsJJwKXaTq28aGXf7TcSuY69HFEfe6vXSG3yEIbJG/x8pQmgnrnOE5Tg0Ss7nhV7l8o7WmJjBaPRsPokbymXby0CRJg==",
+      "name":"Mercedes-Benz V-Class Aut.",
+      "description":"Passenger van Luxury, Automatic transmission",
+      "image":"https://www.sixt.de/php/fleet/vehicleimage?grp=LVAR&liso=FI&uci=42526",
+      "car":{
+        "passengers":8,
+        "doors":5,
+        "models":[
+          "Mercedes-Benz V-Class Aut."
         ],
-        "outOfHours":{
-          "IsAllowed":true,
-          "Information":"The Key box is located next to main entrance. Sixt parking places are available on the backside of the building. During weekends parking also possible on the street in front of the Sixt branch."
+        "transmission":"automatic",
+        "airConditioning":true,
+        "navigationSystem":false
+      },
+      "options":{
+        "navigationSystem":true,
+        "additionalMiles":{
+          "Currency":"EUR",
+          "NetAmount":"1.38",
+          "VatPercent":"24.00"
         }
       }
     },
-    "price":{
-      "amount":122.97,
-      "currency":"EUR"
-    }
-  },
-  "signature":"1cf0847d1397756b58d1a16eac132cb5a00c31d54956ad2dc453dae2fa4d0efe"
-}
+    "terms":{
+      "mileageLimit":{
+        "Distance":11600,
+        "Unit":"km"
+      },
+      "stations":{
+        "pickup":{
+          "openingHours":[
+            {
+              "Days":[
+                "MO",
+                "TU",
+                "WE",
+                "TH",
+                "FR"
+              ],
+              "Times":[
+                {
+                  "Open":"07:00:00",
+                  "Close":"15:00:00"
+                }
+              ]
+            }
+          ],
+          "outOfHours":{
+            "IsAllowed":true,
+            "Information":"Pick-up out of opening hours is possible for an additional charge. This service is bookable on request. Please provide your e-mail address and mobile number."
+          }
+        },
+        "dropoff":{
+          "openingHours":[
+            {
+              "Days":[
+                "MO",
+                "TU",
+                "WE",
+                "TH",
+                "FR"
+              ],
+              "Times":[
+                {
+                  "Open":"07:00:00",
+                  "Close":"15:00:00"
+                }
+              ]
+            }
+          ],
+          "outOfHours":{
+            "IsAllowed":true,
+            "Information":"The key box is located next to the main entrance."
+          }
+        }
+      },
+      "price":{
+        "amount":28451.43,
+        "currency":"EUR"
+      }
+    },
+    "signature":"1e1a705d481d8949821aed0ff08936b5ebcb9ec3ed842be3b9bd932e6056ef49"
+  }
 }
