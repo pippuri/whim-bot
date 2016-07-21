@@ -49,7 +49,6 @@ function handleDetailsUpdate(event, payload) {
   const identity = profile.identityId;
   //make sure we have at least something
   if (!profile.hasOwnProperty('address')) profile.address = {};
-
   return MaaS.updateCustomerProfile(identity, {
     firstName: profile.firstName,
     lastName: profile.lastName,

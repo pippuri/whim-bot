@@ -28,6 +28,59 @@ describe('store products', () => {
   });
 });
 
+const ID = 'MaaS-Test-' + Math.random() * 1000;
+// skip to avoid polluting subscriptions
+describe.skip('create user', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.createUser(ID, 'fi-whim-payg', {
+      phone: '+358555666',
+    }).then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      console.log('Error', data.toString());
+      error = data;
+      done();
+    });
+  });
+
+  it('should find products', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should not have errored', () => {
+    expect(error).to.be.empty;
+  });
+});
+
+describe.skip('create subscription', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.purchaseSubscription('MaaS-Test-296.01563489995897', 'fi-whim-payg')
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      console.log('Error', data.toString());
+      error = data;
+      done();
+    });
+  });
+
+  it('should find products', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should not have errored', () => {
+    expect(error).to.be.empty;
+  });
+});
+
 describe('user by ID', () => {
   // let error;
   let response;
@@ -152,4 +205,56 @@ describe('List the user plan', () => {
   it('should not have an error', () => {
     expect(error).to.be.empty;
   });
+});
+
+describe('Post a charge on the user', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 1000, 'Test Charge' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should have changed the user', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should have no error', () => {
+    expect(error).to.be.empty;
+  });
+
+});
+
+describe('Change User Plan', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.updatePlan('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-payg' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should have changed the user plan', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should have no error', () => {
+    expect(error).to.be.empty;
+  });
+
 });
