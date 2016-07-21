@@ -1,7 +1,7 @@
 {
   "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
   "payload": {
-    "event_type":"subscription_created",
+    "event_type":"subscription_cancelled",
     "content": {
         "subscription": {
             "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
