@@ -34,6 +34,7 @@
     "case-expression": "^0.1.1",
     "chargebee": "^2.0.7",
     "deep-sort-object": "^1.0.1",
+    "fs-promise": "^0.5.0",
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
     "json-schema-deref": "^0.3.2",
@@ -47,6 +48,7 @@
     "powerset": "0.0.1",
     "request-promise-lite": "^0.5.1",
     "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
+    "tempfile": "^1.1.1",
     "twilio": "^2.9.1"
   },
   "description": "A Serverless Project Template.",

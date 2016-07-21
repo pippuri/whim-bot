@@ -228,7 +228,7 @@ module.exports.respond = function (event, callback) {
   .then(itinerary => {
     // Update input, update balance
     context.itinerary = itinerary;
-    const balance = maasOperation.computeBalance(context.itinerary, context.profile);
+    const balance = maasOperation.computeBalance(context.itinerary.fare.points, context.profile);
 
     return maasOperation.updateBalance(context.profile.identityId, balance);
   })

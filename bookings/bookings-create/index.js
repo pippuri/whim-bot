@@ -20,11 +20,11 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
-  if (!event.signature || event.signature === '') {
+  if (!event.payload.signature || event.payload.signature === '') {
     return Promise.reject(new MaaSError('Missing signature', 400));
   }
 
-  if (!event.leg || !event.leg.agencyId || event.leg.agencyId === '') {
+  if (!event.payload.leg || !event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
     return Promise.reject(new MaaSError('Missing leg input'));
   }
 
@@ -49,25 +49,37 @@ function saveBooking(booking) {
 function changeBookingState(booking, state) {
   const old_state = booking.state || 'START';
   booking.state = state;
-  return stateMachine.changeState('Booking', booking.id || booking.bookingId, old_state, booking.state);
+  return stateMachine.changeState('Booking', booking.id || booking.bookingId, old_state, booking.state)
+    .return(booking);
 }
+
 /**
  * Create a booking for a leg OR an individual booking (Go on a whim)
  * @param  {object} event
  * @return {Promise -> object} db save response object
  */
 function createBooking(event) {
+
+  let cachedProfile;
+  let cachedBooking;
+
   return Promise.all([
     maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
-    utils.validateSignatures(event), // Validate request signature
+    utils.validateSignatures(event.payload), // Validate request signature
   ])
   .spread((profile, event)  => {
-    return tsp.createBooking(event.leg, profile, event.term, event.meta );
+    cachedProfile = profile;
+    return tsp.createBooking(event.payload.leg, profile, event.payload.terms, event.payload.meta );
   })
   // TODO: actually reduce points before putting to PAID state
-  .then(booking => {
-    return changeBookingState(booking, 'PAID')
-      .then(() => Promise.resolve(booking));
+  .then(responseBooking => {
+    cachedBooking = responseBooking;
+    return maasOperation.computeBalance(event.payload.terms.price.amount, cachedProfile);
+  })
+  .then(newBalance => maasOperation.updateBalance(event.identityId, newBalance))
+  .then(response => {
+    return changeBookingState(cachedBooking, 'PAID')
+      .then(booking => Promise.resolve(booking));
   })
   .then(booking => saveBooking(booking));
 }
