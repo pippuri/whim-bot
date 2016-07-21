@@ -36,12 +36,8 @@ function handleWebhook(event) {
 }
 
 function wrapToEnvelope(profile, event) {
-  console.log('Wrapping', profile);
   return {
     response: profile,
-    maas: {
-      query: event,
-    },
   };
 }
 

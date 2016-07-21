@@ -5,9 +5,10 @@ const _ = require('lodash');
 const Subscription = require('../../lib/subscription-manager/index.js');
 const utils = require('../../lib/utils/index.js');
 const MaaS = require('../../lib/maas-operation/index.js');
-const PROFILE_FIELD = 'profile';
+const lib = require('../../lib/service-bus/index.js');
 const BALANCE_FIELD = 'balance';
 const PLAN_FIELD = 'plans';
+const UPDATE_PLAN = 'MaaS-profile-active-plan-put';
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 /*
@@ -32,11 +33,11 @@ function handleSubscriptionUpdate(event, payload) {
       }
     });
     if (planUpdate) {
-      // update the user profile with the points of this renewal
-      return Promise.all([
-        MaaS.updateCustomerProfile(identity, PLAN_FIELD, [planUpdate]),
-        MaaS.updateCustomerProfile(identity, BALANCE_FIELD, planUpdate.pointGrant),
-      ]);
+      const evt = {
+        identityId: identity,
+        planId: planUpdate.id,
+      }
+      return lib.call(UPDATE_PLAN,evt);
     }
     return Promise.reject(new Error('Did not find the active plan'));
   });
@@ -48,7 +49,17 @@ function handleSubscriptionUpdate(event, payload) {
 function handleDetailsUpdate(event, payload) {
   const profile = Subscription.formatUser(payload.content);
   const identity = profile.identityId;
-  return MaaS.updateCustomerProfile(identity, PROFILE_FIELD, profile);
+  //make sure we have at least something
+  if (!profile.hasOwnProperty('address')) profile.address = {};
+
+  return MaaS.updateCustomerProfile(identity, {
+    firstName: profile.firstName,
+    lastName: profile.lastName,
+    email: profile.email,
+    country: profile.address.country,
+    city: profile.address.city,
+    zip: profile.address.zip,
+  } );
 }
 
 /**
@@ -60,7 +71,7 @@ function handleCancellation(event, payload) {
   const identity = profile.identityId;
   return Subscription.getPlanById(WHIM_DEFAULT)
     .then( plan => {
-      return MaaS.updateCustomerProfile(identity, PLAN_FIELD, [plan.plan]);
+      return MaaS.updateCustomerProfile(identity, { PLAN_FIELD:  [plan.plan], BALANCE_FIELD: 0 } );
     })
     .then( () => {
       return MaaS.updateCustomerProfile(identity, BALANCE_FIELD, 0);
