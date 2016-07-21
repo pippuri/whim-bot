@@ -1,7 +1,7 @@
 {
   "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
   "payload": {
-    "event_type":"subscription_cancelled",
+    "event_type":"subscription_changed",
     "content": {
         "subscription": {
             "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
@@ -28,7 +28,7 @@
             "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
             "first_name": "Test",
             "last_name": "User",
-            "email": "me@maas.fi",
+            "email": "me@maasz.fi",
             "phone": "+358555666",
             "auto_collection": "on",
             "allow_direct_debit": false,
