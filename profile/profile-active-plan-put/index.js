@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const lib = require('../../lib/utils/index');
 const bus = require('../../lib/service-bus/index');
+const Subscriptions = require('../../lib/subscription-manager/index');
 
 function setActivePlan(event) {
   let oldLevel;
@@ -26,7 +27,16 @@ function setActivePlan(event) {
       if (documentExist === false) { // False if not existed
         return Promise.reject(new Error('User Not Existed'));
       }
-
+    })
+    .then( _ => {
+      // update chargebee with the plan, 
+      // webhook will specify (skipUpdate)
+      if (!event.skipUpdate) {
+        return Subscriptions.updatePlan(event.identityId, event.planId);
+      }
+      return Promise.resolve({});
+    })
+    .then( _ => {
       return bus.call('MaaS-profile-info', { // Then get user balance
         identityId: event.identityId,
         attributes: 'balance,planlevel',
