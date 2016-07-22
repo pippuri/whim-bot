@@ -1,0 +1,72 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "id": "ev_2rprAVcgPlZYzfX1WRU",
+    "occurred_at": 1463589644,
+    "source": "admin_console",
+    "user": "maasfinland@gmail.com",
+    "object": "event",
+    "api_version": "v2",
+    "content": {
+        "subscription": {
+            "id": "2rprAVcgPlZYzes1WRR",
+            "customer_id": "2rprAVcgPlZYzes1WRR",
+            "plan_id": "enterprise-consolidated",
+            "plan_quantity": 1,
+            "status": "future",
+            "start_date": 1465776000,
+            "po_number": "PO0367645",
+            "created_at": 1463589644,
+            "has_scheduled_changes": false,
+            "object": "subscription",
+            "addons": [{
+                "id": "enterprise-add-on-nn",
+                "quantity": 3,
+                "object": "addon"
+            }],
+            "due_invoices_count": 0,
+            "shipping_address": {
+                "first_name": "Fleet",
+                "last_name": "Manager",
+                "email": "tech@maas.fi",
+                "company": "MaaS",
+                "line1": "Töölönlahdenkatu 2",
+                "city": "Helsinki",
+                "country": "FI",
+                "zip": "00100",
+                "object": "shipping_address"
+            }
+        },
+        "customer": {
+            "id": "2rprAVcgPlZYzes1WRR",
+            "first_name": "Fleet",
+            "last_name": "Manager",
+            "email": "tech@maas.fi",
+            "phone": "+35870023522",
+            "company": "MaaS Finland",
+            "auto_collection": "on",
+            "allow_direct_debit": false,
+            "created_at": 1463589644,
+            "taxability": "exempt",
+            "object": "customer",
+            "billing_address": {
+                "first_name": "Fleet",
+                "last_name": "Manager",
+                "email": "tech@maas.fi",
+                "company": "MaaS",
+                "line1": "Töölönlahdenkatu 2",
+                "city": "Helsinki",
+                "country": "FI",
+                "zip": "00100",
+                "object": "billing_address"
+            },
+            "card_status": "no_card",
+            "promotional_credits": 0,
+            "refundable_credits": 0,
+            "excess_payments": 0
+        }
+    },
+    "event_type": "subscription_created",
+    "webhook_status": "not_configured"
+}
+}

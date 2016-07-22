@@ -1,7 +1,6 @@
 {
-  "name": "bookings-create",
+  "name": "profile-payment-get",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -13,17 +12,35 @@
   },
   "endpoints": [
     {
-      "path": "bookings",
-      "method": "POST",
+      "path": "profile/payment",
+      "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": {
-          "identityId": "$context.authorizer.principalId",
-          "payload": "$input.json('$')"
+        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
+      },
+      "swaggerExport": {
+        "summary": "Edit an user profile attribute(s)",
+        "description": "Set one or multiple attribute of a profile by providing key-value pairs in the body payload",
+        "security": [{"Bearer":[]}],
+        "parameter": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/profile.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
         }
       },
       "responses": {
@@ -71,9 +88,5 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}",
-  "vpc": {
-    "securityGroupIds": [],
-    "subnetIds": []
-  }
+  "environment": "$${environment}"
 }

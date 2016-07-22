@@ -1,7 +1,11 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload" : {
-    "email": "abcd@gmail.com",
-    "phone": "10983012"
+    "phone": "10983012",
+    "profile": {
+      "email": "abcd@gmail.com",
+      "firstName": "Test",
+      "lastName": "User"
+    }
   }
 }

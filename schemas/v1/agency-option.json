@@ -23,6 +23,9 @@
         },
         "to": {
           "$ref": "units.json#definitions/location"
+        },
+        "agencyId": {
+          "type": "string"
         }
       }
     },
