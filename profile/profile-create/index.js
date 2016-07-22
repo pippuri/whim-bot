@@ -51,6 +51,7 @@ function persistUserData(event) {
     return bus.call('Dynamo-put', params);
   })
   .then(user => {
+    console.log('Creating user ', event.identityId, event.payload.phone );
     return mgr.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: event.payload.phone })
       .then( _ => {
         return user;
