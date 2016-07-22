@@ -27,9 +27,10 @@ function setActivePlan(event) {
       if (documentExist === false) { // False if not existed
         return Promise.reject(new Error('User Not Existed'));
       }
+      return Promise.resolve();
     })
     .then( _ => {
-      // update chargebee with the plan, 
+      // update chargebee with the plan,
       // webhook will specify (skipUpdate)
       if (!event.skipUpdate) {
         return Subscriptions.updatePlan(event.identityId, event.planId);
