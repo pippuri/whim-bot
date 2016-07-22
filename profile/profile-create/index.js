@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const lib = require('../../lib/utils/index');
 const bus = require('../../lib/service-bus/index');
+const mgr = require('../../lib/subscription-manager');
 const _ = require('lodash');
 
 /**
@@ -48,7 +49,14 @@ function persistUserData(event) {
     };
 
     return bus.call('Dynamo-put', params);
+  })
+  .then(user => {
+    return mgr.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: event.payload.phone })
+      .then( _ => {
+        return user;
+      });
   });
+
 }
 
 /**

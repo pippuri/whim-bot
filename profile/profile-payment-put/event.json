@@ -1,0 +1,18 @@
+{
+  "identityId": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+  "payload" : {
+    "email": "abcd@gmail.com",
+    "firstName": "Test",
+    "lastName": "User",
+    "phone": "+35810983012",
+    "zip": "02270",
+    "country": "FI",
+    "city": "Helsinki",
+    "card": {
+      "number": "4012888888881881",
+      "cvv": "999",
+      "expiryMonth": "01",
+      "expiryYear": "2017"
+    }
+  }
+}

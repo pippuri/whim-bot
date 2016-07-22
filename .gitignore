@@ -51,3 +51,5 @@ swagger/swagger-maas-api-json/maas-api.json
 
 // Map file
 *.mdj
+
+.vscode/launch.json
