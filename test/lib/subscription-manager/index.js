@@ -10,8 +10,63 @@ describe('store products', () => {
   before(done => {
     mgr.getProducts().then(data => {
       response = data;
+      //console.log('products:' + JSON.stringify(data, null, 2));
       done();
     }).catch(data => {
+      console.log('Error', data);
+      error = data;
+      done();
+    });
+  });
+
+  it('should find products', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should not have errored', () => {
+    expect(error).to.be.empty;
+  });
+});
+
+const ID = 'MaaS-Test-' + Math.random() * 1000;
+// skip to avoid polluting subscriptions
+describe.skip('create user', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.createUser(ID, 'fi-whim-payg', {
+      phone: '+358555666',
+    }).then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      console.log('Error', data.toString());
+      error = data;
+      done();
+    });
+  });
+
+  it('should find products', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should not have errored', () => {
+    expect(error).to.be.empty;
+  });
+});
+
+describe.skip('create subscription', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.purchaseSubscription('MaaS-Test-296.01563489995897', 'fi-whim-payg')
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      console.log('Error', data.toString());
       error = data;
       done();
     });
@@ -31,7 +86,7 @@ describe('user by ID', () => {
   let response;
 
   before(done => {
-    mgr.getUser('IG5rynMPlZaTwQ1nSg').then(data => {
+    mgr.getUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb' /*'IG5rynMPlZaTwQ1nSg'*/).then(data => {
       response = data;
       done();
     }).catch(data => {
@@ -64,18 +119,21 @@ describe('user by ID not found', () => {
   });
 });
 
-describe('Update user', () => {
+describe('Update user', function () {
   let error;
   let response;
+  this.timeout(5000);
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
-      first_name: 'Test',
-      last_name: 'User',
+      firstName: 'Tester' + Math.random() * 100,
+      lastName: 'User',
       email: 'me@maas.fi',
       phone: '+358555666',
-      'billing_address[country]': 'FI',
-      'billing_address[zip]': '00110',
+      street: 'Töölonlahdenkatu 2',
+      country: 'FI',
+      zip: '00110',
+      city: 'Helsinki',
     }).then(data => {
       response = data;
       done();
@@ -94,30 +152,34 @@ describe('Update user', () => {
   });
 });
 
-describe('Update User card', () => {
-  //let error;
+describe('Update User card', function () {
   let response;
-
+  this.timeout(5000);
   before(done => {
-    mgr.updateUserCreditCard('ergaegeaeageagrseg', {
-      first_name: 'Test',
-      last_name: 'User',
+    mgr.updateUserCreditCard('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
+      firstName: 'Test',
+      lastName: 'User',
       email: 'me@maas.fi',
-      phone: '+358555666',
-      billing_country: 'FI',
-      billing_zip: '00110',
-      tmp_token: '46y6htbg35b',
+      zip: '02270',
+      city: 'Espoo',
+      country: 'FI',
+      card: {
+        number: '4012888888881881',
+        cvv: '999',
+        expiryMonth: '01',
+        expiryYear: '2017',
+      },
     }).then(data => {
       response = data;
       done();
     }).catch(data => {
-      //error = data;
+      console.log('Error', data);
       done();
     });
   });
 
-  it('Should not work since Stripe isnt configured', () => {
-    expect(response).to.be.empty;
+  it('Should  work since Stripe is configured in test', () => {
+    expect(response).to.not.be.empty;
   });
 });
 
@@ -126,11 +188,12 @@ describe('List the user plan', () => {
   let response;
 
   before(done => {
-    mgr.getUserSubscription('IG5rynMPlZaTwQ1nSg').then(data => {
+    mgr.getUserSubscription('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb').then(data => {
       response = data;
       done();
     }).catch(data => {
       error = data;
+      console.log('Error', data);
       done();
     });
   });
@@ -142,4 +205,56 @@ describe('List the user plan', () => {
   it('should not have an error', () => {
     expect(error).to.be.empty;
   });
+});
+
+describe('Post a charge on the user', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 1000, 'Test Charge' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should have changed the user', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should have no error', () => {
+    expect(error).to.be.empty;
+  });
+
+});
+
+describe('Change User Plan', () => {
+  let error;
+  let response;
+
+  before(done => {
+    mgr.updatePlan('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-payg' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should have changed the user plan', () => {
+    expect(response).to.be.not.empty;
+  });
+
+  it('should have no error', () => {
+    expect(error).to.be.empty;
+  });
+
 });
