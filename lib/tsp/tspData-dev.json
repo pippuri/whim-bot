@@ -51,7 +51,7 @@
           "update": "maas-transport-booking-taxi-update"
         }
       },
-      "config": {
+      "endpoints_config": {
         "headers": {
           "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
         }
@@ -92,6 +92,11 @@
         },
         "delete": {
           "cancel": "maas-transport-booking-sixt-delete"
+        }
+      },
+      "endpoints_config": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
         }
       }
     }

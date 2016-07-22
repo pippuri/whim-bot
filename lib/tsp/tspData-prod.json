@@ -14,6 +14,14 @@
         "put": {
           "update": "update"
         }
+      },
+      "lambdas": {
+        "post": {
+          "book": "maas-tsp-reference-bookings-create"
+        },
+        "get": {
+          "retrieve": "maas-tsp-reference-bookings-retrieve"
+        }
       }
     }
   },
@@ -33,7 +41,18 @@
           "update": "update"
         }
       },
-      "config": {
+      "lambdas": {
+        "post": {
+          "book": "maas-transport-booking-taxi-create"
+        },
+        "get": {
+          "retrieve": "maas-transport-booking-taxi-retrieve"
+        },
+        "put": {
+          "update": "maas-transport-booking-taxi-update"
+        }
+      },
+      "endpoints_config": {
         "headers": {
           "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
         }
@@ -58,6 +77,27 @@
         },
         "delete": {
           "cancel": "/bookings"
+        }
+      },
+      "lambdas": {
+        "post": {
+          "book": "maas-transport-booking-sixt-create",
+          "complete": "maas-transport-booking-sixt-complete"
+        },
+        "get": {
+          "retrieve": "maas-transport-booking-sixt-retrieve",
+          "options": "maas-transport-booking-sixt-options-retrieve"
+        },
+        "put": {
+          "update": "maas-transport-booking-sixt-update"
+        },
+        "delete": {
+          "cancel": "maas-transport-booking-sixt-delete"
+        }
+      },
+      "endpoints_config": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
         }
       }
     }
