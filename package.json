@@ -33,7 +33,6 @@
     "bluebird": "^3.3.3",
     "case-expression": "^0.1.1",
     "deep-sort-object": "^1.0.1",
-    "fs-promise": "^0.5.0",
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
     "json-schema-deref": "^0.3.2",
