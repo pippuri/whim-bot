@@ -28,7 +28,7 @@
   "Valopilkku": {
     "agencyId": "Valopilkku",
     "adapter": {
-      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/dev/taxi",
+      "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/taxi",
       "endpoints": {
         "post": {
           "book": "/bookings"
@@ -61,7 +61,7 @@
   "Sixt": {
     "agencyId": "Sixt",
     "adapter": {
-      "baseUrl": "https://353e7i9el8.execute-api.eu-west-1.amazonaws.com/dev/sixt",
+      "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/sixt",
       "endpoints": {
         "post": {
           "book": "/bookings",
