@@ -8,7 +8,7 @@ used as a starting point for the project.
 
 ## Environment Setup
 
-##### Configure Credentials
+#### Configure Credentials
 
 1. Go to https://maasfi.signin.aws.amazon.com/console
 2. Log in with your temporary password
@@ -28,7 +28,7 @@ aws_access_key_id = <your_fresh_key_id>
 aws_secret_access_key = <your_fresh_secret>
 ```
 
-##### Configure Region
+#### Configure Region
 
 1. Add the following maas section to your `~/.aws/config` file
 ```
@@ -36,7 +36,7 @@ aws_secret_access_key = <your_fresh_secret>
 region=eu-west-1
 ```
 
-##### Install Node.js
+#### Install Node.js
 ```
 curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.0/install.sh | bash
 grep -q -F .bashrc .bash_profile || echo 'source .bashrc' >> ~/.bash_profile
@@ -45,13 +45,13 @@ nvm alias default v4
 npm install npm -g
 ```
 
-##### Install Serverless
+#### Install Serverless
 
 ```
 npm install -g serverless
 ```
 
-##### Downloading Backend Code
+#### Downloading Backend Code
 
 1. Go to https://github.com/maasglobal/maas-backend
 2. Click on the *Fork* button
@@ -78,7 +78,7 @@ upstream    git@github.com:maasglobal/maas-backend.git (push)
 
 The rest of the documentation will assume that you have this setup.
 
-##### Configure Environment and Install Dependencies
+#### Configure Environment and Install Dependencies
 
 ```
 cd maas-backend # unless you are already there
@@ -105,7 +105,7 @@ deployment where they got deleted.
 
 ## Project Flows
 
-##### Deploying static files/images to S3 Bucket
+#### Deploying static files/images to S3 Bucket
 ```
 Add files/folders to client/dist folder
 ```
@@ -119,7 +119,7 @@ Note
 DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE S3 BUCKET AND REDEPLOY ALL FILES.
 ```
 
-##### Running Tests
+#### Running Tests
 
 To run the tests you need to first install mocha
 ```
@@ -137,7 +137,7 @@ mocha -g leaveAt
 mocha -g "TripGo \(South Finland\) leaveAt request response"
 ```
 
-##### Running a Serverless Function In The Cloud
+#### Running a Serverless Function In The Cloud
 
 You can run the *routes-query* function in the cloud as follows
 ```
@@ -145,7 +145,7 @@ AWS_PROFILE=maas sls function run routes-query -d -s dev
 ```
 Example data from file `routes/routes-query/event.json` is used.
 
-##### Running a Serverless Function Locally
+#### Running a Serverless Function Locally
 
 You can run the *routes-query* function locally as follows
 ```
@@ -168,7 +168,7 @@ are allowed to deploy stuff to the AWS cloud. For example creating a new test
 project with Serverless will automatically deploy some parts of the app to AWS
 given that it finds suitable credentials to do so.
 
-##### Working with Travis
+#### Working with Travis
 
 The project is using Travis continuous integration service to run the basic set
 of tests on pull requests. Before deploying or merging a pull request, you
@@ -190,7 +190,7 @@ there is no way of white listing trusted repositories.  See
 https://docs.travis-ci.com/user/environment-variables/#Encrypted-Variables for
 more details.
 
-##### Modifying PostgreSQL Database
+#### Modifying PostgreSQL Database
 
 MaaS uses Postgres for storing itineraries, legs and bookings into database. We use [Objection.js](http://vincit.github.io/objection.js/) and [Knex](http://knexjs.org/) as our ORM layer. Knex has a concept of 'migrations' when working with data, in which database schema changes are wrapped into their own script files.
 
@@ -218,7 +218,7 @@ When working with production data (where you need to migrate):
 2. Run the migration scripts as above
 
 
-##### Deploying To Dev
+#### Deploying To Dev
 
 You can deploy the *routes-query* function to development environemnt as follows
 ```
@@ -247,7 +247,7 @@ on the subject.
 
 ## Git Conventions
 
-##### Starting a New Local Branch
+#### Starting a New Local Branch
 
 Below are commands for starting a new branch. The branch name should reflect
 what you intend to achieve. This makes it easier to determine when you are done
@@ -260,7 +260,7 @@ sls function autoinstall -a
 git checkout -b <local_branch_name>
 ```
 
-##### Committing Changes
+#### Committing Changes
 
 Use imperative in commit messages. This makes them short. For example
 "Implement superman provider." or "Fix code layout."
@@ -269,7 +269,7 @@ Use imperative in commit messages. This makes them short. For example
 2. Select changes to add with `git add <filename>`
 3. Commit selected changes with `git commit -m "<message>"`
 
-##### Updating Your Branch
+#### Updating Your Branch
 
 1. Make sure you do not have uncommitted changes. You can either commit them or use `git stash` to put them aside.
 2. Make sure that the master branch does not have local commits (see next chapter for getting local changes out of master)
@@ -289,7 +289,7 @@ since there might be edit conflicts.  In this case git will give you further
 instructions on what to do. If you get lost you can use `git status` to find
 out what git is expecting you to do next.
 
-##### Removing Local Changes From Local Master
+#### Removing Local Changes From Local Master
 
 It is easy to accidentally commit something into your local master branch. You
 can move your changes out of local master branch as follows.
@@ -312,7 +312,7 @@ However it does not matter if you call `git reset --hard HEAD^` too many times
 since the following pull command will get all the changes back from the project
 master branch.
 
-##### Contributing Code
+#### Contributing Code
 
 1. Push the changes to your own fork (see example below)
 2. Make a pull requests against official master at https://<i></i>github.com/&lt;your_user_account&gt;/maas-backend/branches
@@ -321,7 +321,7 @@ master branch.
 git push origin <local_branch_name>
 ```
 
-##### Git stash alternative
+#### Git stash alternative
 Some time `git stash` behave in an unexpected way, and it is risky if you move to another branches without stashing or commiting, which could turn out to be a mess.
 This method works better than a `git stash`
 
