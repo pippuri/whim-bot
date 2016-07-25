@@ -11,8 +11,8 @@ module.exports.respond = function (event, callback) {
     if ( ! userData.zendeskJwt ) {
       throw new Error('Token did not contain required zendeskJwt key.');
     }
-    maasOperation.fetchCustomerProfile(userData.userId).
-      then( profile => {
+    maasOperation.fetchCustomerProfile(userData.userId)
+      .then( profile => {
         let phoneNumbers = '' + ( profile.phone || '');
         phoneNumbers = phoneNumbers.replace( /[^\d]/, '', 'g');
 
