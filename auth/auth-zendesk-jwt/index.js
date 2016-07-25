@@ -5,14 +5,13 @@ const maasOperation = require('../../lib/maas-operation');
 const utils = require('../../lib/utils');
 
 module.exports.respond = function (event, callback) {
-  const user_token = event.body.split('=').splice(1).join('=');
-  let user_data = jwt.verify(user_token, process.env.JWT_SECRET);
+  const userToken = event.body.split('=').splice(1).join('=');
   try {
-    user_data = jwt.verify(user_token, process.env.JWT_SECRET);
-    if ( ! user_data.zendesk_jwt ) {
-      throw new Error('Token did not contain required zendesk_jwt key.');
+    const userData = jwt.verify(userToken, process.env.JWT_SECRET);
+    if ( ! userData.zendeskJwt ) {
+      throw new Error('Token did not contain required zendeskJwt key.');
     }
-    maasOperation.fetchCustomerProfile(user_data.id).
+    maasOperation.fetchCustomerProfile(userData.userId).
       then( profile => {
         let phoneNumbers = '' + ( profile.phone || '');
         phoneNumbers = phoneNumbers.replace( /[^\d]/, '', 'g');
@@ -24,14 +23,14 @@ module.exports.respond = function (event, callback) {
 
         const email = profile.email || 'whim.user+' + phoneNumbers + '@maas.global';
 
-        const jwt_payload = {
+        const jwtPayload = {
           jti: utils.createId(),
           name: name,
           email: email,
         };
 
-        const jwt_result = jwt.sign( jwt_payload, process.env.ZENDESK_JWT_SECRET );
-        callback( null, { jwt: jwt_result } );
+        const jwtResult = jwt.sign( jwtPayload, process.env.ZENDESK_JWT_SECRET );
+        callback( null, { jwt: jwtResult } );
       } );
   } catch (err) {
     callback('400: Could not verify token.');

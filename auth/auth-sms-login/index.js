@@ -223,11 +223,11 @@ function smsLogin(phone, code) {
   .then(_empty => {
     // Create a signed JSON web token
     const token = jwt.sign({ id: identityId }, process.env.JWT_SECRET);
-    const zendesk_token = jwt.sign({ zendesk_jwt: 1, id: identityId }, process.env.JWT_SECRET);
+    const zendeskToken = jwt.sign({ zendeskJwt: 1, userId: identityId }, process.env.JWT_SECRET);
 
     return {
       id_token: token,
-      zendesk_token: zendesk_token,
+      zendesk_token: zendeskToken,
       cognito_id: identityId,
       cognito_token: cognitoToken,
       cognito_pool: process.env.COGNITO_POOL_ID,
