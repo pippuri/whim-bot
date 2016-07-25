@@ -2,99 +2,100 @@
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload": {
     "leg": {
-      "startTime":1478927888944,
-      "endTime":1488927897754,
-      "from": {
-        "lat":60.297966,
-        "lon":24.991203
-      },
-      "to": {
-        "lat":60.297966,
-        "lon":24.991203
-      }
+        "startTime": 1478927888944,
+        "endTime": 1488927897754,
+        "from": {
+            "lat": 60.297966,
+            "lon": 24.991203
+        },
+        "to": {
+            "lat": 60.297966,
+            "lon": 24.991203
+        },
+        "agencyId": "Sixt"
     },
     "meta": {
-      "identifier":"ABNFTHZV0V-QAc2gHDgfgHs3XQaQKnMrM1i7znK9VawOK10jKhNSgq4ocgCsWaJVDKgZf2f8hihnCLgN4FaJqFqSg4qfpwpKatYrk/5dsEc+u+8cyQi1PwbGs5p4UYdir5YbckkgH8zw1zkH5+1eZHxv7zUIwLsFERaBUacNuJkbJfyezMdqYPG8WQSXuotvUGzr5Pi0ANrEKgEDHgF417Wn0Yx3Dk2ye+plRFwx5we+/tcPBp6IdSGQJaJJkG/XYiBISA5s3o9u4WPlkVgdNuuBtbCoO4vkb4xIuJblQ8eHV7S5W2DB3JsADAl3GgST+PtYOSVGJq9Ilksic8E0hR12jngGiZSxVyZHzIrC8l+/cx+1uKvTCBVgPrIf5bztBecNcZOnySbzjgzVlmG9OnaeUhO/JUklqjf0MUd9X0TCNv+CYxDgx9CQrFZgWtZoK9LCvnUgJRo6wA9PmHxQLuubop2zsJL9UFsmiF7NGqnv8JFuMiLPnfVYSBzzvAiQju8KdCEu4TM02QDBegiuq/+wWS/hS9r0VXuK9GYMGCdMqXtyhbCxwGEVDNlSt2EDkq388N85rTdxR2SWK/8BBavYuWAgzlasTvRi+nQhtvxCueFqloa67WF+TAmFy7rxP0p0maacEdPhIb63CHz+rWO1bSmA5YSJkoWel11gBx3zwOPNv3N2RnJ9egxIbozWaFc/V5bsJJwKXaTq28aGXf7TcSuY69HFEfe6vXSG3yEIbJG/x8pQmgnrnOE5Tg0Ss7nhV7l8o7WmJjBaPRsPokbymXby0CRJg==",
-      "name":"Mercedes-Benz V-Class Aut.",
-      "description":"Passenger van Luxury, Automatic transmission",
-      "image":"https://www.sixt.de/php/fleet/vehicleimage?grp=LVAR&liso=FI&uci=42526",
-      "car":{
-        "passengers":8,
-        "doors":5,
-        "models":[
-          "Mercedes-Benz V-Class Aut."
-        ],
-        "transmission":"automatic",
-        "airConditioning":true,
-        "navigationSystem":false
-      },
-      "options":{
-        "navigationSystem":true,
-        "additionalMiles":{
-          "Currency":"EUR",
-          "NetAmount":"1.38",
-          "VatPercent":"24.00"
-        }
-      }
-    },
-    "terms":{
-      "mileageLimit":{
-        "Distance":11600,
-        "Unit":"km"
-      },
-      "stations":{
-        "pickup":{
-          "openingHours":[
-            {
-              "Days":[
-                "MO",
-                "TU",
-                "WE",
-                "TH",
-                "FR"
-              ],
-              "Times":[
-                {
-                  "Open":"07:00:00",
-                  "Close":"15:00:00"
-                }
-              ]
-            }
-          ],
-          "outOfHours":{
-            "IsAllowed":true,
-            "Information":"Pick-up out of opening hours is possible for an additional charge. This service is bookable on request. Please provide your e-mail address and mobile number."
-          }
+        "identifier": "ABWX7HRH0W-QAc2gHDgfgHs3XQaQKnMrM1i7znK9VawOK10jKhNSgq4ocgCsWaJVDKgZf2f8hihnCLgN4FaJqFqSg4qfpwpKatYrk/5dsEc+u+8cyQi1PwbGs5p4UYdiivyqOWKfDMiOMW45vXhuzUBVBkltlllPB5HnWU7okMpDocpygQLafPk6yPmI4dtiGsxf43HIrncxzXqoRt614G9GEV9RQ5qRK7mQpVKUdK5wgx7S79r8hB058Pxc8yazcml6UqNYNQA3aJOq6igvTCG6t5OuCiA21OqCjac2Tj9ruXOH82vIMCiPTQicg5t1Te55X02g6LQP6inbul9CgO0gGLx9YI4yLOAfvxUYcliQ9t5rfGsdgUiY4Cynd45mTnZXMR90ww1yqoWe5vJvnCJ6e8ZpacFpOy2C856pyOJ8kZaeTKJYXz2BqYlqHGHcjc8grru+se9MfXNXGmcvsPJ62OhS7rz0n/p6UrhNwKfIO4JahRT0SmDxGeDpYLBcZN+ynsnG+kgSSo2uKBHTTQCCQp1BKbEgjFKtOamNEmXGRxxvYC+OqLYMZauOQiNue+q8Yh/KLvBKMERRERXlWIV8d/zU+Lgh6OP+AoZErRCc5eMqam+pqX6VZ+kUskMU094sGUwMhfNId1kSQN5UMXwMGny2GFroiIxyT3WkeNHdwKYK6yDMr8sdqK556bEI1FqgdsZnm5TaMeNYT2NpyY5d2V6Gm9NhpeOQXyeS43x7SG4+czIzLdC5E696JV/jbw78oFx58J6ukXOzlOC3uGXQsWe/XPZ4Xt41Ytk6fCq",
+        "name": "Mercedes-Maybach S-Class",
+        "description": "Special Special, Automatic transmission",
+        "image": "https://www.sixt.de/php/fleet/vehicleimage?grp=XXAR&liso=FI&uci=42526",
+        "car": {
+            "passengers": 4,
+            "doors": 4,
+            "models": [
+                "Mercedes-Maybach S-Class"
+            ],
+            "transmission": "automatic",
+            "airConditioning": true,
+            "navigationSystem": false
         },
-        "dropoff":{
-          "openingHours":[
-            {
-              "Days":[
-                "MO",
-                "TU",
-                "WE",
-                "TH",
-                "FR"
-              ],
-              "Times":[
-                {
-                  "Open":"07:00:00",
-                  "Close":"15:00:00"
-                }
-              ]
+        "options": {
+            "navigationSystem": true,
+            "additionalMiles": {
+                "Currency": "EUR",
+                "NetAmount": "3.00",
+                "VatPercent": "24.00"
             }
-          ],
-          "outOfHours":{
-            "IsAllowed":true,
-            "Information":"The key box is located next to the main entrance."
-          }
         }
-      },
-      "price":{
-        "amount":28451.43,
-        "currency":"EUR"
-      }
     },
-    "signature":"1e1a705d481d8949821aed0ff08936b5ebcb9ec3ed842be3b9bd932e6056ef49"
+    "terms": {
+        "mileageLimit": {
+            "Distance": 11600,
+            "Unit": "km"
+        },
+        "stations": {
+            "pickup": {
+                "openingHours": [
+                    {
+                        "Days": [
+                            "MO",
+                            "TU",
+                            "WE",
+                            "TH",
+                            "FR"
+                        ],
+                        "Times": [
+                            {
+                                "Open": "07:00:00",
+                                "Close": "15:00:00"
+                            }
+                        ]
+                    }
+                ],
+                "outOfHours": {
+                    "IsAllowed": true,
+                    "Information": "Pick-up out of opening hours is possible for an additional charge. This service is bookable on request. Please provide your e-mail address and mobile number."
+                }
+            },
+            "dropoff": {
+                "openingHours": [
+                    {
+                        "Days": [
+                            "MO",
+                            "TU",
+                            "WE",
+                            "TH",
+                            "FR"
+                        ],
+                        "Times": [
+                            {
+                                "Open": "07:00:00",
+                                "Close": "15:00:00"
+                            }
+                        ]
+                    }
+                ],
+                "outOfHours": {
+                    "IsAllowed": true,
+                    "Information": "The key box is located next to the main entrance."
+                }
+            }
+        },
+        "price": {
+            "amount": 3023689.33,
+            "currency": "POINT"
+        }
+    },
+    "signature": "88626bb9a68bb204fda732d9a5324f251a3058f9cbe8d604e05b2922fb69065b"
   }
 }

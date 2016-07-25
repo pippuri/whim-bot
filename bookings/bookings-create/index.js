@@ -24,8 +24,12 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Missing signature', 400));
   }
 
-  if (!event.payload.leg || !event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
-    return Promise.reject(new MaaSError('Missing leg input'));
+  if (!event.payload.leg) {
+    return Promise.reject(new MaaSError('Missing leg input', 400));
+  }
+
+  if (!event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
+    return Promise.reject(new MaaSError('Missing agencyId in input leg', 400));
   }
 
   return Promise.resolve();
@@ -67,9 +71,9 @@ function createBooking(event) {
     maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
     utils.validateSignatures(event.payload), // Validate request signature
   ])
-  .spread((profile, event)  => {
+  .spread((profile, payload)  => {
     cachedProfile = profile;
-    return tsp.createBooking(event.payload.leg, profile, event.payload.terms, event.payload.meta );
+    return tsp.createBooking(payload.leg, profile, payload.terms, payload.meta );
   })
   // TODO: actually reduce points before putting to PAID state
   .then(responseBooking => {
@@ -111,7 +115,7 @@ module.exports.respond = (event, callback) => {
             return;
           }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(_error);
         });
     });
 };
