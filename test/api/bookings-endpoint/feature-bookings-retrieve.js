@@ -59,7 +59,7 @@ module.exports = function (lambda) {
       });
     });
 
-    it.skip('should return a valid response', () => {
+    it('should return a valid response', () => {
       // FIXME change this when bookings are returning in correct states
       return validator.validate(response, schema)
         .then(validationError => {

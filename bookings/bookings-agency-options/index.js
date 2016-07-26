@@ -1,6 +1,5 @@
 'use strict';
 
-const request = require('request-promise-lite');
 const Promise = require('bluebird');
 const MaasError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils/index');
@@ -88,19 +87,15 @@ function getAgencyProductOptions(event) {
 
   return validateInput(event)
     .then(_empty => checkTimestamp())
-    .then(_empty => tsp.findAgency(event.agencyId))
-    .then(tsp => request.get(tsp.adapter.baseUrl + tsp.adapter.endpoints.get.options, {
-      qs: {
-        mode: event.mode,
-        from: event.from,
-        to: event.to,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        fromRadius: event.fromRadius,
-        toRadius: event.toRadius,
-      },
-      json: true,
-    }))
+    .then(_empty => tsp.retrieveBookingOptions( event.agencyId, {
+      mode: event.mode,
+      from: event.from,
+      to: event.to,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      fromRadius: event.fromRadius,
+      toRadius: event.toRadius,
+    } ) )
     .then(response => {
       if (response.errorMessage) {
         return Promise.reject(new Error(response.errorMessage));
@@ -120,7 +115,6 @@ function getAgencyProductOptions(event) {
       });
 
       return Promise.resolve(response);
-
     });
 }
 
