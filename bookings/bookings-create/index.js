@@ -58,34 +58,75 @@ function changeBookingState(booking, state) {
 }
 
 /**
- * Create a booking for a leg OR an individual booking (Go on a whim)
+ * Create a booking for an individual booking (Go on a whim)
  * @param  {object} event
- * @return {Promise -> object} db save response object
+ * @return {Promise -> object} responseBooking - The booking with the tsp booking status
  */
 function createBooking(event) {
 
   let cachedProfile;
-  let cachedBooking;
+  let oldBalance;
+  let calculatedBalance;
 
   return Promise.all([
     maasOperation.fetchCustomerProfile(event.identityId), // Get customer information
-    utils.validateSignatures(event.payload), // Validate request signature
+    utils.validateSignatures(event.payload) // Validate request signature
+      .then(booking => changeBookingState(booking, 'PENDING')), // Change state to PENDING after validating
   ])
-  .spread((profile, payload)  => {
+  .spread((profile, pendingBooking)  => {
     cachedProfile = profile;
-    return tsp.createBooking(payload.leg, profile, payload.terms, payload.meta );
+    oldBalance = profile.balance;
+
+    return maasOperation.computeBalance(pendingBooking.terms.price.amount, cachedProfile)
+      .then(_calculatedBalance => {
+        calculatedBalance = _calculatedBalance;
+        return Promise.all([
+          changeBookingState(pendingBooking, 'PAID'),
+          maasOperation.updateBalance(event.identityId, calculatedBalance), // Deduction
+        ]);
+      })
+      .spread((paidBooking, updateResponse) => {
+
+        const request = {
+          id: utils.createId(),
+          leg: paidBooking.leg,
+          customer: {
+            title: cachedProfile.title || 'mr',
+            firstName: cachedProfile.firstName || 'John',
+            lastName: cachedProfile.lastName || 'Doe',
+            phone: cachedProfile.phone,
+            email: cachedProfile.email || `maasuser-${profile.phone}@maas.fi`,
+          },
+          terms: paidBooking.terms,
+          meta: paidBooking.meta,
+        };
+
+        return tsp.createBooking(request)
+          .then(reservedBooking => {
+            // responseBooking has state RESERVED here and was already saved
+            return changeBookingState(Object.assign(reservedBooking, paidBooking), 'RESERVED');
+          })
+          .catch(error => {
+            if (error) {
+              return Promise.reject(error);
+            }
+            // Inject some missing information, because adapter return error instead of request booking
+            paidBooking.customer = request.customer;
+            paidBooking.id = request.id;
+            paidBooking.tspId = null;
+
+            return Promise.all([
+              changeBookingState(paidBooking, 'REJECTED'),
+              maasOperation.updateBalance(event.identityId, oldBalance), // Refunding
+            ])
+            .spread((rejectedBooking, updateResponse) => rejectedBooking);
+          });
+      });
   })
-  // TODO: actually reduce points before putting to PAID state
   .then(responseBooking => {
-    cachedBooking = responseBooking;
-    return maasOperation.computeBalance(event.payload.terms.price.amount, cachedProfile);
-  })
-  .then(newBalance => maasOperation.updateBalance(event.identityId, newBalance))
-  .then(response => {
-    return changeBookingState(cachedBooking, 'PAID')
-      .then(booking => Promise.resolve(booking));
-  })
-  .then(booking => saveBooking(booking));
+    return saveBooking(responseBooking)
+      .return(responseBooking);
+  });
 }
 
 /**
@@ -106,7 +147,7 @@ module.exports.respond = (event, callback) => {
         .then(() => callback(null, response));
     })
     .catch(_error => {
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      // console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
       Database.cleanup()
         .then(() => {
