@@ -115,7 +115,9 @@ function getAgencyProductOptions(event) {
         option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
       });
 
-      return Promise.resolve(response);
+      return Promise.resolve({
+        options: response.options,
+      });
     });
 }
 
