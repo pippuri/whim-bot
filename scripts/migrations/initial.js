@@ -20,7 +20,7 @@ exports.up = function (knex) {
       table.uuid('id').primary();
 
       // TSP generated foreign key (primary from their viewpoint)
-      table.string('tspId').index().notNullable();
+      table.string('tspId').index();
 
       // TODO Find alter tabel syntax where to create the leg reference
       //table.uuid('legId').references('Leg.id');
