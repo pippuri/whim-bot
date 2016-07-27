@@ -34,6 +34,7 @@ function handleSubscriptionUpdate(event, payload) {
       const evt = {
         identityId: identity,
         planId: planUpdate.id,
+        skipUpdate: true,
       };
       return lib.call(UPDATE_PLAN, evt);
     }
@@ -69,6 +70,7 @@ function handleCancellation(event, payload) {
   const evt = {
     identityId: identity,
     planId: WHIM_DEFAULT,
+    skipUpdate: true,
   };
   return Promise.all( [
     lib.call(UPDATE_PLAN, evt),
