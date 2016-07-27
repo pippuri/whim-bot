@@ -7,7 +7,7 @@ const lambda = require('../../../profile/profile-payment-put/handler.js');
 module.exports = function () {
 
   describe('profile-card-update', function () { //eslint-disable-line
-    this.timeout(10000)
+    this.timeout(10000);
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     const event = {
