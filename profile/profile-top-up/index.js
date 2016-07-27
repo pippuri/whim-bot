@@ -14,7 +14,7 @@ const MaaSError = require('../../lib/errors/MaaSError');
 
 function buyPoints(identityId, productId, amount, pointGrant) {
   let currentBalance = 0;
-  return lib.fetchCustomerBalance(identityId)
+  return lib.fetchCustomerProfile(identityId)
   .then( profile => {
     if (!profile) throw new MaaSError('User not found', 404);
     currentBalance = (profile.balance ? profile.balance : 0); // eslint-disable-line no-unneeded-ternary

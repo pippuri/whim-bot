@@ -7,7 +7,7 @@ const lambda = require('../../../profile/profile-top-up/handler.js');
 module.exports = function () {
 
   describe('profile-top-up', () => {
-    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
 
     const event = {
       identityId: identityId,
