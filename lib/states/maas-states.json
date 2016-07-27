@@ -6,11 +6,11 @@
     },
     "PENDING": {
       "description": "The booking is pending for available reservation response from tsp. This state can be skipped depends on the tsp.",
-      "transition": ["PAID", "REJECTED"]
+      "transition": ["PAID"]
     },
     "PAID": {
       "description": "Ticket/ride has been paid, waiting to go into active. Can be CANCELLED here",
-      "transition": ["RESERVED", "CANCELLED"]
+      "transition": ["RESERVED", "REJECTED"]
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
@@ -18,7 +18,7 @@
     },
     "ACTIVATED": {
       "description": "Booking is activated. Can be CANCELLED and will go EXPIRED if not",
-      "transition": ["CANCELLED", "EXPIRED"]
+      "transition": ["CANCELLED", "EXPIRED", "ACTIVATED"]
     },
     "CANCELLED": {
       "description": "Booking is cancelled, will be reconsiled, or directly RESOLVED base on terms",
@@ -26,7 +26,7 @@
     },
     "EXPIRED": {
       "description": "The activated booking has expired. Can be reconsiled or be bought again",
-      "transition": ["RECONCILING", "RESERVED"]
+      "transition": ["RECONCILING"]
     },
     "RECONCILING": {
       "description": "Issusing for a refund due to a CANCELLED or ABANDONED booking.",
@@ -56,7 +56,7 @@
     },
     "ACTIVATED": {
       "description": "The leg has been ACTIVATED",
-      "transition": ["CANCELLED", "FINISHED"]
+      "transition": ["ABANDONED", "FINISHED"]
     },
     "CANCELLED": {
       "description": "The leg has been CANCELLED",

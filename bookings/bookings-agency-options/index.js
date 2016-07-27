@@ -111,10 +111,13 @@ function getAgencyProductOptions(event) {
 
       response.options.forEach(option => {
         option.terms.price.amount = convertPriceToPoints(event.identityId, option);
+        option.terms.price.currency = 'POINT';
         option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
       });
 
-      return Promise.resolve(response);
+      return Promise.resolve({
+        options: response.options,
+      });
     });
 }
 
