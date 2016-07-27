@@ -74,7 +74,7 @@
         "put": {
           "update": "/bookings"
         },
-        "delete": {
+        "del": {
           "cancel": "/bookings"
         }
       },
@@ -90,8 +90,8 @@
         "put": {
           "update": "maas-transport-booking-sixt-update"
         },
-        "delete": {
-          "cancel": "maas-transport-booking-sixt-delete"
+        "del": {
+          "cancel": "maas-transport-booking-sixt-cancel"
         }
       },
       "endpoints_config": {
