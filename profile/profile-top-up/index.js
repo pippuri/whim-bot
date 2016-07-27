@@ -24,7 +24,6 @@ function buyPoints(identityId, productId, amount, pointGrant) {
   })
   .then( purchase => {
     if (purchase.status === 'paid') {
-      console.log('updating user profile', identityId)
       // update profile with the points the successful purchase grants
       return lib.updateBalance(identityId, currentBalance + pointGrant);
     }
