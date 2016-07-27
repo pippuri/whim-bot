@@ -7,10 +7,45 @@ const lambda = require('../../../profile/profile-top-up/handler.js');
 module.exports = function () {
 
   describe('profile-top-up', () => {
-    const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
 
     const event = {
-      identityId: identityId,
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      payload: {
+        productId: 'fi-whim-points-purchase-payg',
+        amount: '500',
+        //chargeOK: '2500',
+      },
+    };
+
+    let error;
+    let response;
+
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
+        error = err;
+        response = data;
+        if (err) {
+          console.log('Error', err);
+        }
+        done();
+      });
+    });
+
+    it('should not raise an error', () => {
+      expect(error).to.be.null;
+    });
+
+    it('should return message with amount', () => {
+      expect(response).to.have.deep.property('message');
+      expect(response).to.have.deep.property('confirm');
+      expect(response).to.have.deep.property('price');
+    });
+  });
+
+  describe('profile-top-up-ok', function () { //eslint-disable-line
+    this.timeout(10000);
+    const event = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
       payload: {
         productId: 'fi-whim-points-purchase-payg',
         amount: '500',
@@ -36,8 +71,8 @@ module.exports = function () {
       expect(error).to.be.null;
     });
 
-    it('should return an updated profile', () => {
-      expect(response).to.have.deep.property('profile.balance');
+    it('should return profile with new amount', () => {
+      expect(response).to.have.deep.property('profile');
     });
   });
 };

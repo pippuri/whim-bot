@@ -212,7 +212,7 @@ describe('Post a charge on the user', () => {
   let response;
 
   before(done => {
-    mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 1000, 'Test Charge' )
+    mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-points-purchase-payg', 10 )
     .then(data => {
       response = data;
       done();

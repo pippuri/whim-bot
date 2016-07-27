@@ -6,8 +6,8 @@ const lambda = require('../../../profile/profile-payment-put/handler.js');
 
 module.exports = function () {
 
-  describe.skip('profile-card-update', () => {
-    const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
+  describe('profile-card-update', () => {
+    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     const event = {
       identityId: identityId,
