@@ -1,0 +1,8 @@
+{
+  "identityId": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+  "payload": {
+    "productId": "fi-whim-points-purchase-payg",
+    "amount": "500",
+    "chargeOK": "2500"
+  }
+}
