@@ -9,8 +9,28 @@ const tsp = require('../../lib/tsp/index');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
 
+/**
+ * Parse itinerary to merge-ready database format
+ * @param {object} itinerary
+ */
+function parseDatabaseFormat(itinerary) {
+  function removeAllSignature(itinerary) {
+    delete itinerary.signature;
+    itinerary.legs.forEach(leg => {
+      delete leg.signature;
+    });
+    return itinerary;
+  }
+
+  return removeAllSignature(itinerary);
+}
+
+/**
+ * Remove unbookable leg out of the collection
+ * @param {object array} legs - array of legs
+ * @return {object array} legs - arary of bookable legs
+ */
 function filterBookableLegs(legs) {
-  //console.log(`Filter ${legs.length} bookable legs`);
 
   // Filter away the legs that do not need a TSP
   return legs.filter(leg => {
@@ -37,6 +57,24 @@ function filterBookableLegs(legs) {
   });
 }
 
+/**
+ * Change booking state and log the state change
+ * @param {object} booking
+ * @param {string} state
+ * @return {Promise -> undefined}
+ */
+function changeBookingState(booking, state) {
+  const old_state = booking.state || 'START';
+  booking.state = state;
+  return stateMachine.changeState('Booking', booking.id || booking.bookingId, old_state, booking.state)
+    .return(booking);
+}
+
+/**
+ * Create Id for the itinenaray and each of the leg within
+ * @param {object} itinerary - without id
+ * @return {object} itinenery - without id
+ */
 function annotateIdentifiers(itinerary) {
   // Assign fresh identifiers for the itinerary and legs
   itinerary.id = utils.createId();
@@ -44,73 +82,113 @@ function annotateIdentifiers(itinerary) {
     leg.id = utils.createId();
   });
 
-  return itinerary;
+  return Promise.resolve(itinerary);
 }
 
-function annotateIdentityId(itinerary, identityId) {
-  itinerary.identityId = identityId;
-
-  return itinerary;
-}
-
-function annotateLegsState(itinerary, state) {
-  const queue = [];
-  itinerary.legs.forEach(leg => {
-    // Starting state
-    leg.state = 'START';
-    queue.push(stateMachine.changeState('Leg', leg.id, leg.state, state));
-  });
-
-  return Promise.all(queue)
-   .then(response => {
-     itinerary.legs.map(leg => {
-       leg.state = state;
-     });
-
-     return itinerary;
-   });
-}
-
+/**
+ * Change itinerary state
+ * @param {object} itinerary
+ * @param {string} state
+ * @return {object} itinerary
+ */
 function annotateItineraryState(itinerary, state) {
-  // Starting state
-  itinerary.state = 'START';
+  function annotateLegsState(itinerary, state) {
+    const queue = [];
+    itinerary.legs.forEach(leg => {
+      // Starting state
+      leg.state = leg.state || 'START';
+      queue.push(stateMachine.changeState('Leg', leg.id, leg.state, state));
+    });
+
+    return Promise.all(queue)
+     .then(response => {
+       itinerary.legs.map(leg => {
+         leg.state = state;
+       });
+
+       return itinerary;
+     });
+  }
+
+  // Set itinerary state to starting state if no state exists
+  itinerary.state = itinerary.state || 'START';
 
   return stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, state)
     .then(newState => {
-      itinerary.state = newState;
+      itinerary.state = state;
 
       return annotateLegsState(itinerary, state);
     })
-    .then(itinerary => {
-      return itinerary;
+    .then(_itinerary => _itinerary);
+}
+
+/**
+ * Save itinerary on DB
+ * @param {itinerary} itinerary
+ * @return {object} postgres response
+ */
+function saveItinerary(itinerary) {
+  return models.Itinerary
+    .query()
+    .insertWithRelated(itinerary)
+    .then(() => itinerary);
+}
+
+/**
+ * Format itinerary before returning
+ * @param {object} itinerary
+ * @return {object} itinerary
+ */
+function wrapToEnvelope(itinerary) {
+  if (itinerary.legs &&  itinerary.legs.constructor === Array) {
+    itinerary.legs.forEach(leg => {
+      if (leg.booking && leg.booking.leg) {
+        delete leg.booking.leg;
+      }
+      if (leg.bookingId) {
+        delete leg.bookingId;
+      }
     });
+  }
+  return {
+    itinerary: itinerary,
+  };
 }
 
 function createAndAppendBookings(itinerary, profile) {
-
   const completed = [];
   const failed = [];
   const cancelled = [];
 
   function appendOneBooking(leg) {
-    //console.log(`Create booking for ${leg.id}`);
-
-    return tsp.createBooking(leg, profile)
+    const tspBooking = {
+      id: utils.createId(),
+      leg: leg,
+      customer: {
+        title: profile.title || 'mr',
+        firstName: profile.firstName || 'John',
+        lastName: profile.lastName || 'Doe',
+        phone: profile.phone,
+        email: profile.email || `maasuser-${profile.phone}@maas.fi`,
+      },
+      meta: {},
+    };
+    // Since Booking moneteraztion logic is actually in the leg, so PENDING and PAID state are dealt with during the logic with itinerary
+    return changeBookingState(tspBooking, 'PENDING')
+      .then(() => changeBookingState(tspBooking, 'PAID'))
+      .then(() => tsp.createBooking(tspBooking))
       .then(
         booking => {
-          //console.log(`Booking for ${leg.id} succeeded`);
-
-          return stateMachine.changeState('Leg', leg.id, leg.state, 'PAID')
-            .then(newState => {
+          return changeBookingState(booking, 'RESERVED')
+            .then(() => {
               completed.push(leg);
-              leg.state = newState;
+              leg.state = 'RESERVED';
               leg.booking = booking;
             });
         },
-
         error => {
-          console.warn(error);
           console.warn(`Booking failed for agency ${leg.agencyId}`);
+          console.warn(error);
           failed.push(leg);
         }
       );
@@ -120,35 +198,30 @@ function createAndAppendBookings(itinerary, profile) {
     return tsp.cancelBooking(leg.booking)
       .then(
         booking => {
-          return stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED')
-            .then(newState => {
-              cancelled.push(leg);
-              leg.state = newState;
-            });
+          return Promise.all([
+            stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED'),
+            changeBookingState(leg.booking, 'CANCELLED'),
+          ])
+          .spread((newLegState, cancelledBooking) => {
+            cancelled.push(leg);
+            leg.state = newLegState;
+            leg.booking = cancelledBooking;
+          });
         },
 
         error => {
           console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-          return stateMachine.changeState('Leg', leg.id, leg.state, 'PAID')
-            .then(newState => {
-              cancelled.push(leg);
-              leg.state = newState;
-            });
         }
       );
   }
 
   return Promise.resolve(filterBookableLegs(itinerary.legs))
-    .then(legs => Promise.map(legs, appendOneBooking))
+    .then(bookableLegs => Promise.map(bookableLegs, appendOneBooking))
     .then(_empty => {
       // In case of success, return the itinerary. In case of failure,
       // cancel the completed bookings.
       if (failed.length === 0) {
-        return stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, 'PAID')
-          .then(newState => {
-            itinerary.state = newState;
-            return Promise.resolve(itinerary);
-          });
+        return itinerary;
       }
 
       const failedLegStack = {
@@ -168,85 +241,59 @@ function createAndAppendBookings(itinerary, profile) {
     });
 }
 
-function saveItinerary(itinerary) {
-  //console.log(`Save itinerary ${itinerary.id} into db`);
-  return models.Itinerary
-    .query()
-    .insertWithRelated(itinerary)
-    .then(response => {
-      return Promise.resolve(response);
-    });
-}
+function bookItinerary(event) {
 
-function wrapToEnvelope(itinerary) {
-  //console.log(`Wrap itinerary ${itinerary.id} into response`);
-  if (itinerary.legs &&  itinerary.legs.constructor === Array) {
-    itinerary.legs.forEach(leg => {
-      if (leg.booking && leg.booking.leg) {
-        delete leg.booking.leg;
-      }
-      if (leg.bookingId) {
-        delete leg.bookingId;
-      }
+  let cachedProfile;
+  let oldBalance;
+  let annotatedItinerary;
+
+  return annotateIdentifiers(event.itinerary)
+    .then(_annotatedItinerary => {
+      _annotatedItinerary.identityId = event.identityId;
+      annotatedItinerary = _annotatedItinerary;
+      return maasOperation.fetchCustomerProfile(event.identityId);
+    })
+    .then(_profile => {
+      cachedProfile = _profile;
+      oldBalance = _profile.balance;
+      return annotateItineraryState(annotatedItinerary, 'PLANNED');
+    })
+    .then(plannedItinerary => maasOperation.computeBalance(plannedItinerary.fare.points, cachedProfile))
+    .then(newBalance => maasOperation.updateBalance(event.identityId, newBalance))
+    .then(response => annotateItineraryState(annotatedItinerary, 'PAID'))
+    .then(paidItinerary => createAndAppendBookings(paidItinerary, cachedProfile))
+    .then(bookedItinerary => {
+      console.log('booked itinerary', bookedItinerary);
+      return saveItinerary(parseDatabaseFormat(bookedItinerary));
+    })
+    .then(savedItinerary => wrapToEnvelope(savedItinerary))
+    .catch(error => {
+      return maasOperation.updateBalance(event.identityId, oldBalance)
+        .return(Promise.reject(error));
     });
-  }
-  return {
-    itinerary: itinerary,
-    maas: {},
-  };
 }
 
 module.exports.respond = function (event, callback) {
-
-  const context = {};
-
-  // Process & validate the input, then save the itinerary; then do bookings,
-  // update balance and save both itinerary and profile.
   return Promise.all([
     Database.init(),
     utils.validateSignatures(event.itinerary),
-    maasOperation.fetchCustomerProfile(event.identityId),
   ])
-  .spread((none, valid, profile) => {
-    // Assign our inputs
-    context.profile = profile;
-    context.itinerary = event.itinerary;
-
-    // Update itinerary for storable form
-    context.itinerary = utils.removeSignatures(context.itinerary);
-    if (context.itinerary.legs) {
-      context.itinerary.legs.forEach(leg => {
-        utils.removeSignatures(leg);
-      });
-    }
-    annotateIdentifiers(context.itinerary);
-    annotateIdentityId(context.itinerary, context.profile.identityId);
-    return annotateItineraryState(context.itinerary, 'PLANNED');
-  })
-  .then(itinerary => createAndAppendBookings(itinerary, context.profile))
-  .then(saveItinerary)
-  .then(itinerary => {
-    // Update input, update balance
-    context.itinerary = itinerary;
-    const balance = maasOperation.computeBalance(context.itinerary.fare.points, context.profile);
-
-    return maasOperation.updateBalance(context.profile.identityId, balance);
-  })
-  .then(profile => {
+  .then((_knex, _itinerary) => bookItinerary(event))
+  .then(response => {
     Database.cleanup()
-      .then(() => callback(null, wrapToEnvelope(context.itinerary)));
+      .then(() => callback(null, response));
   })
   .catch(_error => {
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    let error = _error;
-    if (!(error instanceof MaaSError)) {
-      error = new MaaSError(`Internal server error: ${_error.toString()}`, 500);
-    }
+    // console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
-    // Uncaught, unexpected error
     Database.cleanup()
-    .then(() => {
-      callback(error);
-    });
+      .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
+
+        callback(_error);
+      });
   });
 };
