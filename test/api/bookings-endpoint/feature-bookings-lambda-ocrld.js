@@ -93,7 +93,7 @@ module.exports = function (lambda) {
         .then( bookingList => new Promise( ( resolve, reject ) => {
           const retrieveEvent = {
             identityId: testUserIdentity,
-            payload: { id: bookingId },
+            bookingId: bookingId,
           };
           wrap(retrieveLambda).run( retrieveEvent, (err, res) => {
             retrieveResponse = res;
@@ -106,7 +106,7 @@ module.exports = function (lambda) {
         .then( booking => new Promise( ( resolve, reject ) => {
           const cancelEvent = {
             identityId: testUserIdentity,
-            payload: { id: booking.id },
+            bookingId: bookingId,
           };
           wrap(cancelLambda).run( cancelEvent, (err, res) => {
             cancelResponse = res;
