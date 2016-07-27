@@ -20,9 +20,13 @@ module.exports = function () {
         address: 'Varputie 17, 02270 Espoo',
         zip: '02270',
         city: 'Espoo',
-        country: 'Finland',
-        type: 'stripe-token',
-        token: 'egroegoiegioehoiheaoghae',
+        country: 'FI',
+        card: {
+          number: '4242424242424242',
+          cvv: 100,
+          expiryMonth: '10',
+          expiryYear: '2017',
+        },
       },
     };
 
@@ -45,7 +49,8 @@ module.exports = function () {
     });
 
     it('should return empty', () => {
-      expect(response).to.deep.equal({});
+      expect(response).to.have.deep.property('response.card');
+      expect(response).to.have.deep.property('response.customer');
     });
   });
 };
