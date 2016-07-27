@@ -91,6 +91,7 @@ function createBooking(event) {
           id: utils.createId(),
           leg: paidBooking.leg,
           customer: {
+            identityId: cachedProfile.identityId,
             title: cachedProfile.title || 'mr',
             firstName: cachedProfile.firstName || 'John',
             lastName: cachedProfile.lastName || 'Doe',

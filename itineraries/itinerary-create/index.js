@@ -165,6 +165,7 @@ function createAndAppendBookings(itinerary, profile) {
       id: utils.createId(),
       leg: leg,
       customer: {
+        identityId: profile.identityId,
         title: profile.title || 'mr',
         firstName: profile.firstName || 'John',
         lastName: profile.lastName || 'Doe',
