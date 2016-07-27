@@ -8,11 +8,6 @@
     "zip": "02270",
     "country": "FI",
     "city": "Helsinki",
-    "card": {
-      "number": "4012888888881881",
-      "cvv": "999",
-      "expiryMonth": "01",
-      "expiryYear": "2017"
-    }
+    "token": "tok_18blfFGYEY6nE6m4YC22zwOO"
   }
 }
