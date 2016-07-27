@@ -37,14 +37,7 @@ module.exports = function (lambda) {
 
     before(done => {
 
-      return new Promise( ( resolve, reject ) => {
-
-        // First we need to make sure the user actually has enough points to complete the transaction
-        // TODO: ADD 10000 points to the user account
-
-        resolve();
-      } )
-
+      return Promise.resolve()
         .then( () => new Promise( ( resolve, reject ) => {
           const optionsEvent = {
             agencyId: 'Sixt',
@@ -114,13 +107,6 @@ module.exports = function (lambda) {
             if ( err ) reject( err );
             else resolve( res );
           } );
-        } ) )
-
-        .then( () => new Promise( ( resolve, reject ) => {
-          // We also want the points not to get accumulating for the test user
-          // TODO: REMOVE 10000 points to the user account
-
-          resolve();
         } ) )
 
         .then( () => done() )
