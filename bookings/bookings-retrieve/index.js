@@ -11,6 +11,8 @@ module.exports.respond = (event, callback) => {
 
   return Promise.resolve(Database.init())
     .then(() => models.Booking.query().findById(event.bookingId))
+    // TODO: This merging business should be done in an another endpoint which we don't have yet
+    /*
     .then(booking => {
       if (!booking) {
         const message = `No booking found with bookingId '${event.bookingId}'`;
@@ -29,6 +31,7 @@ module.exports.respond = (event, callback) => {
       return models.Booking.query()
         .updateAndFetchById(booking.id, updatedBooking);
     })
+    */
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));
