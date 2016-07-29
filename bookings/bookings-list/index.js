@@ -13,7 +13,7 @@ module.exports.respond = (event, callback) => {
   // TODO: add index CREATE INDEX ON Booking((customer->>'id'));
   return Database.init()
     .then(() => Database.knex.select().from('Booking')
-      .whereRaw("customer ->> 'id' = ?", [event.identityId] ))
+      .whereRaw("customer ->> 'identityId' = ?", [event.identityId] ))
     .then( response => {
       Database.cleanup()
         .then(() => callback(null, { bookings: response || [] } ));
