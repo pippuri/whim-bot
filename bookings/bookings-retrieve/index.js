@@ -1,10 +1,10 @@
 'use strict';
 
-const _ = require('lodash');
+//const _ = require('lodash');
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
-const tsp = require('../../lib/tsp');
+//const tsp = require('../../lib/tsp');
 const Database = models.Database;
 
 module.exports.respond = (event, callback) => {
