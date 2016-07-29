@@ -72,21 +72,9 @@ module.exports = function (lambda) {
         .then( booking => new Promise( ( resolve, reject ) => {
           bookingId = booking.id;
 
-          const listEvent = {
-            identityId: testUserIdentity,
-          };
-          wrap(listLambda).run( listEvent, (err, res) => {
-            listResponse = res;
-            listError = err;
-            if ( err ) reject( err );
-            else resolve( res );
-          } );
-        } ) )
-
-        .then( bookingList => new Promise( ( resolve, reject ) => {
           const retrieveEvent = {
             identityId: testUserIdentity,
-            bookingId: bookingId,
+            bookingId: booking.id,
           };
           wrap(retrieveLambda).run( retrieveEvent, (err, res) => {
             retrieveResponse = res;
@@ -96,14 +84,27 @@ module.exports = function (lambda) {
           } );
         } ) )
 
+
         .then( booking => new Promise( ( resolve, reject ) => {
           const cancelEvent = {
             identityId: testUserIdentity,
-            bookingId: bookingId,
+            bookingId: booking.id,
           };
           wrap(cancelLambda).run( cancelEvent, (err, res) => {
             cancelResponse = res;
             cancelError = err;
+            if ( err ) reject( err );
+            else resolve( res );
+          } );
+        } ) )
+
+        .then( booking => new Promise( ( resolve, reject ) => {
+          const listEvent = {
+            identityId: testUserIdentity,
+          };
+          wrap(listLambda).run( listEvent, (err, res) => {
+            listResponse = res;
+            listError = err;
             if ( err ) reject( err );
             else resolve( res );
           } );
@@ -131,6 +132,12 @@ module.exports = function (lambda) {
     it('cancel should succeed without error', () => {
       expect(cancelError).to.be.null;
     });
+
+    it('booking list should contain created booking as cancelled', () => {
+      const matchingBookings = listResponse.bookings.filter( b => b.id === bookingId );
+      expect(matchingBookings).to.have.lengthOf(1);
+      expect(matchingBookings[0].state).to.equal('CANCELLED');
+    } );
 
     it('none of the responses should be null', () => {
       expect(optionsResponse).to.be.not.null;
