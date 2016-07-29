@@ -14,7 +14,7 @@ function updateBooking(event) {
     return Promise.reject(new MaaSError('Missing or empty identityId', 401));
   }
 
-  if (!event.hasOwnProperty('bookingId') || !event.bookingId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
+  if (!event.hasOwnProperty('bookingId')) {
     return Promise.reject(new MaaSError('Missing or invalid bookingId'));
   }
 
@@ -29,18 +29,15 @@ function updateBooking(event) {
     }
   });
 
-  const modifiedTime = new Date().getTime();
-  event.payload.modified = new Date(modifiedTime).toISOString();
-
   return Database.knex
     .update(event.payload, returnField.concat(Object.keys(event.payload)))
     .into('Booking')
-    .where({
-      id: event.bookingId,
-    })
+    .whereRaw("customer ->> 'identityId' = ?", [event.identityId] )
+    .andWhere('id', event.bookingId)
     .then(response => {
+      console.log(response);
       if (response.length !== 1) {
-        return Promise.reject(new MaaSError(`Database returned ${response.length} results (expected 1) with ${event.bookingId}`, 500));
+        return Promise.reject(new MaaSError(`Database returned ${response.length} results (expected 1) with ${event.bookingId} for identityId ${event.identityId}`, 500));
       }
       const booking = response[0];
       return booking;
