@@ -6,5 +6,6 @@ describe('profile tools', () => {
   require('./profile-card-update/index.js')();
   require('./profile-card-get/index.js')();
   require('./profile-webhook/index.js')();
+  require('./profile-buy-points/index.js')();
 });
 

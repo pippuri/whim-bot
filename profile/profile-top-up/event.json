@@ -1,0 +1,8 @@
+{
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "payload": {
+    "productId": "fi-whim-points-purchase-payg",
+    "amount": "500",
+    "chargeOK": "2500"
+  }
+}

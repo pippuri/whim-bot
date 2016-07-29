@@ -1,6 +1,7 @@
 {
-  "name": "profile-payment-put",
+  "name": "profile-top-up",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -11,9 +12,9 @@
     "excludePatterns": []
   },
   "endpoints": [
-    {
-      "path": "profile/payment",
-      "method": "PUT",
+{
+      "path": "profile/top-up",
+      "method": "POST",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
@@ -23,8 +24,8 @@
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
       },
       "swaggerExport": {
-        "summary": "Edit an user profile attribute(s)",
-        "description": "Set one or multiple attribute of a profile by providing key-value pairs in the body payload",
+        "summary": "Add points to users profile account",
+        "description": "",
         "security": [{"Bearer":[]}],
         "parameter": [],
         "responses": {
@@ -85,7 +86,7 @@
           }
         }
       }
-    }
+    }  
   ],
   "events": [],
   "environment": "$${environment}"
