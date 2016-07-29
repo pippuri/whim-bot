@@ -83,18 +83,6 @@ exports.up = function (knex) {
         END;
       $modified_timestamp$ LANGUAGE plpgsql;
     `)
-    // State change logging procedure
-    .raw(`
-      CREATE OR REPLACE FUNCTION proc_log_state_change()
-      RETURNS trigger AS
-      $state_audit$
-        BEGIN
-          INSERT INTO "StateLog" ("tableName", "itemId", "oldState", "newState", "created")
-            VALUES (TG_TABLE_NAME, OLD.id, OLD.state, NEW.state, now());
-          RETURN NULL;
-        END;
-      $state_audit$ LANGUAGE plpgsql;
-    `)
     // Trigger for "modified timestamp" on Booking, Itinerary and Leg
     .raw(`
       CREATE TRIGGER "trig_update_modified_timestamp" BEFORE UPDATE
@@ -110,22 +98,6 @@ exports.up = function (knex) {
       CREATE TRIGGER "trig_update_modified_timestamp" BEFORE UPDATE
       ON "Leg"
       FOR EACH ROW EXECUTE PROCEDURE proc_update_modified_timestamp();
-    `)
-    // Trigger for logging states
-    .raw(`
-      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
-      ON "Booking"
-      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
-    `)
-    .raw(`
-      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
-      ON "Itinerary"
-      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
-    `)
-    .raw(`
-      CREATE TRIGGER "trig_log_state_change" BEFORE UPDATE OF "state"
-      ON "Leg"
-      FOR EACH ROW EXECUTE PROCEDURE proc_log_state_change();
     `);
 };
 
