@@ -22,16 +22,14 @@
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.querystring.id": "method.request.querystring.id",
-        "integration.request.querystring.timestamp": "method.request.querystring.timestamp"
       },
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
           "itinerary": {
-            "id": "$input.params('id')",
-            "timestamp": "$input.params('timestamp')",
-            "legId": "$input.params('legId')"
+            "id": "$input.json('$.id')",
+            "timestamp": "$input.json('$.timestamp')",
+            "legId": "$input.json('$.legId')"
           }
         }
       },
