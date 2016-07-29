@@ -108,9 +108,6 @@ function createBooking(event) {
             return changeBookingState(Object.assign(reservedBooking, paidBooking), 'RESERVED');
           })
           .catch(error => {
-            if (error) {
-              return Promise.reject(error);
-            }
             // Inject some missing information, because adapter return error instead of request booking
             paidBooking.customer = request.customer;
             paidBooking.id = request.id;
