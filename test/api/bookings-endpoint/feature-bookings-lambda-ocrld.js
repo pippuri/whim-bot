@@ -9,6 +9,8 @@ const createLambda = require('../../../bookings/bookings-create/handler.js');
 const retrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
 const listLambda = require('../../../bookings/bookings-list/handler.js');
 const cancelLambda = require('../../../bookings/bookings-cancel/handler.js');
+const models = require('../../../lib/models');
+const Database = models.Database;
 
 module.exports = function (lambda) {
 
@@ -116,6 +118,12 @@ module.exports = function (lambda) {
           done( err );
         } );
     } );
+
+    after( done => {
+      return Promise.resolve(Database.init())
+        .then(() => models.Booking.query().delete().where( 'id', bookingId ))
+        .then(() => done());
+    });
 
     it('options fetching should succeed without error', () => {
       expect(optionsError).to.be.null;
