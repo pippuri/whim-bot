@@ -183,7 +183,6 @@ function createAndAppendBookings(itinerary, profile) {
           return changeBookingState(booking, 'RESERVED')
             .then(() => {
               completed.push(leg);
-              leg.state = 'RESERVED';
               leg.booking = booking;
             });
         },
