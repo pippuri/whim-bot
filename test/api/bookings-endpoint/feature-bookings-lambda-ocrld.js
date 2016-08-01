@@ -122,6 +122,7 @@ module.exports = function (lambda) {
     after( done => {
       return Promise.resolve(Database.init())
         .then(() => models.Booking.query().delete().where( 'id', bookingId ))
+        .then(() => Database.cleanup())
         .then(() => done());
     });
 
