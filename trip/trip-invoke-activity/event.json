@@ -1,0 +1,5 @@
+{
+  "activity": "nop",
+  "taskToken": "dummy",
+  "input":"{\"activity\":\"nop\",\"stage\":\"dev\"}"
+}

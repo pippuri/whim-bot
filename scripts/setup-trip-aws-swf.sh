@@ -10,11 +10,11 @@ export AWS_PROFILE="maas"
 #export STAGE="dev"
 #export LAMBDA="MaaS-auth-custom-authorizer"
 
-export DOMAIN_NAME="MaaS-stage-test"
-export FLOW_NAME="MaaS-follow-trip"
-export FLOW_VERSION="test-v1"
-export ACTIVITY_NAME="MaaS-book-tickets"
-export ACTIVITY_VERSION="test-v1"
+export DOMAIN_NAME="maas-trip-stage-dev"
+export FLOW_NAME="maas-trip"
+export FLOW_VERSION="test-v3"
+export ACTIVITY_NAME="maas-trip"
+export ACTIVITY_VERSION="v1"
 
 # register domain
 aws swf register-domain --name $DOMAIN_NAME --description "MaaS SWF for managing user's trips (itenary followup & actions)" --workflow-execution-retention-period-in-days 90
@@ -23,7 +23,7 @@ aws swf register-domain --name $DOMAIN_NAME --description "MaaS SWF for managing
 aws swf list-domains --registration-status REGISTERED
 
 # register workflow
-aws swf register-workflow-type --domain $DOMAIN_NAME --name $FLOW_NAME --workflow-version $FLOW_VERSION --description "Maas SWF trip follow workflow type"
+aws swf register-workflow-type --domain $DOMAIN_NAME --name $FLOW_NAME --workflow-version $FLOW_VERSION --description "Maas SWF trip follow workflow type" --default-task-start-to-close-timeout "60" --default-child-policy "TERMINATE"
 
 # list registered flows
 aws swf list-workflow-types --domain $DOMAIN_NAME --registration-status REGISTERED
@@ -33,7 +33,6 @@ aws swf register-activity-type --domain $DOMAIN_NAME --name $ACTIVITY_NAME --act
 
 # register activity
 aws swf list-activity-types --domain $DOMAIN_NAME --registration-status REGISTERED
-
 
 # First we update the authorizer to call the right lambda function including the qualifier :xxx at the end of the function ARN
 #aws apigateway update-authorizer --rest-api-id $API_ID --authorizer-id $AUTHORIZER_ID --patch-operations op=replace,path=/authorizerUri,value=arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:$AWS_REGION:$AWS_ACCOUNT:function:$LAMBDA:$STAGE/invocations
