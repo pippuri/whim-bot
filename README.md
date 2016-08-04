@@ -128,13 +128,25 @@ npm install -g mocha
 
 You can then run the tests by simply commanding `mocha`.
 
-The tests are named with sentenses. You can leave tests out by defining any
+The tests are named with sentences. You can leave tests out by defining any
 part of the sentence that matches the tests you want to run. See examples
 below.
 ```
 mocha -g TripGo
 mocha -g leaveAt
 mocha -g "TripGo \(South Finland\) leaveAt request response"
+```
+
+#### Running tests with local TSP implementations
+
+If you have local TSP repos checked out with their default names to `../maas-transport-booking` or `../maas-tsp-reference`, you can just use this environment variable to run tests with local TSP lambdas found in those directories:
+```
+TEST_WITH_LOCAL_TSP=1 mocha
+```
+
+If you have your repositories in different directories, you can specify the directories with the following env variables:
+```
+LOCAL_MAAS_TRANSPORT_BOOKING_PATH=../mtb LOCAL_MAAS_TSP_REFERENCE_PATH=../mtr TEST_WITH_LOCAL_TSP=1 mocha
 ```
 
 #### Running a Serverless Function In The Cloud
