@@ -183,9 +183,10 @@ describe('Update User card', function () {
   });
 });
 
-describe('List the user plan', () => {
+describe('List the user plan', function () {
   let error;
   let response;
+  this.timeout(5000);
 
   before(done => {
     mgr.getUserSubscription('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb').then(data => {
@@ -207,9 +208,10 @@ describe('List the user plan', () => {
   });
 });
 
-describe('Post a charge on the user', () => {
+describe('Post a charge on the user', function () {
   let error;
   let response;
+  this.timeout(5000);
 
   before(done => {
     mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-points-purchase-payg', 10 )
@@ -233,9 +235,10 @@ describe('Post a charge on the user', () => {
 
 });
 
-describe('Change User Plan', () => {
+describe('Change User Plan', function () {
   let error;
   let response;
+  this.timeout(5000);
 
   before(done => {
     mgr.updatePlan('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-payg' )
