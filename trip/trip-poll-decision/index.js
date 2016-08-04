@@ -9,7 +9,7 @@ const bus = require('../../lib/service-bus');
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
 
-const DECIDER_LAMBDA = 'MaaS-trip-invoke-decider'
+const LAMBDA_TRIP_INVOKE_DECIDER = 'MaaS-trip-invoke-decider'
 
 /**
  * Makes a polling call to AWS SFW. The call usually blocks for 70 seconds or until a decition
@@ -17,8 +17,6 @@ const DECIDER_LAMBDA = 'MaaS-trip-invoke-decider'
  * start polling again if there is still time (defined by maxBlockingTimeInSec).
  *
  * This function is typically called from a worker process keeps the polling ongoing continously.
- *
- * To improve functionality, once a task appears, this could launch separate lambda to handle it.
  *
  * @return {Promise -> object} Epmty object.
  */
@@ -53,8 +51,10 @@ function pollForDecisionTasks(params) {
 
     const flow = new TripWorkFlow();
 
+    // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
     return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
       .then(data => {
+        //console.log("pollForDecisionTasks() got data:", JSON.stringify(data));
 
         // check do we have proper decition to process...
         if (!data.startedEventId || data.startedEventId === 0 ) {
@@ -63,9 +63,9 @@ function pollForDecisionTasks(params) {
         }
 
         console.log("pollForDecisionTasks() invoking decider to process inbound decision task...");
-        bus.call(DECIDER_LAMBDA, data)
+        bus.call(LAMBDA_TRIP_INVOKE_DECIDER, data)
           .then(result => {
-            console.log(`pollForDecisionTask() decider done with workflowId '${result.workFlowId}'...`);
+            console.log(`pollForDecisionTask() decider handled workflowId '${result.workFlowId}'`);
           })
           .catch(err => {
             console.error(`pollForDecisionTask() decider FAILED; `, err);

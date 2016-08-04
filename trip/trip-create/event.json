@@ -1,5 +1,6 @@
 {
-  "referenceId": "cafe-cafe-123123123",
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "referenceId": "cafe-cafe-123123129",
   "referenceType": "itinerary",
   "startTime": 1470225685332,
   "endTime": 1570225685332

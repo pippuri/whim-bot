@@ -1,5 +1,20 @@
 {
-  "activity": "nop",
-  "taskToken": "dummy",
-  "input":"{\"activity\":\"nop\",\"stage\":\"dev\"}"
+  "trip": {
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+    "referenceId": "cafe-cafe-123123129",
+    "referenceType": "itinerary",
+    "startTime": 1470225685332,
+    "endTime": 1570225685332
+  },
+  "task": {
+    "serviceName": "MaaS-itinerary-update",
+    "event": {
+      "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+      "itineraryId": "cafe-cafe-123123129",
+      "payload": {
+        "state": "CANCELLED"
+      }
+    }
+  },
+  "stage": "dev"
 }

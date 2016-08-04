@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const Decision = require('../../lib/trip/Decision');
 const MaaSError = require('../../lib/errors/MaaSError.js');
-//const bus = require('../../lib/service-bus');
+const bus = require('../../lib/service-bus');
 
 /**
  * Runs activity task. This is typically invoked by SWF by a result of activity task appearing
@@ -30,21 +30,18 @@ function runActivityTask(event) {
     result: '???'
   };
 
-  switch (flow.task) {
-    case TripWorkFlow.TASK_CHECK_BOOKINGS:
-      console.log("runActivityTask() checking bookings for trip:", flow.trip);
+  // TODO: set right stage within the call!
+  return bus.call(flow.task.serviceName, flow.task.event)
+    .then(result => {
+      console.error("Lambda invoke success, result", result)
+      response.result = result;
+      return Promise.resolve(resonse);
+    })
+    .catch(err => {
+      console.error("Lambda invoke fail")
+      return Promise.reject(err);
+    });
 
-      // ....
-
-      response.result = `${TripWorkFlow.TASK_CHECK_BOOKINGS} was a huge success!`;
-      break;
-    default:
-      console.error("runActivityTask() got unkown task:", flow.task);
-      return Promise.reject(new MaaSError(`runActivityTask() got unkown task: ${flow.task}`, 400));
-      break;
-  }
-
-  return Promise.resolve(response);
 }
 
 module.exports.respond = function (event, callback) {
