@@ -183,7 +183,6 @@ function createAndAppendBookings(itinerary, profile) {
           return changeBookingState(booking, 'RESERVED')
             .then(() => {
               completed.push(leg);
-              leg.state = 'RESERVED';
               leg.booking = booking;
             });
         },
@@ -264,7 +263,7 @@ function bookItinerary(event) {
     .then(response => annotateItineraryState(annotatedItinerary, 'PAID'))
     .then(paidItinerary => createAndAppendBookings(paidItinerary, cachedProfile))
     .then(bookedItinerary => {
-      console.log('booked itinerary', bookedItinerary);
+      console.info('Booked itinerary', bookedItinerary);
       return saveItinerary(parseDatabaseFormat(bookedItinerary));
     })
     .then(savedItinerary => wrapToEnvelope(savedItinerary))
