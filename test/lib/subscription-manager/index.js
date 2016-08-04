@@ -183,7 +183,7 @@ describe('Update User card', function () {
   });
 });
 
-describe('List the user plan', () => {
+describe('List the user plan', function () {
   let error;
   let response;
   this.timeout(5000);
@@ -208,7 +208,7 @@ describe('List the user plan', () => {
   });
 });
 
-describe('Post a charge on the user', () => {
+describe('Post a charge on the user', function () {
   let error;
   let response;
   this.timeout(5000);
@@ -235,7 +235,7 @@ describe('Post a charge on the user', () => {
 
 });
 
-describe('Change User Plan', () => {
+describe('Change User Plan', function () {
   let error;
   let response;
   this.timeout(5000);
