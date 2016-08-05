@@ -9,4 +9,5 @@ describe('bookings endpoint', function () {
   agencyOptionsTest(require('../../../bookings/bookings-agency-options/handler.js'));
   bookingsRetrieveTest(require('../../../bookings/bookings-retrieve/handler.js'));
   require('./feature-bookings-lambda-ocrld')();
+  require('./feature-bookings-lambda-ocrld-maas')();
 });

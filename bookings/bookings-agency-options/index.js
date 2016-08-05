@@ -17,18 +17,6 @@ function validateInput(event) {
     return Promise.reject(new MaasError('Missing input agencyId', 400));
   }
 
-  if (!event.hasOwnProperty('startTime') || event.startTime === '') {
-    return Promise.reject(new MaasError('startTime querystring empty or missing', 500));
-  }
-
-  if (!event.hasOwnProperty('endTime') || event.endTime === '') {
-    return Promise.reject(new MaasError('endTime querystring empty or missing', 500));
-  }
-
-  if (!event.hasOwnProperty('from') || event.from === '') {
-    return Promise.reject(new MaasError('from querystring empty or missing', 500));
-  }
-
   return Promise.resolve();
 }
 /**

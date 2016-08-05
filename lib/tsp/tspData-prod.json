@@ -101,5 +101,32 @@
         }
       }
     }
+  },
+  "MaaS": {
+    "agencyId": "MaaS",
+    "adapter": {
+      "baseUrl": "https://tsp.dev.maas.global/maas",
+      "endpoints": {
+        "post": {
+          "book": "/bookings"
+        },
+        "get": {
+          "options": "/bookings/options"
+        }
+      },
+      "lambdas": {
+        "post": {
+          "book": "maas-transport-booking-maas-create"
+        },
+        "get": {
+          "options": "maas-transport-booking-maas-agency-options"
+        }
+      },
+      "endpointsConfig": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      }
+    }
   }
 }
