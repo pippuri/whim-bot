@@ -1,23 +1,29 @@
 {
   "name": "scheduler",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
     "excludePatterns": []
   },
   "endpoints": [],
   "events": [
     {
-      "name" : "MaaSScheduler",
+      "name": "MaaSScheduler",
       "type": "schedule",
       "config": {
         "schedule": "rate(1 minute)"
       }
     }
   ],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

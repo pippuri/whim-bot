@@ -8,6 +8,14 @@
   "timeout": 6,
   "memorySize": 1024,
   "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
   "endpoints": [],
-  "environment": "$${environment}"
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

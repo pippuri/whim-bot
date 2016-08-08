@@ -23,27 +23,6 @@
       "requestTemplates": {
         "application/json": ""
       },
-      "swaggerExport": {
-        "summary": "Retrieve all available packages in store",
-        "description": "Retrieve all public plans and addons available for purchase from MaaS store.",
-        "security": [{"Bearer":[]}],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "application/json": {},
-            "description": "Success",
-            "schema": {
-              "$ref": "schemas/v1/package.json"
-            }
-          },
-          "400": {
-            "description": "Invalid Input"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
@@ -51,7 +30,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
@@ -85,9 +64,38 @@
             "application/json": ""
           }
         }
+      },
+      "swaggerExport": {
+        "summary": "Retrieve all available packages in store",
+        "description": "Retrieve all public plans and addons available for purchase from MaaS store.",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/package.json"
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

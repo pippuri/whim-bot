@@ -1,16 +1,20 @@
 {
   "name": "auth-zendesk-jwt",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 6,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
     "excludePatterns": [],
     "cors": {
       "allowOrigin": "*",
-      "allowHeaders": ["Content-Type"]
+      "allowHeaders": [
+        "Content-Type"
+      ]
     }
   },
   "endpoints": [
@@ -19,9 +23,9 @@
       "method": "POST",
       "type": "AWS",
       "authorizationType": "none",
+      "authorizerFunction": false,
       "apiKeyRequired": false,
-      "requestParameters": {
-      },
+      "requestParameters": {},
       "requestTemplates": {
         "application/x-www-form-urlencoded": {
           "body": "$input.body"
@@ -66,5 +70,9 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

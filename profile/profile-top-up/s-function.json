@@ -12,7 +12,7 @@
     "excludePatterns": []
   },
   "endpoints": [
-{
+    {
       "path": "profile/top-up",
       "method": "POST",
       "type": "AWS",
@@ -23,27 +23,6 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
       },
-      "swaggerExport": {
-        "summary": "Add points to users profile account",
-        "description": "",
-        "security": [{"Bearer":[]}],
-        "parameter": [],
-        "responses": {
-          "200": {
-            "application/json": {},
-            "description": "Success",
-            "schema": {
-              "$ref": "schemas/v1/profile.json"
-            }
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
@@ -51,7 +30,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
@@ -85,9 +64,38 @@
             "application/json": ""
           }
         }
+      },
+      "swaggerExport": {
+        "summary": "Add points to users profile account",
+        "description": "",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameter": [],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "schemas/v1/profile.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
-    }  
+    }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

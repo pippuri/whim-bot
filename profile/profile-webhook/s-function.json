@@ -1,6 +1,7 @@
 {
   "name": "profile-webhook",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -11,7 +12,9 @@
     "excludePatterns": [],
     "cors": {
       "allowOrigin": "*",
-      "allowHeaders": ["Content-Type"]
+      "allowHeaders": [
+        "Content-Type"
+      ]
     }
   },
   "endpoints": [
@@ -20,6 +23,7 @@
       "method": "POST",
       "type": "AWS",
       "authorizationType": "none",
+      "authorizerFunction": false,
       "apiKeyRequired": false,
       "requestParameters": {
         "integration.request.path.id": "method.request.path.id"
@@ -37,7 +41,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
@@ -75,5 +79,9 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }
