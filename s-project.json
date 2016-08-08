@@ -1,10 +1,5 @@
 {
   "name": "MaaS",
-  "version": "0.1.0",
-  "profile": "serverless-v0.4.2",
-  "location": "https://github.com/maasglobal/serverless-backend/",
-  "author": "Sami Pippuri, Lauri Svan, Kenneth Falck",
-  "description": "MaaS serverless infrastructure",
   "custom": {
     "meta": {
       "name": "maas-serverless",
@@ -14,7 +9,7 @@
       "configPath": "webpack.config.js"
     },
     "client": {
-        "bucketName": "staticfiles.maas.global"
+      "bucketName": "staticfiles.maas.global"
     },
     "slack": {
       "token": "xoxb-55270714182-UY7cMnTgSTucKTnnzOvW4Gcl",
@@ -38,6 +33,11 @@
     "serverless-client-s3",
     "serverless-slack-plugin"
   ],
+  "version": "0.1.0",
+  "profile": "serverless-v0.4.2",
+  "location": "https://github.com/maasglobal/serverless-backend/",
+  "author": "Sami Pippuri, Lauri Svan, Kenneth Falck, James Nguyen",
+  "description": "MaaS serverless infrastructure",
   "swaggerExport": {
     "host": "api.dev.maas.global",
     "schemes": [

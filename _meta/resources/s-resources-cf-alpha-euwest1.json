@@ -27,7 +27,7 @@
     "IamPolicyLambda": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "${stage}-MaaS-lambda",
+        "PolicyName": "alpha-MaaS-lambda",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -36,21 +36,21 @@
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-profile-${stage}"
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-profile-alpha"
             },
             {
               "Effect": "Allow",
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-user-transaction-history-${stage}"
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-alpha"
             },
             {
               "Effect": "Allow",
               "Action": [
                 "*"
               ],
-              "Resource": "arn:aws:dynamodb:${region}:*:table/${project}-scheduled-functions-${stage}"
+              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-scheduled-functions-alpha"
             },
             {
               "Effect": "Allow",
@@ -59,7 +59,7 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
-              "Resource": "arn:aws:logs:${region}:*:*"
+              "Resource": "arn:aws:logs:eu-west-1:*:*"
             },
             {
               "Effect": "Allow",
@@ -139,7 +139,7 @@
     "IamPolicyCustomAuthorizer": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "${stage}-MaaS-customauthorizer",
+        "PolicyName": "alpha-MaaS-customauthorizer",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -150,7 +150,7 @@
                 "logs:CreateLogStream",
                 "logs:PutLogEvents"
               ],
-              "Resource": "arn:aws:logs:${region}:*:*"
+              "Resource": "arn:aws:logs:eu-west-1:*:*"
             },
             {
               "Effect": "Allow",
@@ -170,7 +170,7 @@
     },
     "DynamoUserProfile": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "${DELETION_POLICY}",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -188,12 +188,12 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "${project}-user-profile-${stage}"
+        "TableName": "MaaS-user-profile-alpha"
       }
     },
     "DynamoUserTransactionHistory": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "${DELETION_POLICY}",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -219,12 +219,12 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "${project}-user-transaction-history-${stage}"
+        "TableName": "MaaS-user-transaction-history-alpha"
       }
     },
     "DynamoScheduledFunctions": {
       "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "${DELETION_POLICY}",
+      "DeletionPolicy": "Delete",
       "Properties": {
         "AttributeDefinitions": [
           {
@@ -242,7 +242,18 @@
           "ReadCapacityUnits": 5,
           "WriteCapacityUnits": 5
         },
-        "TableName": "${project}-scheduled-functions-${stage}"
+        "TableName": "MaaS-scheduled-functions-alpha"
+      }
+    }
+  },
+  "Outputs": {
+    "IamRoleArnLambda": {
+      "Description": "ARN of the lambda IAM role",
+      "Value": {
+        "Fn::GetAtt": [
+          "IamRoleLambda",
+          "Arn"
+        ]
       }
     }
   },
