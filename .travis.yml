@@ -5,22 +5,18 @@ before_install:
 - if [[ `npm -v` != 3.9.6* ]]; then npm i  -g npm@3.9.6; fi
 - npm --version
 before_script:
+- export AWS_PROFILE=travis
 - mkdir mkdir ~/.aws && touch ~/.aws/credentials # create .aws folder with placeholder credentials file
 - echo '[profile travis]\nregion=eu-west-1' > ~/.aws/config # create .aws config file with default region
 - openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./.secret -out ~/.aws/credentials
   -d -a # populate credential file by decrypt .secret
 - sls function autoinstall -a
 - echo '{}' > _meta/variables/s-variables-test.json
-- AWS_PROFILE=travis sls meta sync -s test -f
+- sls meta sync -s test -f
 script:
 - npm test
-deploy:
-  provider: script
-  script:
-  - sh deploy-authorizer-test.sh
-  - npm run deploy-test:all
-  on:
-    branch: master
+after_success:
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "travis" ]]; then sh scripts/auto-deploy-test.sh; fi fi
 env:
   global:
     - secure: oHzmcARbCvFobUZhcta11Wbw67NMDW9IXc7QyhbUG7utodbI+Dky7EJdLTZ1m7zpoucEJvR8K6MtAZnkEa0QRz87AqdcHGRZQt4MvwlmSxr4ea9QTyxb7fbmMfBfgWVCOdas3DWC9MQGeZylS1gAisAK7SpMLWRyEJIXFa6G5hqjoYdkZsxco4eE+Yq9n4CkUqlMBZ6ruX8oLuxqXK86sz5fKVjfh9BIsHwWaOPtRs+HyGnetawk0xCqk8ZAhGY7QO65jsy3m9HVvhbiINC8Ti0RSHgWRFDiCYSyQIy039+w0EgTuWStv4tk9K3V4S4Og22zT/tq1gGZoMZw6z+Ttm24eorr4kDMs3Wi2fNDT+32VAkyv/uR9Jp2J17UrSxSa6z1AtX/IAs/i231NVGaI/rmFsmyl9EuYDTbk184WEXnKXm/GGwxanbLW81EKPd1rIbO3zKhxCX3+2MBvr7k0/Dnxf1EFfTppdjz1z+tKbadzQnM/r4hy+DcIboKFit2ix+MBgJ7YPqDnf+MpD7nnLtYPXCmkXMzJ6CS3HP6HUo2slARm4w3cA70j0R8ntVeyrizQH/ddI6E7429Nyr3szEVXysW5iMqO4QvNKqJ7Jlq/LCp9ExAk79Gz3BXevonBQJEuXb3Nsx8psDSjGKjtGuHDxdO1+g14OOqgMkUWVY= # do NOT touch this

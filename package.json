@@ -93,8 +93,8 @@
     "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/",
     "deploy-dev:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
     "deploy-prod:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
-    "deploy-test:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s test && sls endpoint deploy -a -s test",
-    "deploy-alpha:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha"
+    "deploy-test:all": "sls function deploy -a -s test && sls endpoint deploy -a -s test",
+    "deploy-alpha:all": "sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha"
   },
   "version": "0.1.0"
 }
