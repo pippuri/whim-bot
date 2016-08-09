@@ -8,17 +8,14 @@ const utils = require('../../lib/utils');
 const Promise = require('bluebird');
 
 const devTicketIssuers = [];
-
 let privateKey;
 
 if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test' || process.env.SERVERLESS_STAGE === 'alpha') {
-  privateKey = require('./keys/dev').key;
-} else if ( ( '' + process.env.SERVERLESS_STAGE.indexOf('prod') ) === 0) {
-  // TODO: add a separate prod file
-  // privateKey = require('./keys/prod').key;
-  privateKey = require('./keys/dev').key;
+  privateKey = require('./keys/dev').getKey();
+} else if ( ( '' + process.env.SERVERLESS_STAGE ).indexOf('prod') === 0) {
+  privateKey = require('./keys/prod').getKey();
 } else {
-  throw new Error( 'Unknown SERVERLESS_STAGE' );
+  throw new Error( 'Unknown SERVERLESS_STAGE when initializing tickets-create' );
 }
 
 function validateEvent( event ) {
