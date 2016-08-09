@@ -10,6 +10,11 @@ export AWS_ACCOUNT="756207178743"
 export STAGE="test"
 export LAMBDA="MaaS-auth-custom-authorizer"
 
+
+## Install awscli
+pip install --user awscli
+export PATH=$PATH:$HOME/.local/bin
+
 ## First we update the authorizer to call the right lambda function including the qualifier :xxx at the end of the function ARN
 aws apigateway update-authorizer --rest-api-id $API_ID --authorizer-id $AUTHORIZER_ID --patch-operations op=replace,path=/authorizerUri,value=arn:aws:apigateway:$AWS_REGION:lambda:path/2015-03-31/functions/arn:aws:lambda:$AWS_REGION:$AWS_ACCOUNT:function:$LAMBDA:$STAGE/invocations
 
@@ -21,6 +26,8 @@ aws apigateway get-authorizer --rest-api-id $API_ID --authorizer-id $AUTHORIZER_
 
 ## You can also check the policy against the lambda function with
 aws lambda get-policy --function-name $LAMBDA --qualifier $STAGE
+
+## re-enable fail-safe
 set -e
 
 # Deploy all endpoint + lambda to test stage on every master merge
