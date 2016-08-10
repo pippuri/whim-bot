@@ -17,203 +17,161 @@ const LAMBDA_ITINERARY_UPDATE = 'MaaS-itinerary-update';
  *
  * @return {Promise -> Decision} Decision object containing needed data to repond SWF.
  */
-function decider(data) {
 
-  const flow = new TripWorkFlow();
-  if (!flow.assertType(data.workflowType)) {
-    return Promise.reject(new Error(`decider() got unknown decision task: '${data.workflowType}'`));
+class Decider {
+
+  constructor(flow) {
+    if (!flow || !(flow instanceof TripWorkFlow)) {
+      throw new MaaSError(`Cannot create Decider without TripWorkFlow`, 400);
+    }
+    this.flow = flow;
+    this.decision = new Decision(this.flow);
+    this.now = Date.now();
   }
 
-  let lastEvent;
-
-  //
-  // First figure out past events and get the flow data out of it
-  //
-
-  try {
-    flow.taskToken = data.taskToken;
-    flow.id = data.workflowExecution.workflowId;
-
-    (() => {
-      let results, result, startedEvents;
-      for (let event of data.events) {
-        // return => all done, break => continue looping events
-        switch (event.eventType) {
-          // events that we don't care
-          case 'WorkflowExecutionCompleted':
-          case 'DecisionTaskStarted':
-          case 'DecisionTaskScheduled':
-          case 'DecisionTaskCompleted':
-          case 'LambdaFunctionStarted':
-          case 'LambdaFunctionScheduled':
-          case 'TimerStarted':
-          case 'TimerCanceled':
-            break;
-          // events that we should be worried about...
-          case 'DecisionTaskTimedOut':
-          case 'CompleteWorkflowExecutionFailed':
-          case 'WorkflowExecutionFailed':
-          case 'WorkflowExecutionTimedOut':
-          case 'CancelWorkflowExecutionFailed':
-          case 'WorkflowExecutionTerminated':
-          case 'DecisionTaskTimedOut':
-          case 'StartTimerFailed':
-          case 'LambdaFunctionTimedOut':
-          case 'ScheduleLambdaFunctionFailed':
-          case 'StartLambdaFunctionFailed':
-            console.warn(`Decider found ERROR event '${event.eventType}', ignoring...`);
-            break;
-          // events that we can handle
-          case 'WorkflowExecutionSignaled':
-            console.log(`Decider found event 'WorkflowExecutionSignaled'...`);
-            // ... TODO: check if trip being cancelled etc.
-            break;
-          case 'TimerFired':
-            console.log(`Decider found event 'TimerFired'...`);
-            // looks like there has been activity task run, check results
-            results = event.timerFiredEventAttributes;
-            console.log(`Decider found TimerFired results:`, results);
-            // since TimerFired does not carry input data for us, we need to
-            // dig out it from the older event
-            startedEvents = data.events.filter(function(event) {
-              return (event.eventId === results.startedEventId &&
-                      event.eventType === 'TimerStarted');
-            })
-            if (startedEvents.length !== 1) {
-              throw new Error("TimerFired cloud not find out startedEvent to get input data!")
-            }
-            result = JSON.parse(startedEvents[0].timerStartedEventAttributes.control)
-            flow.assignFlowInput(result);
-            lastEvent = 'TimerFired';
-            return;
-          case 'LambdaFunctionCompleted':
-            console.log(`Decider found event 'LambdaFunctionCompleted'...`);
-            // looks like there has been activity task run, check results
-            results = event.lambdaFunctionCompletedEventAttributes;
-            console.log(`Decider found LambdaFunction results:`, results);
-            result = JSON.parse(results.result);
-            flow.assignFlowInput(result.input);
-            lastEvent = 'LambdaFunctionCompleted';
-            return;
-          case 'LambdaFunctionFailed':
-            console.log(`Decider found event 'LambdaFunctionFailed'...`);
-            // looks like there has been activity task run, check results
-            results = event.lambdaFunctionFailedEventAttributes;
-            console.log(`Decider found LambdaFunctionFailed results:`, results);
-            // since LambdaFunctionFailed does not carry input data for us, we need to
-            // dig out it from the event that started the lambda
-            startedEvents = data.events.filter(function(event) {
-              return (event.eventId === results.scheduledEventId &&
-                      event.eventType === 'LambdaFunctionScheduled');
-            })
-            if (startedEvents.length !== 1) {
-              throw new Error("LambdaFunctionFailed cloud not find out startedEvent to get input data!")
-            }
-            result = JSON.parse(startedEvents[0].lambdaFunctionScheduledEventAttributes.input)
-            flow.assignFlowInput(result);
-            lastEvent = 'LambdaFunctionFailed';
-            return;
-          case 'WorkflowExecutionStarted':
-            console.log(`Decider found event 'WorkflowExecutionStarted'...`);
-            result = event.workflowExecutionStartedEventAttributes
-                     && event.workflowExecutionStartedEventAttributes.input
-                     || "{}";
-            flow.assignFlowInput(JSON.parse(result));
-            lastEvent = 'WorkflowExecutionStarted';
-            return;
-          default:
-            console.warn(`Decider found unknown event '${event.eventType}', ignoring...`);
-            break;
-        }
-      }
-    })();
-  } catch (err) {
-    return Promise.reject(new Error(`Decider CRASHED while parsing events`, err));
+  decide() {
+    return this._decide()
+      .then(this._submit)
   }
 
-  //
-  // Based on event and flow data, make a decision and send it to SWF
-  //
+  _decide() {
+    // cannot do anything if not based on itinerary..
+    if (this.flow.trip.referenceType !== 'itinerary') {
+      console.warn(`Decider: not itinerary based trip -- aborting`);
+      this.decision.abortFlow("Decider: not itinerary based trip -- aborting");
+      return Promise.resolve();
+    }
 
-  const decision = new Decision(flow);
-
-  // generate a decision
-  return new Promise((resolve, reject) => {
-    // check did we understad the situation
-    if (!lastEvent) {
-      decision.abortFlow("Decider could not make any decisions!");
-      console.warn(`Decider deciced to abort workflow, could not make any decisions`);
-      return resolve(decision);
+    // check did we understand the flow situation
+    if (!this.flow.event && !this.flow.task) {
+      console.warn(`Decider: lost flow event & task -- aborting`);
+      this.decision.abortFlow("Decider: lost flow event & task -- aborting");
+      return Promise.resolve();
     }
 
     // check if somethings have failed
-    if (lastEvent === 'LambdaFunctionFailed') {
-      decision.abortFlow("LambdaFunctionFailed -- aborting...");
-      console.warn(`Decider found that LambdaFunctionFailed -- aborting`);
-      return resolve(decision);
+    if (flow.event === 'LambdaFunctionFailed') {
+      console.warn(`Decider: LambdaFunctionFailed -- aborting`);
+      this.decision.abortFlow("Decider: LambdaFunctionFailed -- aborting");
+      return Promise.resolve();
     }
 
-    // for now, always just fetch itinerary once, then close
-    if (flow.trip.referenceType === 'itinerary') {
-      let data = {
-        identityId: flow.trip.identityId,
-        itineraryId: flow.trip.referenceId,
-        filter: ""
-      }
-      bus.call(LAMBDA_ITINERARY_RETRIEVE, data)
-        .then(result => {
-          console.log(`Decider checking itinerary...`, result);
-
-          // ... find deffered leg/booking
-
-          // lets next decision in one minute :)
-          if (lastEvent === 'WorkflowExecutionStarted') {
-            decision.scheduleTimer(Date.now() + 60000);
-            console.log(`Decider decided to schedule timer into 60 seconds`);
-          } else if (lastEvent === 'TimerFired') {
-            decision.scheduleLambdaTask(LAMBDA_ITINERARY_UPDATE, {
-              identityId: flow.trip.identityId,
-              itineraryId: flow.trip.referenceId,
-              payload: {
-                state: "CANCELLED"
-              }
-            });
-            console.log(`Decider decided to schedule lambda call`);
-          } else if (lastEvent === 'LambdaFunctionCompleted') {
-            decision.closeFlow();
-            console.log(`Decider deciced to close trip`);
-          }
-          return resolve(decision);
-        })
-        .catch(err => {
-          console.error("LAMBDA_ITINERARY_RETRIEVE fail")
-          return reject(err);
-        });
-    } else {
-      // everything else than itinerary..
-      return resolve(decision);
+    // act according flow stage
+    console.log(`Decider: Processing task '${flow.task && flow.task.name}'`);
+    switch (flow.task && flow.task.name) {
+      case TripWorkFlow.TASK_START_TRIP:
+        // process whole itinerary
+        return this._fetchItinerary()
+          .then(itinerary => this._processLegs(itinerary))
+          .then(() => {
+            // schedule trip closing into end
+            this.decision.scheduleTimedTask(leg.stopTime + (5 * 1000), TripWorkFlow.TASK_CLOSE_TRIP);
+            return Promise.resolve();
+          })
+          .catch(err => {
+            console.warn(`Decider: cannot process itinerary -- aborting`, err);
+            this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
+            return Promise.resolve();
+          })
+        break;
+      case TripWorkFlow.TASK_CLOSE_TRIP:
+        this.decision.closeFlow();
+        return Promise.resolve();
+        break;
+      case TripWorkFlow.TASK_CHECK_BOOKING:
+        // ... fetch booking and check it :)
+        console.log(`Decider: CHECKING BOOKING '${flow.task && flow.task.id}'`)
+        return Promise.resolve();
+        break;
+      default:
+        break;
     }
-  })
 
-  // then submit the decision
-  .then((decision) => {
+  }
+
+  _submit() {
+    if (!this.decision || !this.flow) {
+      throw new Error("Cannot submit decision");
+    }
     // send decision to SWF
-    return swfClient.respondDecisionTaskCompletedAsync(decision.decisionTaskCompletedParams)
+    return swfClient.respondDecisionTaskCompletedAsync(this.decision.decisionTaskCompletedParams)
       .then(data => {
-        console.log(`Decider done with workflowId '${flow.id}'`);
+        console.log(`Decider done with workflowId '${this.flow.id}'`);
         return Promise.resolve({ workFlowId: flow.id });
       })
       .catch(err => {
-        console.error(`Decider responding decision for workflowId FAILED '${flow.id}'`, err);
+        console.error(`Decider responding decision for workflowId FAILED '${this.flow.id}'`, err);
         return Promise.reject(err);
       });
-  })
+  }
+
+  /**
+   * Helper to fetch itinerary
+   */
+  _fetchItinerary() {
+    let data = {
+      identityId: this.flow.trip.identityId,
+      itineraryId: this.flow.trip.referenceId,
+      filter: ""
+    }
+    return bus.call(LAMBDA_ITINERARY_RETRIEVE, data)
+      .then(itineraries => {
+        console.log(`Decider: checking itineraries:`, itineraries);
+        // find right itinerary
+        let itinerary = itineraries.find(itinerary => {
+          return itinerary.id === this.flow.trip.referenceId
+        })
+        if (itinerary) {
+          return Promise.resolve(itinerary);
+        } else {
+          return Promise.reject(`cannot find itinerary '${id}'`);
+        }
+      })
+      .catch(err => {
+        Promise.reject(`error while fetching itinerary '${id}', err: ${err}`);
+      });
+  }
+
+  /**
+   * Helper tvaverse itinerary.
+   */
+  _processLegs(itinerary) {
+    if (!this.decision || !itinerary.legs || !this.now || !this.flow) {
+      throw new Error("Cannot parse itinerary");
+    }
+    // traverse legs
+    itinerary.legs.forEach(leg => {
+      if (leg.booking) {
+        // check leg status or schedule check before half an hour before leg starts
+        if (leg.startTime - (35 * 1000) > this.now) {
+          //_checkLegBooking(leg);
+        } else {
+          let timeout = leg.startTime - (33 * 1000);
+          this.decision.scheduleTimedTask(leg.startTime - (33 * 1000), TripWorkFlow.TASK_CHECK_BOOKING, leg.booking.id);
+          console.log(`Decider decided to schedule task '${TripWorkFlow.TASK_CHECK_BOOKING}' booking id '${leg.booking.id}' ` +
+                      `into ${new Date(timeout)}.`);
+        }
+      }
+    })
+  }
 
 }
 
 module.exports.respond = function (event, callback) {
-  return decider(event)
-    .then((response) => callback(null, response))
+
+  let flow = new TripWorkFlow();
+  let decider;
+
+  try {
+    flow.assignDecisionTaskInput(event);
+    decider = new Decider(flow);
+  } catch (err) {
+    console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
+    return callback(err);
+  }
+
+  return decider.decide()
+    .then(response => callback(null, response))
     .catch(err => {
       console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       callback(err);

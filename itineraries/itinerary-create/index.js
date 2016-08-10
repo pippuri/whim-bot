@@ -8,6 +8,7 @@ const models = require('../../lib/models/index');
 const tsp = require('../../lib/tsp/index');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
+const Trip = require('../../lib/trip');
 
 /**
  * Parse itinerary to merge-ready database format
@@ -267,7 +268,8 @@ function bookItinerary(event) {
       console.info(`Created itinerary ${bookedItinerary.id} with ${bookedItinerary.legs.length} legs.`);
       return saveItinerary(parseDatabaseFormat(bookedItinerary));
     })
-    .then(savedItinerary => wrapToEnvelope(savedItinerary))
+    .then(savedItinerary => Trip.startWithItinerary(savedItinerary))
+    .then(tripItinerary => wrapToEnvelope(tripItinerary))
     .catch(error => {
       return maasOperation.updateBalance(event.identityId, oldBalance)
         .return(Promise.reject(error));
