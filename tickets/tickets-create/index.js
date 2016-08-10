@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const utils = require('../../lib/utils');
 const Promise = require('bluebird');
 
-const devTicketIssuers = [];
 let privateKey;
 
 if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test' || process.env.SERVERLESS_STAGE === 'alpha') {
@@ -22,19 +21,16 @@ function validateEvent( event ) {
   // TODO: validation
   return 1;
 }
-function validateIssuer( event ) {
+function validatePartner( event ) {
 
-  // TODO: TicketIssuer database
-  //return models.TicketIssuer.query().first()
-  //  .where( 'issuerId', event.issuerId )
-
-  return Promise.resolve( devTicketIssuers )
-    .then( issuers => issuers.filter( i => i.issuerId === event.issuerId )[0] )
-    .then( issuer => {
-      if ( ! issuer || event.issuerKey !== issuer.issuerKey ) {
-        return Promise.reject(new MaaSError('Invalid issuer key'));
+  // TODO: TicketPartner database
+  return models.TicketPartner.query().first()
+    .where( 'partnerId', event.partnerId )
+    .then( partner => {
+      if ( ! partner || ! partner.partnerKey || event.partnerKey !== partner.partnerKey ) {
+        return Promise.reject(new MaaSError('Invalid partner key'));
       }
-      return true;
+      return partner;
     } );
 }
 
@@ -60,16 +56,23 @@ function createTicketPayload( event ) {
 
   return payload;
 }
-function storeTicketAuditLog( event, payload ) {
-  const logEntry = Object.assign( {}, payload, { meta: event.meta, issuerId: event.issuerId } );
-  console.log( 'AUDIT_LOG', logEntry );
-  // TODO: TicketAuditLog database
+function storeTicketAuditLog( event, payload, partner ) {
+  let domainId = partner.domainId;
+  if ( domainId === 'any' ) {
+    domainId = event.domainId;
+  }
+  const logEntry = { id: payload.id, payload: payload, meta: event.meta, domainId: partner.domainId, issuerId: partner.partnerId };
 
-  /*
+  console.log( 'Starting to store Audit Log:', logEntry );
+
+  // TODO: inform all of the relevant webhooks about new data in the audit log
+
   return models.TicketAuditLog.query().insert( logEntry )
-    .then( () => payload );
-    */
-  return payload;
+    .then( () => payload )
+    .catch( () => {
+      console.error( 'Failed to store to audit log:', logEntry );
+      throw new MaaSError('Could not contact database for creating the ticket', 500);
+    } );
 }
 
 function signPayload( payload ) {
@@ -80,9 +83,9 @@ module.exports.respond = (event, callback) => {
 
   return Database.init()
     .then( () => validateEvent( event ) )
-    .then( () => validateIssuer( event ) )
-    .then( () => createTicketPayload( event ) )
-    .then( payload => storeTicketAuditLog( event, payload ) )
+    .then( () => validatePartner( event ) )
+    .then( partner => [createTicketPayload( event ), partner] )
+    .spread( ( payload, partner ) => storeTicketAuditLog( event, payload, partner ) )
     .then( payload => [payload, signPayload( payload )] )
     .spread( ( payload, signedPayload ) => {
       Database.cleanup()
@@ -103,13 +106,3 @@ module.exports.respond = (event, callback) => {
         });
     });
 };
-
-devTicketIssuers.push( {
-  issuerId: 'HSL',
-  issuerKey: 'secret!',
-} );
-
-devTicketIssuers.push( {
-  issuerId: 'MAAS',
-  issuerKey: 'secret!2',
-} );

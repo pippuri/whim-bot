@@ -4,26 +4,53 @@
 
 This is a section of the API which can be used to issue, audit and allow validating tickets provided by MaaS.
 
-## Adding new ticket issuers
+## Adding new ticket partners
 
-Ticket issuers have a database table which contains the following information about each issuer:
+Ticket partners have a database table which contains the following information about each partner:
 
-* A unique ID for the issuer
-* A password which the issuer can use to interact with the ticket issuing API
-* A password which the issuer auditor can use to query the audit API
+* A unique ID for the partner
+* The domain within which the partner can either create or audit tickets
+* A password which the partner can use to interact with the ticket issuing API
+* A password which the partner auditor can use to query the audit API
 * An optional webhook URL which will be called once each time a new ticket is issued
 
-Currently there is no interface to add the issuers programmatically, so you just need to insert the new objects into the database by hand.
+Currently there is no interface to add the partners programmatically, so you just need to insert the new objects into the database by hand.
+
+## Using the audit log and the global automated audit system
+
+For MaaS business partners it is important to be able to trust that every ticket issued or revoked by MaaS is properly reported for balance settlement purposes. The solution to this is a two-fold trust but verify scheme:
+
+1. Every time MaaS issues or revokes a ticket, the information of that action is made available to the business partner through a real-time API.
+2. Every time a ticket inspector or an automated device scans a ticket, it stores the data of a valid ticket along with the scanning date and eventually sends it to the business partner for verification.
+
+Business partner can then trivially implement an automated verification system which makes sure that all of the tickets that have been scanned have actually been published by MaaS through the real-time API at the time of ticket creation.
+
+However, implementing an audited real-time API consumer like this creates a technical step for the business partner. In order to ensure that this does not place impediments on the adoption of the MaaS Ticket system, Maas provides a way to securely delay the implementation of this system.
+
+For this purpose MaaS will contract multiple trustworthy 3rd party auditing partners, who provide a global MaaS Ticket signature verification service. This service allows securely ensuring that the audit log history that MaaS provides for it's business partners is complete and has not been changed after the tickets were first issued. While doing this, the system does not expose the actual contents of the tickets to the 3rd party auditing partner.
+
+In effect this system is a real-time API that is fed to the 3rd party auditing partner and contains the following information for each globally issued MaaS Ticket creation or revocation:
+
+1. An obfuscated business partner ticket domain ID
+2. A signature of the audit log item payload
+
+The 3rd party auditing partner stores this information with a timestamp for each item received, and provides an API for the business partner to fetch the full audit log signature history using their obfuscated domain ID.
+
+The signature will be formed by creating a JWT token of the audit log item payload with the HS256 algorithm, while using the unique ID of the issued or revoked ticket as the hashing secret. Only the last part of the JWT token (the signature) is published through the API.
+
+When the auditing partner eventually implements a verification system, they can fetch the full log of the audit log item signatures from any of the 3rd party auditing partners, and verify that the audit log history that MaaS provides exactly matches the list of 3rd party signatures, with only small differences in the recorded timestamps.
+
+Ultimately using a 3rd party verification system also allows the business partner to implement the verification system as a cheap batch run instead of investing in the development of a potentially costly real-time system.
 
 ## How to do manual production deployments
 
-The repository currently contains the production secret key in an encrypted format, and these files are decrypted as part of the automated deployment process. If you for some reason need to deploy the ticket endpoints to the production environment manually, you need to procure the $TRAVIS_CI_SECRET environment variable which matches the one that is currently used for the automated deployment.
+The repository currently contains the production secret key in an encrypted format, and these files are decrypted as part of the automated deployment process. If you for some reason need to deploy the ticket endpoints to the production environment manually, you need to export the $MAAS_TICKET_DEPLOY_SECRET environment variable from production \_meta.
 
-After you have the $TRAVIS_CI_SECRET environment variable set, you can encrypt the production secrets locally by running the following commands:
+After you have the $MAAS_TICKET_DEPLOY_SECRET environment variable set, you can encrypt the production secrets locally by running the following commands:
 
 ```
-openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./tickets/tickets-create/keys/prod-latest.js.asc -out tickets/tickets-create/keys/prod-latest.js -d -a
-openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./tickets/tickets-create/keys/prod-transitional.js.asc -out tickets/tickets-create/keys/prod-transitional.js -d -a
+openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./tickets/tickets-create/keys/prod-latest.js.asc -out tickets/tickets-create/keys/prod-latest.js -d -a
+openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./tickets/tickets-create/keys/prod-transitional.js.asc -out tickets/tickets-create/keys/prod-transitional.js -d -a
 ```
 
 After this you should be safe to do deployments.
@@ -35,7 +62,7 @@ git checkout tickets/tickets-create/keys/prod-latest.js
 git checkout tickets/tickets-create/keys/prod-transitional.js
 ```
 
-## How to refresh the secret key
+## How to refresh the production secret key
 
 Currently the secret key is supplied with within the codebase, and can be refreshed using the following method:
 
@@ -70,10 +97,10 @@ cp tickets/tickets-create/keys/dev-latest.js tickets/tickets-create/keys/prod-la
 
 6. Replace the key in `tickets/tickets-create/keys/prod-latest.clear.js` with the data from `latest.key`.
 
-7. Get the $TRAVIS_CI_SECRET value and encrypt the cleartext file:
+7. Export the $MAAS_TICKET_DEPLOY_SECRET value from \_meta and encrypt the cleartext file:
 
 ```
-openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./tickets/tickets-create/keys/prod-latest.clear.js -out tickets/tickets-create/keys/prod-latest.js.asc -a
+openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./tickets/tickets-create/keys/prod-latest.clear.js -out tickets/tickets-create/keys/prod-latest.js.asc -a
 ```
 
 8. Add the public key from `latest.key.pub` to the end of `./tickets/tickets-validation-keys/index.js` like the other keys.
@@ -87,6 +114,10 @@ rm latest.key.pub latest.key tickets/tickets-create/keys/prod-latest.clear.js
 10. Commit and roll out your changes.
 
 ## TODO items for the future
+
+### Audit log endpoints
+
+Both global audit endpoint and the partner specific log endpoint needs to be implemented.
 
 ### Ticket expiry, cancellation and revocation
 

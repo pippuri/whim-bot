@@ -21,14 +21,15 @@
       "requestParameters": {},
       "requestTemplates": {
         "application/json": {
-          "issuerId": "$input.json('$.issuerId')",
-          "issuerKey": "$input.json('$.issuerKey')",
+          "partnerId": "$input.json('$.partnerId')",
+          "partnerKey": "$input.json('$.partnerKey')",
           "startTime": "$input.json('$.startTime')",
           "endTime": "$input.json('$.endTime')",
           "from": "$input.json('$.from')",
           "to": "$input.json('$.to')",
           "ownerName": "$input.json('$.ownerName')",
           "custom": "$input.json('$.custom')",
+          "domainId": "$input.json('$.domainId')",
           "meta": "$input.json('$.meta')"
         }
       },
