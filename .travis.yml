@@ -10,7 +10,6 @@ before_script:
 - echo '[profile travis]\nregion=eu-west-1' > ~/.aws/config # create .aws config file with default region
 
 # populate credential file by decrypt .secret / .secret2
-- if [ -s ~/.aws/credentials ]; then echo "Valid" ; else echo "Not valid"; fi
 - if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET_JUNIOR" -in ./.secret2 -out ~/.aws/credentials -d -a && echo "I ran"; fi
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./.secret -out ~/.aws/credentials -d -a && echo "I ran"; fi
 
