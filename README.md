@@ -334,6 +334,7 @@ git push origin <local_branch_name>
 ```
 
 #### Git stash alternative
+
 Some time `git stash` behave in an unexpected way, and it is risky if you move to another branches without stashing or commiting, which could turn out to be a mess.
 This method works better than a `git stash`
 
@@ -341,3 +342,18 @@ This method works better than a `git stash`
 2. Move to other branches as you want `git checkout <branch-2>`
 3. When you want to get back and working with wip branch, `git checkout <branch-1>`
 4. Do `git reset HEAD^` to uncommit the previous WIP commit and continue working
+
+### Making releases
+
+We tag every sprint release to have a reference point between old and new production releases.
+The tags follow [semver 2.0 format](http://semver.org/), but semantically the major and minor versions refer to our roadmap in JIRA and the suffix changes every sprint. A sample: `0.1-sprint2`. Create new tags as follows:
+
+1. Make sure that you're in the commit that refers to the sprint results
+2. Create the tag and push it upstream
+
+```
+git tag -a 0.1-sprint2
+git push --tags upstream
+```
+
+3. Repeat the procedure to the other repositories you may have (app, TSPs etc.).
