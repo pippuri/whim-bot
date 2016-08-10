@@ -20,7 +20,7 @@ function runActivityTask(event) {
   let flow;
   try {
     flow = new TripWorkFlow();
-    flow.assignFlowInput(event);
+    flow.assignEventInputData(event);
   } catch(err) {
     return Promise.reject(err);
   }

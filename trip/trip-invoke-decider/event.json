@@ -26,7 +26,7 @@
       "workflowExecutionStartedEventAttributes": {
         "childPolicy": "TERMINATE",
         "executionStartToCloseTimeout": "3599",
-        "input": "{\"trip\":{\"identityId\":\"eu-west-1:00000000-cafe-cafe-cafe-000000000000\",\"referenceId\":\"cafe-cafe-123123124\",\"referenceType\":\"itinerary\",\"startTime\":1470225685332,\"endTime\":1570225685332},\"stage\":\"dev\"}",
+        "input": "{\"trip\":{\"identityId\":\"eu-west-1:00000000-cafe-cafe-cafe-000000000000\",\"referenceId\":\"cafe-cafe-123123124\",\"referenceType\":\"itinerary\",\"startTime\":1470225685332,\"endTime\":1570225685332},\"stage\":\"dev\",\"task\":{\"name\":\"start-start\"}}",
         "lambdaRole": "arn:aws:iam::756207178743:role/MaaS-dev-r-IamRoleLambda-S27Y0PCCZ41I",
         "parentInitiatedEventId": 0,
         "taskList": {
