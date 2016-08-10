@@ -13,7 +13,7 @@
   },
   "endpoints": [
     {
-      "path": "tickets/validation-keys",
+      "path": "tickets-validation-keys",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "NONE",
