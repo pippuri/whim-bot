@@ -94,7 +94,8 @@
     "deploy-dev:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
     "deploy-prod:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
     "deploy-test:all": "sls function deploy -a -s test && sls endpoint deploy -a -s test",
-    "deploy-alpha:all": "sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha"
+    "deploy-alpha:all": "sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
+    "release-alpha": "git checkout master && git pull upstream master && git checkout -b alpha && git rebase master && git push upstream alpha:alpha"
   },
   "version": "0.1.0"
 }
