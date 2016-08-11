@@ -1,7 +1,7 @@
 {
-  "name": "tickets-create",
+  "name": "tickets-audit-log",
   "version": "0.0.1",
-  "description": "MaaS ticket creation endpoint",
+  "description": "MaaS ticket audit log endpoint",
   "author": "Antti Vähäkotamäki",
   "license": "UNLICENSED",
   "private": true,
