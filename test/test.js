@@ -5,10 +5,38 @@ const Templates = (new (require('serverless'))()).classes.Templates;
 function loadEnvironment() {
 
   let values;
+  let loadingError;
+
   try {
+    loadingError = false;
     values = require('../_meta/variables/s-variables-dev.json');
   } catch (e) {
     console.log('Failed to read _meta/variables/s-variables-dev.json');
+    loadingError = true;
+  }
+
+  if (loadingError) {
+    try {
+      loadingError = false;
+      values = require('../_meta/variables/s-variables-test.json');
+    } catch (e) {
+      console.log('Failed to read _meta/variables/s-variables-test.json');
+      loadingError = true;
+    }
+  }
+
+  if (loadingError) {
+    try {
+      loadingError = false;
+      values = require('../_meta/variables/s-variables-alpha.json');
+    } catch (e) {
+      console.log('Failed to read _meta/variables/s-variables-alpha.json');
+      loadingError = true;
+    }
+  }
+
+  if (loadingError) {
+    throw Error('Unable to read any s-variables json file');
   }
 
   const variables = (new Templates(values, '../s-templates.json')).toObject();
