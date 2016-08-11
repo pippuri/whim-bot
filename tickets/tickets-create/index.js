@@ -18,7 +18,17 @@ if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 
 }
 
 function validateEvent( event ) {
-  // TODO: validation
+  if (!event.partnerId || event.partnerId === '') {
+    return Promise.reject(new MaaSError('Missing partnerId', 400));
+  }
+  if (!event.partnerKey || event.partnerKey === '') {
+    return Promise.reject(new MaaSError('Missing partnerKey', 400));
+  }
+
+  if ( event.meta && ! typeof( event.meta ) !== 'object' ) {
+    return Promise.reject(new MaaSError('Optional meta parameter must be an object', 400));
+  }
+
   return 1;
 }
 function validatePartner( event ) {
