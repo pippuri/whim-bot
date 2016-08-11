@@ -80,7 +80,7 @@ class Decider {
             return Promise.resolve();
           });
       case TripWorkFlow.TASK_CLOSE_TRIP:
-        console.log(`Decider: CLOSING TRIP '${this.flow.task && this.flow.task.params}'`);
+        console.log(`Decider: CLOSING TRIP WORK FLOW '${this.flow.id}'`);
         this.decision.closeFlow();
         return Promise.resolve();
       case TripWorkFlow.TASK_CHECK_BOOKING:
