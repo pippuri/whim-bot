@@ -25,8 +25,16 @@ function validateEvent( event ) {
     return Promise.reject(new MaaSError('Missing partnerKey', 400));
   }
 
-  if ( event.meta && ! typeof( event.meta ) !== 'object' ) {
+  if ( event.meta && typeof( event.meta ) !== 'object' ) {
     return Promise.reject(new MaaSError('Optional meta parameter must be an object', 400));
+  }
+
+  if (event.startTime && isNaN( event.startTime ) ) {
+    return Promise.reject(new MaaSError('Input startTime should be an epoch', 400));
+  }
+
+  if (event.endTime && isNaN( event.endTime ) ) {
+    return Promise.reject(new MaaSError('Input endTime should be an epoch', 400));
   }
 
   return 1;
