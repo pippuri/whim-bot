@@ -15,11 +15,11 @@ before_script:
 
 - sls function autoinstall -a
 
-# get variable from s3 alpha file -> alpha stage
-- if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f; fi
-
 # get variable from s3 test file -> continuous deployment to test stage
-- if [[ $TRAVIS_BRANCH == "master" ]]; then echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f; fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f; fi fi
+
+# get variable from s3 alpha file -> alpha stage
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f; fi fi
 
 # get variable from s3 test file -> for PRs
 - if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f; fi
