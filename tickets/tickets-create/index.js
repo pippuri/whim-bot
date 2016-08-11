@@ -23,7 +23,6 @@ function validateEvent( event ) {
 }
 function validatePartner( event ) {
 
-  // TODO: TicketPartner database
   return models.TicketPartner.query().first()
     .where( 'partnerId', event.partnerId )
     .then( partner => {
@@ -61,7 +60,7 @@ function storeTicketAuditLog( event, payload, partner ) {
   if ( domainId === 'any' ) {
     domainId = event.domainId;
   }
-  const logEntry = { id: payload.id, payload: payload, meta: event.meta, domainId: partner.domainId, issuerId: partner.partnerId };
+  const logEntry = { id: payload.id, payload: payload, meta: event.meta, domainId: partner.domainId, partnerId: partner.partnerId };
 
   console.log( 'Starting to store Audit Log:', logEntry );
 

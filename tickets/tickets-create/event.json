@@ -1,6 +1,6 @@
 {
-  "issuerId": "HSL",
-  "issuerKey": "secret!",
+  "partnerId": "HSL",
+  "partnerKey": "secret!",
   "startTime": 1480314671,
   "endTime": 1480315671,
   "from": "Ludviginkatu 6, Helsinki",
