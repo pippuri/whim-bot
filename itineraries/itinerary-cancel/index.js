@@ -1,109 +1,215 @@
 'use strict';
 
 const Promise = require('bluebird');
-const allowedFields = require('../../lib/models/editableFields.json');
-const models = require('../../lib/models/index');
+const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
-const _ = require('lodash');
-const stateMachine = require('../../lib/states/index').StateMachine;
+const tsp = require('../../lib/tsp/index');
+const stateMachine = require('../../lib/states').StateMachine;
+const utils = require('../../lib/utils');
 const Database = models.Database;
 
-const allowedItineraryFields = allowedFields.Itinerary;
-const returnFields = ['id'];
+function validateStateChanges(itinerary) {
+  // Itinerary
+  if (!stateMachine.isStateValid('Itinerary', itinerary.state, 'CANCELLED')) {
+    const message = `Itinerary ${itinerary.id}: State transition from ${itinerary.state} to CANCELLED not permitted.`;
+    return Promise.reject(new MaaSError(message, 400));
+  }
 
-function updateItinerary(event) {
+  // Legs
+  for (let i = 0; i < itinerary.legs.length; i++) {
+    const leg = itinerary.legs[i];
+    const booking = leg.booking;
 
+    if (!stateMachine.isStateValid('Leg', leg.state, 'CANCELLED')) {
+      const message = `Itinerary ${itinerary.id}, Leg ${leg.id}: State transition from ${leg.state} to CANCELLED not permitted`;
+      return Promise.reject(new MaaSError(message, 400));
+    }
+
+    // Not all the legs have a booking
+    if (typeof booking === typeof undefined || booking === null) {
+      continue;
+    }
+
+    // Nested booking
+    if (!stateMachine.isStateValid('Booking', booking.state, 'CANCELLED')) {
+      const message = `Itinerary ${itinerary.id}, Leg ${leg.id}, Booking ${booking.id}: State transition from ${leg.state} to CANCELLED not permitted`;
+      return Promise.reject(new MaaSError(message, 400));
+    }
+  }
+
+  return Promise.resolve(itinerary);
+}
+
+/**
+ * Cancels a booking; performs a state check, delegates to TSP, and updates the state in the DB.
+ * In case of success, resolves with the new state; in case of failure, rejects with an error.
+ *
+ * @return an Promise that resolves into an array of the states of bookings { id, state }
+ */
+function cancelBooking(booking) {
+  console.info(`Cancel booking ${booking.id}, agencyId ${booking.leg.agencyId}`);
+
+  return tsp.cancelBooking(booking)
+    .catch(error => {
+      console.warn(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, cancellation failed, ${error.message}, ${JSON.stringify(error)}`);
+      console.warn(error.stack);
+      return Promise.reject(error);
+    })
+    .then(() => {
+      console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancelled from the TSP side`);
+
+      return [
+        models.Booking.query()
+          .patch({ state: 'CANCELLED' })
+          .where('id', booking.id),
+        stateMachine.changeState('Booking', booking.id, booking.state, 'CANCELLED'),
+      ];
+    })
+    .spread((updateCount, _) => {
+      console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, state updated.`);
+      if (updateCount === 0) {
+        return Promise.reject(new MaaSError(`Booking ${booking.id} failed to update: Not found`, 404));
+      }
+
+      return Promise.resolve('CANCELLED');
+    });
+}
+
+/**
+ * Tries to cancel an individual leg. Performs a state check, delegates to
+ * booking cancellation, and updates the state in the DB.
+ *
+ * In case of failing to cancel the nested booking, resets the leg state to CANCELLED_WITH_ERRORS.
+ *
+ * @return a Promise, resolving to 'CANCELLED' or 'CANCELLED_WITH_ERRORS', or rejected in case of failed update
+ */
+function cancelLeg(leg) {
+  console.info(`Cancel leg ${leg.id}`);
+
+  return new Promise((resolve, reject) => {
+    const booking = leg.booking;
+
+    // In case of missing booking, resolve with the same value that a succesful booking would
+    if (typeof booking === typeof undefined || booking === null) {
+      resolve('CANCELLED');
+    }
+
+    // Cancel the booking, but recover from the errors.
+    cancelBooking(booking)
+      .then(success => {
+        console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancelled`);
+        resolve('CANCELLED');
+      }, error => {
+        console.warn(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancellation failed`);
+        console.warn(error.message, error.stack);
+        resolve('CANCELLED_WITH_ERRORS');
+      });
+  })
+  .then(newState => {
+    // Update the leg
+    return stateMachine.changeState('Leg', leg.id, leg.state, newState)
+      .then(() => {
+        return models.Leg.query()
+          .patch({ state: newState })
+          .where('id', leg.id);
+      })
+      .then(() => Promise.resolve(newState));
+  });
+}
+
+/**
+ * Tries to cancel an itinerary. Performs state check, delegates to individual
+ * leg cancaellations, and updates the state in the DB.
+ *
+ * In case of failing to cancel one or more of the children, sets its state to
+ * CANCELLED_WITH_ERRORS.
+ */
+function cancelItinerary(itinerary) {
+  console.info(`Cancel itinerary ${itinerary.id}`);
+
+  // First cancel the legs, then investigate their states to determine whether
+  // to resolve with cancelled with errors or normal cancel
+  return Promise.map(itinerary.legs, leg => cancelLeg(leg))
+    .then(newStates => {
+      const hasErrors = newStates.some(state => state !== 'CANCELLED');
+      const newState = hasErrors ? 'CANCELLED_WITH_ERRORS' : 'CANCELLED';
+
+      return [
+        newState,
+        stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, newState),
+      ];
+    })
+    .spread((newState, _) => {
+      return models.Itinerary
+        .query()
+        .patchAndFetchById(itinerary.id, { state: 'CANCELLED' })
+        .eager('[legs, legs.booking]');
+    });
+}
+
+function validateInput(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
     return Promise.reject(new MaaSError('Missing identityId input', 401));
   }
 
-  if (!event.hasOwnProperty('itineraryId') || !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/g)) {
-    return Promise.reject(new MaaSError('Missing or invalid itineraryId'));
+  // TODO Stricter itineraryId validation
+  if (!event.hasOwnProperty('itineraryId') || event.itineraryId === '') {
+    return Promise.reject(new MaaSError('Missing or invalid itineraryId', 400));
   }
 
-  if (!event.hasOwnProperty('payload') || Object.keys('payload').length === 0) {
-    return Promise.reject(new MaaSError('Payload empty. No update was processed'));
-  }
+  return Promise.resolve(event);
+}
 
-  // Compare input key vs allowed keys
-  Object.keys(event.payload).map(key => { // eslint-disable-line consistent-return
-    if (!_.includes(allowedItineraryFields, key.toLowerCase())) {
-      return Promise.reject(new MaaSError(`Request contains unallowed field(s), allow only [${allowedItineraryFields}]`));
-    }
-  });
-
-  // Add modified time
-  const modifiedTime = new Date().getTime();
-  event.payload.modified = new Date(modifiedTime).toISOString();
-
-  // Get old state
-  return Database.knex.select()
-    .from('Itinerary')
-    .where('id', event.itineraryId)
-    .then(_itinerary => {
-      const itinerary = _itinerary[0];
-      const oldState = _itinerary.state;
-
-      // Handle item not exist
+function fetchItinerary(itineraryId, identityId) {
+  // Get the old state
+  return models.Itinerary.query()
+    .findById(itineraryId)
+    .eager('[legs, legs.booking]')
+    .then(itinerary => {
+      // Handle not found
       if (typeof itinerary === typeof undefined) {
-        return Promise.reject(new MaaSError(`No item found for itineraryId ${event.itineraryId}, item might not exist`, 500));
+        return Promise.reject(new MaaSError(`No item found with itineraryId ${event.itineraryId}`, 404));
       }
 
-      // Handle item not having oldState
-      if (typeof oldState === typeof undefined) {
-        return Promise.reject(new MaaSError(`oldState not found for itineraryId ${event.itineraryId}, item might not exist`, 500));
+      // Handle item not user's itinerary
+      if (itinerary.identityId !== identityId) {
+        return Promise.reject(new MaaSError(`Itinerary ${event.itineraryId} not owned by the user`, 403));
       }
 
-      // Double check if oldState of the responded item is still valid
-      if (event.payload.state || !stateMachine.isStateValid('Itinerary', oldState, event.payload.state)) {
-        return Promise.reject('State unavailable');
-      }
-      const promiseQueue = [];
-
-      // Queue up state change process
-      if (event.payload.state) {
-        promiseQueue.push(stateMachine.changeState('Itinerary', event.itineraryId, oldState, event.payload.state));
-        delete event.payload.state;
-      }
-
-      // Queue up other fields update
-      promiseQueue.push(
-        Database.knex.update(event.payload, returnFields.concat(Object.keys(event.payload)))
-          .into('Itinerary')
-          .where('id', event.itineraryId)
-      );
-
-      // Process the queue
-      return Promise.all(promiseQueue);
-    })
-    .then(response => {
-      if (response.length === 0) {
-        return Promise.reject(new MaaSError(`Itinerary id ${event.bookingId} not updated, server error`, 500));
-      } else if (response.length !== 1 || response.length !== 2) { // There could be maximum 2 task queued which is state change task, and item update task
-        return Promise.reject(new MaaSError(`Task queue for id ${event.bookingId} failed, if payload contained 'state' input, please check if its validity!`, 500));
-      }
-      console.warn(response);
-
-      // Update state will always be the first task on the queue
-      // Update others will always be the last.
-      const booking = response[response.length - 1];
-      return booking;
+      return Promise.resolve(itinerary);
     });
+}
+
+function formatResponse(itinerary) {
+  return Promise.resolve({
+    itinerary: utils.removeNulls(itinerary),
+    maas: {},
+  });
 }
 
 module.exports.respond = (event, callback) => {
   return Database.init()
-    .then(() => updateItinerary(event))
+    .then(() => validateInput(event))
+    .then(() => fetchItinerary(event.itineraryId, event.identityId))
+    .then(itinerary => validateStateChanges(itinerary))
+    .then(itinerary => cancelItinerary(itinerary))
+    .then(formatResponse)
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
       // Uncaught, unexpected error
       Database.cleanup()
       .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
+
         callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
       });
     });

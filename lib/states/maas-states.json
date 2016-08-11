@@ -14,14 +14,18 @@
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
-      "transition": ["ACTIVATED", "CANCELLED"]
+      "transition": ["ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "ACTIVATED": {
       "description": "Booking is activated. Can be CANCELLED and will go EXPIRED if not",
-      "transition": ["CANCELLED", "EXPIRED", "ACTIVATED"]
+      "transition": ["EXPIRED", "ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "CANCELLED": {
-      "description": "Booking is cancelled, will be reconsiled, or directly RESOLVED base on terms",
+      "description": "Booking is cancelled, will be reconciled, or directly RESOLVED based on terms",
+      "transition": ["RECONCILING", "RESOLVED"]
+    },
+    "CANCELLED_WITH_ERRORS": {
+      "description": "Booking is cancelled with errors, will be reconciled, or directly RESOLVED based on terms",
       "transition": ["RECONCILING", "RESOLVED"]
     },
     "EXPIRED": {
@@ -29,11 +33,11 @@
       "transition": ["RECONCILING"]
     },
     "RECONCILING": {
-      "description": "Issusing for a refund due to a CANCELLED or ABANDONED booking.",
+      "description": "Issusing for a refund due to a CANCELLED or FINISHED booking.",
       "transition": ["RESOLVED", "REJECTED"]
     },
     "RESOLVED": {
-      "description": "The reconsilation has been RESOLVED.",
+      "description": "The reconcilation has been RESOLVED.",
       "transition": []
     },
     "REJECTED": {
@@ -48,18 +52,22 @@
     },
     "PLANNED": {
       "description": "The leg has been planned and saved.",
-      "transition": ["PAID", "CANCELLED", "ACTIVATED"]
+      "transition": ["PAID", "ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "PAID": {
       "description": "The leg has been PAID",
-      "transition": ["ACTIVATED", "CANCELLED"]
+      "transition": ["ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "ACTIVATED": {
       "description": "The leg has been ACTIVATED",
-      "transition": ["ABANDONED", "FINISHED"]
+      "transition": ["ACTIVATED", "FINISHED", "CANCELLED", "CANCELLED_WITH_ERRORS" ]
     },
     "CANCELLED": {
       "description": "The leg has been CANCELLED",
+      "transition": []
+    },
+    "CANCELLED_WITH_ERRORS": {
+      "description": "The leg has been CANCELLED WITH ERRORS",
       "transition": []
     },
     "FINISHED": {
@@ -78,22 +86,22 @@
     },
     "PAID": {
       "description": "The Itinerary has been booked",
-      "transition": ["ACTIVATED", "CANCELLED"]
+      "transition": ["ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "ACTIVATED": {
       "description": "The Itinerary has been ACTIVATED",
-      "transition": ["FINISHED", "ABANDONED"]
+      "transition": ["FINISHED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "CANCELLED": {
       "description": "The Itinerary has been CANCELLED",
       "transition": []
     },
-    "FINISHED": {
-      "description": "The Itinerary has been FINISHED",
+    "CANCELLED": {
+      "description": "The Itinerary has been CANCELLED WITH ERRORS",
       "transition": []
     },
-    "ABANDONED": {
-      "description": "The Itinerary has been ABANDONED, one or more leg has been ABANDONED",
+    "FINISHED": {
+      "description": "The Itinerary has been FINISHED",
       "transition": []
     }
   }
