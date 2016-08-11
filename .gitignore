@@ -41,6 +41,8 @@ admin.env
 _meta/_tmp
 _meta/variables/s-variables-dev.json
 _meta/variables/s-variables-prod.json
+_meta/variables/s-variables-test.json
+_meta/variables/s-variables-alpha.json
 _serverless_handler.js
 
 #VIM STUFF
