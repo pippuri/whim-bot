@@ -5,37 +5,24 @@ const Templates = (new (require('serverless'))()).classes.Templates;
 function loadEnvironment() {
 
   let values;
-  let loadingError;
+  let loading = true;
+  const stages = ['dev', 'test', 'alpha'];
 
-  try {
-    loadingError = false;
-    values = require('../_meta/variables/s-variables-dev.json');
-  } catch (e) {
-    console.log('Failed to read _meta/variables/s-variables-dev.json');
-    loadingError = true;
-  }
-
-  if (loadingError) {
-    try {
-      loadingError = false;
-      values = require('../_meta/variables/s-variables-test.json');
-    } catch (e) {
-      console.log('Failed to read _meta/variables/s-variables-test.json');
-      loadingError = true;
+  stages.forEach(stage => {
+    if (loading) {
+      try {
+        loading = false;
+        values = require(`../_meta/variables/s-variables-${stage}.json`);
+        console.log(`Using ${stage} variables`);
+      } catch (e) {
+        console.log(`Failed to read _meta/variables/s-variables-${stage}.json`);
+        loading = true;
+      }
     }
-  }
+  });
 
-  if (loadingError) {
-    try {
-      loadingError = false;
-      values = require('../_meta/variables/s-variables-alpha.json');
-    } catch (e) {
-      console.log('Failed to read _meta/variables/s-variables-alpha.json');
-      loadingError = true;
-    }
-  }
-
-  if (loadingError) {
+  // After trying to load files with all stages, throw Error
+  if (loading) {
     throw Error('Unable to read any s-variables json file');
   }
 
