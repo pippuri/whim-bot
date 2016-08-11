@@ -5,11 +5,12 @@ const AWS = require('aws-sdk');
 const moment = require('moment');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
 
-const LAMBDA_TRIP_INVOKE_DECIDER = 'MaaS-trip-invoke-decider'
+const LAMBDA_TRIP_INVOKE_DECIDER = 'MaaS-trip-invoke-decider';
 
 /**
  * Makes a polling call to AWS SFW. The call usually blocks for 70 seconds or until a decition
@@ -24,12 +25,12 @@ function pollForDecisionTasks(params) {
 
   if (!params || !params.maxBlockingTimeInSec) {
     params.maxBlockingTimeInSec = 100;
-    console.log("pollForDecisionTasks() defaulting maxBlockingTimeInSec into 100 sec");
+    console.log('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 100 sec');
   }
   if (typeof(params.maxBlockingTimeInSec) !== 'number'
       || params.maxBlockingTimeInSec < 100
       || params.maxBlockingTimeInSec > 300) {
-    return Promise.reject(new MaaSError(`maxBlockingTimeInSec need to be 100..300 (sec)`, 400));
+    return Promise.reject(new MaaSError('maxBlockingTimeInSec need to be 100..300 (sec)', 400));
   }
 
   const pollingStartTime = Date.now();
@@ -43,11 +44,11 @@ function pollForDecisionTasks(params) {
     // current execution time (ms) > maxRunTime timeout (sec) - pollForDecisionTaskAsync timeout (sec)
     console.log(`pollForDecisionTasks() polling was started ${moment().diff(pollingStartTime, 'seconds')} seconds ago`);
     if (Date.now() - pollingStartTime > (params.maxBlockingTimeInSec - 70) * 1000) {
-      console.log("pollForDecisionTasks() reaching maxBlockingTimeInSec, exiting");
+      console.log('pollForDecisionTasks() reaching maxBlockingTimeInSec, exiting');
       return Promise.resolve();
     }
 
-    console.log("pollForDecisionTasks() waiting a decision from SWF...");
+    console.log('pollForDecisionTasks() waiting a decision from SWF...');
 
     const flow = new TripWorkFlow();
 
@@ -62,20 +63,20 @@ function pollForDecisionTasks(params) {
           return nextPoll();
         }
 
-        console.log("pollForDecisionTasks() invoking decider to process inbound decision task...");
+        console.log('pollForDecisionTasks() invoking decider to process inbound decision task...');
         bus.call(LAMBDA_TRIP_INVOKE_DECIDER, data)
           .then(result => {
             console.log(`pollForDecisionTask() decider handled workflowId '${result.workFlowId}'`);
           })
           .catch(err => {
-            console.error(`pollForDecisionTask() decider FAILED; `, err);
+            console.error('pollForDecisionTask() decider FAILED; ', err);
           });
 
         return nextPoll();
 
       })
       .catch(err => {
-        console.error("pollForDecisionTask() polling or decision error", err);
+        console.error('pollForDecisionTask() polling or decision error', err);
         return Promise.reject(err);
       });
   }

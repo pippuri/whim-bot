@@ -2,8 +2,6 @@
 
 const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
-const Decision = require('../../lib/trip/Decision');
-const MaaSError = require('../../lib/errors/MaaSError.js');
 const bus = require('../../lib/service-bus');
 
 /**
@@ -21,24 +19,24 @@ function runActivityTask(event) {
   try {
     flow = new TripWorkFlow();
     flow.assignEventInputData(event);
-  } catch(err) {
+  } catch (err) {
     return Promise.reject(err);
   }
 
   const response = {
     input: flow.flowInput,
-    result: '???'
+    result: '???',
   };
 
   // TODO: set right stage within the call!
   return bus.call(flow.task.serviceName, flow.task.event)
     .then(result => {
-      console.error("Lambda invoke success, result", result)
+      console.error('Lambda invoke success, result', result);
       response.result = result;
-      return Promise.resolve(resonse);
+      return Promise.resolve(response);
     })
     .catch(err => {
-      console.error("Lambda invoke fail")
+      console.error('Lambda invoke fail');
       return Promise.reject(err);
     });
 
@@ -46,10 +44,9 @@ function runActivityTask(event) {
 
 module.exports.respond = function (event, callback) {
   return runActivityTask(event)
-    .then((response) => callback(null, response))
+    .then(response => callback(null, response))
     .catch(err => {
       console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       callback(err);
     });
 };
-
