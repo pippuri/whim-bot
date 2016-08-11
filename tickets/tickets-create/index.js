@@ -18,10 +18,10 @@ if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 
 }
 
 function validateEvent( event ) {
-  if (!event.partnerId || event.partnerId === '') {
+  if (!event.partnerId) {
     return Promise.reject(new MaaSError('Missing partnerId', 400));
   }
-  if (!event.partnerKey || event.partnerKey === '') {
+  if (!event.partnerKey) {
     return Promise.reject(new MaaSError('Missing partnerKey', 400));
   }
 
