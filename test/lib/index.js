@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Library', () => {
-  require('./business-rule-engine/index.js');
-  require('./subscription-manager/index.js');
+  require('./business-rule-engine');
+  require('./subscription-manager');
+  require('./utils');
 });
