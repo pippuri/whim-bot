@@ -42,7 +42,7 @@ function validateEvent( event ) {
 function validatePartner( event ) {
 
   return models.TicketPartner.query().first()
-    .where( 'partnerId', event.partnerId )
+    .where( 'partnerId', '=', event.partnerId )
     .then( partner => {
       if ( ! partner || ! partner.partnerKey || event.partnerKey !== partner.partnerKey ) {
         return Promise.reject(new MaaSError('Invalid partner key'));
