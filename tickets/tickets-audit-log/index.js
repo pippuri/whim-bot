@@ -32,7 +32,7 @@ function validatePartner( event ) {
   return models.TicketPartner.query().first()
     .where( 'partnerId', '=', event.partnerId )
     .then( partner => {
-      if ( ! partner || ! partner.auditorKey || event.auditorKey !== partner.auditorKey ) {
+      if ( ! partner || ! partner.auditorKey || event.auditorKey !== partner.auditorKey || partner.domainId === 'any' ) {
         return Promise.reject(new MaaSError('Invalid auditor key', 400));
       }
       return Promise.resolve(partner);
