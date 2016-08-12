@@ -17,14 +17,22 @@ module.exports.respond = (event, callback) => {
 
 publicKeysMap.dev.push( {
   validityStartMilliEpoch: 0,
+  validityEndMilliEpoch: 1470748367398,
+  publicKey: `-----BEGIN PUBLIC KEY-----
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhANLriSaQ1mE4QSRusJ8AxqDNc98Wuvsd
+VK7o2j4ST3Yvh5amStJPpmYfzRJ5vo3bzU0rRcZhO9ez9YsO9hP1QGGYnjTqKuSN
+eMAKFhJ6Xew88q8OkvxMvsZbtQwQYTs0QwIDAQAB
+-----END PUBLIC KEY-----`,
+} );
+
+publicKeysMap.dev.push( {
+  validityStartMilliEpoch: 1470748367398,
   validityEndMilliEpoch: 1735682400000, // 2025
-  publicKey: [
-    '-----BEGIN PUBLIC KEY-----',
-    'MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhANLriSaQ1mE4QSRusJ8AxqDNc98Wuvsd',
-    'VK7o2j4ST3Yvh5amStJPpmYfzRJ5vo3bzU0rRcZhO9ez9YsO9hP1QGGYnjTqKuSN',
-    'eMAKFhJ6Xew88q8OkvxMvsZbtQwQYTs0QwIDAQAB',
-    '-----END PUBLIC KEY-----',
-  ].join('\n'),
+  publicKey: `-----BEGIN PUBLIC KEY-----
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAPad/1cNq1sZr+Uxt6mNJGpbrxNNUeAd
+7Mdwj/NLShpfZalJQKfiDuqmI2MYroRzkqsLqgvAuDuo/d0CGOTXRzNdrAVml5oR
+xd75bQDz1BBO0yamLRw4B7/jatPxZZM0awIDAQAB
+-----END PUBLIC KEY-----`,
 } );
 
 publicKeysMap.prod.push( {
