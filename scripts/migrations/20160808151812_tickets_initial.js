@@ -20,7 +20,18 @@ exports.up = function (knex, Promise) {
     })
     .then( () => {
       if ( ( '' + process.env.SERVERLESS_STAGE ).indexOf('prod') === 0 ) {
-        return Promise.resolve();
+        return knex('TicketPartner').insert([
+          {
+            partnerId: 'HSL',
+            domainId: 'HSL',
+            partnerKey: process.env.INITIAL_HSL_TICKET_PASS,
+          },
+          {
+            partnerId: 'MAAS',
+            domainId: 'MAAS',
+            partnerKey: process.env.INITIAL_MAAS_TICKET_PASS,
+          },
+        ]);
       }
       // Insert the test partners to the database if not in production
       return knex('TicketPartner').insert([
