@@ -1,6 +1,7 @@
 {
   "name": "auth-custom-authorizer",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -13,8 +14,11 @@
   "custom": {
     "excludePatterns": []
   },
-  "endpoints": [
-  ],
+  "endpoints": [],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

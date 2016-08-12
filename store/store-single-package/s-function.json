@@ -25,10 +25,60 @@
       "requestTemplates": {
         "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"plan\"}"
       },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^403.*": {
+          "statusCode": "403",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "[^0-9].*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      },
       "swaggerExport": {
         "summary": "Retrieve one available plan",
         "description": "Retrieve one plan available for public purchase from MaaS store",
-        "security": [{"Bearer":[]}],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -53,6 +103,20 @@
             "description": "Unauthorized"
           }
         }
+      }
+    },
+    {
+      "path": "store/packages/addon/{id}",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": false,
+      "requestParameters": {
+        "integration.request.path.id": "method.request.path.id"
+      },
+      "requestTemplates": {
+        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"addon\"}"
       },
       "responses": {
         "^400.*": {
@@ -61,7 +125,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
@@ -99,25 +163,15 @@
             "application/json": ""
           }
         }
-      }
-    },
-    {
-      "path": "store/packages/addon/{id}",
-      "method": "GET",
-      "type": "AWS",
-      "authorizationType": "CUSTOM",
-      "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
-      "requestParameters": {
-        "integration.request.path.id": "method.request.path.id"
-      },
-      "requestTemplates": {
-        "application/json": "{\"id\": \"$input.params('id')\", \"type\": \"addon\"}"
       },
       "swaggerExport": {
         "summary": "Retrieve one available addon",
         "description": "Retrieve one addon available for public purchase from MaaS store",
-        "security": [{"Bearer":[]}],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
@@ -142,55 +196,13 @@
             "description": "Unauthorized"
           }
         }
-      },
-      "responses": {
-        "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-         "^403.*": {
-          "statusCode": "403",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^401.*": {
-          "statusCode": "401",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^404.*": {
-          "statusCode": "404",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "[^0-9].*": {
-          "statusCode": "500",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
-          "responseModels": {},
-          "responseTemplates": {
-            "application/json": ""
-          }
-        },
-        "default": {
-          "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
-          "responseModels": {},
-          "responseTemplates": {
-            "application/json": ""
-          }
-        }
       }
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

@@ -1,16 +1,21 @@
 {
   "name": "provider-twilio-send-sms",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 10,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
     "excludePatterns": []
   },
-  "endpoints": [
-  ],
+  "endpoints": [],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

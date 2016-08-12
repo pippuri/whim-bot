@@ -33,7 +33,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
