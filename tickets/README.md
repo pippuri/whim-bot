@@ -103,7 +103,7 @@ cp tickets/tickets-create/keys/dev-latest.js tickets/tickets-create/keys/prod-la
 openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./tickets/tickets-create/keys/prod-latest.clear.js -out tickets/tickets-create/keys/prod-latest.js.asc -a
 ```
 
-8. Add the public key from `latest.key.pub` to the end of `./tickets/tickets-validation-keys/index.js` like the other keys.
+8. Add the public key from `latest.key.pub` to the end of `./tickets/tickets-validation-keys/index.js` like the other keys. Remember to use the original milliepoch as the validity starting time.
 
 9. Remove the cleartext versions of key files:
 
@@ -114,10 +114,6 @@ rm latest.key.pub latest.key tickets/tickets-create/keys/prod-latest.clear.js
 10. Commit and roll out your changes.
 
 ## TODO items for the future
-
-### Audit log endpoints
-
-Both global audit endpoint and the partner specific log endpoint needs to be implemented.
 
 ### Ticket expiry, cancellation and revocation
 
