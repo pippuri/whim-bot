@@ -2,17 +2,16 @@
   "HSL": {
     "agencyId": "HSL",
     "adapter": {
-      "baseUrl": "https://a523hzmaj7.execute-api.eu-west-1.amazonaws.com/dev",
+      "baseUrl": "https://osymzhleyg.execute-api.eu-west-1.amazonaws.com/dev",
       "endpoints": {
         "post": {
           "book": "/bookings"
         },
-        "get": {
-          "options": "/options",
-          "retrieve": "/orders"
-        },
         "put": {
-          "update": "/update"
+          "update": "/bookings"
+        },
+        "del": {
+          "cancel": "/bookings"
         }
       },
       "lambdas": {
@@ -21,6 +20,9 @@
         },
         "get": {
           "retrieve": "maas-tsp-reference-bookings-retrieve"
+        },
+        "del": {
+          "cancel": "maas-tsp-reference-bookings-cancel"
         }
       }
     }
@@ -37,7 +39,10 @@
           "retrieve": "/bookings"
         },
         "put": {
-          "update": "/update"
+          "update": "/bookings"
+        },
+        "del": {
+          "cancel": "/bookings"
         }
       },
       "lambdas": {
@@ -49,6 +54,9 @@
         },
         "put": {
           "update": "maas-transport-booking-taxi-update"
+        },
+        "del": {
+          "cancel": "maas-transport-booking-taxi-cancel"
         }
       },
       "endpointsConfig": {

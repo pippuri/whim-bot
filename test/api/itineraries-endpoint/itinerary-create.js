@@ -3,6 +3,7 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
+const _ = require('lodash');
 const schema = require('../../../itineraries/itinerary-create/response-schema.json');
 const utils = require('../../../lib/utils');
 const event = require('../../../itineraries/itinerary-create/event.json');
@@ -16,11 +17,11 @@ module.exports = function (lambda) {
 
     before(done => {
       // Sign the event data (Travis seems to have problems repeating the signatures)
-      const newItinerary = Object.assign({}, event.itinerary);
-      delete newItinerary.signature;
-      event.itinerary.signature = utils.sign(newItinerary, process.env.MAAS_SIGNING_SECRET);
+      const newEvent = _.cloneDeep(event);
+      delete newEvent.itinerary.signature;
+      newEvent.itinerary.signature = utils.sign(newEvent.itinerary, process.env.MAAS_SIGNING_SECRET);
 
-      wrap(lambda).run(event, (_error, _response) => {
+      wrap(lambda).run(newEvent, (_error, _response) => {
         error = _error;
         response = _response;
         done();

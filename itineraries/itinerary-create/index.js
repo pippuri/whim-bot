@@ -182,6 +182,7 @@ function createAndAppendBookings(itinerary, profile) {
         booking => {
           return changeBookingState(booking, 'RESERVED')
             .then(() => {
+              console.info(`Created booking ${booking.id}, agencyId ${booking.leg.agencyId}.`);
               completed.push(leg);
               leg.booking = booking;
             });
@@ -263,7 +264,7 @@ function bookItinerary(event) {
     .then(response => annotateItineraryState(annotatedItinerary, 'PAID'))
     .then(paidItinerary => createAndAppendBookings(paidItinerary, cachedProfile))
     .then(bookedItinerary => {
-      console.info('Booked itinerary', bookedItinerary);
+      console.info(`Created itinerary ${bookedItinerary.id} with ${bookedItinerary.legs.length} legs.`);
       return saveItinerary(parseDatabaseFormat(bookedItinerary));
     })
     .then(savedItinerary => wrapToEnvelope(savedItinerary))
