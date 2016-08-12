@@ -193,12 +193,12 @@ function fetchItinerary(itineraryId, identityId) {
     .then(itinerary => {
       // Handle not found
       if (typeof itinerary === typeof undefined) {
-        return Promise.reject(new MaaSError(`No item found with itineraryId ${event.itineraryId}`, 404));
+        return Promise.reject(new MaaSError(`No item found with itineraryId ${itineraryId}`, 404));
       }
 
       // Handle item not user's itinerary
       if (itinerary.identityId !== identityId) {
-        return Promise.reject(new MaaSError(`Itinerary ${event.itineraryId} not owned by the user`, 403));
+        return Promise.reject(new MaaSError(`Itinerary ${itineraryId} not owned by the user`, 403));
       }
 
       return Promise.resolve(itinerary);
