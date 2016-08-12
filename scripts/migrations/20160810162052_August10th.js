@@ -10,8 +10,8 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
-    .dropTableIfExists('Leg')
-    .dropTableIfExists('Itinerary')
-    .dropTableIfExists('Booking')
-    .dropTableIfExists('StateLog');
+    .raw(`
+      ALTER TABLE "Leg"
+      DROP COLUMN bookingProvider
+    `);
 };
