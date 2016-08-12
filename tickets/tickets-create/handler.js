@@ -4,8 +4,8 @@
 const lib = require('./index');
 
 // Lambda Handler
-module.exports.handler = function (event, context) {
+module.exports.handler = function (event, context, callback) {
   lib.respond(event, (error, response) => {
-    return context.done(error, response);
+    return callback(error, response);
   });
 };
