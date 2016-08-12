@@ -104,7 +104,7 @@
   "MaaS": {
     "agencyId": "MaaS",
     "adapter": {
-      "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/maas",
+      "baseUrl": "https://tsp.dev.maas.global/maas",
       "endpoints": {
         "post": {
           "book": "/bookings"
