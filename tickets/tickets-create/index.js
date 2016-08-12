@@ -51,9 +51,22 @@ function validatePartner( event ) {
     } );
 }
 
-function createTicketPayload( event ) {
+function getDomainIdForPartner( partner ) {
+  let domainId = partner.domainId;
+  if ( domainId === 'any' ) {
+    domainId = event.domainId;
+  }
+  return domainId;
+}
+
+function createTicketPayload( event, partner ) {
+  let domainId = partner.domainId;
+  if ( domainId === 'any' ) {
+    domainId = event.domainId;
+  }
   const payload = {
     id: utils.createId(),
+    domainId: getDomainIdForPartner( partner ),
   };
 
   const keys = [
@@ -74,11 +87,13 @@ function createTicketPayload( event ) {
   return payload;
 }
 function storeTicketAuditLog( event, payload, partner ) {
-  let domainId = partner.domainId;
-  if ( domainId === 'any' ) {
-    domainId = event.domainId;
-  }
-  const logEntry = { id: payload.id, payload: payload, meta: event.meta, domainId: partner.domainId, partnerId: partner.partnerId };
+  const logEntry = {
+    id: payload.id,
+    payload: payload,
+    meta: event.meta,
+    domainId: getDomainIdForPartner( partner ),
+    partnerId: partner.partnerId,
+  };
 
   console.log( 'Starting to store Audit Log:', logEntry );
 
@@ -101,7 +116,7 @@ module.exports.respond = (event, callback) => {
   return Database.init()
     .then( () => validateEvent( event ) )
     .then( () => validatePartner( event ) )
-    .then( partner => [createTicketPayload( event ), partner] )
+    .then( partner => [createTicketPayload( event, partner ), partner] )
     .spread( ( payload, partner ) => storeTicketAuditLog( event, payload, partner ) )
     .then( payload => [payload, signPayload( payload )] )
     .spread( ( payload, signedPayload ) => {
