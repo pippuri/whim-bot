@@ -6,6 +6,7 @@ const Database = models.Database;
 const jwt = require('jsonwebtoken');
 const utils = require('../../lib/utils');
 const Promise = require('bluebird');
+const request = require('request-promise-lite');
 
 let privateKey;
 
@@ -111,6 +112,23 @@ function signPayload( payload ) {
   return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
 }
 
+// TODO: this should really use a queue instead of a hack like this.
+function sendWebhookPingsAndCleanupDatabase( payload ) {
+  return models.TicketPartner.query()
+    .where('domainId', '=', payload.domainId )
+    .then( domainPartners => {
+      Database.cleanup()
+        .then( () => {
+          domainPartners.forEach( partner => {
+            if ( partner.auditWebhookUrl ) {
+              console.log(`Pinging partner ${partner.partnerId} at ${partner.auditWebhookUrl}`);
+              request.post( partner.auditWebhookUrl, { json: true, body: { ping: 1 } } );
+            }
+          } );
+        } );
+    } );
+}
+
 module.exports.respond = (event, callback) => {
 
   return Database.init()
@@ -120,11 +138,13 @@ module.exports.respond = (event, callback) => {
     .spread( ( payload, partner ) => storeTicketAuditLog( event, payload, partner ) )
     .then( payload => [payload, signPayload( payload )] )
     .spread( ( payload, signedPayload ) => {
-      Database.cleanup()
-        .then(() => callback(null, {
-          ticketId: payload.id,
-          ticket: signedPayload,
-        } ));
+      callback(null, {
+        ticketId: payload.id,
+        ticket: signedPayload,
+      } );
+
+      Promise.resolve()
+        .then( () => sendWebhookPingsAndCleanupDatabase( payload ) );
     } )
     .catch( error => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
