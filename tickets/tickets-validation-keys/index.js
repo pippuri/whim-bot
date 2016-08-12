@@ -15,7 +15,7 @@ module.exports.respond = (event, callback) => {
   return callback(null, { keys: publicKeys || [] } );
 };
 
-publicKeys.dev.push( {
+publicKeysMap.dev.push( {
   validityStartMilliEpoch: 0,
   validityEndMilliEpoch: 1735682400000, // 2025
   publicKey: [
@@ -27,7 +27,7 @@ publicKeys.dev.push( {
   ].join('\n'),
 } );
 
-publicKeys.prod.push( {
+publicKeysMap.prod.push( {
   validityStartMilliEpoch: 0,
   validityEndMilliEpoch: 1735682400000, // 2025
   publicKey: [
