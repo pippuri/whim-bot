@@ -8,6 +8,27 @@ const stateMachine = require('../../lib/states').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
 
+/**
+ * Filters away the legs that don't need to be act on.
+ * Legs that don't need to be act on are the ones in states
+ * 'FINSHED', 'CANCELLED', or 'ABANDONED'
+ *
+ * @param legs Array containing all legs that are to be filtered
+ * @return Array containing legs that can be cancelled
+ */
+function filterCancellableLegs(legs) {
+  return legs.filter(leg => {
+    switch (leg.state) {
+      case 'CANCELLED':
+      case 'FINISHED':
+      case 'ABANDONED':
+        return false;
+      default:
+        return true;
+    }
+  });
+}
+
 function validateStateChanges(itinerary) {
   // Itinerary
   if (!stateMachine.isStateValid('Itinerary', itinerary.state, 'CANCELLED')) {
@@ -16,7 +37,8 @@ function validateStateChanges(itinerary) {
   }
 
   // Legs
-  for (let i = 0; i < itinerary.legs.length; i++) {
+  const cancellableLegs = filterCancellableLegs(itinerary.legs);
+  for (let i = 0; i < cancellableLegs.length; i++) {
     const leg = itinerary.legs[i];
     const booking = leg.booking;
 
@@ -127,9 +149,12 @@ function cancelLeg(leg) {
 function cancelItinerary(itinerary) {
   console.info(`Cancel itinerary ${itinerary.id}`);
 
+  // Check which legs need to be cancelled (finished ones don't)
+  const cancellableLegs = filterCancellableLegs(itinerary.legs);
+
   // First cancel the legs, then investigate their states to determine whether
   // to resolve with cancelled with errors or normal cancel
-  return Promise.map(itinerary.legs, leg => cancelLeg(leg))
+  return Promise.map(cancellableLegs, leg => cancelLeg(leg))
     .then(newStates => {
       const hasErrors = newStates.some(state => state !== 'CANCELLED');
       const newState = hasErrors ? 'CANCELLED_WITH_ERRORS' : 'CANCELLED';

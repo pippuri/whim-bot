@@ -71,5 +71,9 @@ module.exports = function (createLambda, cancelLambda) {
         }
       });
     });
+
+    xit('should only cancel cancellable legs', () => {
+      // TODO Not implemented (needs leg state toggling elsewhere)
+    });
   });
 };
