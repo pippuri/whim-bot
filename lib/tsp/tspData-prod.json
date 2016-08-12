@@ -105,7 +105,7 @@
   "MaaS": {
     "agencyId": "MaaS",
     "adapter": {
-      "baseUrl": "https://tsp.dev.maas.global/maas",
+      "baseUrl": "https://tsp.maas.global/maas",
       "endpoints": {
         "post": {
           "book": "/bookings"
