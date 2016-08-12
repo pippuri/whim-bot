@@ -24,6 +24,7 @@
       },
       "requestTemplates": {
         "application/json": {
+          "identityId": "$context.authorizer.principalId",
           "itineraryId": "$input.params('itineraryId')"
         }
       },
