@@ -2,7 +2,12 @@
   "HSL": {
     "agencyId": "HSL",
     "adapter": {
-      "baseUrl": "https://osymzhleyg.execute-api.eu-west-1.amazonaws.com/dev",
+      "baseUrl": "https://tsp.dev.maas.global/hsl",
+      "endpointsConfig": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      },
       "endpoints": {
         "post": {
           "book": "/bookings"
