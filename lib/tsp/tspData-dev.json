@@ -21,13 +21,13 @@
       },
       "lambdas": {
         "post": {
-          "book": "maas-tsp-reference-bookings-create"
+          "book": "maas-transport-booking-hsl-maas-create"
         },
         "get": {
-          "retrieve": "maas-tsp-reference-bookings-retrieve"
+          "retrieve": "maas-transport-booking-hsl-maas-retrieve"
         },
         "del": {
-          "cancel": "maas-tsp-reference-bookings-cancel"
+          "cancel": "maas-transport-booking-hsl-maas-cancel"
         }
       }
     }
