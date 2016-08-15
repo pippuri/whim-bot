@@ -297,6 +297,11 @@ the endpoints of a single component. See
 https://github.com/joostfarla/serverless-cors-plugin/issues/22 for discussion
 on the subject.
 
+#### Creating new stage
+
+- On bash do `echo '{}' > _meta/variables/s-variables-${YOUR}.json`
+- Do `sls stage create`, follow instruction
+
 ## Git Conventions
 
 #### Starting a New Local Branch
@@ -372,6 +377,9 @@ master branch.
 ```
 git push origin <local_branch_name>
 ```
+
+#### Updating your submodule
+`git submodule update --upstream`
 
 #### Git stash alternative
 

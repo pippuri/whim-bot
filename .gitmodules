@@ -1,0 +1,3 @@
+[submodule "maas-schemas"]
+	path = maas-schemas
+	url = git@github.com:maasglobal/maas-schemas.git

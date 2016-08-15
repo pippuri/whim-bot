@@ -10,6 +10,9 @@ before_script:
 - mkdir ~/.aws && touch ~/.aws/credentials # create .aws folder with placeholder credentials file
 - echo '[profile travis]\nregion=eu-west-1' > ~/.aws/config # create .aws config file with default region
 
+# submodule package install
+- cd ./maas-schemas && npm install && cd ../
+
 # populate credential file by decrypt .secret-aws-travis / .secret-aws-travis-pullrequests
 - if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET_PULLREQUESTS" -in ./.secret-aws-travis-pullrequests -out ~/.aws/credentials -d -a && echo "I ran"; fi # When travis run PR
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./.secret-aws-travis-branch -out ~/.aws/credentials -d -a && echo "I ran"; fi # When travis run branch
