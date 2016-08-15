@@ -35,8 +35,8 @@ module.exports = function (createLambda, setActiveLambda) {
           itinerary: {
             id: _response.itinerary.id,
             timestamp: Date.now(),
-            legId: _response.itinerary.legs[0].id
-          }
+            legId: _response.itinerary.legs[0].id,
+          },
         };
 
         wrap(setActiveLambda).run(setActiveEvent, (_error, _response) => {

@@ -49,60 +49,28 @@ function annotateItinerary(itinerary) {
 }
 
 /**
- * Get first leg of the itinerary, based on startTime of the leg
- * @param  {UUID} itineraryId
- * @return {String} legId
- */
-function getFirstLegId(itineraryId) {
-
-  return Database._knex
-    .select('id', 'startTime')
-    .from('Leg')
-    .where('itineraryId', itineraryId)
-    .then(response =>
-      response
-        .map(item => {
-          return {
-            id: item.id,
-            startTime: new Date(item.startTime).valueOf(),
-          };
-        })
-        .sort((a, b) => {
-          return a.startTime - b.startTime;
-        })[0].id // index 0 means the lowest startTime -> the first leg
-      );
-}
-
-/**
  * Activate the starting leg of the itinerary
  * @default First leg of the itinerary
  * @param {UUID} legId - Optional - Alternatively start the itinerary at the leg with this id
  */
 function activateStartingLeg(identityId, itinerary, legId) {
+  console.log(`Activate starting leg, identityid=${identityId}, itinerary:=${JSON.stringify(itinerary)}, legId=${legId}`);
 
-  // If no input legId is presence
-  if (!legId || legId === null || legId === '') {
-    // Set active leg to be the first leg of the itinerary || sorted by startTime
-    return getFirstLegId(itinerary.id)
-      .then(firstLegId => {
-        return bus.call('MaaS-tracking-set-active-leg', {
-          identityId: identityId,
-          leg: {
-            id: firstLegId,
-            timestamp: itinerary.timestamp,
-          },
-        });
-      });
+  // If no input legId given, use the first leg
+  if (!legId) {
+    legId = itinerary.legs[0].id;
   }
 
   // else use provided legId
-  return bus.call('MaaS-tracking-set-active-leg', {
+  const payload = {
     identityId: identityId,
     leg: {
       id: legId,
       timestamp: itinerary.timestamp,
     },
-  });
+  };
+  console.log('Payload', JSON.stringify(payload, null, 2));
+  return bus.call('MaaS-tracking-set-active-leg', payload);
 }
 
 /**
@@ -127,14 +95,21 @@ function setActiveItinerary(identityId, itinerary) {
 
   // TODO Query with ID and identityId would be more secure bet
   return models.Itinerary.query().findById(itinerary.id)
-    .then(oldItinerary => Promise.all([
-      stateMachine.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
-      models.Itinerary.query().update({ state: 'ACTIVATED' }).where('id', itinerary.id),
-      iotData.updateThingShadowAsync({
-        thingName: thingName,
-        payload: payload,
-      }),
-    ]))
+    .then(oldItinerary => {
+      if (typeof oldItinerary === typeof undefined) {
+        const message = `No itinerary found with id ${itinerary.id}`;
+        return Promise.reject(new MaaSError(message, 404));
+      }
+
+      return Promise.all([
+        stateMachine.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
+        models.Itinerary.query().update({ state: 'ACTIVATED' }).where('id', itinerary.id),
+        iotData.updateThingShadowAsync({
+          thingName: thingName,
+          payload: payload,
+        }),
+      ]);
+    })
     .spread((changedState, newItinerary, iotResponse) => {
       console.log('iotResponse', iotResponse);
       return activateStartingLeg(identityId, itinerary, itinerary.legId);
@@ -152,6 +127,8 @@ module.exports.respond = function (event, callback) {
         .then(() => callback(null, response));
     })
     .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(_error.stack);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
       Database.cleanup()
