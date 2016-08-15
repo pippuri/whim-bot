@@ -54,9 +54,6 @@ function adapt(input) {
   .then(suggestions => {
     return {
       suggestions: suggestions,
-      maas: {
-        query: query,
-      },
     };
   });
 }

@@ -5,7 +5,6 @@ const expect = chai.expect;
 const wrap = require('lambda-wrapper').wrap;
 
 const validator = require('../../../lib/validator');
-const schema = require('../../../autocomplete/autocomplete-query/response-schema.json');
 
 module.exports = function (lambda) {
 
@@ -37,7 +36,7 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', () => {
-      validator.validate(response, schema)
+      validator.validate('maas-backend:autocomplete-query-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

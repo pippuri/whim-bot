@@ -2,7 +2,7 @@
 
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
-const validator = require('./response_validator');
+const validator = require('../../../lib/validator/index');
 
 module.exports = function (lambda) {
 
@@ -29,8 +29,12 @@ module.exports = function (lambda) {
     });
 
     it('should return a valid response', () => {
-      const validationError = validator(response);
-      expect(validationError).to.be.null;
+
+      return validator.validate('maas-backend:profile-info-response', response)
+        .then(validationError => {
+          expect(validationError).to.be.null;
+        });
+
     });
 
   });

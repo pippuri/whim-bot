@@ -5,7 +5,6 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
-const schema = require('../../../itineraries/itinerary-cancel/response-schema.json');
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
 
 module.exports = function (createLambda, cancelLambda) {
@@ -53,7 +52,7 @@ module.exports = function (createLambda, cancelLambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate(response, schema)
+      return validator.validate('maas-backend:bookings-cancel-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
