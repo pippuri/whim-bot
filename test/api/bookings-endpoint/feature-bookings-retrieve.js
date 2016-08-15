@@ -9,7 +9,7 @@ const Database = require('../../../lib/models/index').Database;
 module.exports = function (lambda) {
 
   const event = {
-    identityId: 'eu-west-1: 00000000-cafe-cafe-cafe-000000000000',
+    identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
     bookingId: '84174750-4CF7-11E6-9C1D-4D511BCD104A',
   };
 

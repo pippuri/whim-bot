@@ -51,9 +51,9 @@ function fetchBooking(bookingId, identityId) {
         return Promise.reject(new MaaSError(message, 404));
       }
 
-      /*if (booking.customer.identityId !== identityId) {
+      if (booking.customer.identityId !== identityId) {
         return Promise.reject(new MaaSError(`Booking ${bookingId} not owned by the user`, 403));
-      }*/
+      }
 
       return Promise.resolve(booking);
     });
