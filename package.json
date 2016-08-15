@@ -45,8 +45,6 @@
     "pg": "4.4.0",
     "powerset": "0.0.1",
     "request-promise-lite": "^0.5.1",
-    "serverless-meta-sync": "git+https://github.com/serverless/serverless-meta-sync.git#c5e34a59a8665df703534ee18464d035ef30edc6",
-    "serverless-slack-plugin": "git+https://github.com/blackevil245/serverless-slack-plugin.git",
     "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
     "tempfile": "^1.1.1",
     "twilio": "^2.9.1"
