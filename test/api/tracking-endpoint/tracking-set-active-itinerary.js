@@ -4,8 +4,6 @@ const _ = require('lodash');
 const wrap = require('lambda-wrapper').wrap;
 const utils = require('../../../lib/utils');
 const expect = require('chai').expect;
-const models = require('../../../lib/models');
-const Promise = require('bluebird');
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
 
 module.exports = function (createLambda, setActiveLambda) {
@@ -54,6 +52,11 @@ module.exports = function (createLambda, setActiveLambda) {
       }
 
       expect(error).to.be.null;
+    });
+
+    it('should trigger a valid response', () => {
+      // TODO Have better checks
+      expect(response).to.not.be.null;
     });
   });
 };
