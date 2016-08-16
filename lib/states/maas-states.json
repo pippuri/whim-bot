@@ -90,7 +90,7 @@
     },
     "ACTIVATED": {
       "description": "The Itinerary has been ACTIVATED",
-      "transition": ["FINISHED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
+      "transition": ["ACTIVATED", "FINISHED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "CANCELLED": {
       "description": "The Itinerary has been CANCELLED",

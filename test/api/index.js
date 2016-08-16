@@ -8,4 +8,5 @@ describe('API', () => {
   require('./itineraries-endpoint/index.js');
   require('./bookings-endpoint/index.js');
   require('./store-endpoint/index.js');
+  require('./tracking-endpoint/index.js');
 });
