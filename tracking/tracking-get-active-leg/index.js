@@ -20,7 +20,7 @@ function getActiveLegId(identityId) {
   })
   .then(response => {
     const payload = JSON.parse(response.payload);
-    console.log(payload.state.reported.location.legId);
+    console.info(payload.state.reported.location.legId);
     if (payload.state.reported.location.legId) {
       return payload.state.reported.location.legId;
     }

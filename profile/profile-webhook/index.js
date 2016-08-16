@@ -49,7 +49,7 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(error => {
-      console.log('This event caused an error, but ignoring: ' + JSON.stringify(event, null, 2), error);
+      console.info('This event caused an error, but ignoring: ' + JSON.stringify(event, null, 2), error);
       callback(null, { result: 'ERROR' });
       //callback(error);
     });

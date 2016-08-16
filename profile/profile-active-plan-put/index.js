@@ -73,10 +73,10 @@ function setActivePlan(event) {
       return bus.call('Dynamo-update', params);
     })
     .then(response => { // Then set the new point balance
-      console.log('New pointGrant: ', newPlan.pointGrant);
-      console.log('Old balance: ', oldBalance);
-      console.log('Old level: ', oldLevel);
-      console.log('New level: ', newPlan.level);
+      console.info('New pointGrant: ', newPlan.pointGrant);
+      console.info('Old balance: ', oldBalance);
+      console.info('Old level: ', oldLevel);
+      console.info('New level: ', newPlan.level);
       let newBalance = oldBalance;
       if (newPlan.level > 0 && (newPlan.level > oldLevel)) {
         // handle upgrade
@@ -84,7 +84,7 @@ function setActivePlan(event) {
         for (const level of slices) {
           newBalance += level;
         }
-        console.log('New tier grant', newBalance);
+        console.info('New tier grant', newBalance);
       } else if (newPlan.level === oldLevel) {
         return Promise.resolve( { message: 'Old plan already the same level' } );
       } else {
@@ -92,7 +92,7 @@ function setActivePlan(event) {
         if (newBalance > newPlan.pointGrant) {
           newBalance = newPlan.pointGrant;
         }
-        console.log('Downgrade: points', newBalance);
+        console.info('Downgrade: points', newBalance);
       }
       const params2 = {
         identityId: event.identityId,
@@ -101,7 +101,7 @@ function setActivePlan(event) {
           planlevel: newPlan.level,
         },
       };
-      console.log(params2);
+      console.info(params2);
       return bus.call('MaaS-profile-edit', params2);
     })
     .then(response => { // Then get new profile information
@@ -122,8 +122,8 @@ module.exports.respond = (event, callback) => {
       callback(null, response);
     })
     .catch(error => {
-      console.log('Caught an error: ' + JSON.stringify(error, null, 2));
-      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.info('Caught an error: ' + JSON.stringify(error, null, 2));
+      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
 
       if (error instanceof MaaSError) {
         callback(error);

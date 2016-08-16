@@ -41,7 +41,7 @@ function validateInput(event) {
  * @return Promise that resolves to a booking, or rejects with MaaSError
  */
 function fetchBooking(bookingId, identityId) {
-  //console.log(`Fetch booking ${bookingId}`);
+  //console.info(`Fetch booking ${bookingId}`);
 
   return models.Booking.query()
     .findById(bookingId)

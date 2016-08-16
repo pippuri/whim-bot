@@ -47,7 +47,7 @@ function convertDateTime(date, time) {
 }
 
 function convertLeg(leg) {
-  console.log('Leg:', leg);
+  console.info('Leg:', leg);
   const startTime = leg.DEPARTURE ? convertDateTime(leg.DEPARTURE[0].$.date, leg.DEPARTURE[0].$.time) : undefined;
   const endTime = leg.ARRIVAL ? convertDateTime(leg.ARRIVAL[0].$.date, leg.ARRIVAL[0].$.time) : undefined;
   return {

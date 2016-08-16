@@ -31,13 +31,13 @@ function sendPushNotification(event) {
     response.Records.map(record => {
       const platformEndpointList = [];
       params.Token = record.Value.replace(/\s/g, '');
-      console.log('Message is being sent to : ' + params.Token);
+      console.info('Message is being sent to : ' + params.Token);
 
       // Queue all user devices ( Apple ) to the list
       platformEndpointList.push(sns.createPlatformEndpointAsync(params)
         .then((response, error) => {
           if (error) {
-            console.log('abc', error);
+            console.info('abc', error);
             return Promise.reject(error);
           }
 
@@ -64,7 +64,7 @@ function sendPushNotification(event) {
       }))
       .each(inspection => {
         if (inspection.isFulfilled()) {
-          console.log('This request was fulfilled with response: ', inspection.value());
+          console.info('This request was fulfilled with response: ', inspection.value());
         } else {
           console.error('One request has been rejected with error: ', inspection.reason());
         }

@@ -35,7 +35,7 @@ function updateBooking(event) {
     .whereRaw("customer ->> 'identityId' = ?", [event.identityId] )
     .andWhere('id', event.bookingId)
     .then(response => {
-      console.log(response);
+      console.info(response);
       if (response.length !== 1) {
         return Promise.reject(new MaaSError(`Database returned ${response.length} results (expected 1) with ${event.bookingId} for identityId ${event.identityId}`, 500));
       }

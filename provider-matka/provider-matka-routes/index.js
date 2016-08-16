@@ -20,7 +20,7 @@ function convertWGS84ToKKJ3(coords) {
   const to = proj4('WGS84', 'EPSG:2393', from);
   const converted = to.map(Math.floor).join(',');
 
-  //console.log('Converted from', from, 'to', converted);
+  //console.info('Converted from', from, 'to', converted);
   return converted;
 }
 
@@ -37,7 +37,7 @@ function getMatkaRoutes(from, to, format) {
     return xml2js.parseStringAsync(response, { explicitChildren: true, preserveChildrenOrder: true });
   })
   .then(result => {
-    console.log('Format:', format);
+    console.info('Format:', format);
     if (format === 'original') {
       return result;
     }
@@ -52,7 +52,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

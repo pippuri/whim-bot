@@ -27,7 +27,7 @@ function smsRequestCode(phone, provider) {
   const verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
   const verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
   const functionName = 'MaaS-provider-' + provider + '-send-sms';
-  console.log('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
+  console.info('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
   return lambda.invokePromise({
     FunctionName: functionName,
     Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
@@ -51,7 +51,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

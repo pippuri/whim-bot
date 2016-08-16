@@ -46,7 +46,7 @@ function delegate(event) {
   // Replace local stage name with dev (no 'local' in AWS side);
   const stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
 
-  //console.log('Invoking provider', provider, "with input",
+  //console.info('Invoking provider', provider, "with input",
   //  JSON.stringify(event, null, 2));
 
   return lambda.invokePromise({
@@ -78,7 +78,7 @@ module.exports.respond = function (event, callback) {
     const valid = validate(event.query);
 
     if (!valid) {
-      console.log('errors', event.query, validate.errors);
+      console.info('errors', event.query, validate.errors);
       return reject(new Error(JSON.stringify(validate.errors)));
     }
 
@@ -94,7 +94,7 @@ module.exports.respond = function (event, callback) {
     callback(null, results);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn('Error:', err.errors);
 
     // TODO Process the error
