@@ -49,17 +49,31 @@ function annotateItinerary(itinerary) {
 }
 
 /**
+ * Get first leg of the itinerary, based on startTime of the leg
+ *
+ * @param {UUID} legId The leg, given by client that we may or may not have
+ * @param {UUID} legs the legs of itinerary that we use to pick an alternative
+ * @return {String} legId
+ */
+function getFirstLegId(legId, legs) {
+
+   // Use the given leg if available
+  if (legId) {
+    return legId;
+  }
+
+  return legs.sort((a, b) => {
+    return a.startTime - b.startTime;
+  })[0].id;
+}
+
+/**
  * Activate the starting leg of the itinerary
  * @default First leg of the itinerary
  * @param {UUID} legId - Optional - Alternatively start the itinerary at the leg with this id
  */
-function activateStartingLeg(identityId, itinerary, legId, timestamp) {
-  console.info(`Activate starting leg, identityid=${identityId}, itineraryId:=${JSON.stringify(itinerary.id)}, legId=${legId}`);
-
-  // If no input legId given, use the first leg
-  if (!legId) {
-    legId = itinerary.legs[0].id;
-  }
+function activateStartingLeg(identityId, legId, timestamp) {
+  console.info(`Activate starting leg, identityid=${identityId}, legId=${legId}`);
 
   // else use provided legId
   const payload = {
@@ -122,7 +136,8 @@ function setActiveItinerary(identityId, itineraryData) {
         return Promise.reject(new MaaSError(message, 500));
       }
 
-      return activateStartingLeg(identityId, updatedItinerary, itineraryData.legId, itineraryData.timestamp);
+      const legId = getFirstLegId(itineraryData.legId, updatedItinerary.legs);
+      return activateStartingLeg(identityId, legId, itineraryData.timestamp);
     })
     .then(iotResponse => Promise.resolve({
       payload: JSON.parse(iotResponse.payload),
