@@ -36,7 +36,7 @@ after_success:
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
 # Creating Tag
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version") && export RELEASE_TAG="$NPM_PACKAGE_VERSION-$SERVERLESS_STAGE-$TRAVIS_BUILD_NUMBER"
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version") && export RELEASE_TAG="$NPM_PACKAGE_VERSION-$SERVERLESS_STAGE-$TRAVIS_BUILD_NUMBER"; fi fi
 
 # Auto deploy to "test" stage on master branch
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then npm run deploy-test:all && cd ./scripts && SERVERLESS_STAGE=test knex migrate:latest; fi fi
