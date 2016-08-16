@@ -8,7 +8,9 @@ const creationEvent = require('../../../itineraries/itinerary-create/event.json'
 
 module.exports = function (createLambda, setActiveLambda) {
 
-  describe('activate an itinerary, created by itinerary create', () => {
+  // TODO Skip because Travis AWS user cannot update thing shadow
+  // Enable again when we can mock AWS iot
+  describe.skip('activate an itinerary, created by itinerary create', () => {
     let error;
     let response;
 
