@@ -39,10 +39,10 @@ after_success:
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version") && export RELEASE_TAG="$NPM_PACKAGE_VERSION-$SERVERLESS_STAGE-$TRAVIS_BUILD_NUMBER"; fi fi
 
 # Auto deploy to "test" stage on master branch
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then npm run deploy-test:all && cd ./scripts && SERVERLESS_STAGE=test knex migrate:latest; fi fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then npm run deploy-test:all && cd ./scripts && npm install -g knex && SERVERLESS_STAGE=test knex migrate:latest; fi fi
 
 # Auto deploy to "alpha" stage on alpha branch with release tag
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then npm run deploy-alpha:all && cd ./scripts && SERVERLESS_STAGE=alpha knex migrate:latest && git tag -a $RELEASE_TAG -m "$CURRENT_TIMESTAMP"; fi fi
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then npm run deploy-alpha:all && cd ./scripts && npm install -g knex && SERVERLESS_STAGE=alpha knex migrate:latest && git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP"; fi fi
 env:
   global:
     - TRAVIS_CI_SECRET_PULLREQUESTS=b7a2f8902a4c11675da3e1b421c6e28d95794fed
