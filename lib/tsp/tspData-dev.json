@@ -2,7 +2,12 @@
   "HSL": {
     "agencyId": "HSL",
     "adapter": {
-      "baseUrl": "https://osymzhleyg.execute-api.eu-west-1.amazonaws.com/dev",
+      "baseUrl": "https://tsp.dev.maas.global/hsl",
+      "endpointsConfig": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      },
       "endpoints": {
         "post": {
           "book": "/bookings"
@@ -16,13 +21,13 @@
       },
       "lambdas": {
         "post": {
-          "book": "maas-tsp-reference-bookings-create"
+          "book": "maas-transport-booking-hsl-maas-create"
         },
         "get": {
-          "retrieve": "maas-tsp-reference-bookings-retrieve"
+          "retrieve": "maas-transport-booking-hsl-maas-retrieve"
         },
         "del": {
-          "cancel": "maas-tsp-reference-bookings-cancel"
+          "cancel": "maas-transport-booking-hsl-maas-cancel"
         }
       }
     }
