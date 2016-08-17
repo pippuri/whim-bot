@@ -1,11 +1,11 @@
 'use strict';
 
 const Promise = require('bluebird');
-const AWS = require('aws-sdk');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const Decision = require('../../lib/trip/Decision');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
+const AWS = require('aws-sdk');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
@@ -20,7 +20,7 @@ class Decider {
 
   constructor(flow) {
     if (!flow || !(flow instanceof TripWorkFlow)) {
-      throw new MaaSError('Cannot create Decider without TripWorkFlow', 400);
+      throw new Error('Cannot create Decider without TripWorkFlow');
     }
     this.flow = flow;
     this.decision = new Decision(this.flow);
@@ -75,7 +75,7 @@ class Decider {
             return Promise.resolve();
           })
           .catch(err => {
-            console.warn('Decider: cannot process itinerary -- aborting', err);
+            console.warn('Decider: cannot process itinerary -- aborting, err:', err.stack || err);
             this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
             return Promise.resolve();
           });
@@ -88,6 +88,8 @@ class Decider {
         console.log(`Decider: CHECKING BOOKING '${this.flow.task && this.flow.task.params}'`);
         return Promise.resolve();
       default:
+        console.warn(`Decider: unknown taskName '${taskName}', aboring...`);
+        this.decision.abortFlow(`Decider: unknown action '${taskName}' -- aborting`);
         return Promise.resolve();
     }
 
@@ -179,7 +181,7 @@ module.exports.respond = function (event, callback) {
     decider = new Decider(flow);
   } catch (err) {
     console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
-    return callback(err);
+    return callback(new MaaSError(err.message || err, 400));
   }
 
   return decider.decide()

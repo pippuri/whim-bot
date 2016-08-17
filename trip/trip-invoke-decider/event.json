@@ -26,7 +26,7 @@
       "workflowExecutionStartedEventAttributes": {
         "childPolicy": "TERMINATE",
         "executionStartToCloseTimeout": "3599",
-        "input": "{\"trip\":{\"identityId\":\"eu-west-1:00000000-cafe-cafe-cafe-000000000000\",\"referenceId\":\"cafe-cafe-123123124\",\"referenceType\":\"itinerary\",\"startTime\":1470225685332,\"endTime\":1570225685332},\"stage\":\"dev\",\"task\":{\"name\":\"start-start\"}}",
+        "input": "{\"trip\":{\"identityId\":\"eu-west-1:00000000-cafe-cafe-cafe-000000000000\",\"referenceId\":\"288bf020-3c62-11e6-b3ee-8d653248757f\",\"referenceType\":\"itinerary\",\"startTime\":1470225685332,\"endTime\":1570225685332},\"stage\":\"dev\",\"task\":{\"name\":\"start-trip\"}}",
         "lambdaRole": "arn:aws:iam::756207178743:role/MaaS-dev-r-IamRoleLambda-S27Y0PCCZ41I",
         "parentInitiatedEventId": 0,
         "taskList": {
@@ -45,7 +45,7 @@
   "taskToken": "AAAAKgAAAAIAAAAAAAAAA91Eur3roSANgDIcHLRmyQoGegB8wf/grNP5QW8jFAJsXUIWyR6F+lTyzsp9AAYSHa+BKM1Mxy2iCRCy35TyAukW90h1xPaRZPEd1V81sRGMrRapwOasHH+hJlZgzaZaCPlkYGl/jvonGYbgXNXPVuNz/tALZUwrrZVyIvCD12+aB9TqtRaah+VILGEJ/TfJpdut5ORkLr83UMszpNOZ+RQ43QOGqdvgRpcwj/l8UdrOCTl8jGTlqqCSaXsm/5fN4t0v+fHskJGKTDGLs0X8UayqFGt85ZjCGnjSvwnXI6q0R+/eG+XYxB+Fz9yo7FWxeg==",
   "workflowExecution": {
     "runId": "22VhQW46PFH4I2TZ4jlVDiRtdy3vvq7wS+0jDOj4mVFE0=",
-    "workflowId": "itinerary.cafe-cafe-123123124"
+    "workflowId": "itinerary.288bf020-3c62-11e6-b3ee-8d653248757f"
   },
   "workflowType": {
     "name": "maas-trip",

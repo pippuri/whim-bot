@@ -1,11 +1,11 @@
 'use strict';
 
 const Promise = require('bluebird');
-const AWS = require('aws-sdk');
 const moment = require('moment');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
+const AWS = require('aws-sdk');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
@@ -28,9 +28,9 @@ function pollForDecisionTasks(params) {
     console.log('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 100 sec');
   }
   if (typeof(params.maxBlockingTimeInSec) !== 'number'
-      || params.maxBlockingTimeInSec < 100
+      || params.maxBlockingTimeInSec < 10
       || params.maxBlockingTimeInSec > 300) {
-    return Promise.reject(new MaaSError('maxBlockingTimeInSec need to be 100..300 (sec)', 400));
+    return Promise.reject(new MaaSError('maxBlockingTimeInSec need to be 10..300 (sec)', 400));
   }
 
   const pollingStartTime = Date.now();
@@ -51,11 +51,10 @@ function pollForDecisionTasks(params) {
     console.log('pollForDecisionTasks() waiting a decision from SWF...');
 
     const flow = new TripWorkFlow();
-
     // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
     return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
       .then(data => {
-        //console.log("pollForDecisionTasks() got data:", JSON.stringify(data));
+        console.log('pollForDecisionTasks() got data:', JSON.stringify(data));
 
         // check do we have proper decition to process...
         if (!data.startedEventId || data.startedEventId === 0 ) {
@@ -89,7 +88,7 @@ function pollForDecisionTasks(params) {
 module.exports.respond = function (event, callback) {
   // maxBlockingTimeInSec should be same or less than lambda execution timeout
   // defined in s-function.json.
-  return pollForDecisionTasks({ maxBlockingTimeInSec: 150 })
+  return pollForDecisionTasks(event)
     .then(() => callback(null, null))
     .catch(err => {
       console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
