@@ -2,7 +2,7 @@ language: node_js
 node_js:
 - 4.3.2
 before_install:
-- if [[ -n $TRAVIS_TAG ]]; then echo "Detect travis tag build, exit" && exit 1; fi # Exit if it is a Tag Build
+- if [[ -n $TRAVIS_TAG ]]; then echo "Detect travis tag build, exit" && exit 0; fi # Exit if it is a Tag Build
 - if [[ `npm -v` != 3.9.6* ]]; then npm i  -g npm@3.9.6; fi
 - npm --version
 before_script:

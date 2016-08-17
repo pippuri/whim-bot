@@ -10,6 +10,9 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
       export RELEASE_TAG="$NPM_PACKAGE_VERSION-$SERVERLESS_STAGE-$TRAVIS_BUILD_NUMBER";
 
+      git config --global user.email "$GIT_NAME";
+      git config --global user.name "$GIT_EMAIL";
+
       # Trigger build
       npm run deploy-alpha:all;
       cd ./scripts;
@@ -18,7 +21,7 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       git config --global user.email "$GH_NAME";
       git config --global user.name "$GH_EMAIL";
       git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP";
-      git push origin $RELEASE_TAG;
+      git push --tags origin;
       echo "Finished running autodeployment to alpha stage script ..."
   else
     echo "Stopping ... Not on alpha branch"
