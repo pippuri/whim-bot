@@ -2,25 +2,32 @@
   "HSL": {
     "agencyId": "HSL",
     "adapter": {
-      "baseUrl": "https://a523hzmaj7.execute-api.eu-west-1.amazonaws.com/dev",
+      "baseUrl": "https://tsp.dev.maas.global/hsl",
+      "endpointsConfig": {
+        "headers": {
+          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+        }
+      },
       "endpoints": {
         "post": {
           "book": "/bookings"
         },
-        "get": {
-          "options": "/options",
-          "retrieve": "/orders"
-        },
         "put": {
-          "update": "/update"
+          "update": "/bookings"
+        },
+        "del": {
+          "cancel": "/bookings"
         }
       },
       "lambdas": {
         "post": {
-          "book": "maas-tsp-reference-bookings-create"
+          "book": "maas-transport-booking-hsl-maas-create"
         },
         "get": {
-          "retrieve": "maas-tsp-reference-bookings-retrieve"
+          "retrieve": "maas-transport-booking-hsl-maas-retrieve"
+        },
+        "del": {
+          "cancel": "maas-transport-booking-hsl-maas-cancel"
         }
       }
     }
@@ -37,7 +44,10 @@
           "retrieve": "/bookings"
         },
         "put": {
-          "update": "/update"
+          "update": "/bookings"
+        },
+        "del": {
+          "cancel": "/bookings"
         }
       },
       "lambdas": {
@@ -49,6 +59,9 @@
         },
         "put": {
           "update": "maas-transport-booking-taxi-update"
+        },
+        "del": {
+          "cancel": "maas-transport-booking-taxi-cancel"
         }
       },
       "endpointsConfig": {

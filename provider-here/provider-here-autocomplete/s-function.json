@@ -1,14 +1,21 @@
 {
   "name": "provider-here-autocomplete",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
     "excludePatterns": []
   },
+  "endpoints": [],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

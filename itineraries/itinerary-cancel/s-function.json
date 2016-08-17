@@ -1,5 +1,5 @@
 {
-  "name": "itinerary-update",
+  "name": "itinerary-cancel",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
@@ -14,7 +14,7 @@
   "endpoints": [
     {
       "path": "itineraries/{itineraryId}",
-      "method": "PUT",
+      "method": "DELETE",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
@@ -23,7 +23,10 @@
         "integration.request.path.itineraryId": "method.request.path.itineraryId"
       },
       "requestTemplates": {
-        "application/json": "{\"itineraryId\": \"$input.params('itineraryId')\",\"payload\": $input.json()}"
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "itineraryId": "$input.params('itineraryId')"
+        }
       },
       "responses": {
         "^400.*": {
@@ -34,6 +37,12 @@
         },
         "^401.*": {
           "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^403.*": {
+          "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }

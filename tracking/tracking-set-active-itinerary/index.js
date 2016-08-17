@@ -50,27 +50,21 @@ function annotateItinerary(itinerary) {
 
 /**
  * Get first leg of the itinerary, based on startTime of the leg
- * @param  {UUID} itineraryId
+ *
+ * @param {UUID} legId The leg, given by client that we may or may not have
+ * @param {UUID} legs the legs of itinerary that we use to pick an alternative
  * @return {String} legId
  */
-function getFirstLegId(itineraryId) {
+function getFirstLegId(legId, legs) {
 
-  return Database._knex
-    .select('id', 'startTime')
-    .from('Leg')
-    .where('itineraryId', itineraryId)
-    .then(response =>
-      response
-        .map(item => {
-          return {
-            id: item.id,
-            startTime: new Date(item.startTime).valueOf(),
-          };
-        })
-        .sort((a, b) => {
-          return a.startTime - b.startTime;
-        })[0].id // index 0 means the lowest startTime -> the first leg
-      );
+   // Use the given leg if available
+  if (legId) {
+    return legId;
+  }
+
+  return legs.sort((a, b) => {
+    return a.startTime - b.startTime;
+  })[0].id;
 }
 
 /**
@@ -78,66 +72,72 @@ function getFirstLegId(itineraryId) {
  * @default First leg of the itinerary
  * @param {UUID} legId - Optional - Alternatively start the itinerary at the leg with this id
  */
-function activateStartingLeg(identityId, itinerary, legId) {
-
-  // If no input legId is presence
-  if (!legId || legId === null || legId === '') {
-    // Set active leg to be the first leg of the itinerary || sorted by startTime
-    return getFirstLegId(itinerary.id)
-      .then(firstLegId => {
-        return bus.call('MaaS-tracking-set-active-leg', {
-          identityId: identityId,
-          leg: {
-            id: firstLegId,
-            timestamp: itinerary.timestamp,
-          },
-        });
-      });
-  }
+function activateStartingLeg(identityId, legId, timestamp) {
+  console.info(`Activate starting leg, identityid=${identityId}, legId=${legId}`);
 
   // else use provided legId
-  return bus.call('MaaS-tracking-set-active-leg', {
+  const payload = {
     identityId: identityId,
     leg: {
       id: legId,
-      timestamp: itinerary.timestamp,
+      timestamp: timestamp,
     },
-  });
+  };
+  console.log('Payload', JSON.stringify(payload, null, 2));
+  return bus.call('MaaS-tracking-set-active-leg', payload);
 }
 
 /**
  * Update IoT thing shadow with new active itinerary and first activated leg
  * @param {UUID} identityId
- * @param {Object} itinerary
+ * @param {Object} itineraryData object encapsulating itineraryId,timestamp and legId
  */
-function setActiveItinerary(identityId, itinerary) {
+function setActiveItinerary(identityId, itineraryData) {
 
-  console.log(`Activating user ${identityId} itinerary ${JSON.stringify(itinerary)}`);
+  console.info(`Activating user ${identityId} itinerary ${JSON.stringify(itineraryData)}`);
   const thingName = identityId.replace(/:/, '-');
 
   const payload = JSON.stringify({
     state: {
       reported: {
-        itinerary: annotateItinerary(itinerary),
+        itinerary: annotateItinerary(itineraryData),
       },
     },
   });
 
-  console.log(`Thing shadow itinerary: ${payload}`);
-
   // TODO Query with ID and identityId would be more secure bet
-  return models.Itinerary.query().findById(itinerary.id)
-    .then(oldItinerary => Promise.all([
-      stateMachine.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
-      models.Itinerary.query().update({ state: 'ACTIVATED' }).where('id', itinerary.id),
-      iotData.updateThingShadowAsync({
-        thingName: thingName,
-        payload: payload,
-      }),
-    ]))
-    .spread((changedState, newItinerary, iotResponse) => {
-      console.log('iotResponse', iotResponse);
-      return activateStartingLeg(identityId, itinerary, itinerary.legId);
+  return models.Itinerary.query().findById(itineraryData.id)
+    .then(oldItinerary => {
+      if (typeof oldItinerary === typeof undefined) {
+        const message = `No itinerary found with id ${itineraryData.id}`;
+        return Promise.reject(new MaaSError(message, 404));
+      }
+
+      // Validate state change
+      if (!stateMachine.isStateValid('Itinerary', oldItinerary.state, 'ACTIVATED')) {
+        const message = `Invalid state change request from ${oldItinerary.state} to ACTIVATED`;
+        return Promise.reject(new MaaSError(message, 400));
+      }
+
+      return Promise.all([
+        stateMachine.changeState('Itinerary', oldItinerary.id, oldItinerary.state, 'ACTIVATED'),
+        models.Itinerary.query()
+          .patchAndFetchById(itineraryData.id, { state: 'ACTIVATED' })
+          .eager('[legs]'),
+        iotData.updateThingShadowAsync({
+          thingName: thingName,
+          payload: payload,
+        }),
+      ]);
+    })
+    .spread((changedState, updatedItinerary, iotResponse) => {
+      if (!updatedItinerary) {
+        const message = `Itinerary ${itineraryData.id} update failed`;
+        return Promise.reject(new MaaSError(message, 500));
+      }
+
+      const legId = getFirstLegId(itineraryData.legId, updatedItinerary.legs);
+      return activateStartingLeg(identityId, legId, itineraryData.timestamp);
     })
     .then(iotResponse => Promise.resolve({
       payload: JSON.parse(iotResponse.payload),
@@ -152,6 +152,8 @@ module.exports.respond = function (event, callback) {
         .then(() => callback(null, response));
     })
     .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(_error.stack);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
       Database.cleanup()

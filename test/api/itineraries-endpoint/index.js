@@ -1,10 +1,21 @@
 'use strict';
 
 const testCreateItinerary = require('./itinerary-create.js');
+const testCancelItinerary = require('./itinerary-cancel.js');
 
 describe('itineraries endpoint', function () {
   this.timeout(20000);
 
-  const lambda = require('../../../itineraries/itinerary-create/handler.js');
-  testCreateItinerary(lambda);
+  const createLambda = require('../../../itineraries/itinerary-create/handler.js');
+  const cancelLambda = require('../../../itineraries/itinerary-cancel/handler.js');
+
+  describe('itinerary-create', function () {
+    this.timeout(20000);
+    testCreateItinerary(createLambda);
+  });
+
+  describe('itinerary-cancel', function () {
+    this.timeout(20000);
+    testCancelItinerary(createLambda, cancelLambda);
+  });
 });

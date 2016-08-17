@@ -23,37 +23,6 @@
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"name\":$input.json('$.name'), \"address\": $input.json('$.address'), \"lat\":$input.json('$.lat'), \"lon\":$input.json('$.lon')}}"
       },
-      "swaggerExport": {
-        "summary": "Add an user favorite location",
-        "description": "Add an user favorite location to the his/her list",
-        "security": [{"Bearer":[]}],
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "description": "Location that will be added to user's favoriteLocations list",
-            "required": true,
-            "schema": {
-              "$ref": "profile/profile-favoriteLocations-add/request-schema.json"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "application/json": {},
-            "description": "Success",
-            "schema": {
-              "$ref": "profile/profile-favoriteLocations-add/response-schema.json"
-            }
-          },
-          "400": {
-            "description": "Invalid Input"
-          },
-          "401": {
-            "description": "Unauthorized"
-          }
-        }
-      },
       "responses": {
         "^400.*": {
           "statusCode": "400",
@@ -61,7 +30,7 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-         "^403.*": {
+        "^403.*": {
           "statusCode": "403",
           "responseParameters": {
             "method.response.header.Access-Control-Allow-Origin": "'*'"
@@ -95,9 +64,48 @@
             "application/json": ""
           }
         }
+      },
+      "swaggerExport": {
+        "summary": "Add an user favorite location",
+        "description": "Add an user favorite location to the his/her list",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "description": "Location that will be added to user's favoriteLocations list",
+            "required": true,
+            "schema": {
+              "$ref": "profile/profile-favoriteLocations-add/request-schema.json"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "profile/profile-favoriteLocations-add/response-schema.json"
+            }
+          },
+          "400": {
+            "description": "Invalid Input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
       }
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

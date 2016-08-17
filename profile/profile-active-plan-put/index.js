@@ -4,21 +4,22 @@ const Promise = require('bluebird');
 const lib = require('../../lib/utils/index');
 const bus = require('../../lib/service-bus/index');
 const Subscriptions = require('../../lib/subscription-manager/index');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 
 function setActivePlan(event) {
   let oldLevel;
   let oldBalance;
   let newPlan;
   if (Object.keys(event).length === 0) {
-    return Promise.reject(new Error('400: Input missing'));
+    return Promise.reject(new MaaSError('Missing input keys', 400));
   }
 
   if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
-    return Promise.reject(new Error('400 : Missing identityId'));
+    return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
   if (event.planId === '' || !event.hasOwnProperty('planId')) {
-    return Promise.reject(new Error('400: Missing planId'));
+    return Promise.reject(new MaaSError('Missing planId', 400));
   }
 
   // First check user existence
@@ -121,7 +122,14 @@ module.exports.respond = (event, callback) => {
       callback(null, response);
     })
     .catch(error => {
-      console.log('This caused error: ' + JSON.stringify(error, null, 2));
-      callback(error);
+      console.log('Caught an error: ' + JSON.stringify(error, null, 2));
+      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+
+      if (error instanceof MaaSError) {
+        callback(error);
+        return;
+      }
+
+      callback(new MaaSError(`Unexpected error: ${JSON.stringify(error)}`, 500));
     });
 };

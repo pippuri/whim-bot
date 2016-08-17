@@ -1,16 +1,23 @@
 {
   "name": "routes-query",
   "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 30,
   "memorySize": 1024,
+  "authorizer": {},
   "custom": {
     "excludePatterns": [],
     "cors": {
       "allowOrigin": "*",
-      "allowHeaders": ["Content-Type", "X-Amz-Date", "Authorization", "X-Api-Key"]
+      "allowHeaders": [
+        "Content-Type",
+        "X-Amz-Date",
+        "Authorization",
+        "X-Api-Key"
+      ]
     }
   },
   "endpoints": [
@@ -29,12 +36,12 @@
       },
       "requestTemplates": {
         "application/json": {
-            "identityId":"$context.authorizer.principalId",
-            "from":"$input.params('from')",
-            "to":"$input.params('to')",
-            "leaveAt":"$input.params('leaveAt')",
-            "arriveBy":"$input.params('arriveBy')"
-          }
+          "identityId": "$context.authorizer.principalId",
+          "from": "$input.params('from')",
+          "to": "$input.params('to')",
+          "leaveAt": "$input.params('leaveAt')",
+          "arriveBy": "$input.params('arriveBy')"
+        }
       },
       "responses": {
         "^400.*": {
@@ -75,5 +82,9 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }

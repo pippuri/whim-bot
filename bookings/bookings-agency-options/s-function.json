@@ -24,7 +24,7 @@
         "integration.request.querystring.startTime": "method.request.querystring.startTime",
         "integration.request.querystring.endTime": "method.request.querystring.endTime",
         "integration.request.querystring.from": "method.request.querystring.from"
-    },
+      },
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
@@ -38,10 +38,56 @@
           "toRadius": "$input.params('toRadius')"
         }
       },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^403.*": {
+          "statusCode": "403",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401.*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404.*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^500.*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      },
       "swaggerExport": {
         "summary": "Retrieve agency available options",
         "description": "Retrieve all agency available options for transportation",
-        "security": [{"Bearer":[]}],
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
         "parameters": [
           {
             "name": "agencyId",
@@ -99,48 +145,6 @@
           },
           "401": {
             "description": "Unauthorized"
-          }
-        }
-      },
-      "responses": {
-        "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^403.*": {
-          "statusCode": "403",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^401.*": {
-          "statusCode": "401",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^404.*": {
-          "statusCode": "404",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "^500.*": {
-          "statusCode": "500",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
-        "default": {
-          "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
-          "responseModels": {},
-          "responseTemplates": {
-            "application/json": ""
           }
         }
       }

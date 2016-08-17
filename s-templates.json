@@ -1,21 +1,4 @@
 {
-  "restGet": {
-    "application/json": {
-      "method": "$context.httpMethod"
-    }
-  },
-  "restPost": {
-    "application/json": "{\n\"method\": \"$context.httpMethod\",\n\"body\": $input.json('$')\n}"
-  },
-  "restPut": {
-    "application/json": "{\n\"method\": \"$context.httpMethod\",\"body\": $input.json('$'),\"id\":\"$input.params('id')\"\n}"
-  },
-  "restDelete": {
-    "application/json": {
-      "method": "$context.httpMethod",
-      "id": "$input.params('id')"
-    }
-  },
   "environment": {
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_DATA_MODEL_STAGE": "${stage}",
@@ -43,6 +26,7 @@
     "COGNITO_USER_DEVICES_DATASET": "${COGNITO_USER_DEVICES_DATASET}",
     "GOOGLE_API_KEY": "${GOOGLE_API_KEY}",
     "DYNAMO_USER_PROFILE": "${DYNAMO_USER_PROFILE}",
+    "DELETION_POLICY": "${DELETION_POLICY}",
     "CHARGEBEE_API_KEY": "${CHARGEBEE_API_KEY}",
     "CHARGEBEE_SITE": "${CHARGEBEE_SITE}",
     "DEFAULT_WHIM_PLAN": "${DEFAULT_WHIM_PLAN}",

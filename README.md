@@ -105,6 +105,21 @@ deployment where they got deleted.
 
 ## Project Flows
 
+#### Creating new Serverless stage - DON'T DO IT unless you know what you are doing
+1. Make sure you are inside maas-backend folder
+2. Do `sls stage create`
+3. Follow the CL instruction
+4. At the end, it may return an error saying some environment variables are missing, this is *normal*
+5. Go to `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE.json` and add in missing variables, read s-templates.json as a reference, then add this file to `.gitignore`
+6. Repeat step 5 with `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE-euwest1.json` but do not add it to .gitignore
+
+> Note: When do step 5 and 6, be careful and check stage name to prevent reoccurence
+
+7. Run `sls resource deploy -s YOUR_NEW_STAGE_NAME_HERE`
+8. [Create new RDS table](#creating-new-rds-postgres-instance) if *instructed*
+9.  Migrate new knex table following [this instruction](#modifying-postgresql-database)
+10. If instructed, redeploy all functions and endpoint to the new stage. You might want to create new npm deploy script. Read package.json script section for reference.
+
 #### Deploying static files/images to S3 Bucket
 ```
 Add files/folders to client/dist folder
@@ -201,6 +216,18 @@ protected keys to pull requests comming from developer forks. As far as we know
 there is no way of white listing trusted repositories.  See
 https://docs.travis-ci.com/user/environment-variables/#Encrypted-Variables for
 more details.
+
+#### Creating new RDS Postgres instance
+
+1. Login to AWS console
+2. Go to RDS ( Relational Database Service )
+3. From RDS > Instance > Launch DB Instance
+4. Choose Database type
+5. Choose Production / Dev
+6. Modify Instance specification
+7. Input settings and advanced setting ( username, password, identifier etc are exampled in _meta folder)
+In Security Group, choose `rds-postgres-maas`
+
 
 #### Modifying PostgreSQL Database
 
@@ -347,6 +374,7 @@ git push origin <local_branch_name>
 ```
 
 #### Git stash alternative
+
 Some time `git stash` behave in an unexpected way, and it is risky if you move to another branches without stashing or commiting, which could turn out to be a mess.
 This method works better than a `git stash`
 
@@ -354,3 +382,18 @@ This method works better than a `git stash`
 2. Move to other branches as you want `git checkout <branch-2>`
 3. When you want to get back and working with wip branch, `git checkout <branch-1>`
 4. Do `git reset HEAD^` to uncommit the previous WIP commit and continue working
+
+### Making releases
+
+We tag every sprint release to have a reference point between old and new production releases.
+The tags follow [semver 2.0 format](http://semver.org/), but semantically the major and minor versions refer to our roadmap in JIRA and the suffix changes every sprint. A sample: `0.1-sprint2`. Create new tags as follows:
+
+1. Make sure that you're in the commit that refers to the sprint results
+2. Create the tag and push it upstream
+
+```
+git tag -a 0.1-sprint2
+git push --tags upstream
+```
+
+3. Repeat the procedure to the other repositories you may have (app, TSPs etc.).

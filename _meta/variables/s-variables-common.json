@@ -2,5 +2,5 @@
   "project": "MaaS",
   "projectBucket": "serverless.eu-west-1.maas",
   "domain": "maas",
-  "notificationEmail": "kennu@sc5.io"
+  "notificationEmail": "james.nguyen@maas.fi"
 }

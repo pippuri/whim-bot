@@ -72,14 +72,22 @@ function setActiveLeg(identityId, itinerary, leg) {
 
   console.log(`Thing shadow payload: ${JSON.stringify(payload)}`);
   return models.Leg.query().findById(leg.id)
-    .then(oldLeg => Promise.all([
-      stateMachine.changeState('Leg', oldLeg.id, oldLeg.state, 'ACTIVATED'),
-      models.Leg.query().update({ state: 'ACTIVATED' }).where('id', leg.id),
-      iotData.updateThingShadowAsync({
-        thingName: thingName,
-        payload: payload,
-      }),
-    ]))
+    .then(oldLeg => {
+      if (typeof oldLeg === typeof undefined) {
+        const message = `No leg found with id ${leg.id}`;
+        return Promise.reject(new MaaSError(message, 404));
+      }
+
+      // FIXME Reject if the user does not own this leg; DB change needed
+      return Promise.all([
+        stateMachine.changeState('Leg', oldLeg.id, oldLeg.state, 'ACTIVATED'),
+        models.Leg.query().update({ state: 'ACTIVATED' }).where('id', leg.id),
+        iotData.updateThingShadowAsync({
+          thingName: thingName,
+          payload: payload,
+        }),
+      ]);
+    })
     .spread((changedState, newLeg, iotResponse) => {
       console.log('iotResponse', iotResponse);
       return iotResponse;
@@ -90,9 +98,9 @@ module.exports.respond = function (event, callback) {
   return Promise.all([
     Database.init(),
     validateInput(event),
-    getActiveItinerary(event.identityId),
   ])
-    .spread((knex, validation, itinerary) => setActiveLeg(event.identityId, itinerary, event.leg))
+    .spread((knex, validation) => getActiveItinerary(event.identityId))
+    .then(itinerary => setActiveLeg(event.identityId, itinerary, event.leg))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));

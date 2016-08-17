@@ -20,12 +20,14 @@
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.path.bookingId": "method.request.path.bookingId"
+        "integration.request.path.bookingId": "method.request.path.bookingId",
+        "integration.request.querystring.refresh": "method.request.querystring.refresh"
       },
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
-          "bookingId": "$input.params('bookingId')"
+          "bookingId": "$input.params('bookingId')",
+          "refresh": "$input.params('refresh')"
         }
       },
       "responses": {
@@ -67,5 +69,9 @@
     }
   ],
   "events": [],
-  "environment": "$${environment}"
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
 }
