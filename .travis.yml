@@ -2,6 +2,7 @@ language: node_js
 node_js:
 - 4.3.2
 before_install:
+- if [[ -n $TRAVIS_TAG ]]; then echo "Detect travis tag build, exit" && exit 1; fi # Exit if it is a Tag Build
 - if [[ `npm -v` != 3.9.6* ]]; then npm i  -g npm@3.9.6; fi
 - npm --version
 before_script:
@@ -35,14 +36,11 @@ after_success:
 # Current time
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
-# Creating Tag
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version") && export RELEASE_TAG="$NPM_PACKAGE_VERSION-$SERVERLESS_STAGE-$TRAVIS_BUILD_NUMBER"
-
 # Auto deploy to "test" stage on master branch
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then npm run deploy-test:all && cd ./scripts && SERVERLESS_STAGE=test knex migrate:latest; fi fi
+- sh scripts/deployment/travis-autodeploy-stage-test.sh
 
 # Auto deploy to "alpha" stage on alpha branch with release tag
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then npm run deploy-alpha:all && cd ./scripts && SERVERLESS_STAGE=alpha knex migrate:latest && git tag -a $RELEASE_TAG -m "$CURRENT_TIMESTAMP"; fi fi
+- sh scripts/deployment/travis-autodeploy-stage-alpha.sh
 env:
   global:
     - TRAVIS_CI_SECRET_PULLREQUESTS=b7a2f8902a4c11675da3e1b421c6e28d95794fed
