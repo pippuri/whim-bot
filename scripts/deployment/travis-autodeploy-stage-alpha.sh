@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # James Nguyen
 # Auto deploy to "alpha" stage on alpha branch build with release tag
 

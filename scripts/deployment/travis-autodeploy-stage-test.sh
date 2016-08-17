@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # James Nguyen
 # Auto deploy to "test" stage on master branch build
 
