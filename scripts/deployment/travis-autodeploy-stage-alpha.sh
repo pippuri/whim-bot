@@ -15,6 +15,8 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       cd ./scripts;
       npm install -g knex;
       SERVERLESS_STAGE=alpha knex migrate:latest;
+      git config --global user.email "$GH_NAME";
+      git config --global user.name "$GH_EMAIL";
       git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP";
       git push origin $RELEASE_TAG;
       echo "Finished running autodeployment to alpha stage script ..."
