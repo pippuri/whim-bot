@@ -239,23 +239,36 @@ To work with Knex, you will likely want to install its cli from npm:
 npm install -g knex
 ```
 
-When working with development data (that can be deleted):
-
-1. Delete the tables using your own SQL client, e.g. [PSequel](http://www.psequel.com/)
-2. Modify the initial migration script at `scripts/migrations`
-3. Run the migration scripts:
+You can create a new migration with the following command:
 
 ```
 cd scripts
-SERVERLESS_STAGE=stage knex migrate:latest
+knex migrate:make your_descriptive_migration_name
 ```
-Whereas stage is `dev` / `prod`
 
-When working with production data (where you need to migrate):
+This will create a new file that looks a bit like the following:
 
-1. Add a new script to `scripts/migrations` describing the change
-2. Run the migration scripts as above
+`scripts/migrations/20160808151812_your_descriptive_migration_name.js`
 
+You should add up and down scripts into the file. You can look for examples in the other files in the `scripts/migrations` folder.
+
+When your `exports.up` function is ready, you can run the following to make the migration in the dev environment:
+
+```
+cd scripts
+SERVERLESS_STAGE=dev knex migrate:latest
+```
+
+When your `exports.down` function is ready (meaning it actually deletes/reverts the stuff that `exports.up` does), you can run the following to roll the latest migration back:
+
+```
+cd scripts
+SERVERLESS_STAGE=dev knex migrate:rollback
+```
+
+After you are confident with your migration script, you can just commit it, and the automatic deployment scripts will make sure it is run on the test and production environments.
+
+To look into the database while developing, you probably want to use [PSequel](http://www.psequel.com/) like everyone else.
 
 #### Deploying To Dev
 

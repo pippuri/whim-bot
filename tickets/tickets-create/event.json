@@ -1,0 +1,11 @@
+{
+  "partnerId": "HSL",
+  "partnerKey": "secret!",
+  "startTime": 1480314671,
+  "endTime": 1480315671,
+  "from": "Ludviginkatu 6, Helsinki",
+  "to": "Paimionkatu 16, Lahti",
+  "ownerName": "Antti Vähäkotamäki",
+  "custom": "1234",
+  "meta": {}
+}

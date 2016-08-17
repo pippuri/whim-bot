@@ -116,7 +116,12 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
 
     after( done => {
       return Promise.resolve(Database.init())
-        .then(() => models.Booking.query().delete().where( 'id', createdBooking.id ))
+        .then(() => {
+          if ( createdBooking ) {
+            return models.Booking.query().delete().where( 'id', createdBooking.id );
+          }
+          return Promise.resolve();
+        } )
         .then(() => Database.cleanup())
         .then(() => done());
     });

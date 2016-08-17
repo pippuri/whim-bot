@@ -19,4 +19,5 @@ describe('bookings endpoint', function () {
   bookingSixtFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
 
   // bookingsLambdaOcrldTest();
+  require('./feature-bookings-lambda-ocrld-maas')();
 });
