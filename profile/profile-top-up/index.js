@@ -52,7 +52,7 @@ function verifyPurchase(event) {
 
     // check that the user has OK'd the payment sum
     if (!params.hasOwnProperty('chargeOK') || (parseInt(params.chargeOK, 10) !== price)) {
-      console.log(price, params.chargeOK);
+      console.info(price, params.chargeOK);
       return Promise.resolve({ amount: amount, price: price, confirm: false, message: `Please confirm charge of ${price} cents for ${params.amount} points by supplying chargeOK parameter with the correct amount` });
     }
 
@@ -67,7 +67,7 @@ module.exports.respond = function (event, callback) {
       callback(null, response);
     })
     .catch(error => {
-      console.log('This event caused an error: ' + JSON.stringify(event, null, 2));
+      console.info('This event caused an error: ' + JSON.stringify(event, null, 2));
       console.warn('Error: ' + error.message);
       callback(error);
     });

@@ -31,7 +31,7 @@ function simulateUser(phone) {
 
   return loginSimulatedUser(phone)
   .then(response => {
-    //console.log('Simulating user', phone, response.cognito_id);
+    //console.info('Simulating user', phone, response.cognito_id);
     // Read the current state from user's Thing Shadow
     thingName = response.cognito_id.replace(/:/, '-');
     identityId = response.cognito_id;
@@ -46,7 +46,7 @@ function simulateUser(phone) {
   })
   .then(null, err => {
     if (err.code === 'ResourceNotFoundException') {
-      console.log('Note: Thing', thingName, 'does not have a thing shadow yet');
+      console.info('Note: Thing', thingName, 'does not have a thing shadow yet');
       state = {};
       return Promise.resolve();
     }
@@ -84,7 +84,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

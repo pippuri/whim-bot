@@ -70,7 +70,7 @@ function setActiveLeg(identityId, itinerary, leg) {
     },
   });
 
-  console.log(`Thing shadow payload: ${JSON.stringify(payload)}`);
+  console.info(`Thing shadow payload: ${JSON.stringify(payload)}`);
   return models.Leg.query().findById(leg.id)
     .then(oldLeg => {
       if (typeof oldLeg === typeof undefined) {
@@ -89,7 +89,7 @@ function setActiveLeg(identityId, itinerary, leg) {
       ]);
     })
     .spread((changedState, newLeg, iotResponse) => {
-      console.log('iotResponse', iotResponse);
+      console.info('iotResponse', iotResponse);
       return iotResponse;
     });
 }

@@ -20,7 +20,7 @@ function updateUserLocation(identityId, lat, lon, timestamp, legId) {
       },
     },
   });
-  console.log('Thing shadow payload:', payload);
+  console.info('Thing shadow payload:', payload);
   return iotData.updateThingShadowAsync({
     thingName: thingName,
     payload: payload,
@@ -33,7 +33,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

@@ -83,7 +83,7 @@ function activateStartingLeg(identityId, legId, timestamp) {
       timestamp: timestamp,
     },
   };
-  console.log('Payload', JSON.stringify(payload, null, 2));
+  console.info('Payload', JSON.stringify(payload, null, 2));
   return bus.call('MaaS-tracking-set-active-leg', payload);
 }
 

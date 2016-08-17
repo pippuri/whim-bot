@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 // that's limited to logged in users.
 
 function customAuthorize(event) {
-  console.log('Custom authorizer checking', event);
+  console.info('Custom authorizer checking', event);
   const m = ('' + event.authorizationToken).match(/^Bearer +([^ ]+)$/);
   if (!m) {
     // Invalid authorization
@@ -21,11 +21,11 @@ function customAuthorize(event) {
     user = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     // Invalid authorization
-    console.log('Error verifying JWT token:', err);
+    console.info('Error verifying JWT token:', err);
     return Promise.reject('Unauthorized');
   }
 
-  console.log('Token contents:', user);
+  console.info('Token contents:', user);
 
   return Promise.resolve()
   .then(() => {
@@ -51,7 +51,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

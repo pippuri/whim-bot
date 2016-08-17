@@ -7,7 +7,7 @@ const Promise = require('bluebird');
 const area = [60.1454104, 24.697979, 60.4546686, 25.2032076];
 
 function activateRoute(identityId, idToken, activeRoute) {
-  console.log('Activating route:', identityId, activeRoute);
+  console.info('Activating route:', identityId, activeRoute);
 
   // Add some required fields to the route
   activeRoute.timestamp = Date.now();
@@ -47,7 +47,7 @@ function startRandomRoute(identityId, idToken) {
     lat: area[0] + Math.random() * (area[2] - area[0]),
     lon: area[1] + Math.random() * (area[3] - area[1]),
   };
-  console.log('Starting random route from ' + from.lat + ',' + from.lon + ' to ' + to.lat + ',' + to.lon);
+  console.info('Starting random route from ' + from.lat + ',' + from.lon + ' to ' + to.lat + ',' + to.lon);
   return request.get('https://api.dev.maas.global/routes', {
     qs: {
       from: from.lat + ',' + from.lon,

@@ -36,9 +36,9 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(error => {
-      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
       if (error && error.hasOwnPropert('response')) {
-        console.log(error.response.toString());
+        console.info(error.response.toString());
         callback(error.response.toString());
       } else {
         callback(error);

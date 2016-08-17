@@ -27,7 +27,7 @@ function getCognitoDeveloperIdentity(plainPhone) {
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     Logins: logins,
   };
-  console.log('Getting cognito developer identity with', JSON.stringify(options, null, 2));
+  console.info('Getting cognito developer identity with', JSON.stringify(options, null, 2));
   return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options)
   .then(response => {
     return {
@@ -95,7 +95,7 @@ function updateCognitoProfile(identityId, profile) {
  */
 function createUserThing(identityId, plainPhone, isSimulationUser) {
   const thingName = identityId.replace(/:/, '-');
-  console.log('Creating user thing', identityId, thingName);
+  console.info('Creating user thing', identityId, thingName);
   return iot.createThingAsync({
     thingName: thingName,
     attributePayload: {
@@ -121,7 +121,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       });
     }
 
-    console.log('ERROR:', err.code, err);
+    console.info('ERROR:', err.code, err);
     return Promise.reject(err);
   })
   .then(response => {
@@ -132,7 +132,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
     });
   })
   .then(response => {
-    console.log('AttachThingPrincipal response:', response);
+    console.info('AttachThingPrincipal response:', response);
 
     // Attach the cognito policy to the default policy
     return iot.attachPrincipalPolicyAsync({
@@ -141,19 +141,19 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
     });
   })
   .then(response => {
-    console.log('AttachPrincipalPolicy response:', response);
+    console.info('AttachPrincipalPolicy response:', response);
     return iot.listPrincipalPoliciesAsync({
       principal: identityId,
     });
   })
   .then(response => {
-    console.log('Attached policies:', response);
+    console.info('Attached policies:', response);
     return iot.listPrincipalThingsAsync({
       principal: identityId,
     });
   })
   .then(response => {
-    console.log('Attached things:', response);
+    console.info('Attached things:', response);
   });
 }
 
@@ -174,7 +174,7 @@ function smsLogin(phone, code) {
 
   if (isSimulationUser) {
     // Simulation users accept login with code 292
-    console.log('User is a simulation user');
+    console.info('User is a simulation user');
     correctCode = '292';
   } else {
     // Real users must have a real code from Twilio
@@ -185,7 +185,7 @@ function smsLogin(phone, code) {
     correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
   }
 
-  console.log('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
+  console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
     return Promise.reject(new Error('401 Unauthorized'));
   }
@@ -242,7 +242,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

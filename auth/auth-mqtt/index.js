@@ -24,7 +24,7 @@ function getMqttCredentials(principalId) {
   .then(response => {
     let plainPhone = '';
     response.Records.map(record => {
-      console.log('Considering', record);
+      console.info('Considering', record);
       if (record.Key === 'phone') {
         plainPhone = record.Value.replace(/[^\d]/g, '');
       }
@@ -33,7 +33,7 @@ function getMqttCredentials(principalId) {
     // Get cognito token
     const logins = {};
     logins[process.env.COGNITO_DEVELOPER_PROVIDER] = 'tel:' + plainPhone;
-    console.log('Identity logins:', logins);
+    console.info('Identity logins:', logins);
     return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
       IdentityId: principalId,
@@ -63,7 +63,7 @@ module.exports.respond = function (event, callback) {
     callback(null, response);
   })
   .catch(err => {
-    console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
     callback(err);
   });
 };

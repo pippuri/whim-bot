@@ -27,7 +27,7 @@ module.exports.respond = function (event, callback) {
       }
     })
     .catch(error => {
-      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn('Error: ' + error.message);
       callback(error);
     });

@@ -32,7 +32,7 @@ function updateUserData(event) {
       keys.forEach(key => {
         values[':' + key] = event.payload[key];
       });
-      console.log('update user data:', keys, expressions);
+      console.info('update user data:', keys, expressions);
 
       const params = {
         TableName: table,
@@ -69,7 +69,7 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response.Attributes, event))
     .then(envelope => callback(null, envelope))
     .catch(error => {
-      console.log('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(error);
     });
 };

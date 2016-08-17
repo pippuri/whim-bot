@@ -27,7 +27,7 @@ function findNextLeg(legs, legId) {
 }
 
 function continueExistingRoute(identityId, idToken, activeRoute) {
-  console.log('Continue existing route:', activeRoute.routeId, 'leg', activeRoute.activeLeg.legId);
+  console.info('Continue existing route:', activeRoute.routeId, 'leg', activeRoute.activeLeg.legId);
 
   // Check if leg has been completed
   const now = Date.now();
@@ -45,13 +45,13 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
 
   // Proceed to next leg when reached endTime (or for simulation, also when travelled leg for 1 min or more)
   if (legTimeLeft > 0 && legTimeElapsed < 0) {
-    console.log('Leg [' + legNumber + '/' + activeRoute.legs.length + '] active for', legTimeElapsed, 'min, ', legTimeLeft, 'min left:', leg);
+    console.info('Leg [' + legNumber + '/' + activeRoute.legs.length + '] active for', legTimeElapsed, 'min, ', legTimeLeft, 'min left:', leg);
     return Promise.resolve();
   }
 
   if (nextLeg) {
     const nextLegNumber = activeRoute.legs.indexOf(nextLeg) + 1;
-    console.log('Leg [' + nextLegNumber + '/' + activeRoute.legs.length + '] activating now:', nextLeg);
+    console.info('Leg [' + nextLegNumber + '/' + activeRoute.legs.length + '] activating now:', nextLeg);
     return request.put('https://api.dev.maas.global/tracking/active-route/active-leg', {
       json: {
         legId: nextLeg.legId,
@@ -80,7 +80,7 @@ function continueExistingRoute(identityId, idToken, activeRoute) {
     });
   }
 
-  console.log('No more legs left. Route completed!');
+  console.info('No more legs left. Route completed!');
   return request.delete('https://api.dev.maas.global/tracking/active-route', {
     json: true,
     headers: {
