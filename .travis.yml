@@ -37,10 +37,10 @@ after_success:
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
 # Auto deploy to "test" stage on master branch
-- sh scripts/deployment/travis-autodeploy-stage-test.sh
+- bash scripts/deployment/travis-autodeploy-stage-test.sh
 
 # Auto deploy to "alpha" stage on alpha branch with release tag
-- sh scripts/deployment/travis-autodeploy-stage-alpha.sh
+- bash scripts/deployment/travis-autodeploy-stage-alpha.sh
 env:
   global:
     - TRAVIS_CI_SECRET_PULLREQUESTS=b7a2f8902a4c11675da3e1b421c6e28d95794fed
