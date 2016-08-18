@@ -71,7 +71,10 @@ class Decider {
           .then(itinerary => this._processLegs(itinerary))
           .then(() => {
             // schedule trip closing into end
-            this.decision.scheduleTimedTask((this.flow.trip.endTime || Date.now()) + (5 * 60 * 1000), TripWorkFlow.TASK_CLOSE_TRIP);
+            const timeout = (this.flow.trip.endTime || Date.now()) + (5 * 60 * 1000);
+            this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
+            console.log(`Decider decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' itinerary id '${this.flow.trip.referenceId}' ` +
+                        `into ${new Date(timeout)}.`);
             return Promise.resolve();
           })
           .catch(err => {
@@ -126,7 +129,7 @@ class Decider {
     };
     return bus.call(LAMBDA_ITINERARY_RETRIEVE, data)
       .then(response => {
-        console.log('Decider: checking itinerary-retrieve response:', response);
+        console.log('Decider: checking itinerary-retrieve response...');
         // find right itinerary
         const itinerary = response.itineraries && response.itineraries.find(itinerary => {
           return itinerary.id === this.flow.trip.referenceId;
@@ -151,21 +154,23 @@ class Decider {
     if (!this.decision || !itinerary.legs || !this.now || !this.flow) {
       throw new Error('Cannot parse itinerary; missing parameter(s)');
     }
-
-    // traverse legs
-    itinerary.legs.forEach(leg => {
-      if (leg.bookingId) {
-        // check leg status or schedule check before half an hour before leg starts
-        if (leg.startTime - (35 * 1000) < this.now) {
-          //_checkLegBooking(leg);
-          console.log(`Decider WOULD decide to check booking id '${leg.bookingId}' (${leg.mode} in state ${leg.state})`);
-        } else {
-          const timeout = leg.startTime - (30 * 1000);
-          this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CHECK_BOOKING, leg.bookingId);
-          console.log(`Decider decided to schedule task '${TripWorkFlow.TASK_CHECK_BOOKING}' booking id '${leg.bookingId}' ` +
-                      `into ${new Date(timeout)}.`);
+    return new Promise((resolve, reject) => {
+      // traverse legs
+      itinerary.legs.forEach(leg => {
+        if (leg.bookingId) {
+          // check leg status or schedule check before half an hour before leg starts
+          if (leg.startTime - (35 * 1000) < this.now) {
+            //_checkLegBooking(leg);
+            console.log(`Decider WOULD decide to check booking id '${leg.bookingId}' (${leg.mode} in state ${leg.state})`);
+          } else {
+            const timeout = leg.startTime - (30 * 1000);
+            this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CHECK_BOOKING, leg.bookingId);
+            console.log(`Decider decided to schedule task '${TripWorkFlow.TASK_CHECK_BOOKING}' booking id '${leg.bookingId}' ` +
+                        `into ${new Date(timeout)}.`);
+          }
         }
-      }
+      });
+      resolve();
     });
   }
 

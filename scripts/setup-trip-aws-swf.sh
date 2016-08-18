@@ -12,7 +12,7 @@ export AWS_PROFILE="maas"
 
 export DOMAIN_NAME="maas-trip-stage-dev"
 export FLOW_NAME="maas-trip"
-export FLOW_VERSION="test-v3"
+export FLOW_VERSION="test-v4"
 export ACTIVITY_NAME="maas-trip"
 export ACTIVITY_VERSION="v1"
 
@@ -23,7 +23,7 @@ aws swf register-domain --name $DOMAIN_NAME --description "MaaS SWF for managing
 aws swf list-domains --registration-status REGISTERED
 
 # register workflow
-aws swf register-workflow-type --domain $DOMAIN_NAME --name $FLOW_NAME --workflow-version $FLOW_VERSION --description "Maas SWF trip follow workflow type" --default-task-start-to-close-timeout "60" --default-child-policy "TERMINATE"
+aws swf register-workflow-type --domain $DOMAIN_NAME --name $FLOW_NAME --workflow-version $FLOW_VERSION --description "Maas SWF trip follow workflow type" --default-task-start-to-close-timeout "180" --default-child-policy "TERMINATE"
 
 # list registered flows
 aws swf list-workflow-types --domain $DOMAIN_NAME --registration-status REGISTERED

@@ -24,8 +24,8 @@ const LAMBDA_TRIP_INVOKE_DECIDER = 'MaaS-trip-invoke-decider';
 function pollForDecisionTasks(params) {
 
   if (!params || !params.maxBlockingTimeInSec) {
-    params.maxBlockingTimeInSec = 100;
-    console.log('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 100 sec');
+    params.maxBlockingTimeInSec = 150;
+    console.log('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 150 sec');
   }
   if (typeof(params.maxBlockingTimeInSec) !== 'number'
       || params.maxBlockingTimeInSec < 10
@@ -54,7 +54,7 @@ function pollForDecisionTasks(params) {
     // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
     return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
       .then(data => {
-        console.log('pollForDecisionTasks() got data:', JSON.stringify(data));
+        //console.log('pollForDecisionTasks() got data:', JSON.stringify(data));
 
         // check do we have proper decition to process...
         if (!data.startedEventId || data.startedEventId === 0 ) {
