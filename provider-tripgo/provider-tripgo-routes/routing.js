@@ -15,7 +15,7 @@ const TRIPGO_PUBLIC_MODES = [
   //'me_car-s_Ekorent',
   //'me_mot',
   //'cy_bic',
-  //'wa_wal',
+  'wa_wal',
 ];
 
 const TRIPGO_MIXED_MODES = [
