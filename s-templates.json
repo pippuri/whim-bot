@@ -3,6 +3,7 @@
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_DATA_MODEL_STAGE": "${stage}",
     "SERVERLESS_PROJECT_NAME": "${project}",
+    "SERVERLESS_IAM_ROLE_ARN_LAMBDA": "${iamRoleArnLambda}",
     "AWS_REGION": "${AWS_REGION}",
     "IOT_ENDPOINT": "${IOT_ENDPOINT}",
     "SMS_CODE_SECRET": "${SMS_CODE_SECRET}",
