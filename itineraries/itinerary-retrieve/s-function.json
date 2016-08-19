@@ -13,20 +13,19 @@
   },
   "endpoints": [
     {
-      "path": "itineraries",
+      "path": "itineraries/{itineraryId}",
       "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.querystring.itineraryId": "method.request.querystring.itineraryId"
+        "integration.request.path.itineraryId": "method.request.path.itineraryId"
       },
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
-          "itineraryId": "$input.params('itineraryId')",
-          "filter": "$input.params('filter')"
+          "itineraryId": "$input.params('itineraryId')"
         }
       },
       "responses": {

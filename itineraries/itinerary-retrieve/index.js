@@ -1,123 +1,82 @@
 'use strict';
 
 const Promise = require('bluebird');
-const MaasError = require('../../lib/errors/MaaSError');
-const utils = require('../../lib/utils/index');
-const moment = require('moment');
-const models = require('../../lib/models/index');
+const MaaSError = require('../../lib/errors/MaaSError');
+const utils = require('../../lib/utils');
+const models = require('../../lib/models');
 const Database = models.Database;
 
 /**
-* Return past itineraries from the full set
-*/
-
-function filterPastRoutes(itineraries) {
-  const pastRoutes = itineraries.filter(itinerary => {
-    return moment(itinerary.startTime) < moment();
-  });
-
-  return pastRoutes;
-}
-
-/**
-* Return future itineraries from the full set
-*/
-
-function filterFutureRoutes(itineraries) {
-  const futureRoutes = itineraries.filter(itinerary => {
-    return moment(itinerary.startTime) > moment();
-  });
-
-  return futureRoutes;
-}
-
-/**
-* Recover leg data from itinerary info
-*/
-function recoverLegFromItinerary(itinerary) {
-  return Database.knex.from('Leg')
-   .select('*')
-   .where('itineraryId', itinerary.id)
-   .then(legs => {
-     itinerary.legs = legs;
-     itinerary.startTime = new Date(itinerary.startTime).valueOf();
-     itinerary.endTime = new Date(itinerary.endTime).valueOf();
-     itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
-     legs.map(leg => {
-       leg.startTime = new Date(leg.startTime).valueOf();
-       leg.endTime = new Date(leg.endTime).valueOf();
-       leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
-     });
-   });
-}
-
-/**
-* Get itinerary information using input itineraryId
-*/
-function retrieveItinerary(event) {
+ * Validates the input event to have identityId and itineraryId
+ * (passed as query string).
+ *
+ * @param {object} event the input event, as received from API Gateway
+ */
+function validateInput(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaasError('Missing identityId input', 400));
+    return Promise.reject(new MaaSError('Missing identityId input', 400));
   }
 
   if (event.itineraryId !== '' && !event.itineraryId.match(/[A-F0-9]{8}(-[A-F0-9]{4}){3}-[A-F0-9]{12}/i)) {
-    return Promise.reject(new MaasError('Invalid itineraryId format', 400));
+    return Promise.reject(new MaaSError('Invalid itineraryId format', 400));
   }
 
-  let output;
+  return Promise.resolve(event);
+}
 
- // Query for all itinerary of an identityId
-  const withoutItineraryId = Database.knex.select().from('Itinerary')
-   .where('identityId', event.identityId);
+function fetchItinerary(identityId, itineraryId) {
+  // Get the old state
+  return models.Itinerary.query()
+    .findById(itineraryId)
+    .eager('[legs, legs.booking]')
+    .then(itinerary => {
+      // Handle not found
+      if (typeof itinerary === typeof undefined) {
+        return Promise.reject(new MaaSError(`No item found with itineraryId ${itineraryId}`, 404));
+      }
 
- // Query for an itinerary with an itineraryId for an identityId
-  const withItineraryId = Database.knex.select().from('Itinerary')
-   .where('identityId', event.identityId)
-   .andWhere('id', event.itineraryId);
+      // Handle item not user's itinerary
+      if (itinerary.identityId !== identityId) {
+        return Promise.reject(new MaaSError(`Itinerary ${itineraryId} not owned by the user`, 403));
+      }
 
-  const resolve = (event.itineraryId === '') ? withoutItineraryId : withItineraryId;
-
-  return resolve.then(itineraries => {
-    const promiseQueue = [];
-    output = Object.assign([], itineraries);
-    output.map(itinerary => {
-      promiseQueue.push(recoverLegFromItinerary(itinerary));
+      return Promise.resolve(itinerary);
     });
+}
 
-    return Promise.all(promiseQueue);
-  })
-   .then(response => {
-     // Filter itineraries (Optional)
-     if (event.filter) {
-       switch (event.filter.toLowerCase()) {
-         case 'past':
-           output = filterPastRoutes(output);
-           break;
-         case 'future':
-           output = filterFutureRoutes(output);
-           break;
-         default:
-           break;
-       }
-     }
-     return {
-       itineraries: output,
-     };
-   });
-
+function formatResponse(itinerary) {
+  return Promise.resolve({
+    itinerary: utils.removeNulls(itinerary),
+    maas: {},
+  });
 }
 
 module.exports.respond = (event, callback) => {
 
-  return Database.init()
-    .then(() => {
-      return retrieveItinerary(event);
-    })
+  return Promise.all([
+    Database.init(),
+    validateInput(event),
+  ])
+    .then(() => fetchItinerary(event.identityId, event.itineraryId))
+    .then(itinerary => formatResponse(itinerary))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));
     })
-    .catch(error => {
+    .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      // Uncaught, unexpected error
       Database.cleanup()
-        .then(() => callback(null, error));
+      .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
+
+        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      });
     });
 };
