@@ -15,34 +15,34 @@ const Database = models.Database;
  */
 function parseAndValidateInput(event) {
   const identityId = event.identityId;
-  const startTime = (event.startTime === '') ? 0 : parseInt(event.startTime, 10);
-  const endTime = (event.endTime === '') ? 0 : parseInt(event.endTime, 10);
-  const states = event.states.split(',');
+  const startTime = (utils.isEmptyValue(event.startTime)) ? null : parseInt(event.startTime, 10);
+  const endTime = (utils.isEmptyValue(event.endTime)) ? null : parseInt(event.endTime, 10);
+  const states = (utils.isEmptyValue(event.states)) ? [] : event.states.split(',');
   const validStates = stateMachine.getAllStates('Itinerary');
 
   if (typeof identityId === 'undefined' || identityId === '') {
     return Promise.reject(new MaaSError('Missing identityId input', 401));
   }
 
-  if (startTime <= 0) {
+  if (startTime !== null && startTime <= 0) {
     const message = `Invalid startTime: ${event.startTime}; expecting positive integer`;
     return Promise.reject(new MaaSError(message, 400));
   }
 
-  if (endTime <= 0) {
+  if (endTime !== null && endTime <= 0) {
     const message = `Invalid startTime: ${event.endTime}; expecting positive integer`;
     return Promise.reject(new MaaSError(message, 400));
   }
 
-  if (startTime < endTime) {
+  if (endTime && startTime && endTime < startTime) {
     const message = `Invalid endTime: ${event.endTime}; must be greater than equal to startTime ${event.startTime}`;
     return Promise.reject(new MaaSError(message, 400));
   }
 
   for (let i = 0; i < states.length; i++) {
     const state = states[i];
-    if (!validStates.includes(state)) {
-      const message = `Invalid state ${state} instates, should be one of ${states}`;
+    if (!validStates.some(s => s === state)) {
+      const message = `Invalid state ${state} in states, should be one of ${validStates}`;
       return Promise.reject(new MaaSError(message, 400));
     }
   }
@@ -56,23 +56,25 @@ function parseAndValidateInput(event) {
 }
 
 function fetchItineraries(identityId, startTime, endTime, states) {
-  // Get the old state
-  return models.Itinerary.query()
-    .findById(itineraryId)
+  let query = models.Itinerary.query()
+    .where('identityId', identityId);
+
+  if (startTime !== null) {
+    query = query.andWhere('startTime', '>=', (new Date(startTime)).toISOString());
+  }
+
+  if (endTime !== null) {
+    query = query.andWhere('endTime', '<=', (new Date(endTime)).toISOString());
+  }
+
+  if (states.length > 0) {
+    query = query.whereIn('state', states);
+  }
+
+  return query
     .eager('[legs, legs.booking]')
-    .then(itinerary => {
-      // Handle not found
-      if (typeof itinerary === typeof undefined) {
-        return Promise.reject(new MaaSError(`No item found with itineraryId ${itineraryId}`, 404));
-      }
-
-      // Handle item not user's itinerary
-      if (itinerary.identityId !== identityId) {
-        return Promise.reject(new MaaSError(`Itinerary ${itineraryId} not owned by the user`, 403));
-      }
-
-      return Promise.resolve(itinerary);
-    });
+    .orderBy('startTime')
+    .then(results => results);
 }
 
 function formatResponse(itineraries) {

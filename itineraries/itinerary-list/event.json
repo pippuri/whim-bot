@@ -1,4 +1,6 @@
 {
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "itineraryId": "003A36F0-5AE3-11E6-BBAB-EB77ABCA12B4"
+  "states": "START,ACTIVATED",
+  "startTime": "1485413653000",
+  "endTime": "1485415333000"
 }
