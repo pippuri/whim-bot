@@ -91,6 +91,12 @@ class Decider {
         // ... fetch booking and check it :)
         console.log(`Decider: CHECKING BOOKING '${this.flow.task && this.flow.task.params}'`);
         return Promise.resolve();
+      case TripWorkFlow.TRIP_CANCEL_FLOW:
+        // Cancel requested by user or external entity.
+        // Later this can e.g. do some booking cancelling etc.
+        console.log(`Decider: CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        this.decision.closeFlow();
+        return Promise.resolve();
       default:
         console.warn(`Decider: unknown taskName '${taskName}', aboring...`);
         this.decision.abortFlow(`Decider: unknown action '${taskName}' -- aborting`);

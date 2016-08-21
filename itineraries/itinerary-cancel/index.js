@@ -7,6 +7,7 @@ const tsp = require('../../lib/tsp/index');
 const stateMachine = require('../../lib/states').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
+const Trip = require('../../lib/trip');
 
 /**
  * Filters away the legs that don't need to be act on.
@@ -224,6 +225,7 @@ module.exports.respond = (event, callback) => {
     .then(() => fetchItinerary(event.itineraryId, event.identityId))
     .then(itinerary => validateStateChanges(itinerary))
     .then(itinerary => cancelItinerary(itinerary))
+    .then(itinerary => Trip.cancelWithItinerary(itinerary))
     .then(formatResponse)
     .then(response => {
       Database.cleanup()
