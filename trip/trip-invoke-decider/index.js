@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
+const Trip = require('../../lib/trip/Trip');
 const Decision = require('../../lib/trip/Decision');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
@@ -55,7 +56,7 @@ class Decider {
     }
 
     // cannot do anything if not based on itinerary..
-    if (this.flow.trip.referenceType !== 'itinerary') {
+    if (this.flow.trip.referenceType !== Trip.REF_TYPE_ITINERARY) {
       console.warn('Decider: not itinerary based trip -- aborting');
       this.decision.abortFlow('Decider: not itinerary based trip -- aborting');
       return Promise.resolve();

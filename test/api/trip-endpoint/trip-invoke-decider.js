@@ -26,7 +26,7 @@ module.exports = function (lambda, swfStub) {
 
     it('should get workFlowId', () => {
       expect(error).to.be.null;
-      expect(response).to.have.property('workFlowId').and.be.a('string').and.to.equal('itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
+      expect(response).to.have.property('workFlowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
     });
 
     after(done => {
@@ -44,7 +44,7 @@ module.exports = function (lambda, swfStub) {
       taskToken: 'dummy',
       startedEventId: 3,
       workflowExecution: {
-        workflowId: 'itinerary.fa4a73e0-5f29-11e6-8396-d7cb77ca864a',
+        workflowId: 'Itinerary.fa4a73e0-5f29-11e6-8396-d7cb77ca864a',
         workflowType: {
           name: 'maas-trip',
           version: 'test-v3',
