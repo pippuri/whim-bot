@@ -3,7 +3,6 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
-const schema = require('../../../profile/profile-edit/response-schema.json');
 const event = require('../../../profile/profile-edit/event.json');
 
 module.exports = function (lambda) {
@@ -30,7 +29,7 @@ module.exports = function (lambda) {
     });
 
     it('should return a valid response', () => {
-      return validator.validate(response, schema)
+      return validator.validate('maas-backend:profile-edit-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

@@ -6,7 +6,6 @@ const moment = require('moment');
 const _ = require('lodash');
 
 const validator = require('../../../lib/validator');
-const schema = require('../../../routes/routes-query/response-schema.json');
 
 module.exports = (lambda, options) => {
 
@@ -40,7 +39,7 @@ module.exports = (lambda, options) => {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate(response, schema)
+      return validator.validate('maas-backend:routes-query-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

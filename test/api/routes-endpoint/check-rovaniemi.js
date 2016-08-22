@@ -5,7 +5,6 @@ const expect = require('chai').expect;
 const moment = require('moment');
 
 const validator = require('../../../lib/validator');
-const schema = require('../../../routes/routes-query/response-schema.json');
 
 module.exports = function (lambda) {
 
@@ -35,7 +34,7 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate(response, schema)
+      return validator.validate('maas-backend:routes-query-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
