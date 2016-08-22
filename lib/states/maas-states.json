@@ -14,7 +14,7 @@
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
-      "transition": ["ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
+      "transition": ["ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS", "EXPIRED"]
     },
     "ACTIVATED": {
       "description": "Booking is activated. Can be CANCELLED and will go EXPIRED if not",
@@ -102,6 +102,10 @@
     },
     "FINISHED": {
       "description": "The Itinerary has been FINISHED",
+      "transition": []
+    },
+    "CANCELLED_WITH_ERRORS": {
+      "description": "The leg has been CANCELLED WITH ERRORS",
       "transition": []
     }
   }
