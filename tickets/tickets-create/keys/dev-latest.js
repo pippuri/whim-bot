@@ -1,16 +1,16 @@
 'use strict';
 
-module.exports.getKey = () => [
-  '-----BEGIN RSA PRIVATE KEY-----',
-  'MIIBzAIBAAJhAPad/1cNq1sZr+Uxt6mNJGpbrxNNUeAd7Mdwj/NLShpfZalJQKfi',
-  'DuqmI2MYroRzkqsLqgvAuDuo/d0CGOTXRzNdrAVml5oRxd75bQDz1BBO0yamLRw4',
-  'B7/jatPxZZM0awIDAQABAmAT6fYwZV4s4QofC8C05DzIida9TEUMP95azHATSUUW',
-  'lBV1cgDSjaJ+uCOrYNbWwy4wJVuNgy7A3Wc0ydrPGABmvXn0oMpMrx8iZX5mRnKa',
-  '142iXxbgn83W+yM3cWtaO0ECMQD8GvMXDZBUWyJXg5wvEaEjKa8htRUbdazgGQuk',
-  'STAagX++JggOi4e+sMn0Qsi8ysMCMQD6bVfPB1C6yqlMjcsIESNRg96aB9zJnm2s',
-  'zWD8dM4UqFgnEAxMn/8xVPcMvJpWxTkCMQCfLtERXFImwYiUo5hprAMH9dkMOo/C',
-  'T/JBae8M492Izv3+7Xqm3Hlw8aYDImwnsQsCMQDGjRUWrw0h3HbYnH+CWNww0CYY',
-  '5+z06ii43mlsIEwYctTZu86UnjJd8aiir5KLA3kCMQC/fbv1Siw5S49Gc+g7hCIG',
-  'TyZz3lw6M9njucfYOraB5ny7ssudeURUaIu3UtYkPFw=',
-  '-----END RSA PRIVATE KEY-----',
-].join('\n');
+module.exports.getKey = () =>
+`-----BEGIN RSA PRIVATE KEY-----
+MIIBzAIBAAJhALNsVQ14argeLk4BZEvuJH4CowTz7LBV0pOcX+m/bEtqUPe2rdmR
+kHnfA5X7Rz6W2Y3HoQpaJbCN8I2WuYyuKnfnN1CNFp+dcTvuYk1Q7UhfZD5zUO8W
+5RwmNg5/ZF1elQIDAQABAmEAoUC3oAedQiQ90XWGwocg3O9Zu9XN3x0CyA8+VEHp
+/k1qv3a7AFLG2gEIo/7VpPbExl+gJ/SJwE/JlfLSeW4dUuF7zkjPnuEosc+KqGwp
+SUCkHxJD0nvCCCs1rF2eWBiBAjEA1ql6IpVc0M+UcmmQBVaiCF2310+J3bgioWDx
+8hM2ccNpXwoSneMbOqSeljAg+zIdAjEA1fmhs0MDO6u/yVdxEYkw6cvhkCJitBad
+J8pa9IQQxE+9MMgjQyOriy6sNmwKqjTZAjEArRpz/El4VIbgjbbkxflLpvV0V/Oz
+GJHxkzOrR+wIXosXgOWNh7bpcUvo+vIK1qZdAjAP3h87p/CJcEccqztbTY0vCUuE
+4MfpCvREiyELmO+VX0RsZasXw4FpJODoeEKiNKECMQCnRuR4rWRJ71o/cUphzUXu
+6mTt23Y+4bRSpYjNEzsJT/gaDbjJrANIDdhqoS/J1rs=
+-----END RSA PRIVATE KEY-----`
+;
