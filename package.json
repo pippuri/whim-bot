@@ -65,6 +65,7 @@
     "gulp-sequence": "^0.4.5",
     "gulp-util": "^3.0.7",
     "json-loader": "^0.5.4",
+    "proxyquire": "^1.7.10",
     "serverless": "^0.5.5",
     "serverless-client-s3": "^2.0.0",
     "serverless-cors-plugin": "^0.4.1",
@@ -75,6 +76,7 @@
     "serverless-plugin-swagger-export": "^0.5.0",
     "serverless-slack-plugin": "https://github.com/blackevil245/serverless-slack-plugin",
     "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
+    "sinon": "^1.17.5",
     "webpack": "^1.13.1"
   },
   "homepage": "https://github.com/maasglobal/maas-backend#readme",

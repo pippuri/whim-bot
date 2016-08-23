@@ -1,0 +1,26 @@
+{
+  "name": "trip-poll-decision",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function to run AWS SWF decision task polling",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 180,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [],
+  "events": [
+     {
+      "name": "MaaSSWFDecisionPollScheduler",
+      "type": "schedule",
+      "config": {
+        "schedule": "rate(2 minutes)",
+        "enabled": true
+      }
+    }
+  ],
+  "environment": "$${environment}"
+}
