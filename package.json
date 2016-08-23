@@ -1,4 +1,23 @@
 {
+  "homepage": "https://github.com/maasglobal/maas-backend#readme",
+  "license": "UNLICENSED",
+  "name": "MaaS-Backend",
+  "description": "MaaS core backend project",
+  "optionalDependencies": {},
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maasglobal/maas-backend.git"
+  },
+  "version": "0.1.0",
+  "engines": {
+    "node": "4.3.2",
+    "npm": "3.9.6"
+  },
+  "config": {
+    "engine-strict": true
+  },
+  "keywords": ["maas", "whim", "aws", "nodejs", "lambda", "apigateway"],
   "_npmOperationalInternal": {
     "host": "packages-12-west.internal.npmjs.com",
     "tmp": "tmp/sc5-serverless-boilerplate-0.0.5.tgz_1457013990650_0.77550138393417"
@@ -48,7 +67,6 @@
     "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
     "tempfile": "^1.1.1"
   },
-  "description": "A Serverless Project Template.",
   "devDependencies": {
     "aws-sdk": "^2.2.39",
     "chai": "^3.5.0",
@@ -79,15 +97,6 @@
     "sinon": "^1.17.5",
     "webpack": "^1.13.1"
   },
-  "homepage": "https://github.com/maasglobal/maas-backend#readme",
-  "license": "UNLICENSED",
-  "name": "MaaS",
-  "optionalDependencies": {},
-  "private": true,
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/maasglobal/maas-backend.git"
-  },
   "scripts": {
     "test": "gulp test",
     "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json && sls function run -s dev swagger-populate",
@@ -97,6 +106,5 @@
     "deploy-test:all": "sls function deploy -a -s test && sls endpoint deploy -a -s test",
     "deploy-alpha:all": "sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
     "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha"
-  },
-  "version": "0.1.0"
+  }
 }
