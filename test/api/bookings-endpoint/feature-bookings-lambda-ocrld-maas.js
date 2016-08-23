@@ -3,13 +3,14 @@
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const Promise = require('bluebird');
-const optionsLambda = require('../../../bookings/bookings-agency-options/handler.js');
 const createLambda = require('../../../bookings/bookings-create/handler.js');
 const listLambda = require('../../../bookings/bookings-list/handler.js');
 const models = require('../../../lib/models');
 const Database = models.Database;
 
-module.exports = function (lambda) {
+module.exports = function (optionsLambda) {
+
+  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
   describe('create a MaaS Ticket booking for a day', () => {
     const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
@@ -26,57 +27,59 @@ module.exports = function (lambda) {
     before(done => {
 
       return Promise.resolve()
-        .then( () => new Promise( ( resolve, reject ) => {
+        .then(() => new Promise((resolve, reject) => {
           const optionsEvent = {
+            identityId: testIdentityId,
             agencyId: 'MaaS',
             mode: 'MAAS_PERSONAL',
           };
+
           wrap(optionsLambda).run( optionsEvent, (err, res) => {
             optionsResponse = res;
             optionsError = err;
-            if ( err ) reject( err );
-            else resolve( res );
+            if (err) reject(err);
+            else resolve(res);
           } );
-        } ) )
-
-        .then( optionsData => new Promise( ( resolve, reject ) => {
+        }))
+        .then(optionsData => new Promise((resolve, reject) => {
           const createEvent = {
             identityId: testUserIdentity,
             payload: optionsData.options[0],
           };
-          wrap(createLambda).run( createEvent, (err, res) => {
-            createResponse = res;
-            createError = err;
-            if ( err ) reject( err );
-            else resolve( res );
-          } );
-        } ) )
 
-        .then( booking => new Promise( ( resolve, reject ) => {
-          bookingId = booking.id;
+          wrap(createLambda).run(createEvent, (err, res) => {
+            createResponse = res;
+            bookingId = res.booking.id;
+            createError = err;
+            if (err) reject(err);
+            else resolve(res);
+          });
+        }))
+        .then(() => new Promise((resolve, reject) => {
           const listEvent = {
             identityId: testUserIdentity,
           };
-          wrap(listLambda).run( listEvent, (err, res) => {
+
+          wrap(listLambda).run(listEvent, (err, res) => {
             listResponse = res;
             listError = err;
-            if ( err ) reject( err );
-            else resolve( res );
+            if (err) reject(err);
+            else resolve(res);
           } );
         } ) )
 
-        .then( () => done() )
+        .then(() => done())
 
-        .catch( err => {
-          done( err );
+        .catch(err => {
+          done(err);
         } );
     } );
 
-    after( done => {
+    after(done => {
       return Database.init()
         .then(() => {
-          if ( bookingId ) {
-            return models.Booking.query().delete().where( 'id', bookingId );
+          if (bookingId) {
+            return models.Booking.query().delete().where('id', bookingId);
           }
           return Promise.resolve();
         } )
@@ -87,15 +90,18 @@ module.exports = function (lambda) {
     it('options fetching should succeed without error', () => {
       expect(optionsError).to.be.null;
     });
+
     it('create should succeed without error', () => {
       expect(createError).to.be.null;
     });
+
     it('listing should succeed without error', () => {
       expect(listError).to.be.null;
     });
 
-    it('booking list should contain created booking as cancelled', () => {
-      const matchingBookings = listResponse.bookings.filter( b => b.id === bookingId );
+    // Skip, because the MaaS-ticket TSP currently returns RESERVED for cancelled
+    it('booking list should contain created booking as RESERVED', () => {
+      const matchingBookings = listResponse.bookings.filter(b => b.id === bookingId );
       expect(matchingBookings).to.have.lengthOf(1);
       expect(matchingBookings[0].state).to.equal('RESERVED');
     } );

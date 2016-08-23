@@ -86,10 +86,8 @@ function createBooking(event) {
         ]);
       })
       .spread((paidBooking, updateResponse) => {
-
-        const request = {
+        const reservation = Object.assign({}, paidBooking, {
           id: utils.createId(),
-          leg: paidBooking.leg,
           customer: {
             identityId: cachedProfile.identityId,
             title: cachedProfile.title || 'mr',
@@ -98,32 +96,34 @@ function createBooking(event) {
             phone: cachedProfile.phone,
             email: cachedProfile.email || `maasuser-${profile.phone}@maas.fi`,
           },
-          terms: paidBooking.terms,
-          meta: paidBooking.meta,
-        };
+        });
 
-        return tsp.createBooking(request)
-          .then(reservedBooking => {
-            // responseBooking has state RESERVED here and was already saved
-            return changeBookingState(Object.assign(reservedBooking, paidBooking), 'RESERVED');
-          })
+        return tsp.createBooking(reservation)
+          .then(reservedBooking => changeBookingState(reservedBooking, 'RESERVED'))
           .catch(error => {
-            // Inject some missing information, because adapter return error instead of request booking
-            paidBooking.customer = request.customer;
-            paidBooking.id = request.id;
-            paidBooking.tspId = null;
-
             return Promise.all([
-              changeBookingState(paidBooking, 'REJECTED'),
+              changeBookingState(reservation, 'REJECTED'),
               maasOperation.updateBalance(event.identityId, oldBalance), // Refunding
             ])
             .spread((rejectedBooking, updateResponse) => rejectedBooking);
           });
       });
   })
-  .then(responseBooking => {
-    return saveBooking(responseBooking)
-      .return(responseBooking);
+  .then(responseBooking => saveBooking(responseBooking));
+}
+
+/**
+ * Formats the response by removing JSON nulls
+ *
+ * @param {object} booking The unformatted response object
+ * @return {object} A valid MaaS Response nesting the object & meta
+ */
+function formatResponse(booking) {
+  const trimmed = utils.removeNulls(booking);
+
+  return Promise.resolve({
+    booking: trimmed,
+    maas: {},
   });
 }
 
@@ -140,6 +140,7 @@ module.exports.respond = (event, callback) => {
     validateInput(event),
   ])
     .then(() => createBooking(event))
+    .then(booking => formatResponse(booking))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));

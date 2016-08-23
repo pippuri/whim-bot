@@ -5,21 +5,21 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
-const creationEvent = require('../../../itineraries/itinerary-create/event.json');
+const creationEvent = require('../../../bookings/bookings-create/event.json');
 
-module.exports = function (createLambda, retrieveLambda) {
+module.exports = function (createLambda, listLambda) {
 
-  describe('retrieve an itinerary, created by itinerary create', () => {
+  describe('retrieve one or more bookings, created by bookings create', () => {
     let error;
     let response;
 
     before(done => {
       // Sign the event data (Travis seems to have problems repeating the signatures)
       const newEvent = _.cloneDeep(creationEvent);
-      delete newEvent.itinerary.signature;
-      newEvent.itinerary.signature = utils.sign(newEvent.itinerary, process.env.MAAS_SIGNING_SECRET);
+      delete newEvent.payload.signature;
+      newEvent.payload.signature = utils.sign(newEvent.payload, process.env.MAAS_SIGNING_SECRET);
 
-      // Create an itinerary, then cancel it
+      // Create a booking, then cancel it
       wrap(createLambda).run(newEvent, (_error, _response) => {
         if (_error) {
           error = _error;
@@ -29,12 +29,15 @@ module.exports = function (createLambda, retrieveLambda) {
           return;
         }
 
-        const retrieveEvent = {
-          identityId: newEvent.identityId,
-          itineraryId: _response.itinerary.id,
+        const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+        const listEvent = {
+          identityId: testIdentityId,
+          startTime: String(_response.booking.startTime),
+          endTime: String(_response.booking.endTime),
+          states: String(_response.booking.state),
         };
 
-        wrap(retrieveLambda).run(retrieveEvent, (_error, _response) => {
+        wrap(listLambda).run(listEvent, (_error, _response) => {
           error = _error;
           response = _response;
           done();
@@ -52,7 +55,7 @@ module.exports = function (createLambda, retrieveLambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate('maas-backend:itinerary-retrieve-response', response)
+      return validator.validate('maas-backend:bookings-list-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

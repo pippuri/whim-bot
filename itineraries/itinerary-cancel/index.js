@@ -63,7 +63,7 @@ function validateStateChanges(itinerary) {
 }
 
 /**
- * Cancels a booking; performs a state check, delegates to TSP, and updates the state in the DB.
+ * Cancels a booking; delegates to TSP, and updates the state in the DB.
  * In case of success, resolves with the new state; in case of failure, rejects with an error.
  *
  * @return an Promise that resolves into an array of the states of bookings { id, state }
@@ -80,6 +80,7 @@ function cancelBooking(booking) {
     .then(() => {
       console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancelled from the TSP side`);
 
+      // Note: State change is already validated earlier, so we can do the update in parallel
       return [
         models.Booking.query()
           .patch({ state: 'CANCELLED' })

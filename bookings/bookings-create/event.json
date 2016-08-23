@@ -2,7 +2,7 @@
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload": {
     "leg": {
-        "startTime": 1469613600000,
+        "startTime": 1471875300000,
         "endTime": 1469786400000,
         "from": {
             "lat": 60.310967,

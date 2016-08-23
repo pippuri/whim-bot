@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "id": "https://api.maas.global/v1/itineraries/response-schema.json",
-  "description": "Response schema for itineraries",
+  "id": "https://api.maas.global/v1/itinerary-cancel/response-schema.json",
+  "description": "Response schema for itinerary-cancel",
   "type": "object",
   "properties": {
     "itinerary": {
