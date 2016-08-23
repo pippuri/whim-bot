@@ -160,5 +160,85 @@ describe('utility Trip', function () {
 
   });
 
+  describe('cancel', () => {
+
+    before(done => {
+
+      swfStub.signalWorkflowExecutionAsync = params => {
+        expect(params).to.have.property('domain').and.be.a('string');
+        expect(params).to.have.property('workflowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
+        expect(params).to.have.property('signalName').and.be.a('string');
+        return Promise.resolve({
+          foo: 'bar',
+        });
+      };
+
+      Trip.cancel({
+        identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+        referenceId: '288bf020-3c62-11e6-b3ee-8d653248757f',
+        referenceType: 'Itinerary',
+      })
+        .then(trip => {
+          response = trip;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should get trip object', () => {
+      expect(error).to.be.undefined;
+      expect(response).to.have.property('workFlowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
+    });
+
+    after(done => {
+      swfStub.signalWorkflowExecutionAsync = undefined;
+      done();
+    });
+
+  });
+
+  describe('cancel with itinerary', () => {
+
+    const itineraryMock = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      id: '288bf020-3c62-11e6-b3ee-8d653248757f',
+    };
+
+    before(done => {
+
+      swfStub.signalWorkflowExecutionAsync = params => {
+        expect(params).to.have.property('domain').and.be.a('string');
+        expect(params).to.have.property('workflowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
+        expect(params).to.have.property('signalName').and.be.a('string');
+        return Promise.resolve({
+          foo: 'bar',
+        });
+      };
+
+      Trip.cancelWithItinerary(itineraryMock)
+        .then(trip => {
+          response = trip;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should get itinerary back untouched', () => {
+      expect(response).to.deep.equal(itineraryMock);
+    });
+
+    after(done => {
+      swfStub.signalWorkflowExecutionAsync = undefined;
+      done();
+    });
+
+  });
+
 
 });
