@@ -134,12 +134,14 @@ function getAgencyProductOptions(event) {
         });
       }
 
-      const options = response.options.map(utils.removeNulls);
-      options.forEach(option => {
-        option.terms.price.amount = convertPriceToPoints(event.identityId, option);
-        option.terms.price.currency = 'POINT';
-        option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
-      });
+      const options = response.options.map(utils.removeNulls)
+        .map(option => {
+          option.terms.price.amount = convertPriceToPoints(event.identityId, option);
+          option.terms.price.currency = 'POINT';
+          option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
+
+          return option;
+        });
 
       return Promise.resolve(options);
     });
