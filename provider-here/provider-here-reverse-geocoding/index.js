@@ -24,7 +24,7 @@ const util = require('util');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const ENDPOINT_URL = 'https://reverse.geocoder.cit.api.here.com/6.2/reversegeocode.json';
-const SEARCH_RADIUS = 100; // Find within 100m distance
+const SEARCH_RADIUS = 500; // Find within 300m distance
 
 function parseResults(response) {
   if (!response.Response || !util.isArray(response.Response.View) ||
