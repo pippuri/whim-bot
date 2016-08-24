@@ -20,7 +20,7 @@ module.exports.respond = function (event, callback) {
 
     resolve(query);
   })
-  .then(query => bus.call('MaaS-provider-google-reverse-geocoding', query))
+  .then(query => bus.call('MaaS-provider-here-reverse-geocoding', query))
   .then(results => {
     callback(null, results);
   })
