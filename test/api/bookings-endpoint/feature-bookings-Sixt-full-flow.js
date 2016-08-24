@@ -9,6 +9,7 @@ const models = require('../../../lib/models/index');
 const Database = require('../../../lib/models/index.js').Database;
 
 module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retrieveLambda) {
+  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
   describe('cancel a booking, created by bookings-create with the first option retrieved from Sixt agency-option for the next weeks Tuesday starting from 12:00 UTC+2', () => {
 
@@ -24,14 +25,12 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
     let cancelResponse;
 
     let retrieveError;
-    let retrievedBooking;
+    let retrieveResponse;
 
     const tueMoment = moment().utcOffset(120).day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
     const wedMoment = moment().utcOffset(120).day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
 
     before(done => {
-
-      const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
       const agencyOptionEvent = {
         identityId: testIdentityId,
         agencyId: 'Sixt',
@@ -55,7 +54,8 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
           });
         }))
         .then(optionsList => new Promise((resolve, reject) => {
-          agencyOption = optionsList.options[0]; // Choose first one in the list to book
+          // Choose first one in the list to book
+          agencyOption = optionsList.options[0];
 
           const bookingEvent = {
             identityId: testIdentityId,
@@ -67,18 +67,22 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
               createError = error;
               reject(createError);
             } else {
+              if (response.booking.state !== 'RESERVED') {
+                throw new Error(`Sixt booking not reserved - state ${response.booking.state}`);
+              }
+
               createResponse = response;
               resolve(response);
             }
           });
         }))
-        .then(booking => new Promise((resolve, reject) => {
+        .then(createResponse => new Promise((resolve, reject) => {
 
-          createdBooking = booking;
+          createdBooking = createResponse.booking;
 
           const cancelEvent = {
             identityId: testIdentityId,
-            bookingId: booking.id,
+            bookingId: createdBooking.id,
           };
 
           wrap(cancelLambda).run(cancelEvent, (error, response) => {
@@ -102,8 +106,8 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
               retrieveError = error;
               reject(retrieveError);
             } else {
-              retrievedBooking = response;
-              resolve(retrievedBooking);
+              retrieveResponse = response;
+              resolve(retrieveResponse);
             }
           });
         }))
@@ -111,13 +115,12 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
         .catch(error => {
           done(error);
         });
-
     });
 
-    after( done => {
+    after(done => {
       return Promise.resolve(Database.init())
         .then(() => {
-          if ( createdBooking ) {
+          if (createdBooking) {
             return models.Booking.query().delete().where( 'id', createdBooking.id );
           }
           return Promise.resolve();
@@ -155,11 +158,11 @@ module.exports = function (agencyOptionLambda, createLambda, cancelLambda, retri
     });
 
     it('bookings-cancel lambda should return a booking with state CANCELLED', () => {
-      expect(cancelResponse.state).to.equal('CANCELLED');
+      expect(cancelResponse.booking.state).to.equal('CANCELLED');
     });
 
     it('retrieve cancelled booking should have state CANCELLED', () => {
-      expect(retrievedBooking.state).to.equal('CANCELLED');
+      expect(retrieveResponse.booking.state).to.equal('CANCELLED');
     });
   });
 };

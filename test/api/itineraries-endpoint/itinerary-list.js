@@ -7,15 +7,19 @@ const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
 
-module.exports = function (createLambda, cancelLambda) {
+module.exports = function (createLambda, listLambda) {
 
-  describe('cancel an itinerary, created by itinerary create', () => {
+  describe('retrieve one or more itineraries, created by itinerary create', () => {
     let error;
     let response;
 
     before(done => {
       // Sign the event data (Travis seems to have problems repeating the signatures)
       const newEvent = _.cloneDeep(creationEvent);
+      const timeDiff = creationEvent.itinerary.endTime - creationEvent.itinerary.startTime;
+      newEvent.itinerary.startTime = Date.now();
+      newEvent.itinerary.endTime = newEvent.itinerary.startTime + timeDiff;
+
       delete newEvent.itinerary.signature;
       newEvent.itinerary.signature = utils.sign(newEvent.itinerary, process.env.MAAS_SIGNING_SECRET);
 
@@ -29,12 +33,14 @@ module.exports = function (createLambda, cancelLambda) {
           return;
         }
 
-        const cancelEvent = {
+        const listEvent = {
           identityId: newEvent.identityId,
-          itineraryId: _response.itinerary.id,
+          startTime: String(_response.itinerary.startTime),
+          endTime: String(_response.itinerary.endTime),
+          states: String(_response.itinerary.state),
         };
 
-        wrap(cancelLambda).run(cancelEvent, (_error, _response) => {
+        wrap(listLambda).run(listEvent, (_error, _response) => {
           error = _error;
           response = _response;
           done();
@@ -52,29 +58,10 @@ module.exports = function (createLambda, cancelLambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate('maas-backend:bookings-cancel-response', response)
+      return validator.validate('maas-backend:itinerary-list-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
-    });
-
-    it('should have all itineraries, legs and bookings in cancelled state', () => {
-      const itinerary = response.itinerary;
-      expect(itinerary.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-
-      itinerary.legs.forEach(leg => {
-        expect(leg.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-
-        // Don't validate bookings, as they may fail to cancel (which is acceptable)
-        /*const booking = leg.booking;
-        if (typeof booking !== typeof undefined) {
-          expect(booking.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-        }*/
-      });
-    });
-
-    xit('should only cancel cancellable legs', () => {
-      // TODO Not implemented (needs leg state toggling elsewhere)
     });
   });
 };

@@ -1,23 +1,50 @@
 'use strict';
 
-const agencyOptionsLambda = require('../../../bookings/bookings-agency-options/handler.js');
-const bookingsRetrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
-const bookingsCreateLambda = require('../../../bookings/bookings-create/handler.js');
-const bookingsCancelLambda = require('../../../bookings/bookings-cancel/handler.js');
-
 const agencyOptionsTest = require('./feature-agency-options.js');
 const bookingsRetrieveTest = require('./feature-bookings-retrieve');
-const bookingSixtFullFlow = require('./feature-bookings-Sixt-full-flow.js');
+const bookingsListTest = require('./feature-bookings-list');
+const bookingsOcrldTest = require('./feature-bookings-lambda-ocrld-maas');
 
 describe('bookings endpoint', function () {
   this.timeout(20000);
 
-  agencyOptionsTest(agencyOptionsLambda);
+  const agencyOptionsLambda = require('../../../bookings/bookings-agency-options/handler.js');
+  const bookingsCreateLambda = require('../../../bookings/bookings-create/handler.js');
+  const bookingsCancelLambda = require('../../../bookings/bookings-cancel/handler.js');
+  const bookingsRetrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
+  const bookingsListLambda = require('../../../bookings/bookings-list/handler.js');
+  const bookingSixtFullFlow = require('./feature-bookings-Sixt-full-flow.js');
 
-  bookingsRetrieveTest(bookingsRetrieveLambda);
+  describe('bookings-agency-options', function () {
+    this.timeout(20000);
+    agencyOptionsTest(agencyOptionsLambda);
+  });
 
-  bookingSixtFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
+  describe.skip('bookings-create', function () {
+    this.timeout(20000);
+  });
 
-  // bookingsLambdaOcrldTest();
-  require('./feature-bookings-lambda-ocrld-maas')();
+  describe.skip('bookings-cancel', function () {
+    this.timeout(20000);
+  });
+
+  describe('bookings-retrieve', function () {
+    this.timeout(20000);
+    bookingsRetrieveTest(bookingsRetrieveLambda);
+  });
+
+  describe('bookings-list', function () {
+    this.timeout(20000);
+    bookingsListTest(bookingsCreateLambda, bookingsListLambda);
+  });
+
+  describe('bookings-Sixt-full-flow', function () {
+    this.timeout(20000);
+    bookingSixtFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
+  });
+
+  describe('bookings-ocrld', function () {
+    this.timeout(20000);
+    bookingsOcrldTest(agencyOptionsLambda);
+  });
 });

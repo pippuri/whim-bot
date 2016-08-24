@@ -7,6 +7,8 @@ const moment = require('moment');
 
 module.exports = function (lambda) {
 
+  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+
   describe('request agency options for next Tuesday', () => {
     let error;
     let response;
@@ -18,6 +20,7 @@ module.exports = function (lambda) {
     const nextWednesday = moment().day(dowWednesday).valueOf();
 
     const validEvent = {
+      identityId: testIdentityId,
       agencyId: 'Sixt',
       mode: 'CAR',
       from: '60.3210549,24.9506771',
@@ -51,6 +54,7 @@ module.exports = function (lambda) {
     let response;
 
     const faultyEvent = {
+      identityId: testIdentityId,
       agencyId: 'Sixt',
       mode: 'CAR',
       from: '60.3210549,24.9506771',

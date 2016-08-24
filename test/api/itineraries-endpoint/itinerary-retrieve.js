@@ -7,9 +7,9 @@ const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
 
-module.exports = function (createLambda, cancelLambda) {
+module.exports = function (createLambda, retrieveLambda) {
 
-  describe('cancel an itinerary, created by itinerary create', () => {
+  describe('retrieve an itinerary, created by itinerary create', () => {
     let error;
     let response;
 
@@ -29,12 +29,12 @@ module.exports = function (createLambda, cancelLambda) {
           return;
         }
 
-        const cancelEvent = {
+        const retrieveEvent = {
           identityId: newEvent.identityId,
           itineraryId: _response.itinerary.id,
         };
 
-        wrap(cancelLambda).run(cancelEvent, (_error, _response) => {
+        wrap(retrieveLambda).run(retrieveEvent, (_error, _response) => {
           error = _error;
           response = _response;
           done();
@@ -52,29 +52,10 @@ module.exports = function (createLambda, cancelLambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate('maas-backend:bookings-cancel-response', response)
+      return validator.validate('maas-backend:itinerary-retrieve-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
-    });
-
-    it('should have all itineraries, legs and bookings in cancelled state', () => {
-      const itinerary = response.itinerary;
-      expect(itinerary.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-
-      itinerary.legs.forEach(leg => {
-        expect(leg.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-
-        // Don't validate bookings, as they may fail to cancel (which is acceptable)
-        /*const booking = leg.booking;
-        if (typeof booking !== typeof undefined) {
-          expect(booking.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
-        }*/
-      });
-    });
-
-    xit('should only cancel cancellable legs', () => {
-      // TODO Not implemented (needs leg state toggling elsewhere)
     });
   });
 };

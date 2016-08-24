@@ -92,8 +92,7 @@
         "EXPIRED",
         "RECONCILING",
         "RESOLVED",
-        "REJECTED",
-        "FINISHED"
+        "REJECTED"
       ]
     },
     "token": {

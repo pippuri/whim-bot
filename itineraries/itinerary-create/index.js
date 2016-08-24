@@ -65,10 +65,12 @@ function filterBookableLegs(legs) {
  * @return {Promise -> undefined}
  */
 function changeBookingState(booking, state) {
-  const old_state = booking.state || 'START';
-  booking.state = state;
-  return stateMachine.changeState('Booking', booking.id || booking.bookingId, old_state, booking.state)
-    .return(booking);
+  const oldState = booking.state || 'START';
+  return stateMachine.changeState('Booking', booking.id || booking.bookingId, oldState, state)
+    .then(valid => {
+      booking.state = state;
+      return booking;
+    });
 }
 
 /**
@@ -178,43 +180,48 @@ function createAndAppendBookings(itinerary, profile) {
     // Since Booking moneteraztion logic is actually in the leg, so PENDING and PAID state are dealt with during the logic with itinerary
     return changeBookingState(tspBooking, 'PENDING')
       .then(() => changeBookingState(tspBooking, 'PAID'))
-      .then(() => tsp.createBooking(tspBooking))
-      .then(
-        booking => {
-          return changeBookingState(booking, 'RESERVED')
-            .then(() => {
-              console.info(`Created booking ${booking.id}, agencyId ${booking.leg.agencyId}.`);
-              completed.push(leg);
-              leg.booking = booking;
-            });
-        },
-        error => {
-          console.warn(`Booking failed for agency ${leg.agencyId}`);
-          console.warn(error);
-          failed.push(leg);
+      .then(() => {
+        if (!tsp.supportsAction('book', leg.agencyId)) {
+          const message = `The given agency ${leg.agencyId} does not support creation.`;
+          return Promise.reject(new MaaSError(message, 400));
         }
-      );
+
+        return tsp.createBooking(tspBooking);
+      })
+      .then(booking => {
+        return changeBookingState(booking, 'RESERVED')
+          .then(() => {
+            console.info(`Created booking ${booking.id}, agencyId ${leg.agencyId}.`);
+            completed.push(leg);
+            leg.booking = booking;
+          });
+      }, error => {
+        console.warn(`Booking failed for agency ${leg.agencyId}`);
+        console.warn(error);
+        failed.push(leg);
+      });
   }
 
   function cancelOneBooking(leg) {
+    if (!tsp.supportsAction('cancel', leg.booking.agencyId)) {
+      const message = `The given agency ${leg.agencyId.agencyId} does not support cancel.`;
+      return Promise.reject(new MaaSError(message, 400));
+    }
+
     return tsp.cancelBooking(leg.booking)
-      .then(
-        booking => {
-          return Promise.all([
-            stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED'),
-            changeBookingState(leg.booking, 'CANCELLED'),
-          ])
+      .then(booking => {
+        return Promise.all([
+          stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED'),
+          changeBookingState(leg.booking, 'CANCELLED'),
+        ])
           .spread((newLegState, cancelledBooking) => {
             cancelled.push(leg);
             leg.state = newLegState;
             leg.booking = cancelledBooking;
           });
-        },
-
-        error => {
-          console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-        }
-      );
+      }, error => {
+        console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
+      });
   }
 
   return Promise.resolve(filterBookableLegs(itinerary.legs))
@@ -236,6 +243,10 @@ function createAndAppendBookings(itinerary, profile) {
       };
 
       return Promise.map(completed, cancelOneBooking)
+        .catch(error => {
+          // FIXME We should have better means for ensuring cancelOneBooking
+          console.warn('Could not cancel some of the bookings.');
+        })
         .then(_empty => {
           const error = new MaaSError(`${failed.length} bookings failed.\nFailed legs: ${JSON.stringify(failedLegStack, null, 2)}`, 500);
           return Promise.reject(error);

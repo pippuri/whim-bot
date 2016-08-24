@@ -16,8 +16,7 @@ const Database = models.Database;
  * @return {Promise -> undefined}
  */
 function validateInput(event) {
-  // Require identityId and phone in input user profile
-  if (!event.identityId || event.identityId === '') {
+  if (typeof event.identityId !== 'string' || event.identityId === '') {
     return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
@@ -77,20 +76,7 @@ function validateAndMergeChanges(booking, delta) {
   }
 
   return Promise.all(promiseQueue)
-    .then(() => {
-      // Merge the properties that can be merged
-      const agencyId = booking.leg.agencyId;
-      ['terms', 'token', 'meta', 'leg'].forEach(key => {
-        const value = delta[key];
-        if (typeof value !== 'undefined') {
-          booking[key] = delta[key];
-        }
-      });
-      // FIXME We shouldn't need to juggle agencyId like this
-      booking.leg.agencyId = agencyId;
-
-      return booking;
-    });
+    .then(() => tsp.mergeBookingDelta(booking, delta));
 }
 
 /**
@@ -118,18 +104,27 @@ function updateDatabase(booking) {
  */
 function refreshBooking(booking) {
   console.info(`Refresh booking ${booking.id} for agencyId ${booking.leg.agencyId}`);
-  return tsp.retrieveBooking(booking.tspId, booking.leg.agencyId)
-    .then(delta => validateAndMergeChanges(booking, delta))
+
+  const promise = tsp.supportsAction('retrieve', booking.leg.agencyId) ?
+    tsp.retrieveBooking(booking.tspId, booking.leg.agencyId) : Promise.resolve(booking);
+
+  return promise.then(delta => validateAndMergeChanges(booking, delta))
     .then(updateDatabase);
 }
 
 /**
  * Formats the response by removing JSON nulls
+ *
+ * @param {object} booking The unformatted response object
+ * @return {object} A valid MaaS Response nesting the object & meta
  */
 function formatResponse(booking) {
   const trimmed = utils.removeNulls(booking);
 
-  return Promise.resolve(trimmed);
+  return Promise.resolve({
+    booking: trimmed,
+    maas: {},
+  });
 }
 
 module.exports.respond = (event, callback) => {
@@ -139,7 +134,7 @@ module.exports.respond = (event, callback) => {
   ])
     .then(() => fetchBooking(event.bookingId, event.identityId))
     .then(booking => {
-      if (Boolean(event.refresh)) {
+      if (event.refresh === 'true') {
         return refreshBooking(booking);
       }
 
