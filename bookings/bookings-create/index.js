@@ -106,6 +106,9 @@ function createBooking(event) {
         return tsp.createBooking(reservation)
           .then(reservedBooking => changeBookingState(reservedBooking, 'RESERVED'))
           .catch(error => {
+            console.warn(`TSP reservation failed: ${error.message}, ${JSON.stringify(error, null, 2)}`);
+            console.warn('This resevation caused the error: ' + JSON.stringify(reservation, null, 2));
+
             return Promise.all([
               changeBookingState(reservation, 'REJECTED'),
               maasOperation.updateBalance(event.identityId, oldBalance), // Refunding
@@ -151,7 +154,8 @@ module.exports.respond = (event, callback) => {
         .then(() => callback(null, response));
     })
     .catch(_error => {
-      // console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
 
       Database.cleanup()
         .then(() => {
