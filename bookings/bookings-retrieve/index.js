@@ -76,7 +76,10 @@ function validateAndMergeChanges(booking, delta) {
   }
 
   return Promise.all(promiseQueue)
-    .then(() => tsp.mergeBookingDelta(booking, delta));
+    .then(() => {
+      booking.state = delta.state;
+      return tsp.mergeBookingDelta(booking, delta);
+    });
 }
 
 /**
