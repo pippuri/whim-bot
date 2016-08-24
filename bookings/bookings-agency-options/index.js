@@ -25,7 +25,7 @@ function parseAndValidateInput(event) {
   const startTime = (utils.isEmptyValue(event.startTime)) ? undefined : parseInt(event.startTime, 10);
   const endTime = (utils.isEmptyValue(event.endTime)) ? undefined : parseInt(event.endTime, 10);
   const fromRadius = (utils.isEmptyValue(event.fromRadius)) ? undefined : parseFloat(event.fromRadius, 10);
-  const toRadius = (utils.isEmptyValue(event.fromRadius)) ? undefined : parseFloat(event.toRadius, 10);
+  const toRadius = (utils.isEmptyValue(event.toRadius)) ? undefined : parseFloat(event.toRadius, 10);
 
   if (typeof identityId !== 'string' || identityId === '') {
     return Promise.reject(new MaaSError('Missing identityId', 400));
@@ -48,11 +48,11 @@ function parseAndValidateInput(event) {
   }
 
   if (fromRadius && !(fromRadius > 0)) {
-    return Promise.reject(new MaaSError(`Invalid fromRadius value ${fromRadius}, must be '<lat>,<lon>'`, 400));
+    return Promise.reject(new MaaSError(`Invalid fromRadius value ${fromRadius}`, 400));
   }
 
   if (toRadius && !(toRadius > 0)) {
-    return Promise.reject(new MaaSError(`Invalid toRadius value ${toRadius}, must be '<lat>,<lon>'`, 400));
+    return Promise.reject(new MaaSError(`Invalid toRadius value ${toRadius}`, 400));
   }
 
   if (typeof startTime !== typeof undefined && startTime <= 0) {
