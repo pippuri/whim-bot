@@ -31,7 +31,7 @@ function parseAndValidateInput(event) {
     return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
-  if (typeof mode !== 'string') {
+  if (typeof agencyId !== 'string') {
     return Promise.reject(new MaaSError('Missing or invalid input agencyId', 400));
   }
 
