@@ -1,0 +1,16 @@
+{
+  "name": "provider-google-reverse-geocoding",
+  "version": "0.0.1",
+  "description": "Google reverse geocoding provider",
+  "author": "Mohammed Shahwan",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "keywords": [],
+  "devDependencies": {},
+  "dependencies": {
+  }
+}
