@@ -71,6 +71,11 @@ function validateStateChanges(itinerary) {
 function cancelBooking(booking) {
   console.info(`Cancel booking ${booking.id}, agencyId ${booking.leg.agencyId}`);
 
+  if (!tsp.supportsAction('cancel', booking.leg.agencyId.agencyId)) {
+    const message = `The given agency ${booking.leg.agencyId.agencyId} does not support cancellation.`;
+    return Promise.reject(new MaaSError(message));
+  }
+
   return tsp.cancelBooking(booking)
     .catch(error => {
       console.warn(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, cancellation failed, ${error.message}, ${JSON.stringify(error)}`);

@@ -98,6 +98,11 @@ function createBooking(event) {
           },
         });
 
+        if (!tsp.supportsAction('book', reservation.leg.agencyId)) {
+          const message = `The given agency ${reservation.leg.agencyId.agencyId} does not support create.`;
+          return Promise.reject(new MaaSError(message, 400));
+        }
+
         return tsp.createBooking(reservation)
           .then(reservedBooking => changeBookingState(reservedBooking, 'RESERVED'))
           .catch(error => {

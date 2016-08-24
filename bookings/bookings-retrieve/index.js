@@ -104,8 +104,11 @@ function updateDatabase(booking) {
  */
 function refreshBooking(booking) {
   console.info(`Refresh booking ${booking.id} for agencyId ${booking.leg.agencyId}`);
-  return tsp.retrieveBooking(booking.tspId, booking.leg.agencyId)
-    .then(delta => validateAndMergeChanges(booking, delta))
+
+  const promise = tsp.supportsAction('retrieve', booking.leg.agencyId) ?
+    tsp.retrieveBooking(booking.tspId, booking.leg.agencyId) : Promise.resolve(booking);
+
+  return promise.then(delta => validateAndMergeChanges(booking, delta))
     .then(updateDatabase);
 }
 
@@ -131,7 +134,7 @@ module.exports.respond = (event, callback) => {
   ])
     .then(() => fetchBooking(event.bookingId, event.identityId))
     .then(booking => {
-      if (Boolean(event.refresh)) {
+      if (event.refresh === 'true') {
         return refreshBooking(booking);
       }
 

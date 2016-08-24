@@ -112,6 +112,11 @@ function convertPriceToPoints(identityId, booking) {
 
 function getAgencyProductOptions(event) {
 
+  if (!tsp.supportsAction('options', event.agencyId)) {
+    const message = `The given agency ${event.agencyId} does not support options.`;
+    return Promise.reject(new MaaSError(message, 400));
+  }
+
   return tsp.retrieveBookingOptions(event.agencyId, {
     mode: event.mode,
     from: event.from,
