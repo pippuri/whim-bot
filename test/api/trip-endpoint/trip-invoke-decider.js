@@ -7,7 +7,7 @@ const event = require('../../../trip/trip-invoke-decider/event.json');
 
 module.exports = function (lambda, swfStub) {
 
-  describe('give decision for decicer', () => {
+  describe('give decision task for decider', () => {
     let error;
     let response;
 
@@ -36,7 +36,7 @@ module.exports = function (lambda, swfStub) {
 
   });
 
-  describe('give bad decision data for decicer', () => {
+  describe('give bad decision task data for decicer', () => {
     let error;
     let response;
 
