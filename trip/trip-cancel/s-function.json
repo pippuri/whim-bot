@@ -1,0 +1,17 @@
+{
+  "name": "trip-cancel",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function to cancel a trip",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 6,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": []
+  },
+  "endpoints": [],
+  "events": [],
+  "environment": "$${environment}"
+}

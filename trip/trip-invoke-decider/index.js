@@ -85,11 +85,17 @@ class Decider {
           });
       case TripWorkFlow.TASK_CLOSE_TRIP:
         console.log(`Decider: CLOSING TRIP WORK FLOW '${this.flow.id}'`);
-        this.decision.closeFlow();
+        this.decision.closeFlow('Decider: closing ended trip');
         return Promise.resolve();
       case TripWorkFlow.TASK_CHECK_BOOKING:
         // ... fetch booking and check it :)
         console.log(`Decider: CHECKING BOOKING '${this.flow.task && this.flow.task.params}'`);
+        return Promise.resolve();
+      case TripWorkFlow.TASK_CANCEL_TRIP:
+        // Cancel requested by user or external entity.
+        // Later this can e.g. do some booking cancelling etc.
+        console.log(`Decider: CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        this.decision.closeFlow('Decider: user requested cancellation');
         return Promise.resolve();
       default:
         console.warn(`Decider: unknown taskName '${taskName}', aboring...`);
@@ -126,18 +132,13 @@ class Decider {
     const data = {
       identityId: this.flow.trip.identityId,
       itineraryId: this.flow.trip.referenceId,
-      filter: '',
     };
     return bus.call(LAMBDA_ITINERARY_RETRIEVE, data)
       .then(response => {
-        console.log('Decider: checking itinerary-retrieve response...');
-        // find right itinerary
-        const itinerary = response.itineraries && response.itineraries.find(itinerary => {
-          return itinerary.id === this.flow.trip.referenceId;
-        });
         let result;
-        if (itinerary) {
-          result = Promise.resolve(itinerary);
+        if (response.itinerary) {
+          console.log(`Decider fetched itinerary '${response.itinerary.id}'`);
+          result = Promise.resolve(response.itinerary);
         } else {
           result = Promise.reject('cannot find itinerary');
         }
