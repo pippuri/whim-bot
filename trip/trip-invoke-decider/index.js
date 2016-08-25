@@ -13,6 +13,7 @@ Promise.promisifyAll(swfClient);
 
 const LAMBDA_ITINERARY_RETRIEVE = 'MaaS-itinerary-retrieve';
 const LAMBDA_BOOKING_RETRIEVE = 'MaaS-bookings-retrieve';
+const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
 
 const BOOKING_CHECK_TIME = {
   TRAM: (15 * 60 * 1000),
@@ -77,10 +78,10 @@ class Decider {
       case TripWorkFlow.TASK_START_TRIP:
         // process whole itinerary
         return this._fetchItinerary()
-          .then(itinerary => this._processLegs(itinerary))
+          .then(() => this._processLegs())
           .then(() => {
-            // schedule trip closing into end
-            const timeout = (this.flow.trip.endTime || Date.now()) + (5 * 60 * 1000);
+            // schedule trip closing into end, defaulting to one day
+            const timeout = (this.flow.trip.endTime || Date.now() + (24 * 60 * 60 * 1000)) + (30 * 60 * 1000);
             this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
             console.log(`Decider decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' itinerary id '${this.flow.trip.referenceId}' ` +
                         `into ${new Date(timeout)}.`);
@@ -92,12 +93,12 @@ class Decider {
             return Promise.resolve();
           });
       case TripWorkFlow.TASK_CHECK_LEG:
+      case TripWorkFlow.TASK_CHECK_BOOKING:
          // fetch itinerary & check leg
         legId = this.flow.task && this.flow.task.params && this.flow.task.params.legId;
         return this._fetchItinerary()
-          .then(itinerary => this._findLegFromItinerary(itinerary, legId))
+          .then(() => this._findLegFromItinerary(legId))
           .then(leg => this._checkLeg(leg))
-          .then(() => { return Promise.resolve(); })
           .catch(err => {
             console.warn('Decider: cannot check leg, err:', err.stack || err);
             // ... warn user: "check you journey"
@@ -154,13 +155,16 @@ class Decider {
         let result;
         if (response.itinerary) {
           console.log(`Decider fetched itinerary '${response.itinerary.id}'`);
-          result = Promise.resolve(response.itinerary);
+          this.itinerary = response.itinerary;
+          result = Promise.resolve();
         } else {
+          this.itinerary = undefined;
           result = Promise.reject('cannot find itinerary');
         }
         return result;
       })
       .catch(err => {
+        this.itinerary = undefined;
         return Promise.reject(`error while fetching itinerary '${this.flow.trip.referenceId}', err: ${err}`);
       });
   }
@@ -168,13 +172,13 @@ class Decider {
   /**
    * Helper traverse itinerary legs and decide what to do them.
    */
-  _processLegs(itinerary) {
-    if (!this.decision || !itinerary.legs || !this.now || !this.flow) {
+  _processLegs() {
+    if (!this.decision || !this.itinerary || !this.itinerary.legs || !this.now || !this.flow) {
       throw new Error('Cannot parse itinerary; missing parameter(s)');
     }
     const promiseQueue = [];
     // traverse legs
-    itinerary.legs.forEach(leg => {
+    this.itinerary.legs.forEach(leg => {
       // right now we are interested only ongoing or future legs with a booking
       if (leg.bookingId && leg.endTime > this.now) {
         // check leg status now or schedule check before the leg starts
@@ -194,8 +198,8 @@ class Decider {
   /**
    * Helper to find a leg from itinerary
    */
-  _findLegFromItinerary(itinerary, legId) {
-    const legs = itinerary.legs.filter(leg => {
+  _findLegFromItinerary(legId) {
+    const legs = this.itinerary.legs.filter(leg => {
       return leg.id === legId;
     });
     return Promise.resolve(legs[0]);
@@ -209,29 +213,37 @@ class Decider {
     const data = {
       identityId: this.flow.trip.identityId,
       bookingId: leg.bookingId,
-      refresh: (leg.mode === 'TAXI').toString(), // TODO: Set always true
+      refresh: (leg.mode === 'TAXI').toString(), // For now use refresh only for TAXI
     };
-    console.log(`Decider: checking booking id '${leg.bookingId}', mode '${leg.mode}', state '${leg.state}' ...`);
+    console.log(`Decider: checking leg '${leg.id}', mode '${leg.mode}', state '${leg.state}', booking '${leg.bookingId}' ...`);
+    const promises = [];
     return bus.call(LAMBDA_BOOKING_RETRIEVE, data)
-      .then(booking => {
+      .then(results => {
+        const booking = results.booking;
         // booking rules & actions
-        if (booking.mode === 'TAXI' && booking.state === 'PAID') {
-          console.log('Decider: TAXI booking that needs booking!');
+        if (booking.state === 'PENDING') {
+          console.log('Decider: Should do the booking!');
           // ... book taxi!
           // ... alarm user: "Taxi confirmed"
+          promises.push(Promise.resolve());
         } else if (booking.state !== 'RESERVED') {
           console.log(`Decider: A booking in a wrong state '${booking.state}', expected 'RESERVED'`);
-          // ..alarm user: "check journey, missing tickets!"
+          const notifData = {
+            identityId: this.flow.trip.identityId,
+            message: 'Check your current journey; issues with one of the tickets',
+          };
+          promises.push(bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData));
         } else {
           // all good!
           console.log('Decider: A booking looks good, no actions');
+          promises.push(Promise.resolve());
         }
-        return Promise.resolve();
+        return Promise.all(promises);
       })
       .catch(err => {
         // ..alarm user: ""
-        console.error('Decider: Could not fetch booking!', err);
-        return Promise.reject(`error while fetching booking '${leg.bookingId}', err: ${err}`);
+        console.error('Decider: Could not check leg!', err);
+        return Promise.reject(`error while checking leg '${leg.id}', err: ${err}`);
       });
   }
 
