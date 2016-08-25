@@ -9,7 +9,7 @@ newKey() {
   openssl rsa -in latest.key -pubout -outform PEM -out latest.key.pub
   # Append public key to the end of tickets/tickets-validation-keys/index.js
   CONTENT=$(cat latest.key.pub)
-  printf "\npublicKeysMap..push( {\n\tvalidityStartMilliEpoch: $MAAS_TICKET_PREVIOUS_CYCLE_TIME,\n\tvalidityEndMilliEpoch: $1,\n\tpublicKey: \`$CONTENT\`,\n} );\n" >> ../../tickets-validation-keys/index.js
+  printf "\npublicKeysMap.$STAGE.push( {\n\tvalidityStartMilliEpoch: $MAAS_TICKET_PREVIOUS_CYCLE_TIME,\n\tvalidityEndMilliEpoch: $1,\n\tpublicKey: \`$CONTENT\`,\n} );\n" >> ../../tickets-validation-keys/index.js
 }
 
 refresh() {

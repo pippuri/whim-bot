@@ -47,7 +47,7 @@ Ultimately using a 3rd party verification system also allows the business partne
 The repository currently contains the production secret key in an encrypted format, and these files are decrypted as part of the automated deployment process. If you for some reason need to deploy the ticket endpoints to the production environment manually, you need to export the $MAAS_TICKET_DEPLOY_SECRET environment variable from production \_meta.
 
 ```
-export MAAS_TICKET_DEPLOY_SECRET=$(node -p -e “require(‘_meta/variables/s-variables-prod.json’).MAAS_TICKET_DEPLOY_SECRET")
+export MAAS_TICKET_DEPLOY_SECRET=$(node -p -e "require('_meta/variables/s-variables-prod.json').MAAS_TICKET_DEPLOY_SECRET")
 ```
 
 After you have the $MAAS_TICKET_DEPLOY_SECRET environment variable set, you can encrypt the production secrets locally by running the following commands:

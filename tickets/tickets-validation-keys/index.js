@@ -249,122 +249,32 @@ t0nI1I5ixnGlKMCPY04RV04nOdObPtrSdjcpBcHgFGjy9NXnPuQ9zY+unMt8GH9Y
 -----END PUBLIC KEY-----`,
 } );
 
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472458346832,
-	validityEndMilliEpoch: 1472459602857,
+publicKeysMap.dev.push( {
+	validityStartMilliEpoch: 1472460486197,
+	validityEndMilliEpoch: 1472461341993,
 	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAKW/+/fy2F4BqsyOOR93fpehBJIi800i
-7bwUElvaofH00XpkuvUX0xYaLED+4Wtdgv+FMDstfwGDrIMXYOTnGtuqn/KnbeUX
-U3L+UUKSTOlpM3i0D9gVRrag1/ap0MfHMwIDAQAB
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALNM6uML37NQEt7XpQBt1CixBu+6LyQn
+WSzpDWYRiXdwn0XCMwhMPa7jmOBlBGrh6H2aNKpCM9dPPus9vXytA+rfb9F1+hip
+T9DkEjRTqPq1Xi777vq2DyG8Tx3xCbUXXwIDAQAB
 -----END PUBLIC KEY-----`,
 } );
 
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472459602857,
-	validityEndMilliEpoch: 1472459654345,
+publicKeysMap.prod.push( {
+	validityStartMilliEpoch: 1472459089355,
+	validityEndMilliEpoch: 1472461390304,
 	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALxuKaqyPFWEkZN5G+735hk12PRn8X/c
-qmUsehXQsyv/9MEgzhgXxm54ij5mBcFWnQwSVVAiQWiocOtLnVFGfUGLQRNb//UE
-zSf0kalMaaziC6jA8nvJZNjRMDL6GLVRuwIDAQAB
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAMNW+UXmneOH/AsOPfVlZTyfaeXzKyol
+zNeMd9vc+tDnqCFsX4NkUyTF+5BBU8P0Ak2uHL8e3LoSvotZ3PqSAbFSIOlumo6c
+Eb7XSshMvL7Iva7wNmS06CIiVtgIoHlofwIDAQAB
 -----END PUBLIC KEY-----`,
 } );
 
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472459654345,
-	validityEndMilliEpoch: 1472459719027,
+publicKeysMap.dev.push( {
+	validityStartMilliEpoch: 1472461341993,
+	validityEndMilliEpoch: 1472461516884,
 	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAKTXTZ7Spgnn6i21Gf/b3k8e03L9vvOb
-rslrz57r//TNGBFBggSUaKtBuwT3GnLRUr/+XF73GEts6Wu0FWWW6mCMy+VDZJQb
-B31/pFSBsJRN6Tf2rLXH8Z8IYEbqhHD7+wIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472459719027,
-	validityEndMilliEpoch: 1472459755086,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAKLEBNKKnF/bbMrwVSbY25Hw2WfkU/SH
-71ANeLlYYuFuSUUCtgQ3BV7VEH9N2Xssu3Yrf6CgU55u2oi0U88A9z7ZgzIIPJ/k
-Bdfni8hDo9axiGRrwcm2ApjBG/uRGnlB4QIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472459755086,
-	validityEndMilliEpoch: 1472459804085,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhANE7CT6C8buthfrw3tHHlLg25A9eDB8W
-i8nZLf2efmB6dWe6rQdyn1MZzn0hD13guXSI+jXLZ58ktKNTJrMTKZxKkiUGkBhe
-mOgiyUxjdxZdKcDDGNgSBcNIWvwzURRUJwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472459804085,
-	validityEndMilliEpoch: 1472460001587,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALMz08JFjpM/dtzx8w5JRtBtmajzGFH4
-ymLsy9q4dZNsOsRw/MHgtRDhBxvF9Oibx1AbpLbX9QYPfcrsqrEQecZk/KW3vI2J
-2axSvzC/WAEteFFSzYLPNbDTNHCOfY/FeQIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460001587,
-	validityEndMilliEpoch: 1472460055006,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAMHuK+tsw0uHvIvD66C3r2ZUCrJWFn0k
-z6KbKClqnDOz/x3LOQlIReotWWHJ7lqCOMIVVgI02idDd09CZXADiEB3+kiB/I1F
-qZtZe4H3d4iVhUMLWYX2Vy1CHFI1uiEkMwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460055006,
-	validityEndMilliEpoch: 1472460079681,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALLuY35nqD2HVUjGx2Mx8y57KIbFgbrV
-cTFh6SinMNmp2xKugAwDoxf756Rs2wNRHizd+GDH/xbGdEMQe1a7qAhhm6w3Mk9b
-3DUXJSr/C80QPp5k6l8gP64QJPGhQQl3pwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460079681,
-	validityEndMilliEpoch: 1472460342497,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAO6c4x1ec8N0S+AfoVXyxFNqFGgLiaj0
-2G4LSzMh57fw6xYMiiznJkQ2WjdxugAQ32Y72Lqcku1XEfydctVQvNgwQhwOjhzI
-Re0ojEz9pdNItjesh1cxFJ2kD18Giqd/vwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460342497,
-	validityEndMilliEpoch: 1472460406435,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAOVYA4hM4/nr9uNQQvw411azkehpOG+4
-yU4XZczcQbNmk1fenZFUrFktSQoEHC1p1k3Luu74dzXl8DeGbvXnPHiDLlWf6ufo
-YqcqKKC1qegn10IBmzErOYs+dBqgg2ZGIQIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460406435,
-	validityEndMilliEpoch: 1472460458108,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALE6x0wjUI9WPT8hTFMmnvQLTHn2ECxY
-nVq6FlF0TKuGO+kc4d3tofvE90XcJiQbWD5ha2oAFSWjlegvLG7BCX/x6UKGiNIH
-0g9dZBbCvsFRrgBkj7iYfpTG/D57GxxI+QIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap..push( {
-	validityStartMilliEpoch: 1472460458108,
-	validityEndMilliEpoch: 1472460486197,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALNsVQ14argeLk4BZEvuJH4CowTz7LBV
-0pOcX+m/bEtqUPe2rdmRkHnfA5X7Rz6W2Y3HoQpaJbCN8I2WuYyuKnfnN1CNFp+d
-cTvuYk1Q7UhfZD5zUO8W5RwmNg5/ZF1elQIDAQAB
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAMP7RF8Nrjyr+xk/pYnmDl6ZHrEfcISE
+zWI0o4wINcOS7JN3ZcpaXJruGFT27zcSk3NltFlPFyPsmEF787q3r3SY3kaedZuj
+HYiIZWYtItbZNk37KFkQk6wvQoRbq+AhYQIDAQAB
 -----END PUBLIC KEY-----`,
 } );
