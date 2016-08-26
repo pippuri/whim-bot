@@ -37,7 +37,7 @@ module.exports = function (lambda) {
       });
     });
 
-    it('should trigger a valid response', () => {
+    xit('should trigger a valid response', () => {
       return validator.validate('maas-backend:bookings-agency-options-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
