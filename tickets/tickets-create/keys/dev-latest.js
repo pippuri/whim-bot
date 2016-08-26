@@ -1,16 +1,16 @@
 'use strict';
 
-module.exports.getKey = () =>
-`-----BEGIN RSA PRIVATE KEY-----
-MIIBywIBAAJhAMP7RF8Nrjyr+xk/pYnmDl6ZHrEfcISEzWI0o4wINcOS7JN3Zcpa
-XJruGFT27zcSk3NltFlPFyPsmEF787q3r3SY3kaedZujHYiIZWYtItbZNk37KFkQ
-k6wvQoRbq+AhYQIDAQABAmBsGMeZdj5IkMOrJYP1D8OVQfe/0ouJTIbMSCR9NHoT
-KZL7s7udZUH24qThGGLRiZh7CDmUL/CpdXKhpSUGkl6EIBHfQQkb98m5Lse9butv
-Ufu04NXx0DJPjHPxutptS8ECMQDym1yGuM2VtE+ZBtpzT4uUrPb88BCUvpC6Yn/W
-vQYkI8qh7a9dvDDYrzgcSUd9fYUCMQDOzPklxo1c4soREwIjEPeb1L7P2a1elwEc
-8/KstdI1O+aCoh4r+2DuFJ/gurAFHS0CMQDPseXyiD+ojCcg0NcvpMfQTotcW4E2
-djac+jqLcmPRiLqvCjb5vmTq/IbC4JFNg6kCMBgRHLG7wLndntyL1MTV9asKAEba
-M2X9tuByt3xIELWnSfVL/qzprWcnuU+DCncd5QIxAITzhaEuNms+9T/5WIIPIq8k
-jrGwyvqI7jOvT1dfxRgzhgLRQNppi4CZ3LzECWE5PA==
------END RSA PRIVATE KEY-----`
-;
+module.exports.getKey = () => [
+  '-----BEGIN RSA PRIVATE KEY-----',
+  'MIIBzAIBAAJhAPad/1cNq1sZr+Uxt6mNJGpbrxNNUeAd7Mdwj/NLShpfZalJQKfi',
+  'DuqmI2MYroRzkqsLqgvAuDuo/d0CGOTXRzNdrAVml5oRxd75bQDz1BBO0yamLRw4',
+  'B7/jatPxZZM0awIDAQABAmAT6fYwZV4s4QofC8C05DzIida9TEUMP95azHATSUUW',
+  'lBV1cgDSjaJ+uCOrYNbWwy4wJVuNgy7A3Wc0ydrPGABmvXn0oMpMrx8iZX5mRnKa',
+  '142iXxbgn83W+yM3cWtaO0ECMQD8GvMXDZBUWyJXg5wvEaEjKa8htRUbdazgGQuk',
+  'STAagX++JggOi4e+sMn0Qsi8ysMCMQD6bVfPB1C6yqlMjcsIESNRg96aB9zJnm2s',
+  'zWD8dM4UqFgnEAxMn/8xVPcMvJpWxTkCMQCfLtERXFImwYiUo5hprAMH9dkMOo/C',
+  'T/JBae8M492Izv3+7Xqm3Hlw8aYDImwnsQsCMQDGjRUWrw0h3HbYnH+CWNww0CYY',
+  '5+z06ii43mlsIEwYctTZu86UnjJd8aiir5KLA3kCMQC/fbv1Siw5S49Gc+g7hCIG',
+  'TyZz3lw6M9njucfYOraB5ny7ssudeURUaIu3UtYkPFw=',
+  '-----END RSA PRIVATE KEY-----',
+].join('\n');

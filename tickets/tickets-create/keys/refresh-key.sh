@@ -24,14 +24,18 @@ refresh() {
 
   # Copy dev-latest data as a template file for $STAGE-latest.clear.js file
   cp dev-latest.js $STAGE-latest.clear.js;
-  printf "'use strict';\n\nmodule.exports.getKey = () =>\n\`$(cat latest.key)\`\n;\n" > $STAGE-latest.clear.js;
+
+  # Append the file onto $STAGE-latest.clear.js
+  printf "/* eslint-disable */\n'use strict';\n\nmodule.exports.getKey = () => [\n$(sed -i "" "s/$/',/" latest.key && sed -i "" "s/^/'/" latest.key && cat latest.key)\n].join('\\\n');\n" > $STAGE-latest.clear.js
+
+  # Encrypt $STAGE-latest.clear.js
   openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in $STAGE-latest.clear.js -out $STAGE-latest.js.asc -a
 
   # Remove the clear text version
   rm latest.key.pub latest.key $STAGE-latest.clear.js
 
   # Edit MAAS_TICKET_PREVIOUS_CYCLE_TIME to equal newly created NEXT_REFRESH_DATE and save to s-variables-$STAGE
-  node -p -e "const file=require('../../../_meta/variables/s-variables-$STAGE.json'); file.MAAS_TICKET_PREVIOUS_CYCLE_TIME=$NEXT_REFRESH_DATE;require('fs').writeFileSync('../../../_meta/variables/s-variables-$STAGE.json', JSON.stringify(file, null, 2));console.log('Undefined is the result of fs.writeFileSync(), no worry')" # TODO Meta sync this shit, forced it even if it say no!
+  node -p -e "const file=require('../../../_meta/variables/s-variables-$STAGE.json'); file.MAAS_TICKET_PREVIOUS_CYCLE_TIME=$NEXT_REFRESH_DATE;require('fs').writeFileSync('../../../_meta/variables/s-variables-$STAGE.json', JSON.stringify(file, null, 2));console.log('Undefined is the result of fs.writeFileSync(), no worry')"
 }
 
 # Allow this script to run only in this folder
