@@ -51,7 +51,7 @@ module.exports = function (createLambda, retrieveLambda) {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', () => {
+    xit('should trigger a valid response', () => {
       return validator.validate('maas-backend:itinerary-retrieve-response', response)
         .then(validationError => {
           expect(validationError).to.be.null;
