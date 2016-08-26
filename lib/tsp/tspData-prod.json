@@ -41,14 +41,13 @@
           "book": "/bookings"
         },
         "get": {
-          "options": "/options",
-          "retrieve": "/orders"
+          "retrieve": "/bookings"
         },
         "put": {
-          "update": "update"
+          "update": "/bookings"
         },
         "del": {
-          "cancel": "/cancel"
+          "cancel": "/bookings"
         }
       },
       "lambdas": {
