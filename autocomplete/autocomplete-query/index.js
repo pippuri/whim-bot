@@ -7,7 +7,7 @@ module.exports.respond = function (event, callback) {
 
   // Validate & set defaults
   return new Promise((resolve, reject) => {
-    const query = event.query;
+    const query = event.payload;
 
     // Inject input hints, typecast input
     if (typeof query.lat === 'string' && typeof query.lon === 'string') {
