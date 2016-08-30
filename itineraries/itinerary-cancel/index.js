@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
-const tsp = require('../../lib/tsp/index');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const stateMachine = require('../../lib/states').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
@@ -40,7 +40,7 @@ function validateStateChanges(itinerary) {
   // Legs
   const cancellableLegs = filterCancellableLegs(itinerary.legs);
   for (let i = 0; i < cancellableLegs.length; i++) {
-    const leg = itinerary.legs[i];
+    const leg = cancellableLegs[i];
     const booking = leg.booking;
 
     if (!stateMachine.isStateValid('Leg', leg.state, 'CANCELLED')) {
@@ -70,34 +70,33 @@ function validateStateChanges(itinerary) {
  * @return an Promise that resolves into an array of the states of bookings { id, state }
  */
 function cancelBooking(booking) {
-  console.info(`Cancel booking ${booking.id}, agencyId ${booking.leg.agencyId}`);
+  const bookingId = booking.id;
+  const agencyId = booking.leg.agencyId;
 
-  if (!tsp.supportsAction('cancel', booking.leg.agencyId.agencyId)) {
-    const message = `The given agency ${booking.leg.agencyId.agencyId} does not support cancellation.`;
-    return Promise.reject(new MaaSError(message));
-  }
+  console.info(`Cancel booking ${bookingId}, agencyId ${agencyId}`);
 
-  return tsp.cancelBooking(booking)
+  return TSPFactory.createFromAgencyId(agencyId)
+    .then(tsp => tsp.cancel(bookingId))
     .catch(error => {
-      console.warn(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, cancellation failed, ${error.message}, ${JSON.stringify(error)}`);
+      console.warn(`Booking ${bookingId}, agencyId ${agencyId}, cancellation failed, ${error.message}, ${JSON.stringify(error)}`);
       console.warn(error.stack);
       return Promise.reject(error);
     })
     .then(() => {
-      console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancelled from the TSP side`);
+      console.info(`Booking ${bookingId}, agencyId ${agencyId} cancelled from the TSP side`);
 
       // Note: State change is already validated earlier, so we can do the update in parallel
       return [
         models.Booking.query()
           .patch({ state: 'CANCELLED' })
           .where('id', booking.id),
-        stateMachine.changeState('Booking', booking.id, booking.state, 'CANCELLED'),
+        stateMachine.changeState('Booking', bookingId, booking.state, 'CANCELLED'),
       ];
     })
     .spread((updateCount, _) => {
-      console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, state updated.`);
+      console.info(`Booking ${bookingId}, agencyId ${agencyId}, state updated.`);
       if (updateCount === 0) {
-        return Promise.reject(new MaaSError(`Booking ${booking.id} failed to update: Not found`, 404));
+        return Promise.reject(new MaaSError(`Booking ${bookingId} failed to update: Not found`, 404));
       }
 
       return Promise.resolve('CANCELLED');
@@ -234,6 +233,7 @@ module.exports.respond = (event, callback) => {
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
       // Uncaught, unexpected error
       Database.cleanup()

@@ -34,7 +34,7 @@ function loadEnvironment() {
 }
 
 loadEnvironment();
-console.info = () => {};
+//console.info = () => {};
 
 // Handle AWS Lambda calls locally
 process.env.maas_test_run = true;

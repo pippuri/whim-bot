@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
 const stateMachine = require('../../lib/states/index').StateMachine;
-const tsp = require('../../lib/tsp');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const utils = require('../../lib/utils');
 const Database = models.Database;
 
@@ -51,12 +51,8 @@ function validateStateChanges(booking) {
 function cancelBooking(booking) {
   console.info(`Cancel booking ${booking.id}, agencyId ${booking.leg.agencyId}`);
 
-  if (!tsp.supportsAction('cancel', booking.leg.agencyId)) {
-    const message = `The given agency ${booking.leg.agencyId.agencyId} does not support cancel.`;
-    return Promise.reject(new MaaSError(message, 400));
-  }
-
-  return tsp.cancelBooking(booking)
+  return TSPFactory.createFromAgencyId(booking.leg.agencyId)
+    .then(tsp => tsp.cancel(booking.tspId))
     .catch(error => {
       console.warn(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, cancellation failed, ${error.message}, ${JSON.stringify(error)}`);
       console.warn(error.stack);
@@ -65,12 +61,12 @@ function cancelBooking(booking) {
     .then(() => {
       console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId} cancelled from the TSP side`);
 
-      return [
+      return Promise.all([
         models.Booking.query()
           .patch({ state: 'CANCELLED' })
           .where('id', booking.id),
         stateMachine.changeState('Booking', booking.id, booking.state, 'CANCELLED'),
-      ];
+      ]);
     })
     .spread((updateCount, _) => {
       console.info(`Booking ${booking.id}, agencyId ${booking.leg.agencyId}, state updated.`);
@@ -127,6 +123,7 @@ function formatResponse(booking) {
 }
 
 module.exports.respond = (event, callback) => {
+
   return Database.init()
     .then(() => validateInput(event))
     .then(() => fetchBooking(event.bookingId, event.identityId))
@@ -138,8 +135,8 @@ module.exports.respond = (event, callback) => {
         .then(() => callback(null, response));
     })
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`This event caused error: ${JSON.stringify(event, null, 2)}`);
 
       // Uncaught, unexpected error
       Database.cleanup()

@@ -5,7 +5,7 @@ const utils = require('../../lib/utils');
 const maasOperation = require('../../lib/maas-operation/index');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
-const tsp = require('../../lib/tsp/index');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
 const Trip = require('../../lib/trip');
@@ -27,46 +27,37 @@ function parseDatabaseFormat(itinerary) {
 }
 
 /**
- * Remove unbookable leg out of the collection
- * @param {object array} legs - array of legs
- * @return {object array} legs - arary of bookable legs
+ * Checks if the leg is bookable or not
+ *
+ * @param {object} leg a leg to investigate
+ * @return {boolean} true if the leg is bookable, false otherwise
  */
-function filterBookableLegs(legs) {
-
-  // Filter away the legs that do not need a TSP
-  return legs.filter(leg => {
-    switch (leg.mode) {
-      // Erraneous data
-      case 'undefined':
-        throw new Error(`No mode available for leg ${JSON.stringify(leg, null, 2)}`);
-
-      // Manual modes, no TSP needed
-      case 'WAIT':
-      case 'TRANSFER':
-      case 'WALK':
-        return false;
-
-      // All the rest (MaaS should provide a ride)
-      default:
-        if (tsp.containsAgency(leg.agencyId)) {
-          return true;
-        }
-
-        console.warn(`Could not find a TSP for ${leg.agencyId}`);
-        return false;
-    }
-  });
+function isBookableLeg(leg) {
+  switch (leg.mode) {
+    // Erraneous data
+    case 'undefined':
+      throw new Error(`No mode available for leg ${JSON.stringify(leg, null, 2)}`);
+    // Manual modes, no TSP needed
+    case 'WAIT':
+    case 'TRANSFER':
+    case 'WALK':
+      return false;
+    // All the rest (MaaS should provide a ride)
+    default:
+      return true;
+  }
 }
 
 /**
  * Change booking state and log the state change
+ *
  * @param {object} booking
  * @param {string} state
  * @return {Promise -> undefined}
  */
 function changeBookingState(booking, state) {
   const oldState = booking.state || 'START';
-  return stateMachine.changeState('Booking', booking.id || booking.bookingId, oldState, state)
+  return stateMachine.changeState('Booking', booking.id, oldState, state)
     .then(valid => {
       booking.state = state;
       return booking;
@@ -74,7 +65,41 @@ function changeBookingState(booking, state) {
 }
 
 /**
+ * Change leg state and log the state change
+ *
+ * @param {object} leg
+ * @param {string} state
+ * @return {Promise -> undefined}
+ */
+function changeLegState(leg, state) {
+  const oldState = leg.state || 'START';
+  return stateMachine.changeState('Leg', leg.id, oldState, state)
+    .then(valid => {
+      leg.state = state;
+      return leg;
+    });
+}
+
+/**
+ * Change itinerary state
+ *
+ * @param {object} itinerary
+ * @param {string} state
+ * @return {object} itinerary
+ */
+function changeItineraryState(itinerary, state) {
+  const oldState = itinerary.state || 'START';
+
+  return stateMachine.changeState('Itinerary', itinerary.id, oldState, state)
+    .then(valid => {
+      itinerary.state = state;
+      return itinerary;
+    });
+}
+
+/**
  * Create Id for the itinenaray and each of the leg within
+ *
  * @param {object} itinerary - without id
  * @return {object} itinenery - without id
  */
@@ -89,44 +114,8 @@ function annotateIdentifiers(itinerary) {
 }
 
 /**
- * Change itinerary state
- * @param {object} itinerary
- * @param {string} state
- * @return {object} itinerary
- */
-function annotateItineraryState(itinerary, state) {
-  function annotateLegsState(itinerary, state) {
-    const queue = [];
-    itinerary.legs.forEach(leg => {
-      // Starting state
-      leg.state = leg.state || 'START';
-      queue.push(stateMachine.changeState('Leg', leg.id, leg.state, state));
-    });
-
-    return Promise.all(queue)
-     .then(response => {
-       itinerary.legs.map(leg => {
-         leg.state = state;
-       });
-
-       return itinerary;
-     });
-  }
-
-  // Set itinerary state to starting state if no state exists
-  itinerary.state = itinerary.state || 'START';
-
-  return stateMachine.changeState('Itinerary', itinerary.id, itinerary.state, state)
-    .then(newState => {
-      itinerary.state = state;
-
-      return annotateLegsState(itinerary, state);
-    })
-    .then(_itinerary => _itinerary);
-}
-
-/**
  * Save itinerary on DB
+ *
  * @param {itinerary} itinerary
  * @return {object} postgres response
  */
@@ -139,34 +128,30 @@ function saveItinerary(itinerary) {
 
 /**
  * Format itinerary before returning
+ *
  * @param {object} itinerary
  * @return {object} itinerary
  */
 function wrapToEnvelope(itinerary) {
-  if (itinerary.legs &&  itinerary.legs.constructor === Array) {
-    itinerary.legs.forEach(leg => {
-      if (leg.booking && leg.booking.leg) {
-        delete leg.booking.leg;
-      }
-      if (leg.bookingId) {
-        delete leg.bookingId;
-      }
-    });
-  }
+
+  // Hide tspIds from user returned leg
+  const copy = utils.cloneDeep(itinerary);
+  copy.legs.forEach(leg => {
+    if (leg.booking && leg.booking.tspId) {
+      delete leg.tspId;
+    }
+  });
+
   return {
-    itinerary: itinerary,
+    itinerary: copy,
   };
 }
 
 function createAndAppendBookings(itinerary, profile) {
-  const completed = [];
-  const failed = [];
-  const cancelled = [];
-
-  function appendOneBooking(leg) {
-    const tspBooking = {
+  function appendOneBooking(leg, tsp) {
+    const reservation = {
       id: utils.createId(),
-      leg: leg,
+      leg: utils.cloneDeep(leg),
       customer: {
         identityId: profile.identityId,
         title: profile.title || 'mr',
@@ -177,85 +162,108 @@ function createAndAppendBookings(itinerary, profile) {
       },
       meta: {},
     };
-    // Since Booking moneteraztion logic is actually in the leg, so PENDING and PAID state are dealt with during the logic with itinerary
-    return changeBookingState(tspBooking, 'PENDING')
-      .then(() => changeBookingState(tspBooking, 'PAID'))
-      .then(() => {
-        if (!tsp.supportsAction('book', leg.agencyId)) {
-          const message = `The given agency ${leg.agencyId} does not support creation.`;
-          return Promise.reject(new MaaSError(message, 400));
-        }
+    console.info(`Create booking '${reservation.id}' for leg '${leg.id}'`);
 
-        return tsp.createBooking(tspBooking);
-      })
-      .then(booking => {
-        return changeBookingState(booking, 'RESERVED')
-          .then(() => {
-            console.info(`Created booking ${booking.id}, agencyId ${leg.agencyId}.`);
-            completed.push(leg);
-            leg.booking = booking;
-          });
+    // Update the booking state to PENDING to paind and finally to RESERVED
+    // upon succesful booking. Toggle the booking states accordingly
+    return changeBookingState(reservation, 'PENDING')
+      .then(() => changeBookingState(reservation, 'PAID'))
+      .then(() => tsp.reserve(reservation))
+      .then(response => {
+        const reservedBooking = utils.merge(reservation, response);
+        console.info(`Created booking ${reservedBooking.id}, agencyId ${leg.agencyId}.`);
+        leg.booking = reservedBooking;
+        return changeBookingState(reservedBooking, 'RESERVED');
       }, error => {
-        console.warn(`Booking failed for agency ${leg.agencyId}`);
+        console.warn(`Booking failed for agency ${reservation.id}, agencyId ${leg.agencyId}`);
         console.warn(error);
-        failed.push(leg);
-      });
+        leg.booking = reservation;
+        return changeBookingState(reservation, 'REJECTED');
+      })
+      .then(() => leg);
   }
 
-  function cancelOneBooking(leg) {
-    if (!tsp.supportsAction('cancel', leg.booking.agencyId)) {
-      const message = `The given agency ${leg.agencyId.agencyId} does not support cancel.`;
-      return Promise.reject(new MaaSError(message, 400));
+  function cancelOneBooking(leg, tsp) {
+    const booking = leg.booking;
+    console.info(`Cancel booking '${leg.booking.id}' for leg '${leg.id}'`);
+
+    // In case there's no nested booking, or the booking is already cancelled
+    // or rejected, don't do a thing
+    if (!booking || booking.state === 'CANCELLED') {
+      return changeLegState(leg, 'CANCELLED');
     }
 
-    return tsp.cancelBooking(leg.booking)
-      .then(booking => {
-        return Promise.all([
-          stateMachine.changeState('Leg', leg.id, leg.state, 'CANCELLED'),
-          changeBookingState(leg.booking, 'CANCELLED'),
-        ])
-          .spread((newLegState, cancelledBooking) => {
-            cancelled.push(leg);
-            leg.state = newLegState;
-            leg.booking = cancelledBooking;
-          });
+    if (booking.state === 'REJECTED') {
+      return changeLegState(leg, 'CANCELLED_WITH_ERRORS');
+    }
+
+    // Then cancel the booking itself
+    return tsp.cancel(booking.tspId)
+      .then(() => {
+        console.info(`Cancelled booking ${booking.id}, agencyId ${leg.agencyId}.`);
+        return changeBookingState(leg.booking, 'CANCELLED');
       }, error => {
-        console.warn(`Could not cancel booking for ${leg.id}, cancel manually`);
-      });
+        console.warn(`Could not cancel booking ${booking.id} for leg ${leg.id}, cancel manually`);
+      })
+      .then(() => leg);
   }
 
-  return Promise.resolve(filterBookableLegs(itinerary.legs))
-    .then(bookableLegs => Promise.map(bookableLegs, appendOneBooking))
-    .then(_empty => {
-      // In case of success, return the itinerary. In case of failure,
-      // cancel the completed bookings.
-      if (failed.length === 0) {
-        return itinerary;
+  // The main function that iterates the leg and tries to book each
+  return Promise.each(itinerary.legs, leg => {
+
+    // Automatically accept all the legs that we cannot create bookings for
+    if (!isBookableLeg(leg)) {
+      return changeLegState(leg, 'PLANNED');
+    }
+
+    // Create the bookings for legs that we potentially can book
+    return TSPFactory.createFromAgencyId(leg.agencyId)
+        .then(
+          tsp => appendOneBooking(leg, tsp),
+          error => console.info(`Skipping leg '${leg.id}', no adapter for agencyId '${leg.agencyId}'.`)
+        )
+        .then(() => changeLegState(leg, 'PLANNED'));
+  })
+    .then(() => {
+      // Iterate through the legs. In case all succeeded, return the itinerary.
+      // In case of failure, cancel all the reserved bookings
+      const hasFailures = itinerary.legs.some(leg => (leg.booking && leg.booking.state === 'REJECTED'));
+      if (!hasFailures) {
+        return Promise.resolve(itinerary);
       }
 
-      const failedLegStack = {
-        failedLeg: failed.map(leg => {
-          return {
-            mode: leg.mode,
-            agencyId: leg.agencyId,
-          };
-        }),
-      };
+      // Cancel everything
+      return Promise.each(itinerary.legs, leg => {
+        if (!leg.booking) {
+          return changeLegState(leg, 'CANCELLED')
+            .then(() => leg);
+        }
 
-      return Promise.map(completed, cancelOneBooking)
-        .catch(error => {
-          // FIXME We should have better means for ensuring cancelOneBooking
-          console.warn('Could not cancel some of the bookings.');
-        })
-        .then(_empty => {
-          const error = new MaaSError(`${failed.length} bookings failed.\nFailed legs: ${JSON.stringify(failedLegStack, null, 2)}`, 500);
-          return Promise.reject(error);
-        });
+        return TSPFactory.createFromAgencyId(leg.agencyId)
+          .then(
+            tsp => {
+              return cancelOneBooking(leg, tsp)
+                .catch(() => changeLegState(leg, 'CANCELLED_WITH_ERRORS'))
+                .then(() => changeLegState(leg, 'CANCELLED'));
+            },
+            error => {
+              console.info(`Skipping booking creation for leg '${leg.id}', no adapter for agencyId '${leg.agencyId}'.`);
+              return changeLegState(leg, 'CANCELLED');
+            }
+          )
+          .catch(error => {
+            // FIXME We should have better means for ensuring cancelOneBooking
+            console.warn(`Could not cancel some of the bookings: ${error.message}`);
+            console.warn(error.stack);
+          });
+      });
+    })
+    .then(() => {
+      return itinerary;
     });
 }
 
 function bookItinerary(event) {
-
   let cachedProfile;
   let oldBalance;
   let annotatedItinerary;
@@ -269,14 +277,14 @@ function bookItinerary(event) {
     .then(_profile => {
       cachedProfile = _profile;
       oldBalance = _profile.balance;
-      return annotateItineraryState(annotatedItinerary, 'PLANNED');
+      return changeItineraryState(annotatedItinerary, 'PLANNED');
     })
     .then(plannedItinerary => maasOperation.computeBalance(plannedItinerary.fare.points, cachedProfile))
     .then(newBalance => maasOperation.updateBalance(event.identityId, newBalance))
-    .then(response => annotateItineraryState(annotatedItinerary, 'PAID'))
+    .then(response => changeItineraryState(annotatedItinerary, 'PAID'))
     .then(paidItinerary => createAndAppendBookings(paidItinerary, cachedProfile))
     .then(bookedItinerary => {
-      console.info(`Created itinerary ${bookedItinerary.id} with ${bookedItinerary.legs.length} legs.`);
+      console.info(`Created itinerary '${bookedItinerary.id}' with ${bookedItinerary.legs.length} legs.`);
       return saveItinerary(parseDatabaseFormat(bookedItinerary));
     })
     .then(savedItinerary => Trip.startWithItinerary(savedItinerary))
