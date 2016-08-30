@@ -1,0 +1,28 @@
+{
+  "id":"d562ad00-6e7d-11e6-bfe6-c5e5cb5d7cb4",
+  "customer":{
+    "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+    "title":"mr",
+    "firstName":"Test",
+    "lastName":"User",
+    "phone":"10983012",
+    "email":"testestestestest@gmail.com"
+  },
+  "meta":{
+    "MODE_TRAIN":{
+
+    }
+  },
+  "state":"RESERVED",
+  "tspId":"d6a984e0-6e7d-11e6-ba54-43dd1228f428",
+  "terms":{
+    "price":{
+      "amount":0,
+      "currency":"EUR"
+    }
+  },
+  "token":{
+    "type":"MAAS_TICKET",
+    "value":"eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImQ2YTk4NGUwLTZlN2QtMTFlNi1iYTU0LTQzZGQxMjI4ZjQyOCIsImRvbWFpbklkIjoiSFNMIiwic3RhcnRUaW1lIjoxNDc1MzE0MDIwMDAwLCJlbmRUaW1lIjoxNDc1MzE4ODIwMDAwLCJmcm9tIjp7Im5hbWUiOiJIZWxzaW5raSIsImxvbiI6MjQuOTM5OTEsImxhdCI6NjAuMTcyNzJ9LCJ0byI6eyJuYW1lIjoiRXNwb28iLCJsb24iOjI0LjY1NjQ1LCJsYXQiOjYwLjIwNTF9LCJpYXQiOjE0NzI1Mzk3NDN9.bMb9DJisTExhig0v4lY0sMtjZO2SHB6ExDaEYQ2cw_mTbyqcHdmo_Us5YqGX59hZ4U8CxczhEQSfSr80Y5fQPcJHrkbZrSY0FKzGmWoH3b0yEDyExgu6hEjDMORuGMwe"
+  }
+}
