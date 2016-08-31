@@ -1,3 +1,5 @@
+/* eslint-disable indent*/
+
 'use strict';
 
 const publicKeysMap = { dev: [], prod: [] };
@@ -45,4 +47,14 @@ publicKeysMap.prod.push( {
     'zgzVUQON7YDY+xMBlB3/dB8aN3cm0NokqQIDAQAB',
     '-----END PUBLIC KEY-----',
   ].join('\n'),
+} );
+
+publicKeysMap.prod.push( {
+	validityStartMilliEpoch: 1472461390304,
+	validityEndMilliEpoch: 1474793767503,
+	publicKey: `-----BEGIN PUBLIC KEY-----
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALnxAV8kyxOG5xEZjW8AksLaPHOyRmU5
+NvS7Rx75OBP3k8GX4uZeH9CCHw7Jg9Xpa8op1oBoO8z4kpJjO2LkYYyoLqPAF5V/
+nWM5r5TWdMjPUKjTF5mIworalz014Xpq4QIDAQAB
+-----END PUBLIC KEY-----`,
 } );

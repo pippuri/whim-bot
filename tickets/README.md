@@ -6,9 +6,9 @@ This is a section of the API which can be used to issue, audit and allow validat
 
 ## Adding new ticket partners
 
-Ticket partners have a database table which contains the following information about each partner:
+MaaS have a database table which contains the following information about each ticket partner:
 
-* A unique ID for the partner
+* An unique ID for the partner
 * The domain within which the partner can either create or audit tickets
 * A password which the partner can use to interact with the ticket issuing API
 * A password which the partner auditor can use to query the audit API
@@ -42,9 +42,13 @@ When the auditing partner eventually implements a verification system, they can 
 
 Ultimately using a 3rd party verification system also allows the business partner to implement the verification system as a cheap batch run instead of investing in the development of a potentially costly real-time system.
 
-## How to do manual production deployments
+## How to do manual production deployments ( Check decrypt-key.sh )
 
 The repository currently contains the production secret key in an encrypted format, and these files are decrypted as part of the automated deployment process. If you for some reason need to deploy the ticket endpoints to the production environment manually, you need to export the $MAAS_TICKET_DEPLOY_SECRET environment variable from production \_meta.
+
+```
+export MAAS_TICKET_DEPLOY_SECRET=$(node -p -e "require('_meta/variables/s-variables-prod.json').MAAS_TICKET_DEPLOY_SECRET")
+```
 
 After you have the $MAAS_TICKET_DEPLOY_SECRET environment variable set, you can encrypt the production secrets locally by running the following commands:
 
@@ -62,7 +66,7 @@ git checkout tickets/tickets-create/keys/prod-latest.js
 git checkout tickets/tickets-create/keys/prod-transitional.js
 ```
 
-## How to refresh the production secret key
+## How to refresh the production secret key ( Check refresh-key.sh )
 
 Currently the secret key is supplied with within the codebase, and can be refreshed using the following method:
 
@@ -71,7 +75,7 @@ Currently the secret key is supplied with within the codebase, and can be refres
 1. Get a milliepoch timestamp which is 7 days from now:
 
 ```
-node -e 'console.log(new Date().getTime()+1000*60*60*24*7)'
+node -p -e 'new Date().getTime()+1000*60*60*24*7'
 ```
 
 2. Replace the milliepoch in the `tickets/tickets-create/keys/prod.js` with the new one.
