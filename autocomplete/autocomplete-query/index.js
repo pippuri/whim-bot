@@ -2,8 +2,13 @@
 
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors');
 
 module.exports.respond = function (event, callback) {
+
+  if (!event.payload || Object.keys(event.payload).length === 0) {
+    return Promise.reject(new MaaSError('Missing or empty event payload', 401));
+  }
 
   // Validate & set defaults
   return new Promise((resolve, reject) => {
