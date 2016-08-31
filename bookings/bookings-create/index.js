@@ -32,10 +32,10 @@ module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => Booking.create(event.payload, event.identityId))
     .then(booking => booking.pay())
-    .then(booking => formatResponse(booking.toJSON()))
-    .then(bookingJSON => {
+    .then(booking => formatResponse(booking.toObject()))
+    .then(bookingData => {
       Database.cleanup()
-        .then(() => callback(null, bookingJSON));
+        .then(() => callback(null, bookingData));
     })
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

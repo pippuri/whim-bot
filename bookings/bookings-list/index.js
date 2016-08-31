@@ -6,6 +6,7 @@ const utils = require('../../lib/utils');
 const models = require('../../lib/models');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
+const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validates the input event to have identityId and optionally startTime, endTime and states
@@ -56,7 +57,7 @@ function parseAndValidateInput(event) {
 }
 
 function fetchBookings(identityId, startTime, endTime, states) {
-  let query = models.Booking.query()
+  let query = Booking.query()
     .whereRaw('customer ->> \'identityId\' = ?', [identityId]);
 
   if (typeof startTime !== typeof undefined) {
