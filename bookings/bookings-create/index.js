@@ -29,16 +29,13 @@ function formatResponse(booking) {
  * @return {Promise -> [undefined,undefined]}
  */
 module.exports.respond = (event, callback) => {
-  let booking;
   return Database.init()
-    .then(() => {
-      booking = Booking.create(event.payload, event.identityId);
-    })
-    .then(() => booking.pay())
-    .then(() => formatResponse(booking.toJSON()))
-    .then(response => {
+    .then(() => Booking.create(event.payload, event.identityId))
+    .then(booking => booking.pay())
+    .then(booking => formatResponse(booking.toJSON()))
+    .then(bookingJSON => {
       Database.cleanup()
-        .then(() => callback(null, response));
+        .then(() => callback(null, bookingJSON));
     })
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
