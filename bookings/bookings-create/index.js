@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
-const tsp = require('../../lib/tsp');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
@@ -98,12 +98,9 @@ function createBooking(event) {
           },
         });
 
-        if (!tsp.supportsAction('book', reservation.leg.agencyId)) {
-          const message = `The given agency ${reservation.leg.agencyId.agencyId} does not support create.`;
-          return Promise.reject(new MaaSError(message, 400));
-        }
-
-        return tsp.createBooking(reservation)
+        return TSPFactory.createFromAgencyId(reservation.leg.agencyId)
+          .then(tsp => tsp.reserve(reservation))
+          .then(tspReservation => utils.merge(reservation, tspReservation))
           .then(reservedBooking => changeBookingState(reservedBooking, 'RESERVED'))
           .catch(error => {
             console.warn(`TSP reservation failed: ${error.message}, ${JSON.stringify(error, null, 2)}`);

@@ -1,144 +1,49 @@
 {
   "HSL": {
     "agencyId": "HSL",
-    "adapter": {
-      "baseUrl": "https://tsp.dev.maas.global/hsl",
-      "endpointsConfig": {
-        "headers": {
-          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
-        }
-      },
-      "endpoints": {
-        "post": {
-          "book": "/bookings"
-        },
-        "put": {
-          "update": "/bookings"
-        },
-        "del": {
-          "cancel": "/bookings"
-        }
-      },
-      "lambdas": {
-        "post": {
-          "book": "maas-transport-booking-hsl-maas-create"
-        },
-        "get": {
-          "retrieve": "maas-transport-booking-hsl-maas-retrieve"
-        },
-        "del": {
-          "cancel": "maas-transport-booking-hsl-maas-cancel"
-        }
-      }
+    "baseUrl": "https://tsp.dev.maas.global/hsl/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "cancel": "bookings/"
     }
   },
   "Valopilkku": {
     "agencyId": "Valopilkku",
-    "adapter": {
-      "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/taxi",
-      "endpoints": {
-        "post": {
-          "book": "/bookings"
-        },
-        "get": {
-          "retrieve": "/bookings"
-        },
-        "put": {
-          "update": "/bookings"
-        },
-        "del": {
-          "cancel": "/bookings"
-        }
-      },
-      "lambdas": {
-        "post": {
-          "book": "maas-transport-booking-taxi-create"
-        },
-        "get": {
-          "retrieve": "maas-transport-booking-taxi-retrieve"
-        },
-        "put": {
-          "update": "maas-transport-booking-taxi-update"
-        },
-        "del": {
-          "cancel": "maas-transport-booking-taxi-cancel"
-        }
-      },
-      "endpointsConfig": {
-        "headers": {
-          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
-        }
-      }
+    "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/taxi/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/"
     }
   },
   "Sixt": {
     "agencyId": "Sixt",
-    "adapter": {
-      "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/sixt",
-      "endpoints": {
-        "post": {
-          "book": "/bookings",
-          "complete": "/bookings/complete"
-        },
-        "get": {
-          "retrieve": "/bookings",
-          "options": "/bookings/options"
-        },
-        "put": {
-          "update": "/bookings"
-        },
-        "del": {
-          "cancel": "/bookings"
-        }
-      },
-      "lambdas": {
-        "post": {
-          "book": "maas-transport-booking-sixt-create",
-          "complete": "maas-transport-booking-sixt-complete"
-        },
-        "get": {
-          "retrieve": "maas-transport-booking-sixt-retrieve",
-          "options": "maas-transport-booking-sixt-options-retrieve"
-        },
-        "put": {
-          "update": "maas-transport-booking-sixt-update"
-        },
-        "del": {
-          "cancel": "maas-transport-booking-sixt-cancel"
-        }
-      },
-      "endpointsConfig": {
-        "headers": {
-          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
-        }
-      }
+    "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/dev/sixt/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
+      "query": "bookings/options/"
     }
   },
   "MaaS": {
     "agencyId": "MaaS",
-    "adapter": {
-      "baseUrl": "https://tsp.dev.maas.global/maas",
-      "endpoints": {
-        "post": {
-          "book": "/bookings"
-        },
-        "get": {
-          "options": "/bookings/options"
-        }
-      },
-      "lambdas": {
-        "post": {
-          "book": "maas-transport-booking-maas-create"
-        },
-        "get": {
-          "options": "maas-transport-booking-maas-agency-options"
-        }
-      },
-      "endpointsConfig": {
-        "headers": {
-          "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
-        }
-      }
+    "baseUrl": "https://tsp.dev.maas.global/maas/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "query": "bookings/options/"
     }
   }
 }

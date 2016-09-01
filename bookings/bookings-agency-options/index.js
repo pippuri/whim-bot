@@ -2,11 +2,11 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const utils = require('../../lib/utils/index');
-const tsp = require('../../lib/tsp/index');
+const utils = require('../../lib/utils');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const priceConversionRate = require('../../lib/business-rule-engine/lib/priceConversionRate.js');
-const businessRuleEngine = require('../../lib/business-rule-engine/index');
-const Database = require('../../lib/models/index').Database;
+const businessRuleEngine = require('../../lib/business-rule-engine');
+const Database = require('../../lib/models').Database;
 
 /**
  * Parses and validates the event input
@@ -111,32 +111,24 @@ function convertPriceToPoints(identityId, booking) {
 }
 
 function getAgencyProductOptions(event) {
-
-  if (!tsp.supportsAction('options', event.agencyId)) {
-    const message = `The given agency ${event.agencyId} does not support options.`;
-    return Promise.reject(new MaaSError(message, 400));
-  }
-
-  return tsp.retrieveBookingOptions(event.agencyId, {
-    mode: event.mode,
-    from: event.from,
-    to: event.to,
-    startTime: event.startTime,
-    endTime: event.endTime,
-    fromRadius: event.fromRadius,
-    toRadius: event.toRadius,
-  })
+  return TSPFactory.createFromAgencyId(event.agencyId)
+    .then(tsp => {
+      return tsp.query({
+        mode: event.mode,
+        from: event.from,
+        to: event.to,
+        startTime: event.startTime,
+        endTime: event.endTime,
+        fromRadius: event.fromRadius,
+        toRadius: event.toRadius,
+      });
+    })
     .then(response => {
-      if (response.errorMessage) {
-        return Promise.reject(new Error(response.errorMessage));
-      }
       // If response.options is undefined, return error
       // which is most likely inside the response
       if (typeof response.options === typeof undefined) {
-        return Promise.resolve({
-          options: [],
-          meta: {},
-        });
+        const message = `Invalid response from TSP: '${JSON.stringify(response.options)}'`;
+        return Promise.reject(new MaaSError(message, 500));
       }
 
       const options = response.options.map(utils.removeNulls)
@@ -173,13 +165,13 @@ module.exports.respond = function (event, callback) {
     parseAndValidateInput(event),
   ])
   .spread((_knex, parsed) => getAgencyProductOptions(parsed))
-  .then(response => formatResponse(response))
+  .then(formatResponse)
   .then(response => {
     Database.cleanup()
       .then(() => callback(null, response));
   })
   .catch(_error => {
-    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
 

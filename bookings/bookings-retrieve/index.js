@@ -4,7 +4,7 @@
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
-const tsp = require('../../lib/tsp');
+const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
@@ -78,7 +78,7 @@ function validateAndMergeChanges(booking, delta) {
   return Promise.all(promiseQueue)
     .then(() => {
       booking.state = delta.state;
-      return tsp.mergeBookingDelta(booking, delta);
+      return utils.merge(booking, delta);
     });
 }
 
@@ -108,10 +108,15 @@ function updateDatabase(booking) {
 function refreshBooking(booking) {
   console.info(`Refresh booking ${booking.id} for agencyId ${booking.leg.agencyId}`);
 
-  const promise = tsp.supportsAction('retrieve', booking.leg.agencyId) ?
-    tsp.retrieveBooking(booking.tspId, booking.leg.agencyId) : Promise.resolve(booking);
+  return TSPFactory.createFromAgencyId(booking.leg.agecyId)
+    .then(tsp => {
+      if (!tsp.supportsOperation('retrieve')) {
+        return Promise.resolve(booking);
+      }
 
-  return promise.then(delta => validateAndMergeChanges(booking, delta))
+      return tsp.retrieve(booking.tspId);
+    })
+    .then(delta => validateAndMergeChanges(booking, delta))
     .then(updateDatabase);
 }
 
