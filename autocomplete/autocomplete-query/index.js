@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
-const MaaSError = require('../../lib/errors');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 module.exports.respond = function (event, callback) {
 
