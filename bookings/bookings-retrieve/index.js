@@ -4,121 +4,9 @@
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
-const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
-const stateMachine = require('../../lib/states/index').StateMachine;
 const utils = require('../../lib/utils');
 const Database = models.Database;
-
-/**
- * Validate event input
- *
- * @param  {object} event
- * @return {Promise -> undefined}
- */
-function validateInput(event) {
-  if (typeof event.identityId !== 'string' || event.identityId === '') {
-    return Promise.reject(new MaaSError('Missing identityId', 400));
-  }
-
-  if (typeof event.bookingId !== 'string') {
-    return Promise.reject(new MaaSError('Missing or invalid booking id', 400));
-  }
-
-  const refresh = event.refresh;
-  if (refresh !== 'true' && refresh !== 'false' && refresh !== '' && typeof refresh !== 'undefined') {
-    return Promise.reject(new MaaSError(`Invalid value for refresh: ${refresh}, should be 'true' or 'false'`, 400));
-  }
-
-  return Promise.resolve();
-}
-
-/**
- * Fetches an existing booking and validates the identityId owns it
- *
- * @param bookingId The id of the booking
- * @param identityId The id of the user that fetches the booking
- * @return Promise that resolves to a booking, or rejects with MaaSError
- */
-function fetchBooking(bookingId, identityId) {
-  //console.info(`Fetch booking ${bookingId}`);
-
-  return models.Booking.query()
-    .findById(bookingId)
-    .then(booking => {
-      if (!booking) {
-        const message = `No booking found with bookingId '${bookingId}'`;
-        return Promise.reject(new MaaSError(message, 404));
-      }
-
-      if (booking.customer.identityId !== identityId) {
-        return Promise.reject(new MaaSError(`Booking ${bookingId} not owned by the user`, 403));
-      }
-
-      return Promise.resolve(booking);
-    });
-}
-
-/**
- * Compares and the bookign data with delta, and merges the delta if there are
- * no improper changes, such as illegal state or such.
- */
-function validateAndMergeChanges(booking, delta) {
-  const promiseQueue = [];
-
-  // Don't accept invalid deltas
-  if (typeof delta.state === 'undefined') {
-    promiseQueue.push(Promise.reject('TSP returned an undefined \'state\''));
-  }
-
-  // Don't update state if there isn't new one
-  if (booking.state !== delta.state) {
-    promiseQueue.push(stateMachine.changeState('Booking', booking.id, booking.state, delta.state));
-  }
-
-  return Promise.all(promiseQueue)
-    .then(() => {
-      booking.state = delta.state;
-      return utils.merge(booking, delta);
-    });
-}
-
-/**
- * Updates a booking in the database
- */
-function updateDatabase(booking) {
-  return models.Booking.query()
-    .updateAndFetchById(booking.id, booking)
-    .then(updatedBooking => {
-      if (typeof updatedBooking === 'undefined') {
-        const message = `Updating failed; booking ${booking.id} not found in the database`;
-        return Promise.reject(new MaaSError(message, 500));
-      }
-
-      return updatedBooking;
-    });
-}
-
-/**
- * Fetches the booking delta from TSP side; validates changes and merges them
- * into the existing booking.
- *
- * @param booking The booking to refresh the new data with (will be modified)
- * @return Promise resolved with the refreshed booking, or rejected with MaaSError
- */
-function refreshBooking(booking) {
-  console.info(`Refresh booking ${booking.id} for agencyId ${booking.leg.agencyId}`);
-
-  return TSPFactory.createFromAgencyId(booking.leg.agencyId)
-    .then(tsp => {
-      if (!tsp.supportsOperation('retrieve')) {
-        return Promise.resolve(booking);
-      }
-
-      return tsp.retrieve(booking.tspId);
-    })
-    .then(delta => validateAndMergeChanges(booking, delta))
-    .then(updateDatabase);
-}
+const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Formats the response by removing JSON nulls
@@ -136,19 +24,16 @@ function formatResponse(booking) {
 }
 
 module.exports.respond = (event, callback) => {
-  return Promise.all([
-    Database.init(),
-    validateInput(event),
-  ])
-    .then(() => fetchBooking(event.bookingId, event.identityId))
+  return Database.init()
+    .then(() => Booking.retrieve(event.bookingId))
+    .then(booking => booking.validateOwnership(event.identityId))
     .then(booking => {
-      if (event.refresh === 'true') {
-        return refreshBooking(booking);
+      if (event.refresh && event.refresh === 'true' || event.refresh === true) {
+        return booking.refresh();
       }
-
-      return booking;
+      return Promise.resolve(booking);
     })
-    .then(formatResponse)
+    .then(booking => formatResponse(booking.toObject()))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));
@@ -160,13 +45,14 @@ module.exports.respond = (event, callback) => {
 
       // Uncaught, unexpected error
       Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
+
     });
 };
