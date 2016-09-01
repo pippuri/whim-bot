@@ -17,7 +17,14 @@
   "config": {
     "engine-strict": true
   },
-  "keywords": ["maas", "whim", "aws", "nodejs", "lambda", "apigateway"],
+  "keywords": [
+    "maas",
+    "whim",
+    "aws",
+    "nodejs",
+    "lambda",
+    "apigateway"
+  ],
   "_npmOperationalInternal": {
     "host": "packages-12-west.internal.npmjs.com",
     "tmp": "tmp/sc5-serverless-boilerplate-0.0.5.tgz_1457013990650_0.77550138393417"
@@ -77,6 +84,7 @@
     "eslint-plugin-react": "^5.2.2",
     "gulp": "^3.9.1",
     "gulp-eslint": "^2.0.0",
+    "gulp-istanbul": "^1.1.1",
     "gulp-json-lint": "^0.1.0",
     "gulp-jsonlint": "^1.1.2",
     "gulp-mocha": "^2.2.0",
