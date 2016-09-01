@@ -1,0 +1,41 @@
+{
+  "FullMock": {
+    "id": "FullMock",
+    "baseUrl": "https://tsp.dev.maas.global/mock/",
+    "headers": {
+    },
+    "endpoints": {
+      "reserve": "reserve/",
+      "retrieve": "retrieve/",
+      "cancel": "cancel/",
+      "query": "query/"
+    }
+  },
+  "InvalidMock": {
+    "id": "InvalidMock",
+    "baseUrl": "https://tsp.dev.maas.global/invalid/",
+    "headers": {
+    },
+    "endpoints": {
+      "reserve": "reserve/"
+    }
+  },
+  "FaultyMock": {
+    "id": "FaultyMock",
+    "baseUrl": "https://tsp.dev.maas.global/faulty/",
+    "headers": {
+    },
+    "endpoints": {
+      "reserve": "reserve/"
+    }
+  },
+  "ErrorMock": {
+    "id": "ErrorMock",
+    "baseUrl": "https://tsp.dev.maas.global/error/",
+    "headers": {
+    },
+    "endpoints": {
+      "reserve": "reserve/"
+    }
+  }
+}
