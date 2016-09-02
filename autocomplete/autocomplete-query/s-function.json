@@ -27,10 +27,10 @@
       "authorizerFunction": false,
       "apiKeyRequired": false,
       "requestParameters": {
-        "method.request.querystring.name": "integration.request.querystring.name",
-        "method.request.querystring.count": "integration.request.querystring.count",
-        "method.request.querystring.lat": "integration.request.querystring.lat",
-        "method.request.querystring.lon": "integration.request.querystring.lon"
+        "integration.request.querystring.name": "method.request.querystring.name",
+        "integration.request.querystring.count": "method.request.querystring.count",
+        "integration.request.querystring.lat": "method.request.querystring.lat",
+        "integration.request.querystring.lon": "method.request.querystring.lon"
       },
       "requestTemplates": {
         "application/json": {
