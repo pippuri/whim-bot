@@ -164,7 +164,7 @@ function smsLogin(phone, code) {
   let identityId;
   let cognitoToken;
   let correctCode;
-  const plainPhone = phone.replace(/^[0]/g, '').replace(/\S/g, '');
+  const plainPhone = phone.replace(/^[0]/g, '').replace(/\s/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new Error('Invalid phone number'));
   }
