@@ -94,7 +94,7 @@ function createBooking(event) {
             firstName: cachedProfile.firstName || 'John',
             lastName: cachedProfile.lastName || 'Doe',
             phone: cachedProfile.phone,
-            email: cachedProfile.email || `maasuser-${profile.phone}@maas.fi`,
+            email: cachedProfile.email || `maasuser-${profile.phone.replace(/\s/g, '').replace(/^[\+/]/g, '')}@maas.fi`,
           },
         });
 
