@@ -1,0 +1,85 @@
+{
+  "FullMock":{
+    "booking":{
+      "id":"should-not-send",
+      "leg":{
+        "startTime":1472731200000,
+        "endTime":1472817600000,
+        "from":{
+          "lat":60.18948,
+          "lon":24.97213
+        },
+        "to":{
+          "lat":60.18948,
+          "lon":24.97213
+        },
+        "mode":"CAR",
+        "agencyId":"Mock"
+      },
+      "meta":{
+        "mock":true
+      },
+      "terms":{
+        "price":{
+          "amount":1522,
+          "currency":"EUR"
+        }
+      },
+      "customer": {
+        "name": "John Doe",
+        "phone": "+35850123456"
+      },
+      "extraneousObject": {
+        "extraneousAttribute": true
+      }
+    },
+    "response":{
+      "tspId": "tsp-123456",
+      "leg":{
+        "startTime":1472731200000,
+        "endTime":1472817600000,
+        "from":{
+          "lat":60.18948,
+          "lon":24.97213
+        },
+        "to":{
+          "lat":60.18948,
+          "lon":24.97213
+        },
+        "mode":"CAR",
+        "agencyId":"Mock"
+      },
+      "meta":{
+        "mock":true
+      },
+      "terms":{
+        "price":{
+          "amount":1522,
+          "currency":"EUR"
+        }
+      },
+      "extraField":{
+        "extraAttribute":true
+      },
+      "id": "should-not-return",
+      "state": "should-only-return-on-retrieve",
+      "customer": {
+        "name": "should-not-return"
+      }
+    },
+    "invalidResponse":{
+      "meta":{
+        "mock":true
+      },
+      "terms":{
+        "price":{
+          "amount":1522,
+          "currency":"EUR"
+        }
+      },
+      "extraField":{
+        "extraAttribute":true
+      }
+    }
+  }
+}

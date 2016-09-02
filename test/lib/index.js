@@ -5,4 +5,5 @@ describe('Library', () => {
   require('./subscription-manager');
   require('./utils');
   require('./trip');
+  require('./tsp');
 });

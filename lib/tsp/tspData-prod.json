@@ -1,6 +1,6 @@
 {
   "HSL": {
-    "agencyId": "HSL",
+    "id": "HSL",
     "baseUrl": "https://tsp.maas.global/hsl",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
@@ -11,7 +11,7 @@
     }
   },
   "Valopilkku": {
-    "agencyId": "Valopilkku",
+    "id": "Valopilkku",
     "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/prod/taxi",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
@@ -23,7 +23,7 @@
     }
   },
   "Sixt": {
-    "agencyId": "Sixt",
+    "id": "Sixt",
     "baseUrl": "https://0dlrb3j4eb.execute-api.eu-west-1.amazonaws.com/prod/sixt",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
@@ -36,7 +36,7 @@
     }
   },
   "MaaS": {
-    "agencyId": "MaaS",
+    "id": "MaaS",
     "baseUrl": "https://tsp.maas.global/maas",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
