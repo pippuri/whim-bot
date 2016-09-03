@@ -108,7 +108,7 @@ function updateDatabase(booking) {
 function refreshBooking(booking) {
   console.info(`Refresh booking ${booking.id} for agencyId ${booking.leg.agencyId}`);
 
-  return TSPFactory.createFromAgencyId(booking.leg.agecyId)
+  return TSPFactory.createFromAgencyId(booking.leg.agencyId)
     .then(tsp => {
       if (!tsp.supportsOperation('retrieve')) {
         return Promise.resolve(booking);
@@ -156,15 +156,17 @@ module.exports.respond = (event, callback) => {
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
+      // Uncaught, unexpected error
       Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      });
     });
 };
