@@ -1,7 +1,7 @@
 {
   "name": "routes-query",
   "runtime": "nodejs4.3",
-  "description": "Serverless Lambda function for project: MaaS",
+  "description": "Query for routes from a implemented provider",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
@@ -37,10 +37,13 @@
       "requestTemplates": {
         "application/json": {
           "identityId": "$context.authorizer.principalId",
-          "from": "$input.params('from')",
-          "to": "$input.params('to')",
-          "leaveAt": "$input.params('leaveAt')",
-          "arriveBy": "$input.params('arriveBy')"
+          "headers": {},
+          "payload": {
+            "from": "$input.params('from')",
+            "to": "$input.params('to')",
+            "leaveAt": "$input.params('leaveAt')",
+            "arriveBy": "$input.params('arriveBy')"
+          }
         }
       },
       "responses": {
@@ -76,6 +79,56 @@
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""
+          }
+        }
+      },
+      "swaggerExport": {
+        "summary": "Query for a route",
+        "description": "Query for routes from an implemented 3rd party routes API",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Geolocation of the 'from' location",
+            "required": true
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Geolocation of the 'to' location",
+            "required": true
+          },
+          {
+            "name": "leaveAt",
+            "in": "query",
+            "description": "Leave at query time, provide either this or arriveBy",
+            "required": false
+          },
+          {
+            "name": "arriveBy",
+            "in": "query",
+            "description": "Arrive by query time, prodive this ",
+            "required": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "maas-schemas/maas-backend/routes/routes-query/response.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }
