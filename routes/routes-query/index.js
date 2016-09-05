@@ -2,10 +2,30 @@
 
 const businessRuleEngine = require('../../lib/business-rule-engine/index.js');
 const utils = require('../../lib/utils');
+const MaaSError = require('../../lib/errors/MaaSError');
 
-// Add route and leg identifiers that are unique and also act as
-// a signature for the response.
-function addRouteAndLegIdentifiersToResponse(response) {
+function validateInput(event) {
+  if (!event.payload.from) {
+    return Promise.reject(new MaaSError('Missing "from" input', 400));
+  }
+
+  if (!event.payload.to) {
+    return Promise.reject(new MaaSError('Missing "to" input', 400));
+  }
+
+  if (event.payload.leaveAt && event.payload.arriveBy) {
+    return Promise.reject(new MaaSError('Support only leaveAt or arriveBy, not both', 400));
+  }
+
+  return Promise.resolve();
+}
+
+/**
+ * Sign the response
+ * @param response {Object}
+ * @return response {Object} signed response
+ */
+function signResponse(response) {
   const itineraries = response.plan.itineraries || [];
 
   itineraries.map(itinerary => {
@@ -21,6 +41,13 @@ function addRouteAndLegIdentifiersToResponse(response) {
   return response;
 }
 
+/**
+ * Filter out the past routes
+ * TODO Support past route but made it unpurchasable?
+ * @param leaveAt {String}
+ * @param response {Object}
+ * @return response {Object} filtered response
+ */
 function filterPastRoutes(leaveAt, response) {
   if (!leaveAt) {
     return response;
@@ -62,20 +89,12 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy) {
     }
   )
   .then(response => filterPastRoutes(leaveAt, response))
-  .then(response => addRouteAndLegIdentifiersToResponse(response));
+  .then(response => signResponse(response));
 }
 
 module.exports.respond = function (event, callback) {
-  if (!event.identityId) {
-    callback(new Error('Authorization error.'));
-  } else if (!event.from) {
-    callback(new Error('Missing "from" argument.'));
-  } else if (!event.to) {
-    callback(new Error('Missing "to" argument.'));
-  } else if (event.leaveAt && event.arriveBy) {
-    callback(new Error('Both "leaveAt" and "arriveBy" provided.'));
-  } else {
-    getRoutes(event.identityId, event.from, event.to, event.leaveAt, event.arriveBy)
+  return validateInput(event)
+    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy))
     .then(response => {
       callback(null, response);
     })
@@ -83,6 +102,4 @@ module.exports.respond = function (event, callback) {
       console.info('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(err);
     });
-  }
-
 };
