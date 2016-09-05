@@ -6,11 +6,11 @@ const MaaSError = require('../../lib/errors/MaaSError');
 
 function validateInput(event) {
   if (!event.payload.from) {
-    return Promise.reject(new MaaSError('Missing \'from\' input', 400));
+    return Promise.reject(new MaaSError('Missing "from" input', 400));
   }
 
   if (!event.payload.to) {
-    return Promise.reject(new MaaSError('Missing \'from\' input', 400));
+    return Promise.reject(new MaaSError('Missing "to" input', 400));
   }
 
   if (event.payload.leaveAt && event.payload.arriveBy) {
@@ -94,12 +94,12 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy) {
 
 module.exports.respond = function (event, callback) {
   return validateInput(event)
-    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy)
+    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy))
     .then(response => {
       callback(null, response);
     })
     .catch(err => {
       console.info('This event caused error: ' + JSON.stringify(event, null, 2));
       callback(err);
-    }));
+    });
 };

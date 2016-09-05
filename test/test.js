@@ -14,6 +14,7 @@ function loadEnvironment() {
         loading = false;
         values = require(`../_meta/variables/s-variables-${stage}.json`);
         console.log(`Using ${stage} variables`);
+        process.env.SERVERLESS_STAGE = stage;
       } catch (e) {
         console.log(`Failed to read _meta/variables/s-variables-${stage}.json`);
         loading = true;
