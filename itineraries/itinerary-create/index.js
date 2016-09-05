@@ -306,16 +306,19 @@ module.exports.respond = function (event, callback) {
       .then(() => callback(null, response));
   })
   .catch(_error => {
-    // console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
 
+    // Uncaught, unexpected error
     Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
-
+    .then(() => {
+      if (_error instanceof MaaSError) {
         callback(_error);
-      });
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
   });
 };
