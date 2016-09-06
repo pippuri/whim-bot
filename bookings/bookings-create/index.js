@@ -51,7 +51,7 @@ module.exports.respond = (event, callback) => {
             return;
           }
 
-          callback(_error);
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
         });
     });
 };
