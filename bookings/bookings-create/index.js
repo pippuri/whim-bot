@@ -31,7 +31,8 @@ function formatResponse(booking) {
 module.exports.respond = (event, callback) => {
 
   return Database.init()
-    .then(() => Booking.create(event.payload, event.identityId))
+    .then(() => utils.validateSignatures(event.payload))        // Validate request signature
+    .then(validBookingData => Booking.create(validBookingData, event.identityId))
     .then(booking => booking.pay())
     .then(booking => booking.reserve())
     .then(booking => formatResponse(booking.toObject()))
