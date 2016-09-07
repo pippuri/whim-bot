@@ -3,7 +3,8 @@
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
 const geolocation = require('../../lib/geolocation');
-const validator = require('../../lib/validator');
+// FIXME Validator depends on too many nested deps to use
+// const validator = require('../../lib/validator');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 function orderByDistance(results, reference) {
@@ -28,7 +29,15 @@ function orderByDistance(results, reference) {
 
 module.exports.respond = function (event, callback) {
   // Parse and validate results
-  return validator.validate('maas-backend:geocoding-reverse-request', event, { coerceTypes: true })
+  //return validator.validate('maas-backend:geocoding-reverse-request', event, { coerceTypes: true })
+  return Promise.resolve({
+    payload: {
+      lang: event.payload.lang ? event.payload.lang : 'fi',
+      count: event.payload.count ? parseInt(event.payload.count, 10) : 5,
+      lat: parseFloat(event.payload.lat),
+      lon: parseFloat(event.payload.lon),
+    },
+  })
   .catch(error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
   .then(parsed => bus.call('MaaS-provider-here-reverse-geocoding', parsed.payload))
   .then(results => {
