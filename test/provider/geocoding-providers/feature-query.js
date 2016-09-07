@@ -2,12 +2,11 @@
 
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
-const ajv = require('ajv')({ verbose: true });
+const validator = require('../../../lib/validator');
 
-module.exports = (lambda, schema, fixture) => {
+module.exports = (lambda, fixture) => {
   describe('basic tests of a simple query', () => {
     const event = {
-      hint: 'latlon',
       name: 'Kamppi Bus Station',
       count: 5,
       lat: 60.1675800,
@@ -30,9 +29,7 @@ module.exports = (lambda, schema, fixture) => {
     });
 
     it('should trigger a valid response', () => {
-      const valid = ajv.validate(schema, response);
-      const validationError = valid ? null : JSON.stringify(ajv.errors);
-      expect(validationError).to.be.null;
+      return validator.validate('maas-backend:geocoding-query-response', response);
     });
   });
 
@@ -52,13 +49,11 @@ module.exports = (lambda, schema, fixture) => {
       it('should have a valid answer', () => {
         if (!item.pass) {
           expect(error).to.not.be.null;
-          return;
+          return Promise.resolve();
         }
 
         expect(response.features).to.not.be.empty;
-        response.features.forEach(feature => {
-          expect(feature.properties.name).to.have.string(item.input.name);
-        });
+        return validator.validate('maas-backend:geocoding-query-response', response);
       });
     });
   });
