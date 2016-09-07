@@ -2,13 +2,16 @@
 
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
-const ajv = require('ajv')({ verbose: true });
+const validator = require('../../../lib/validator');
 
-module.exports = (lambda, schema, fixture) => {
+module.exports = (lambda, fixture) => {
   describe('basic tests of a simple query', () => {
     const event = {
-      lat: 660.16732510000001,
-      lon: 24.9306569,
+      name: 'Kamppi Bus Station',
+      count: 5,
+      lat: 60.1675800,
+      lon: 24.9302260,
+      radius: 5,
     };
     let error;
     let response;
@@ -26,23 +29,31 @@ module.exports = (lambda, schema, fixture) => {
     });
 
     it('should trigger a valid response', () => {
-      const valid = ajv.validate(schema, response);
-      const validationError = valid ? null : JSON.stringify(ajv.errors);
-      expect(validationError).to.be.null;
+      return validator.validate('maas-backend:geocoding-reverse-response', response);
     });
   });
 
   fixture.forEach(item => {
-    describe(['Search:', item.input.lat, item.input.lon, item.pass].join(','), () => {
-      // let error;
-      // let response;
+    describe(['Search:', item.input.lat, item.input.lon, item.pass].join(' '), () => {
+      let error;
+      let response;
 
       before(done => {
         wrap(lambda).run(item.input, (err, data) => {
-          // error = err;
-          // response = data;
+          error = err;
+          response = data;
           done();
         });
+      });
+
+      it('should have a valid answer', () => {
+        if (!item.pass) {
+          expect(error).to.not.be.null;
+          return Promise.resolve();
+        }
+
+        expect(response.features).to.not.be.empty;
+        return validator.validate('maas-backend:geocoding-reverse-response', response);
       });
     });
   });

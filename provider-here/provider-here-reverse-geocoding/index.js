@@ -88,7 +88,7 @@ function adapt(input) {
     return {
       type: 'FeatureCollection',
       features: features,
-      query: query,
+      debug: query,
     };
   });
 }
