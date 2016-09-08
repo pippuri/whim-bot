@@ -1,167 +1,167 @@
 {
-  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "payload": {
-    "leg": {
-        "startTime": 1471875300000,
-        "endTime": 1469786400000,
-        "from": {
-            "lat": 60.310967,
-            "lon": 24.96952
-        },
-        "to": {
-            "lat": 60.310967,
-            "lon": 24.96952
-        },
-        "agencyId": "Sixt"
-    },
-    "meta": {
-        "identifier": "ABYPXW3301-QAc2gHDgfgHs3XQaQKnMrM1i7znK9VawOK10jKhNSgq4ocgCsWaJVDKgZf2f8hihnCLgN4FaJqFqSg4qfpwpKatYrk/5dsEc+u+8cyQi1PwbGs5p4UYdivVt4oheNlZ5/89uiEACpUiLR0MP6nzZBNwXgRo/Rvbvweh3FV6gI9qmOeCnIFkwKDhP9YYFoUWpCNTioyB6q7N3KQyLQRki+wbweTNMDrJPIQcrJzFv7dQQyqSYXTM8xoORn+VbL6eH0PYH8xXxLIHgy4RO4esHzzatiRijmru7waNBXiR5gl0LU4Bu/jS8NC6820/Kg6LanmCnE3UQ6qipXODoWabUAOPHdwBIqlvfiEVXS/oWDcyXkKKbPG0dvLPx8lSJNEqlTW/qLBGGQCtZ6CDVRHfTILBSiaTuvVAb+rAOSJxiz42AgkkexCgFubcsny42Noog5gJKDB5rD5GGxoAnK0ySWqiJNSXbrSydy0wc18JQFPG+kFBGs2coL1S8z6Cjqn3UStJCnwCvRr8gtqR4jG9e2UuchbMN7Og4zyy2xtLd9hZIdQjgh3cdOA7/tDRYs1OY8bcB5lyCAW/8kbcYxmWlCoizroyZb+p7BKCsVC2wqkJbyyaI2q6x2O1AHLOSc92dGu4Eh/ED3x9wv2HWc0WA+Bjn4/N5fcAmyMSLbqOrfQeCqLm9Ark5N0dVxRBZWW6Fz0o6X6BzN7aZAAhGmm8Elz57sA6e6sh1g6ov9wm9ROTL3vTmhoKzf85wNt42CekJj8s6UYUfBWE=",
-        "name": "Ford Fiesta, Citroen C3",
-        "description": "2/4 Door Compact, Manual transmission",
-        "image": "https://www.sixt.de/php/fleet/vehicleimage?grp=CCMR&liso=FI&uci=2240",
-        "car": {
-            "passengers": 5,
-            "doors": 4,
-            "models": [
-                "Ford Fiesta",
-                "Citroen C3"
-            ],
-            "transmission": "manual",
-            "airConditioning": true,
-            "navigationSystem": false
-        },
-        "options": {
-            "navigationSystem": true,
-            "additionalMiles": null
-        }
-    },
-    "terms": {
-        "mileageLimit": null,
-        "stations": {
-            "pickup": {
-                "openingHours": [
-                    {
-                        "Days": [
-                            "MO",
-                            "TU",
-                            "WE"
-                        ],
-                        "Times": [
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+    "payload": {
+            "leg": {
+                "startTime": 1474199086224,
+                "endTime": 1474221892332,
+                "from": {
+                    "lat": 60.310967,
+                    "lon": 24.96952
+                },
+                "to": {
+                    "lat": 60.310967,
+                    "lon": 24.96952
+                },
+                "mode": "CAR",
+                "agencyId": "Sixt"
+            },
+            "meta": {
+                "MODE_CAR": {
+                    "name": "Ford Ka (Sixt branded)",
+                    "description": "2-3 Door Mini, Manual transmission",
+                    "image": "https://www.sixt.de/php/fleet/vehicleimage?grp=MBMR&liso=FI&uci=2240"
+                },
+                "identifier": "AE85W61K00-QAc2gHDgfgHs3XQaQKnMrM1i7znK9VawOK10jKhNSgq4ocgCsWaJVDKgZf2f8hihnCLgN4FaJqFqSg4qfpwpKatYrk/5dsEc+u+8cyQi1PwbGs5p4UYdijAnkA3YxwjDPZ9vRaVdgayhrAict15hEKICuPIb+JgC6lgcrn6IHOSM/5hRdMaFYVXgD32KCP++idxyEjEyFtAnbjpeQf/Szauiq9/wHrGfg2Z7URplrdZ9rZsn6yqJAezp2dO1H+Ne3EEtILpbVFmwoq9xcD5jEdVq/6vreulF4xAxp9AiUGkwG691DwH6Q0t2PvUZ6CQPh/1p/y/m7hIMFKzqeUR/1j+zxHDvzBeuJIQQa++fhO72Ic9s9IJhyQCkGuqBMtspMSA8mWqeZNY83YlgwjlF3vquNZMWcH8UmgqusHUYEwfZXMU/PIdtCk+bVpErR8vVCnzq0XbiMCyllLBjuNmK0qI1aOqnv8EEJfSHf3X39VZcwtm4z0uzQcMwtwVxFOg5Eb0NW2CShw5etCBa19bl8TwdfvLvVASUTTVbyxUC+tMjRR/9+sli4CvQZFh7BZhovmK2QtvU+s9DYTlASX/LAie94XEADrAL4EuXA0hlx+Qrx7CthgF1vATztggFZ4dVfXubnmiCphe4BIsuEefBwfzaobF3kbAadKriO4xQlsz7FCybLPqKirxVAv7rX+sIwzcRccpbZxy/Zk+BU2uydWCbedgKcx15dbHnK30kzbA2hCZBd4D5AjUNuVqA1+y1afFMs0An510=",
+                "car": {
+                    "passengers": 2,
+                    "doors": 2,
+                    "models": [
+                        "Ford Ka (Sixt branded)"
+                    ],
+                    "transmission": "manual",
+                    "airConditioning": true,
+                    "navigationSystem": false
+                },
+                "options": {
+                    "navigationSystem": true
+                },
+                "stations": {
+                    "pickup": {
+                        "openingHours": [
                             {
-                                "Open": "00:00:00",
-                                "Close": "01:00:00"
+                                "Days": [
+                                    "MO",
+                                    "TU",
+                                    "WE"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "00:00:00",
+                                        "Close": "01:00:00"
+                                    },
+                                    {
+                                        "Open": "07:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
                             },
                             {
-                                "Open": "07:00:00",
-                                "Close": "23:59:00"
-                            }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "TH",
-                            "FR"
-                        ],
-                        "Times": [
+                                "Days": [
+                                    "TH",
+                                    "FR"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "07:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
+                            },
                             {
-                                "Open": "07:00:00",
-                                "Close": "23:59:00"
-                            }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "SA"
-                        ],
-                        "Times": [
+                                "Days": [
+                                    "SA"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "08:00:00",
+                                        "Close": "20:00:00"
+                                    }
+                                ]
+                            },
                             {
-                                "Open": "08:00:00",
-                                "Close": "20:00:00"
+                                "Days": [
+                                    "SU"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "09:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
                             }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "SU"
                         ],
-                        "Times": [
+                        "outOfHours": {
+                            "IsAllowed": true,
+                            "Information": "Pick-up out of opening hours is possible for an additional charge. Please provide e-mail address, flight and mobile number.\nOur partner Securitas serves you at the same hallway as the Sixt counter. Please find all instructions at the Sixt branch."
+                        }
+                    },
+                    "dropoff": {
+                        "openingHours": [
                             {
-                                "Open": "09:00:00",
-                                "Close": "23:59:00"
+                                "Days": [
+                                    "MO",
+                                    "TU",
+                                    "WE"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "00:00:00",
+                                        "Close": "01:00:00"
+                                    },
+                                    {
+                                        "Open": "07:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
+                            },
+                            {
+                                "Days": [
+                                    "TH",
+                                    "FR"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "07:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
+                            },
+                            {
+                                "Days": [
+                                    "SA"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "08:00:00",
+                                        "Close": "20:00:00"
+                                    }
+                                ]
+                            },
+                            {
+                                "Days": [
+                                    "SU"
+                                ],
+                                "Times": [
+                                    {
+                                        "Open": "09:00:00",
+                                        "Close": "23:59:00"
+                                    }
+                                ]
                             }
-                        ]
+                        ],
+                        "outOfHours": {
+                            "IsAllowed": true,
+                            "Information": "You can park the Sixt vehicle to any Sixt parking spot in parking hall P3B. Please leave the GPS and child seat in the car and lock the doors. Then return the keys to the Sixt counter between Terminals 1 and 2 and drop them into the key box, which is located on the left side of the Sixt counter."
+                        }
                     }
-                ],
-                "outOfHours": {
-                    "IsAllowed": true,
-                    "Information": "Pick-up out of opening hours is possible for an additional charge. Please provide e-mail address, flight and mobile number.\nOur partner Securitas serves you at the same hallway as the Sixt counter. Please find all instructions at the Sixt branch."
                 }
             },
-            "dropoff": {
-                "openingHours": [
-                    {
-                        "Days": [
-                            "MO",
-                            "TU",
-                            "WE"
-                        ],
-                        "Times": [
-                            {
-                                "Open": "00:00:00",
-                                "Close": "01:00:00"
-                            },
-                            {
-                                "Open": "07:00:00",
-                                "Close": "23:59:00"
-                            }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "TH",
-                            "FR"
-                        ],
-                        "Times": [
-                            {
-                                "Open": "07:00:00",
-                                "Close": "23:59:00"
-                            }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "SA"
-                        ],
-                        "Times": [
-                            {
-                                "Open": "08:00:00",
-                                "Close": "20:00:00"
-                            }
-                        ]
-                    },
-                    {
-                        "Days": [
-                            "SU"
-                        ],
-                        "Times": [
-                            {
-                                "Open": "09:00:00",
-                                "Close": "23:59:00"
-                            }
-                        ]
-                    }
-                ],
-                "outOfHours": {
-                    "IsAllowed": true,
-                    "Information": "You can park the Sixt vehicle to any Sixt parking spot in parking hall P3B. Please leave the GPS and child seat in the car and lock the doors. Then return the keys to the Sixt counter between Terminals 1 and 2 and drop them into the key box, which is located on the left side of the Sixt counter."
+            "terms": {
+                "price": {
+                    "amount": 1550.2,
+                    "currency": "POINT"
                 }
-            }
-        },
-        "price": {
-            "amount": 8392.67,
-            "currency": "POINT"
+            },
+            "signature": "bd334185527fbe58ce84de3723e2c82764bcdb9bee7f83d11a6c67f6346dcf9a"
         }
-    },
-    "signature": "76cbd20378d349ba7bba6d0b87faa958c596b099cb92d4e59df17ec97151a7cb"
-  }
 }
