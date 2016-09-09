@@ -2,6 +2,7 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/response.json');
 const validator = require('../../../lib/validator');
 const event = require('../../../geocoding/reverse-geocoding-query/event.json');
 const geolocation = require('../../../lib/geolocation');
@@ -26,7 +27,7 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate('maas-backend:geocoding-reverse-response', response);
+      return validator.validate(schema, response);
     });
 
     it('should order the responses by shortest distance to the reference', () => {

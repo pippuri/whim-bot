@@ -2,6 +2,7 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-query/response.json');
 const validator = require('../../../lib/validator');
 const event = require('../../../geocoding/geocoding-query/event.json');
 
@@ -25,7 +26,7 @@ module.exports = function (lambda) {
     });
 
     it('should trigger a valid response', () => {
-      return validator.validate('maas-backend:geocoding-query-response', response);
+      return validator.validate(schema, response);
     });
   });
 };
