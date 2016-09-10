@@ -18,7 +18,8 @@ used as a starting point for the project.
 6. Select your user account
 7. Delete any existing access keys
 8. Click *Create Access Key*
-9. Add the access key to a new maas section in your `~/.aws/credentials` file (see example below)
+9. Add the access key to a new maas section in your `~/.aws/credentials` file
+(see the sample below)
 10. Secure your credentials with `chmod og-rwx ~/.aws/credentials`
 
 Example:
@@ -57,7 +58,8 @@ npm install -g serverless
 2. Click on the *Fork* button
 3. Select your personal user account (if prompted)
 4. Wait for the forking to happen
-5. Authenticate your workstation by adding an SSH key at https://github.com/settings/keys
+5. Authenticate your workstation by adding an SSH key at
+https://github.com/settings/keys
 4. Create a clone on your local workstation (see example below)
 
 ```
@@ -109,9 +111,14 @@ deployment where they got deleted.
 1. Make sure you are inside maas-backend folder
 2. Do `sls stage create`
 3. Follow the CL instruction
-4. At the end, it may return an error saying some environment variables are missing, this is *normal*
-5. Go to `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE.json` and add in missing variables, read s-templates.json as a reference, then add this file to `.gitignore`
-6. Repeat step 5 with `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE-euwest1.json` but do not add it to .gitignore
+4. At the end, it may return an error saying some environment variables are
+missing, this is *normal*
+5. Go to `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE.json` and add in
+missing variables, read s-templates.json as a reference, then add this file to
+`.gitignore`.
+6. Repeat step 5 with
+7. `_meta/variables/s-variables-YOUR_NEW_STAGE_NAME_HERE-euwest1.json`, but do
+not add it to `.gitignore`
 
 > Note: When do step 5 and 6, be careful and check stage name to prevent reoccurence
 
@@ -129,9 +136,10 @@ Then run the following command:
 sls client deploy -s dev #stage should be specified
 ```
 
-Note
+Note:
 ```
-DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE S3 BUCKET AND REDEPLOY ALL FILES.
+DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE
+S3 BUCKET AND REDEPLOY ALL FILES.
 ```
 
 #### Running Tests
@@ -154,12 +162,18 @@ mocha -g "TripGo \(South Finland\) leaveAt request response"
 
 #### Running tests with local TSP implementations
 
-If you have local TSP repos checked out with their default names to `../maas-transport-booking` or `../maas-tsp-reference`, you can just use this environment variable to run tests with local TSP lambdas found in those directories:
+If you have local TSP repos checked out with their default names to
+`../maas-transport-booking` or `../maas-tsp-reference`, you can just use this
+environment variable to run tests with local TSP lambdas found in those
+directories:
+
 ```
 TEST_WITH_LOCAL_TSP=1 mocha
 ```
 
-If you have your repositories in different directories, you can specify the directories with the following env variables:
+If you have your repositories in different directories, you can specify the
+directories with the following env variables:
+
 ```
 LOCAL_MAAS_TRANSPORT_BOOKING_PATH=../mtb LOCAL_MAAS_TSP_REFERENCE_PATH=../mtr TEST_WITH_LOCAL_TSP=1 mocha
 ```
@@ -202,10 +216,13 @@ of tests on pull requests. Before deploying or merging a pull request, you
 should check Travis tests are passing. You should note that Travis environment
 differs from your local environment:
 
-   * Travis does not see your Serverless environment settings at *_meta/variables/**; if you add a new env variable, also add it to [Travis settings](https://travis-ci.com/maasglobal/maas-backend/settings).
-   * Travis is running on Node 4.2 (sufficiently similar to AWS), whereas you may locally run something else.
+   * Travis does not see your Serverless environment settings at
+   `_meta/variables/*`; if you add a new env variable, also add it to [Travis settings](https://travis-ci.com/maasglobal/maas-backend/settings).
+   * Travis is running on Node 4.2 (sufficiently similar to AWS), whereas you
+   * may locally run something else.
 
-When things run safely in Travis, we can be sufficiently confident they run on AWS.
+When things run safely in Travis, we can be sufficiently confident they run on
+AWS.
 
 Travis can not retrieve the API keys from S3 because since it does not have
 credentials for our AWS cloud. Instead Travis uses API keys provided through
@@ -225,13 +242,18 @@ more details.
 4. Choose Database type
 5. Choose Production / Dev
 6. Modify Instance specification
-7. Input settings and advanced setting ( username, password, identifier etc are exampled in _meta folder)
+7. Input settings and advanced settings (samples on username, password etc.
+can be found in in `_meta` folder)
 In Security Group, choose `rds-postgres-maas`
 
 
 #### Modifying PostgreSQL Database
 
-MaaS uses Postgres for storing itineraries, legs and bookings into database. We use [Objection.js](http://vincit.github.io/objection.js/) and [Knex](http://knexjs.org/) as our ORM layer. Knex has a concept of 'migrations' when working with data, in which database schema changes are wrapped into their own script files.
+MaaS uses Postgres for storing itineraries, legs and bookings into database. We
+use [Objection.js](http://vincit.github.io/objection.js/) and
+[Knex](http://knexjs.org/) as our ORM layer. Knex has a concept of 'migrations'
+when working with data, in which database schema changes are wrapped into their
+own script files.
 
 To work with Knex, you will likely want to install its cli from npm:
 
@@ -250,25 +272,32 @@ This will create a new file that looks a bit like the following:
 
 `scripts/migrations/20160808151812_your_descriptive_migration_name.js`
 
-You should add up and down scripts into the file. You can look for examples in the other files in the `scripts/migrations` folder.
+You should add up and down scripts into the file. You can look for examples in
+the other files in the `scripts/migrations` folder.
 
-When your `exports.up` function is ready, you can run the following to make the migration in the dev environment:
+When your `exports.up` function is ready, you can run the following to make the
+migration in the dev environment:
 
 ```
 cd scripts
 SERVERLESS_STAGE=dev knex migrate:latest
 ```
 
-When your `exports.down` function is ready (meaning it actually deletes/reverts the stuff that `exports.up` does), you can run the following to roll the latest migration back:
+When your `exports.down` function is ready (meaning it actually deletes/reverts
+the stuff that `exports.up` does), you can run the following to roll the latest
+migration back:
 
 ```
 cd scripts
 SERVERLESS_STAGE=dev knex migrate:rollback
 ```
 
-After you are confident with your migration script, you can just commit it, and the automatic deployment scripts will make sure it is run on the test and production environments.
+After you are confident with your migration script, you can just commit it, and
+the automatic deployment scripts will make sure it is run on the test and
+production environments.
 
-To look into the database while developing, you probably want to use [PSequel](http://www.psequel.com/) like everyone else.
+To peek into the database while developing, you probably want to use
+[PSequel](http://www.psequel.com/) like everyone else.
 
 #### Deploying To Dev
 
@@ -328,9 +357,12 @@ Use imperative in commit messages. This makes them short. For example
 
 #### Updating Your Branch
 
-1. Make sure you do not have uncommitted changes. You can either commit them or use `git stash` to put them aside.
-2. Make sure that the master branch does not have local commits (see next chapter for getting local changes out of master)
-3. You can now update your branch to contain the latest development code as follows.
+1. Make sure you do not have uncommitted changes. You can either commit them or
+use `git stash` to put them aside.
+2. Make sure that the master branch does not have local commits (see the next
+chapter for getting local changes out of master).
+3. You can now update your branch to contain the latest development code as
+follows.
 
 ```
 git checkout master
@@ -378,26 +410,41 @@ master branch.
 git push origin <local_branch_name>
 ```
 
-#### Updating your submodule
-`git submodule update --upstream`
+#### Working with linked npm modules
+
+You may need to work with changes to maas-schemas or request-promise-lite
+modules in parallel with developing maas-backend. In such a case, the best
+option is to use npm linkages, which creates a symlink.
+
+```
+npm link                # in your <module_name> directory
+npm link <module_name>  # in your maas-backend directory
+```
 
 #### Git stash alternative
 
-Some time `git stash` behave in an unexpected way, and it is risky if you move to another branches without stashing or commiting, which could turn out to be a mess.
-This method works better than a `git stash`
+Sometimes `git stash` behaves in an unexpected way, and it is risky if you move
+to another branch without stashing or commiting. This can turn out to be a mess.
+This method works better than a `git stash`:
 
-1. Commit the changes on your branch `git checkout <branch-1`, name it "WIP" or "Work in progress" etc
-2. Move to other branches as you want `git checkout <branch-2>`
-3. When you want to get back and working with wip branch, `git checkout <branch-1>`
-4. Do `git reset HEAD^` to uncommit the previous WIP commit and continue working
+1. Commit the changes on your branch `git checkout <branch-1>`, name it "WIP" or
+"Work in progress" etc.
+2. Move to another branche as you want `git checkout <branch-2>`.
+3. When you want to get back and working with the original branch,
+`git checkout <branch-1>`.
+4. Do `git reset HEAD^` to uncommit the previous WIP commit and continue
+your work.
 
 ### Making releases
 
-We tag every sprint release to have a reference point between old and new production releases.
-The tags follow [semver 2.0 format](http://semver.org/), but semantically the major and minor versions refer to our roadmap in JIRA and the suffix changes every sprint. A sample: `0.1-sprint2`. Create new tags as follows:
+We tag every sprint release to have a reference point between old and new
+production releases. The tags follow [semver 2.0 format](http://semver.org/),
+but semantically the major and minor versions refer to our roadmap in JIRA and
+the suffix changes every sprint. A sample: `0.1-sprint2`. Create new tags as
+follows:
 
-1. Make sure that you're in the commit that refers to the sprint results
-2. Create the tag and push it upstream
+1. Make sure that you're in the commit that refers to the sprint results.
+2. Create the tag and push it upstream.
 
 ```
 git tag -a 0.1-sprint2

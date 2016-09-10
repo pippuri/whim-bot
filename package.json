@@ -65,6 +65,7 @@
     "knex": "0.11.5",
     "lambda-wrapper": "^0.1.0",
     "lodash": "^4.13.1",
+    "maas-schemas": "git+ssh://git@github.com/maasglobal/maas-schemas.git",
     "moment": "^2.13.0",
     "node-uuid": "^1.4.7",
     "objection": "0.5.1",

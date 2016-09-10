@@ -4,7 +4,9 @@ const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');
 const expect = chai.expect;
 const moment = require('moment');
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 const validator = require('../../../lib/validator');
+
 
 module.exports = function (lambda) {
 
@@ -35,7 +37,7 @@ module.exports = function (lambda) {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:routes-query-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
