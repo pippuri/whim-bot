@@ -3,6 +3,7 @@
 const _ = require('lodash');
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
+const schema = require('maas-schemas/prebuilt/maas-backend/itineraries/itinerary-list/response.json');
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
@@ -58,7 +59,7 @@ module.exports = function (createLambda, listLambda) {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:itinerary-list-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

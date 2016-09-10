@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const _ = require('lodash');
 const bus = require('../../../lib/service-bus');
-
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 const validator = require('../../../lib/validator');
 
 module.exports = options => {
@@ -48,7 +48,7 @@ module.exports = options => {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:routes-query-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
@@ -176,7 +176,7 @@ module.exports = options => {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:routes-query-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
@@ -223,7 +223,7 @@ module.exports = options => {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:routes-query-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
@@ -325,7 +325,7 @@ module.exports = options => {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:routes-query-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

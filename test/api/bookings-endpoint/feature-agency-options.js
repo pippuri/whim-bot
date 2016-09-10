@@ -2,6 +2,7 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
+const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-options/response.json');
 const validator = require('../../../lib/validator');
 const moment = require('moment');
 
@@ -38,7 +39,7 @@ module.exports = function (lambda) {
     });
 
     xit('should trigger a valid response', () => {
-      return validator.validate('maas-backend:bookings-agency-options-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });

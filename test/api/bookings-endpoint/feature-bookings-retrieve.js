@@ -2,6 +2,7 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
+const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-retrieve/response.json');
 const validator = require('../../../lib/validator/index');
 const Database = require('../../../lib/models/index').Database;
 
@@ -61,7 +62,7 @@ module.exports = function (lambda) {
 
     it.skip('should return a valid response', () => {
       // FIXME change this when bookings are returning in correct states
-      return validator.validate('maas-backend:bookings-retrieve-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
@@ -120,7 +121,7 @@ module.exports = function (lambda) {
 
     it.skip('should return a valid response', () => {
       // FIXME change this when bookings are returning in correct states
-      return validator.validate('maas-backend:bookings-retrieve-response', response)
+      return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
