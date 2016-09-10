@@ -114,7 +114,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
     });
 
     it('The whole cycle should succeed without error', () => {
-      expect(error);
+      expect(error).to.be.undefined;
     });
 
     it('bookings-agency-options should return a valid response', () => {
