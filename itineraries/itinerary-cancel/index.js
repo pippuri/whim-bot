@@ -5,7 +5,7 @@ const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
 const Database = models.Database;
-const Trip = require('../../lib/trip');
+//const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 
 function formatResponse(itinerary) {
