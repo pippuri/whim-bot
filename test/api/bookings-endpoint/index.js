@@ -35,7 +35,7 @@ describe('bookings endpoint', function () {
 
   describe('bookings-list', function () {
     this.timeout(20000);
-    bookingsListTest(bookingsCreateLambda, bookingsListLambda);
+    bookingsListTest(agencyOptionsLambda, bookingsCreateLambda, bookingsListLambda);
   });
 
   describe('bookings-Sixt-full-flow', function () {
