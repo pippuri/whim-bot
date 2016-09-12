@@ -24,7 +24,7 @@ const util = require('util');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const ENDPOINT_URL = 'https://reverse.geocoder.cit.api.here.com/6.2/reversegeocode.json';
-const SEARCH_RADIUS = 500; // Find within 300m distance
+const SEARCH_RADIUS = 500; // Find within 500m distance by default
 
 function parseResults(response) {
   if (!response.Response || !util.isArray(response.Response.View) ||
@@ -68,11 +68,12 @@ function parseResults(response) {
 }
 
 function adapt(input) {
+  const radius = input.radius || SEARCH_RADIUS;
   const query = {
     mode: 'retrieveAddresses',
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
-    prox: `${input.lat},${input.lon},${SEARCH_RADIUS}`,
+    prox: `${input.lat},${input.lon},${radius}`,
     language: input.lang,
     gen: 9,
   };

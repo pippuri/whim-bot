@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
 const geolocation = require('../../lib/geolocation');
 const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/request.json');
@@ -8,8 +7,8 @@ const validator = require('../../lib/validator');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
 
-function orderByDistance(results, reference) {
-  const sorted = results.features.sort((a, b) => {
+function orderByDistance(features, reference) {
+  const sorted = features.sort((a, b) => {
     const aGeo = {
       lat: a.geometry.coordinates[0],
       lon: a.geometry.coordinates[1],
@@ -22,10 +21,7 @@ function orderByDistance(results, reference) {
     return geolocation.distance(reference, bGeo) - geolocation.distance(reference, aGeo);
   });
 
-  // Note: We modify the original object, which is an anti-pattern, but safe in this case
-  results.features = sorted;
-
-  return results;
+  return sorted;
 }
 
 module.exports.respond = function (event, callback) {
@@ -35,14 +31,17 @@ module.exports.respond = function (event, callback) {
     useDefaults: true,
     transform: { from: '', to: undefined },
   };
+  let parsed;
+
   return validator.validate(schema, event, validationOptions)
-  .catch(ValidationError, error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
+  .then(_parsed => (parsed = _parsed))
   .then(parsed => bus.call('MaaS-provider-here-reverse-geocoding', parsed.payload))
   .then(results => {
+    // Order by distance, return at most 'count' items
     const reference = { lat: event.lat, lon: event.lon };
-    return orderByDistance(results, reference);
-  })
-  .then(results => {
+    const features = orderByDistance(results.features, reference).slice(0, parsed.count);
+    results.features = features;
+
     // Replace the delegate query info with our own query
     results.debug = event.payload;
     callback(null, results);
@@ -56,6 +55,10 @@ module.exports.respond = function (event, callback) {
     if (_error instanceof MaaSError) {
       callback(_error);
       return;
+    }
+
+    if (_error instanceof ValidationError) {
+      callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
     }
 
     callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));

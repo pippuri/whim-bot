@@ -37,9 +37,8 @@
       "requestTemplates": {
         "application/json": {
           "identityId": "",
-          "headers": {},
           "payload": {
-            "name": "$input.params('lang')",
+            "lang": "$input.params('lang')",
             "count": "$input.params('count')",
             "lat": "$input.params('lat')",
             "lon": "$input.params('lon')"

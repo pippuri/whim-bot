@@ -37,7 +37,6 @@
       "requestTemplates": {
         "application/json": {
           "identityId": "",
-          "headers": {},
           "payload": {
             "name": "$input.params('name')",
             "count": "$input.params('count')",
