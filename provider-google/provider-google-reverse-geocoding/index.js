@@ -30,7 +30,7 @@ function adapt(input) {
   })
   .then(parseResults)
   .then(response => {
-    response.query = query;
+    response.debug = query;
     return response;
   });
 }

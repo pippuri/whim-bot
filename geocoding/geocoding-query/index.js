@@ -1,103 +1,66 @@
 'use strict';
 
-const Promise = require('bluebird');
-const AWS = require('aws-sdk');
-const ajvFactory = require('ajv');
+const bus = require('../../lib/service-bus');
+const geolocation = require('../../lib/geolocation');
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-query/request.json');
+const validator = require('../../lib/validator');
+const MaaSError = require('../../lib/errors/MaaSError');
+const ValidationError = require('../../lib/validator/ValidationError');
 
-// Input schema
-const schema = require('./schema.json');
-const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
-let validate;
-Promise.promisifyAll(lambda, { suffix: 'Promise' });
+function orderByDistance(features, reference) {
+  const sorted = features.sort((a, b) => {
+    const aGeo = {
+      lat: a.geometry.coordinates[0],
+      lon: a.geometry.coordinates[1],
+    };
+    const bGeo = {
+      lat: b.geometry.coordinates[0],
+      lon: b.geometry.coordinates[1],
+    };
 
-// Initialization work
-(function init() {
-
-  // Initialise AJV with the option to use defaults supplied in the schema
-  // Note: Types must be coerced as current API Gateway request templates pass them
-  // as strings
-  const ajv = ajvFactory({ verbose: true, inject: true, coerceTypes: true });
-
-  // Add a new handler
-  ajv.addKeyword('inject', {
-    compile: function (schema) {
-      if (!this._opts.inject) return function () { return true; };
-
-      return function (data, dataPath, parentData, parentDataProperty) {
-        for (let key in schema) { // eslint-disable-line prefer-const
-          if (typeof data[key] === 'undefined') {
-            data[key] = schema[key];
-          }
-        }
-
-        return true;
-      };
-    },
+    return geolocation.distance(reference, bGeo) - geolocation.distance(reference, aGeo);
   });
 
-  // Compile schema
-  validate = ajv.compile(schema);
-
-}());
-
-function delegate(event) {
-  const provider = 'MaaS-provider-here-geocoding';
-
-  // Replace local stage name with dev (no 'local' in AWS side);
-  const stage = process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev');
-
-  //console.info('Invoking provider', provider, "with input",
-  //  JSON.stringify(event, null, 2));
-
-  return lambda.invokePromise({
-    FunctionName: provider,
-    Qualifier: stage,
-    Payload: JSON.stringify(event),
-  })
-  .then(response => {
-    const payload = JSON.parse(response.Payload);
-
-    if (payload.error) {
-      return Promise.reject(new Error(payload.error));
-    }
-
-    if (payload.errorMessage) {
-      return Promise.reject(new Error(payload.errorMessage));
-    }
-
-    // Add some debug info to response
-    payload.provider = provider;
-    return payload;
-  });
+  return sorted;
 }
 
 module.exports.respond = function (event, callback) {
+  // Parse and validate results
+  const validationOptions = {
+    coerceTypes: true,
+    useDefaults: true,
+    transform: { from: '', to: undefined },
+  };
+  let parsed;
 
-  // Validate & set defaults
-  new Promise((resolve, reject) => {
-    const valid = validate(event.query);
-
-    if (!valid) {
-      console.info('errors', event.query, validate.errors);
-      return reject(new Error(JSON.stringify(validate.errors)));
-    }
-
-    return resolve(valid);
-  })
-  .then(() => {
-    return delegate(event.query);
-  })
+  return validator.validate(schema, event, validationOptions)
+  .then(_parsed => (parsed = _parsed))
+  .then(parsed => bus.call('MaaS-provider-here-geocoding', parsed.payload))
   .then(results => {
+    // Order by distance, return at most 'count' items
+    const reference = { lat: event.lat, lon: event.lon };
+    const features = orderByDistance(results.features, reference).slice(0, parsed.count);
+    results.features = features;
 
     // Replace the delegate query info with our own query
-    results.query = event.query;
+    results.debug = event.payload;
     callback(null, results);
   })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn('Error:', err.errors);
+  .catch(_error => {
+    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
 
-    // TODO Process the error
-    callback(err);
+    // Uncaught, unexpected error
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    if (_error instanceof ValidationError) {
+      callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

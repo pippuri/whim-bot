@@ -23,15 +23,11 @@ function adapt(input) {
     address: input.name,
   };
 
-  switch (input.hint) {
-    case 'latlon':
-      query.component = 'country:' + input.country;
-      break;
-    case 'none':
-      return Promise.reject(new Error("'none' not supported for Google Geocoding."));
-    default:
-      throw new Error('Location hint not given');
+  if (typeof input.lat !== 'number' || typeof input.lon !== 'number') {
+    const message = 'Parameters lat and lon are required in the query';
+    return Promise.reject(new Error(message));
   }
+
   return request.get(ENDPOINT_URL, {
     json: true,
     headers: {},
@@ -42,7 +38,7 @@ function adapt(input) {
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
     // the call parameter. Should be ok in this case, though.
-    response.query = query;
+    response.debug = query;
     return response;
   });
 }

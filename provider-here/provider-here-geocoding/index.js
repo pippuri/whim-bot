@@ -70,21 +70,8 @@ function adapt(input) {
     app_code: process.env.HERE_APP_CODE,
     q: input.name,
     size: input.count,
+    at: [input.lat, input.lon].join(','),
   };
-
-  switch (input.hint) {
-    case 'latlon':
-      query.at = [input.lat, input.lon].join(',');
-      break;
-    case 'country':
-
-      // Not implemented
-      return Promise.reject(new Error('Country hint not implemented.'));
-    case 'none':
-      return Promise.reject(new Error("'none' not supported for HERE."));
-    default:
-      return Promise.reject(new Error('Location hint not given'));
-  }
 
   return request.get(ENDPOINT_URL, {
     json: true,
@@ -97,7 +84,7 @@ function adapt(input) {
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
     // the call parameter. Should be ok in this case, though.
-    response.query = query;
+    response.debug = query;
     return response;
   });
 }

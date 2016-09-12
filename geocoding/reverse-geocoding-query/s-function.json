@@ -28,9 +28,22 @@
       "authorizationType": "none",
       "authorizerFunction": false,
       "apiKeyRequired": false,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.querystring.lang": "method.request.querystring.lang",
+        "integration.request.querystring.count": "method.request.querystring.count",
+        "integration.request.querystring.lat": "method.request.querystring.lat",
+        "integration.request.querystring.lon": "method.request.querystring.lon"
+      },
       "requestTemplates": {
-        "application/json": "{\"body\": $input.json('$'),\n \"headers\": {\n #foreach($header in $input.params().header.keySet())\n \"$header\": \"$util.escapeJavaScript($input.params().header.get($header))\" #if($foreach.hasNext),#end\n \n #end\n },\n \"method\": \"$context.httpMethod\",\n \"params\": {\n #foreach($param in $input.params().path.keySet())\n \"$param\": \"$util.escapeJavaScript($input.params().path.get($param))\" #if($foreach.hasNext),#end\n \n #end\n },\n \"query\": {\n #foreach($queryParam in $input.params().querystring.keySet())\n \"$queryParam\": \"$util.escapeJavaScript($input.params().querystring.get($queryParam))\" #if($foreach.hasNext),#end\n \n #end\n } \n}"
+        "application/json": {
+          "identityId": "",
+          "payload": {
+            "lang": "$input.params('lang')",
+            "count": "$input.params('count')",
+            "lat": "$input.params('lat')",
+            "lon": "$input.params('lon')"
+          }
+        }
       },
       "responses": {
         "^400.*": {
