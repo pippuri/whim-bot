@@ -72,7 +72,6 @@
     "pg": "4.4.0",
     "powerset": "0.0.1",
     "request-promise-lite": "^0.6.0",
-    "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
     "tempfile": "^1.1.1"
   },
   "devDependencies": {
@@ -102,9 +101,9 @@
     "serverless-plugin-revision": "^0.5.6",
     "serverless-plugin-swagger-export": "^0.5.0",
     "serverless-slack-plugin": "https://github.com/blackevil245/serverless-slack-plugin",
-    "serverless-webpack-plugin": "git://github.com/laurisvan/serverless-webpack-plugin.git",
+    "serverless-webpack-plugin": "^0.4.5",
     "sinon": "^1.17.5",
-    "webpack": "^1.13.1"
+    "webpack": "^1.13.2"
   },
   "scripts": {
     "test": "gulp test",

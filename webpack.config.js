@@ -15,17 +15,16 @@ module.exports = {
   resolve: {
     extensions: ['', '.js'],
   },
-  resolveLoader: {
-    modulesDirectories: ['node_modules'],
-  },
   devtool: '',
   plugins: [
-
     //new webpack.optimize.DedupePlugin(),
     new webpack.optimize.OccurenceOrderPlugin(),
 
-    // Unnecessary Objection deps
-    //new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // Unnecessary AJV deps
+    new webpack.IgnorePlugin(/(regenerator|nodent|js-beautify)$/),
+
+    // Our internal shims
+    new webpack.IgnorePlugin(/(mockLambda\.js|mockDynamo\.js)$/),
 
     // Unnecessary Knex deps
     //new webpack.IgnorePlugin(/(commander|liftoff)/),
@@ -34,7 +33,7 @@ module.exports = {
     loaders: [
       {
         test: /\.json$/,
-        loader: 'json',
+        loader: 'json-loader',
       },
     ],
   },

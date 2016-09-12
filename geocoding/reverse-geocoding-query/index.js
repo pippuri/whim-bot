@@ -3,9 +3,10 @@
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus');
 const geolocation = require('../../lib/geolocation');
-// FIXME Validator depends on too many nested deps to use
-// const validator = require('../../lib/validator');
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/request.json');
+const validator = require('../../lib/validator');
 const MaaSError = require('../../lib/errors/MaaSError');
+const ValidationError = require('../../lib/validator/ValidationError');
 
 function orderByDistance(results, reference) {
   const sorted = results.features.sort((a, b) => {
@@ -29,16 +30,13 @@ function orderByDistance(results, reference) {
 
 module.exports.respond = function (event, callback) {
   // Parse and validate results
-  //return validator.validate('maas-backend:geocoding-reverse-request', event, { coerceTypes: true })
-  return Promise.resolve({
-    payload: {
-      lang: event.payload.lang ? event.payload.lang : 'fi',
-      count: event.payload.count ? parseInt(event.payload.count, 10) : 5,
-      lat: parseFloat(event.payload.lat),
-      lon: parseFloat(event.payload.lon),
-    },
-  })
-  .catch(error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
+  const validationOptions = {
+    coerceTypes: true,
+    useDefaults: true,
+    transform: { from: '', to: undefined },
+  };
+  return validator.validate(schema, event, validationOptions)
+  .catch(ValidationError, error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
   .then(parsed => bus.call('MaaS-provider-here-reverse-geocoding', parsed.payload))
   .then(results => {
     const reference = { lat: event.lat, lon: event.lon };
