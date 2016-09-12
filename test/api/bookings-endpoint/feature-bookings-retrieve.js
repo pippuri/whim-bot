@@ -30,7 +30,7 @@ module.exports = function (lambda) {
           Database.init()
             .then(_knex => {
               return _knex.insert({
-                identityId: event.bookingId,
+                id: event.bookingId,
                 tspId: '3387',
                 state: 'RESERVED',
                 leg: { dummy: 'dummy', agencyId: 'Valopilkku', state: 'PLANNED' },
