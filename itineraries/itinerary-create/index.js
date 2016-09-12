@@ -8,6 +8,13 @@ const Database = models.Database;
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const Promise = require('bluebird');
 
+function formatResponse(itinerary) {
+  return Promise.resolve({
+    itinerary: utils.removeNulls(itinerary),
+    maas: {},
+  });
+}
+
 module.exports.respond = function (event, callback) {
 
   return Database.init()
@@ -37,6 +44,7 @@ module.exports.respond = function (event, callback) {
         });
     })
     .then(itinerary => itinerary.activate())
+    .then(itinerary => formatResponse(itinerary.toObject()))
     .then(itinerary => {
       Database.cleanup()
         .then(() => callback(null, itinerary));
