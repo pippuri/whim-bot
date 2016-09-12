@@ -30,11 +30,11 @@ module.exports = function (lambda) {
           Database.init()
             .then(_knex => {
               return _knex.insert({
-                id: event.bookingId,
+                identityId: event.bookingId,
                 tspId: '3387',
                 state: 'RESERVED',
                 leg: { dummy: 'dummy', agencyId: 'Valopilkku', state: 'PLANNED' },
-                customer: { id: event.identityId },
+                customer: { identityId: event.identityId },
                 token: { dummy: 'dummy' },
                 terms: { dummy: 'dummy' },
                 meta: { dummy: 'dummy' },
@@ -45,7 +45,7 @@ module.exports = function (lambda) {
             })
             .then(response => {
               const newEvent = {
-                identityId: response[0].customer.id ? response[0].customer.id : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+                identityId: response[0].customer.identityId ? response[0].customer.identityId : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
                 bookingId: response[0].id,
                 refresh: true,
               };
@@ -93,7 +93,7 @@ module.exports = function (lambda) {
                 tspId: '3387',
                 state: 'RESERVED',
                 leg: { dummy: 'dummy', agencyId: 'Valopilkku', state: 'PLANNED' },
-                customer: { id: event.identityId },
+                customer: { identityId: event.identityId },
                 token: { dummy: 'dummy' },
                 terms: { dummy: 'dummy' },
                 meta: { dummy: 'dummy' },
@@ -104,7 +104,7 @@ module.exports = function (lambda) {
             })
             .then(response => {
               const newEvent = {
-                identityId: response[0].customer.id ? response[0].customer.id : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+                identityId: response[0].customer.identityId ? response[0].customer.identityId : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
                 bookingId: response[0].id,
               };
               // And then test with this new repsonse booking
