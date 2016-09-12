@@ -15,6 +15,9 @@ module.exports.respond = function (event, callback) {
     .then(validItineraryData => Itinerary.create(validItineraryData, event.identityId))
     .then(itinerary => itinerary.pay())
     .then(itinerary => {
+      // Itinerary does not offer reserve itself. Legs must be handled individually.
+      // Leg reserving will be handled later by workflow engine. Workflow may, for example,
+      // decide to reserve individual log (booking) in later.
       const legErrors = [];
       const legReserves = itinerary.legs.map(leg => {
         return leg.reserve().reflect();
@@ -27,11 +30,11 @@ module.exports.respond = function (event, callback) {
         })
         .then(() => {
           if (legErrors.length > 0) {
-            return Promise.reject(new MaaSError(`Could not book leggs for itinerary '${itinerary.id}': ` + legErrors, 400));
+            return itinerary.cancel()
+              .then(itinerary => Promise.reject(new MaaSError(`Could not reserve legs for itinerary '${itinerary.id}': ` + legErrors, 400)));
           }
           return Promise.resolve(itinerary);
         });
-
     })
     .then(itinerary => itinerary.activate())
     .then(itinerary => {
