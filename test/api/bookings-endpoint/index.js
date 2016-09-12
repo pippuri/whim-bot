@@ -30,7 +30,7 @@ describe('bookings endpoint', function () {
 
   describe('bookings-retrieve', function () {
     this.timeout(20000);
-    bookingsRetrieveTest(bookingsRetrieveLambda);
+    bookingsRetrieveTest(agencyOptionsLambda, bookingsCreateLambda, bookingsRetrieveLambda);
   });
 
   describe('bookings-list', function () {
