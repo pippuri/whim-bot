@@ -37,13 +37,11 @@ module.exports.respond = function (event, callback) {
         })
         .then(() => {
           if (legErrors.length > 0) {
-            return itinerary.cancel()
-              .then(itinerary => Promise.reject(new MaaSError(`Could not reserve legs for itinerary '${itinerary.id}': ` + legErrors, 400)));
+            return itinerary.cancel();
           }
-          return Promise.resolve(itinerary);
+          return itinerary.activate();
         });
     })
-    .then(itinerary => itinerary.activate())
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(itinerary => {
       Database.cleanup()
