@@ -6,11 +6,11 @@
     },
     "PENDING": {
       "description": "The booking is pending for available reservation response from tsp. This state can be skipped depends on the tsp.",
-      "transition": ["PAID", "REJECTED"]
+      "transition": ["PAID", "CANCELLED"]
     },
     "PAID": {
       "description": "Ticket/ride has been paid, waiting to go into active. Can be CANCELLED here",
-      "transition": ["RESERVED", "REJECTED"]
+      "transition": ["RESERVED", "REJECTED", "CANCELLED"]
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
@@ -82,7 +82,7 @@
     },
     "PLANNED": {
       "description": "The Itinerary has been planned and saved",
-      "transition": ["PAID", "CANCELLED"]
+      "transition": ["PAID", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "PAID": {
       "description": "The Itinerary has been booked",
