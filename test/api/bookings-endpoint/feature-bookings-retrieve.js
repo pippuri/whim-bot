@@ -67,7 +67,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
           const retrieveEvent = {
             identityId: testIdentityId,
             bookingId: _response2.booking.id,
-            refresh: true,
+            refresh: 'true',
           };
 
           wrap(retrieveLambda).run(retrieveEvent, (_error, _response3) => {

@@ -8,6 +8,20 @@ const Database = models.Database;
 //const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 
+function validateInput(event) {
+  if (!event.hasOwnProperty('identityId') || event.identityId === '') {
+    return Promise.reject(new MaaSError('Missing identityId input', 401));
+  }
+
+  // TODO Stricter itineraryId validation
+  if (!event.hasOwnProperty('itineraryId') || event.itineraryId === '') {
+    return Promise.reject(new MaaSError('Missing or invalid itineraryId', 400));
+  }
+
+  return Promise.resolve(event);
+}
+
+
 function formatResponse(itinerary) {
   return Promise.resolve({
     itinerary: utils.removeNulls(itinerary),
@@ -17,6 +31,7 @@ function formatResponse(itinerary) {
 
 module.exports.respond = (event, callback) => {
   return Database.init()
+    .then(() => validateInput(event))
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
     .then(itinerary => itinerary.cancel())

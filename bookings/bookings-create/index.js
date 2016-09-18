@@ -8,6 +8,33 @@ const Database = models.Database;
 const Booking = require('../../lib/business-objects/Booking');
 
 /**
+ * Validate event input
+ * @param  {object} event
+ * @return {Promise -> undefined}
+ */
+function validateInput(event) {
+  // Require identityId and phone in input user profile
+  if (!event.identityId || event.identityId === '') {
+    return Promise.reject(new MaaSError('Missing identityId', 400));
+  }
+
+  if (!event.payload.signature || event.payload.signature === '') {
+    return Promise.reject(new MaaSError('Missing signature', 400));
+  }
+
+  if (!event.payload.leg) {
+    return Promise.reject(new MaaSError('Missing leg input', 400));
+  }
+
+  if (!event.payload.leg.agencyId || event.payload.leg.agencyId === '') {
+    return Promise.reject(new MaaSError('Missing agencyId in input leg', 400));
+  }
+
+  return Promise.resolve();
+}
+
+
+/**
  * Formats the response by removing JSON nulls
  *
  * @param {object} booking The unformatted response object
@@ -31,6 +58,7 @@ function formatResponse(booking) {
 module.exports.respond = (event, callback) => {
 
   return Database.init()
+    .then(() => validateInput(event))
     .then(() => utils.validateSignatures(event.payload))        // Validate request signature
     .then(validBookingData => Booking.create(validBookingData, event.identityId))
     .then(booking => booking.pay())

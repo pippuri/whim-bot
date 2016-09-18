@@ -8,6 +8,25 @@ const Database = models.Database;
 const Booking = require('../../lib/business-objects/Booking');
 
 /**
+ * Validate event input
+ *
+ * @param  {object} event with a identityId and bookingId
+ * @return {Promise} undefined in case of success, MaaSError otherwise
+ */
+function validateInput(event) {
+  // Require identityId and phone in input user profile
+  if (!event.identityId || event.identityId === '') {
+    return Promise.reject(new MaaSError('Missing identityId', 400));
+  }
+
+  if (typeof event.bookingId !== 'string') {
+    return Promise.reject(new MaaSError('Missing or invalid booking id', 400));
+  }
+
+  return Promise.resolve();
+}
+
+/**
  * Formats the response by removing JSON nulls
  *
  * @param {object} booking The unformatted response object
@@ -25,6 +44,7 @@ function formatResponse(booking) {
 module.exports.respond = (event, callback) => {
 
   return Database.init()
+    .then(() => validateInput(event))
     .then(() => Booking.retrieve(event.bookingId))
     .then(booking => booking.validateOwnership(event.identityId))
     .then(booking => booking.cancel())
