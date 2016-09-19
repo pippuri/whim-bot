@@ -31,7 +31,9 @@ module.exports = function (optionsLambda) {
           const optionsEvent = {
             identityId: testIdentityId,
             agencyId: 'MaaS',
-            mode: 'MAAS_PERSONAL',
+            startTime: Date.now() + 60 * 1000,
+            from: '60.18948,24.97213',
+            to: '60.18948,24.97213',
           };
 
           wrap(optionsLambda).run( optionsEvent, (err, res) => {

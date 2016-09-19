@@ -1,7 +1,6 @@
 {
   "FullMock":{
     "booking":{
-      "id":"should-not-send",
       "leg":{
         "startTime":1472731200000,
         "endTime":1472817600000,
@@ -13,11 +12,13 @@
           "lat":60.18948,
           "lon":24.97213
         },
-        "mode":"CAR",
+        "mode":"WALK",
         "agencyId":"Mock"
       },
       "meta":{
-        "mock":true
+        "MODE_WALK": {
+          "mock": true
+        }
       },
       "terms":{
         "price":{
@@ -26,15 +27,15 @@
         }
       },
       "customer": {
-        "name": "John Doe",
-        "phone": "+35850123456"
-      },
-      "extraneousObject": {
-        "extraneousAttribute": true
+        "firstName": "John",
+        "lastName": "Doe",
+        "phone": "+35850123456",
+        "email": "john.doe@example.com"
       }
     },
     "response":{
       "tspId": "tsp-123456",
+      "state": "RESERVED",
       "leg":{
         "startTime":1472731200000,
         "endTime":1472817600000,
@@ -50,7 +51,9 @@
         "agencyId":"Mock"
       },
       "meta":{
-        "mock":true
+        "MODE_WALK": {
+          "mock": true
+        }
       },
       "terms":{
         "price":{
@@ -58,13 +61,11 @@
           "currency":"EUR"
         }
       },
-      "extraField":{
-        "extraAttribute":true
-      },
-      "id": "should-not-return",
-      "state": "should-only-return-on-retrieve",
-      "customer": {
-        "name": "should-not-return"
+      "token": {
+        "validityDuration": {
+          "from":1472731200000,
+          "to":1472817600000
+        }
       }
     },
     "invalidResponse":{
@@ -79,6 +80,12 @@
       },
       "extraField":{
         "extraAttribute":true
+      },
+      "customer": {
+        "firstName": "John",
+        "lastName": "Doe",
+        "phone": "+35850123456",
+        "email": "john.doe@example.com"
       }
     }
   }

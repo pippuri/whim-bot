@@ -12,7 +12,12 @@ describe('tsp', () => {
     'request-promise-lite': {
       get: (url, options) => {
         if (/query/.test(url)) {
-          return Promise.resolve({ options: [mockData.FullMock.response] });
+          const option = Object.assign({}, mockData.FullMock.response);
+          delete option.state;
+          delete option.token;
+          delete option.tspId;
+
+          return Promise.resolve({ options: [option] });
         }
         return Promise.resolve(mockData.FullMock.response);
       },
@@ -32,7 +37,11 @@ describe('tsp', () => {
         return Promise.resolve(mockData.FullMock.response);
       },
       del: (url, options) => {
-        return Promise.resolve(mockData.FullMock.response);
+        const response = {
+          tspId: mockData.FullMock.response.tspId,
+          state: 'CANCELLED',
+        };
+        return Promise.resolve(response);
       },
       '@global': true,
     },

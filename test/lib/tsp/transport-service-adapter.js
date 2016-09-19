@@ -27,8 +27,6 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
       expect(response).to.have.deep.property('terms');
       expect(response).to.have.deep.property('meta');
       expect(response).to.not.have.deep.property('customer');
-      expect(response).to.not.have.deep.property('state');
-      expect(response).to.not.have.deep.property('id');
     });
   });
 
@@ -129,7 +127,10 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
     let error;
 
     before(() => {
-      return adapter.query({ startTime: 1234567 })
+      return adapter.query({
+        startTime: 1472731200000,
+        from: [24.93991, 60.17272],
+      })
         .then(_response => (response = _response), _error => (error = _error));
     });
 
@@ -138,13 +139,13 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
     });
 
     it('should have a valid response', () => {
-      expect(response).to.have.deep.property('tspId');
-      expect(response).to.have.deep.property('leg');
-      expect(response).to.have.deep.property('terms');
-      expect(response).to.have.deep.property('meta');
-      expect(response).to.not.have.deep.property('customer');
-      expect(response).to.not.have.deep.property('state');
-      expect(response).to.not.have.deep.property('id');
+      expect(response).to.have.deep.property('options[0].leg');
+      expect(response).to.have.deep.property('options[0].terms');
+      expect(response).to.have.deep.property('options[0].meta');
+      expect(response).to.not.have.deep.property('options[0].customer');
+      expect(response).to.not.have.deep.property('options[0].state');
+      expect(response).to.not.have.deep.property('options[0].id');
+      expect(response).to.not.have.deep.property('options[0].tspId');
     });
   });
 };
