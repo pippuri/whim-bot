@@ -5,6 +5,7 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
 const models = require('../../lib/models');
 const Database = models.Database;
+const Itinerary = require('../../lib/business-objects/Itinerary');
 
 /**
  * Validates the input event to have identityId and itineraryId
@@ -24,26 +25,6 @@ function validateInput(event) {
   return Promise.resolve(event);
 }
 
-function fetchItinerary(identityId, itineraryId) {
-  // Get the old state
-  return models.Itinerary.query()
-    .findById(itineraryId)
-    .eager('[legs, legs.booking]')
-    .then(itinerary => {
-      // Handle not found
-      if (typeof itinerary === typeof undefined) {
-        return Promise.reject(new MaaSError(`No item found with itineraryId ${itineraryId}`, 404));
-      }
-
-      // Handle item not user's itinerary
-      if (itinerary.identityId !== identityId) {
-        return Promise.reject(new MaaSError(`Itinerary ${itineraryId} not owned by the user`, 403));
-      }
-
-      return Promise.resolve(itinerary);
-    });
-}
-
 function formatResponse(itinerary) {
   return Promise.resolve({
     itinerary: utils.removeNulls(itinerary),
@@ -53,12 +34,11 @@ function formatResponse(itinerary) {
 
 module.exports.respond = (event, callback) => {
 
-  return Promise.all([
-    Database.init(),
-    validateInput(event),
-  ])
-    .then(() => fetchItinerary(event.identityId, event.itineraryId))
-    .then(itinerary => formatResponse(itinerary))
+  return Database.init()
+    .then(() => validateInput(event))
+    .then(() => Itinerary.retrieve(event.itineraryId))
+    .then(itinerary => itinerary.validateOwnership(event.identityId))
+    .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));
@@ -70,13 +50,16 @@ module.exports.respond = (event, callback) => {
 
       // Uncaught, unexpected error
       Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
+
     });
+
+
 };

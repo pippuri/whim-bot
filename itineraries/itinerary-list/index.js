@@ -6,6 +6,7 @@ const utils = require('../../lib/utils');
 const models = require('../../lib/models');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
+const Itinerary = require('../../lib/business-objects/Itinerary');
 
 /**
  * Validates the input event to have identityId and itineraryId
@@ -55,30 +56,8 @@ function parseAndValidateInput(event) {
   });
 }
 
-function fetchItineraries(identityId, startTime, endTime, states) {
-  let query = models.Itinerary.query()
-    .where('identityId', identityId);
-
-  if (startTime !== null) {
-    query = query.andWhere('startTime', '>=', (new Date(startTime)).toISOString());
-  }
-
-  if (endTime !== null) {
-    query = query.andWhere('endTime', '<=', (new Date(endTime)).toISOString());
-  }
-
-  if (states.length > 0) {
-    query = query.whereIn('state', states);
-  }
-
-  return query
-    .eager('[legs, legs.booking]')
-    .orderBy('startTime')
-    .then(results => results);
-}
-
 function formatResponse(itineraries) {
-  const filtered = itineraries.map(utils.removeNulls);
+  const filtered = itineraries.map(itinerary => utils.removeNulls(itinerary.toObject()));
 
   return Promise.resolve({
     itineraries: filtered,
@@ -92,7 +71,7 @@ module.exports.respond = (event, callback) => {
     Database.init(),
     parseAndValidateInput(event),
   ])
-    .spread((knex, parsed) => fetchItineraries(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
+    .spread((knex, parsed) => Itinerary.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
     .then(itineraries => formatResponse(itineraries))
     .then(response => {
       Database.cleanup()

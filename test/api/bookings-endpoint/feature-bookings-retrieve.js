@@ -4,118 +4,78 @@ const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-retrieve/response.json');
 const validator = require('../../../lib/validator/index');
-const Database = require('../../../lib/models/index').Database;
+const moment = require('moment');
+const _ = require('lodash');
+const utils = require('../../../lib/utils');
 
-module.exports = function (lambda) {
-
-  const event = {
-    identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
-    bookingId: '84174750-4CF7-11E6-9C1D-4D511BCD104A',
-  };
+module.exports = function (optionsLambda, createLambda, retrieveLambda) {
 
   describe('refresh an existing booking', () => {
 
     let response;
     let error;
 
+    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+
     before(done => {
-      wrap(lambda).run(event, (err, res) => {
 
-        if (!err) {
-          response = res;
-          error = err;
+      // fetch options first
+      const now = new Date();
+      const dowTuesday = now.getDay() < 2 ? 2 : 2 + 7;
+      const dowWednesday = now.getDay() < 2 ? 3 : 3 + 7;
+      const nextTuesday = moment().day(dowTuesday).valueOf();
+      const nextWednesday = moment().day(dowWednesday).valueOf();
+
+      const validEvent = {
+        identityId: testIdentityId,
+        agencyId: 'Sixt',
+        mode: 'CAR',
+        from: '60.3210549,24.9506771',
+        to: '',
+        startTime: nextTuesday,
+        endTime: nextWednesday,
+      };
+
+      // get options
+      wrap(optionsLambda).run(validEvent, (_error, _response1) => {
+
+        if (_error) {
+          error = _error;
+          response = _response1;
+
           done();
-        } else {
-          // Try to create a dummy booking if somehow the dummy wasn't already there
-          Database.init()
-            .then(_knex => {
-              return _knex.insert({
-                id: event.bookingId,
-                tspId: '3387',
-                state: 'RESERVED',
-                leg: { dummy: 'dummy', agencyId: 'Valopilkku', state: 'PLANNED' },
-                customer: { id: event.identityId },
-                token: { dummy: 'dummy' },
-                terms: { dummy: 'dummy' },
-                meta: { dummy: 'dummy' },
-
-              })
-              .into('Booking')
-              .returning(['customer', 'id']);
-            })
-            .then(response => {
-              const newEvent = {
-                identityId: response[0].customer.id ? response[0].customer.id : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
-                bookingId: response[0].id,
-                refresh: true,
-              };
-              // And then test with this new repsonse booking
-              wrap(lambda).run(newEvent, (err, res) => {
-                response = res;
-                error = err;
-                done();
-              });
-            });
+          return;
         }
-      });
-    });
 
-    it.skip('should return a valid response', () => {
-      // FIXME change this when bookings are returning in correct states
-      return validator.validate(schema, response)
-        .then(validationError => {
-          expect(validationError).to.be.null;
+        // take first option
+        const newEvent = {
+          payload: _.cloneDeep(_response1.options[0]),
+          identityId: testIdentityId,
+        };
+        delete newEvent.payload.signature;
+        newEvent.payload.signature = utils.sign(newEvent.payload, process.env.MAAS_SIGNING_SECRET);
+
+        // Create a booking, then refresh it
+        wrap(createLambda).run(newEvent, (_error, _response2) => {
+          if (_error) {
+            error = _error;
+            response = _response2;
+
+            done();
+            return;
+          }
+          const retrieveEvent = {
+            identityId: testIdentityId,
+            bookingId: _response2.booking.id,
+            refresh: 'true',
+          };
+
+          wrap(retrieveLambda).run(retrieveEvent, (_error, _response3) => {
+            error = _error;
+            response = _response3;
+            done();
+          });
         });
-    });
-
-    it('should succeed without error', () => {
-      expect(error).to.be.null;
-    });
-  });
-
-  describe('retrieve an existing booking', () => {
-
-    let response;
-    let error;
-
-    before(done => {
-      wrap(lambda).run(event, (err, res) => {
-        if (!err) {
-          response = res;
-          error = err;
-          done();
-        } else {
-          // Try to create a dummy booking if somehow the dummy wasn't already there
-          Database.init()
-            .then(_knex => {
-              return _knex.insert({
-                id: event.bookingId,
-                tspId: '3387',
-                state: 'RESERVED',
-                leg: { dummy: 'dummy', agencyId: 'Valopilkku', state: 'PLANNED' },
-                customer: { id: event.identityId },
-                token: { dummy: 'dummy' },
-                terms: { dummy: 'dummy' },
-                meta: { dummy: 'dummy' },
-
-              })
-              .into('Booking')
-              .returning(['customer', 'id']);
-            })
-            .then(response => {
-              const newEvent = {
-                identityId: response[0].customer.id ? response[0].customer.id : 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
-                bookingId: response[0].id,
-              };
-              // And then test with this new repsonse booking
-              wrap(lambda).run(newEvent, (err, res) => {
-                console.log('a', res);
-                response = res;
-                error = err;
-                done();
-              });
-            });
-        }
       });
     });
 

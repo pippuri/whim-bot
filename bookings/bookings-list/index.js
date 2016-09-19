@@ -6,6 +6,7 @@ const utils = require('../../lib/utils');
 const models = require('../../lib/models');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const Database = models.Database;
+const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validates the input event to have identityId and optionally startTime, endTime and states
@@ -55,29 +56,8 @@ function parseAndValidateInput(event) {
   });
 }
 
-function fetchBookings(identityId, startTime, endTime, states) {
-  let query = models.Booking.query()
-    .whereRaw('customer ->> \'identityId\' = ?', [identityId]);
-
-  if (typeof startTime !== typeof undefined) {
-    query = query.whereRaw('leg ->> \'startTime\' = ?', [startTime]);
-  }
-
-  if (typeof endTime !== typeof undefined) {
-    query = query.whereRaw('leg ->> \'endTime\' = ?', [endTime]);
-  }
-
-  if (states.length > 0) {
-    query = query.whereIn('state', states);
-  }
-
-  return query
-    .orderByRaw('leg ->> \'startTime\'')
-    .then(results => results);
-}
-
 function formatResponse(bookings) {
-  const trimmed = bookings.map(utils.removeNulls);
+  const trimmed = bookings.map(booking => utils.removeNulls(booking.toObject()));
 
   return Promise.resolve({
     bookings: trimmed,
@@ -91,7 +71,7 @@ module.exports.respond = (event, callback) => {
     Database.init(),
     parseAndValidateInput(event),
   ])
-    .spread((knex, parsed) => fetchBookings(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
+    .spread((knex, parsed) => Booking.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
     .then(bookings => formatResponse(bookings))
     .then(response => {
       Database.cleanup()
