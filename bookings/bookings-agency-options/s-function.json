@@ -137,7 +137,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "bookings/bookings-agency-options/response-schema.json"
+              "$ref": "node_modules/maas_schemas/prebuilt/maas-backend/bookings/bookings-agency-options/response.json"
             }
           },
           "400": {
