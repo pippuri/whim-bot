@@ -7,7 +7,8 @@ module.exports = function (lambda) {
 
   describe('for a nonexistent user', () => {
 
-    const randomHex = ('0000' + (Math.random() * 0xffff).toString(16)).slice(-4);
+    // Generate 8 random hex characters
+    const randomHex = Math.random().toString(16).replace('.', '').substr(0, 8);
     const identityId = 'eu-west-1:00000000-dead-' + randomHex + '-dead-000000000000';
 
     const event = {
