@@ -18,7 +18,7 @@ function updateUserData(event) {
   if (typeof identityId !== 'string') {
     return Promise.reject(new Error('Invalid or missing identityId'));
   }
-
+  console.log('Update credit card', payload)
   return Subscription.updateUserCreditCard(identityId, payload);
 }
 
@@ -36,7 +36,8 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(error => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn('Error: ' + JSON.stringify(error.toString(), null, 2));
       if (error && error.hasOwnPropert('response')) {
         console.info(error.response.toString());
         callback(error.response.toString());

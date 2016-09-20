@@ -157,18 +157,14 @@ describe('Update User card', function () {
   this.timeout(5000);
   before(done => {
     mgr.updateUserCreditCard('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
-      firstName: 'Test',
-      lastName: 'User',
-      email: 'me@maas.fi',
-      zip: '02270',
-      city: 'Espoo',
-      country: 'FI',
-      card: {
-        number: '4012888888881881',
-        cvv: '999',
-        expiryMonth: '01',
-        expiryYear: '2017',
-      },
+       "email": "test@gmail.com",
+        "firstName": "wdwdwd",
+        "lastName": "Usedwdwdr",
+        "phone": "+3589999999",
+        "zip": "02270",
+        "country": "FI",
+        "city": "Helsinki",
+        "token": "tok_18vnb3GYEY6nE6m4e3xdRUUy"
     }).then(data => {
       response = data;
       done();
