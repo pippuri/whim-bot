@@ -18,8 +18,10 @@ function updateUserData(event) {
   if (typeof identityId !== 'string') {
     return Promise.reject(new Error('Invalid or missing identityId'));
   }
-  console.log('Update credit card', payload)
-  return Subscription.updateUserCreditCard(identityId, payload);
+  return Subscription.updateUser(identityId, payload)
+    .then( _ => {
+      return Subscription.updateUserCreditCard(identityId, payload);
+    });
 }
 
 function wrapToEnvelope(resp, event) {

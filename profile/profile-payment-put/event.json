@@ -1,13 +1,18 @@
 {
     "identityId": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
     "payload": {
-        "email": "test@gmail.com",
-        "firstName": "wdwdwd",
-        "lastName": "Usedwdwdr",
+        "email": "testDuc2@gmail.com",
+        "firstName": "wdwdwd2",
+        "lastName": "Usedwdwdr2",
         "phone": "+3589999999",
         "zip": "02270",
         "country": "FI",
         "city": "Helsinki",
-        "token": "tok_18vnb3GYEY6nE6m4e3xdRUUy"
+        "card": {
+          "number": "4012888888881881",
+          "cvv": "999",
+          "expiryMonth": "01",
+          "expiryYear": "2017"
+        }
     }
 }

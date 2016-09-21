@@ -48,9 +48,11 @@ module.exports = function () {
       expect(error).to.be.null;
     });
 
-    it('should return empty', () => {
+    it('should not return empty', () => {
       expect(response).to.have.deep.property('response.card');
-      expect(response).to.have.deep.property('response.customer');
+      expect(response).to.have.deep.property('response.identityId');
+      expect(response).to.have.deep.property('response.firstName');
+      expect(response).to.have.deep.property('response.lastName');
     });
   });
 };
