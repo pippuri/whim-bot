@@ -26,7 +26,7 @@ function updateUserData(event) {
 
 function wrapToEnvelope(resp, event) {
   return {
-    response: resp,
+    profile: resp,
   };
 }
 

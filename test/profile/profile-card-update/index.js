@@ -49,10 +49,10 @@ module.exports = function () {
     });
 
     it('should not return empty', () => {
-      expect(response).to.have.deep.property('response.card');
-      expect(response).to.have.deep.property('response.identityId');
-      expect(response).to.have.deep.property('response.firstName');
-      expect(response).to.have.deep.property('response.lastName');
+      expect(response).to.have.deep.property('profile.card');
+      expect(response).to.have.deep.property('profile.identityId');
+      expect(response).to.have.deep.property('profile.firstName');
+      expect(response).to.have.deep.property('profile.lastName');
     });
   });
 };
