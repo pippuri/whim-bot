@@ -13,8 +13,15 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       git config --global user.email "travis";
       git config --global user.name "travis@maas.fi";
 
-      # Trigger build
-      npm run deploy-alpha:all;
+      # Decrypt the maas-ticket keys
+      cd ./tickets/tickets-create/keys
+      bash ./decrypt-keys.sh -s alpha
+      cd ../../..
+
+      # Trigger build & deploy
+      #npm run deploy-alpha:all;
+
+      # Migrate databases to the latest schemas
       cd ./scripts;
       npm install -g knex;
       SERVERLESS_STAGE=alpha knex migrate:latest;
