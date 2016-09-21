@@ -51,3 +51,7 @@ _serverless_handler.js
 swagger/swagger-maas-api-json/maas-api.json
 
 .vscode/launch.json
+
+# MaaS-ticket decrypted scriptlets
+tickets/tickets-create/keys/*-latest.js
+tickets/tickets-create/keys/*-transitional.js
