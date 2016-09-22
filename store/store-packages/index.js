@@ -14,7 +14,8 @@ function formatResponse(input) {
   // Parse plans
   for (let i = 0; i < input[0].list.length; i++) {
     const planContext = input[0].list[i];
-    if (planContext.plan.meta_data.hasOwnProperty('invisible')) {
+    // filter out archived or invisible plans
+    if (planContext.plan.meta_data.hasOwnProperty('invisible') || planContext.plan.status !== 'active') {
       continue;
     }
 
