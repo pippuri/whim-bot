@@ -208,6 +208,34 @@ describe('List the user plan', function () {
   });
 });
 
+describe('Create Portal Session', function () {
+  let error;
+  let response;
+  this.timeout(5000);
+
+  before(done => {
+    mgr.getLoginURL('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb').then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log('Error', data);
+      done();
+    });
+  });
+
+  it('should have a URL', () => {
+    expect(response).to.be.not.empty;
+    expect(response).to.have.property('portal_session');
+    expect(response).to.have.deep.property('portal_session.access_url');
+    console.log('Portal URL', response.portal_session.access_url);
+  });
+
+  it('should not have an error', () => {
+    expect(error).to.be.empty;
+  });
+});
+
 describe('Post a charge on the user', function () {
   let error;
   let response;
