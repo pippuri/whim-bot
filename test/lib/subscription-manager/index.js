@@ -122,11 +122,11 @@ describe('user by ID not found', () => {
 describe('Update user', function () {
   let error;
   let response;
-  this.timeout(5000);
+  this.timeout(8000);
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
-      firstName: 'Tester' + Math.random() * 100,
+      firstName: 'Tester_' + Math.floor((Math.random() * 1000)),
       lastName: 'User',
       email: 'me@maas.fi',
       phone: '+358555666',
@@ -139,6 +139,8 @@ describe('Update user', function () {
       done();
     }).catch(data => {
       error = data;
+      console.log(error.toString());
+      console.log(error.response.toString());
       done();
     });
   });
