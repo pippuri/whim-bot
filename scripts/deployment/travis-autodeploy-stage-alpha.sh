@@ -10,8 +10,8 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       export NPM_PACKAGE_VERSION=$(node -p -e "require('./package.json').version")
       export RELEASE_TAG="$NPM_PACKAGE_VERSION-alpha-$TRAVIS_BUILD_NUMBER";
 
-      git config --global user.email "travis";
-      git config --global user.name "travis@maas.fi";
+      git config --global user.email "tech@maas.fi";
+      git config --global user.name "travis";
 
       # Decrypt the maas-ticket keys
       cd ./tickets/tickets-create/keys
