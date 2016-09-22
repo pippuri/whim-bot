@@ -1,7 +1,7 @@
 {
   "HSL": {
     "id": "HSL",
-    "baseUrl": "https://tsp.dev.maas.global/hsl/",
+    "baseUrl": "https://tsp.alpha.maas.global/hsl/",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },
@@ -12,7 +12,7 @@
   },
   "Valopilkku": {
     "id": "Valopilkku",
-    "baseUrl": "https://tsp.dev.maas.global/taxi/",
+    "baseUrl": "https://tsp.alpha.maas.global/taxi/",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },
@@ -24,7 +24,7 @@
   },
   "Sixt": {
     "id": "Sixt",
-    "baseUrl": "https://tsp.dev.maas.global/sixt/",
+    "baseUrl": "https://tsp.alpha.maas.global/sixt/",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },
@@ -37,7 +37,7 @@
   },
   "MaaS": {
     "id": "MaaS",
-    "baseUrl": "https://tsp.dev.maas.global/maas/",
+    "baseUrl": "https://tsp.alpha.maas.global/maas/",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },

@@ -1,6 +1,6 @@
 # MaaS Ticket general documentation
 
-## What is this?
+## What Is this?
 
 This is a section of the API which can be used to issue, audit and allow validating tickets provided by MaaS.
 
@@ -42,7 +42,36 @@ When the auditing partner eventually implements a verification system, they can 
 
 Ultimately using a 3rd party verification system also allows the business partner to implement the verification system as a cheap batch run instead of investing in the development of a potentially costly real-time system.
 
-## How to do manual production deployments ( Check decrypt-key.sh )
+## How to do semi-automatic production deployments (preferred way)
+
+A few scripts have been created to create a private-public key pair,
+converting them into JavaScript files and encrypting the JavaScripted private
+keys using MAAS_TICKET_DEPLOY_SECRET environment variable.
+
+  * `refresh-keys.sh` generates a new pair of keys and encodes them into
+JavaScript functions. The public key JavaScripts are stored as-is, the private
+keys are encrypted into files with '.asc' suffix, so that they can be stored
+safely e.g. in version control.
+  * `decrypt-keys.sh` decrypts the private pairs and digests them back into
+JavaScript files. This scriptlet was created so that Travis would have means
+to decrypt and use the JavaScripts.
+
+The planned usage is as follows:
+
+1. Developer creates/refreshes a local key pair using e.g.
+`refresh-keys.sh -d 7 -s alpha` (7 days rotation, alpha stage)
+2. Developer stores the generated data in version control and pushes the changes
+into a local fork/master/alpha/prod
+3. Travis/Lead Developer picks up the change. It decrypts the keys using
+`decrypt-keys.sh -s alpha` and does the Serverless deployment.
+
+It should be noted that the stage variable here in the scripts exists to pick
+the correct encryption/decryption secret (MAAS_TICKET_DEPLOY_SECRET).
+
+Note that the generated keys production keys should not go into version control,
+so you may manually want to `git checkout` them.
+
+## How to do manual production deployments (in case scripts fail)
 
 The repository currently contains the production secret key in an encrypted format, and these files are decrypted as part of the automated deployment process. If you for some reason need to deploy the ticket endpoints to the production environment manually, you need to export the $MAAS_TICKET_DEPLOY_SECRET environment variable from production \_meta.
 

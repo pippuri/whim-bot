@@ -58,3 +58,23 @@ NvS7Rx75OBP3k8GX4uZeH9CCHw7Jg9Xpa8op1oBoO8z4kpJjO2LkYYyoLqPAF5V/
 nWM5r5TWdMjPUKjTF5mIworalz014Xpq4QIDAQAB
 -----END PUBLIC KEY-----`,
 } );
+
+publicKeysMap.alpha.push( {
+	validityStartMilliEpoch: 1475079862293,
+	validityEndMilliEpoch: 1475079894857,
+	publicKey: `-----BEGIN PUBLIC KEY-----
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAMwBnXEvH2Za7SfalsWD4C0ezYg+uMkK
+IJNRavt96afZz/6NSI3TUSg4K/TqNbM8LdsutWEgC384bSKliptNgb2ff7eUDQSO
+rftd+c4AyhUeqhV0NdrQGFGlnyzET/4FowIDAQAB
+-----END PUBLIC KEY-----`,
+} );
+
+publicKeysMap.alpha.push( {
+	validityStartMilliEpoch: 1475079894857,
+	validityEndMilliEpoch: 1475081179029,
+	publicKey: `-----BEGIN PUBLIC KEY-----
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhALVqcfX47NnLXglAYQUJ8X4+IWvOIscq
+ALi5lenb5U+5qYWVKqfhtIhYhIogPKGkDDsXyCb6P9Y66kmquvSCu12+/i6ndCND
+aDq9idYE5GpFVyA+BJ57BET0lENT2fNFRwIDAQAB
+-----END PUBLIC KEY-----`,
+} );
