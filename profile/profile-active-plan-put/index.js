@@ -34,7 +34,7 @@ function setActivePlan(event) {
       // update chargebee with the plan,
       // webhook will specify (skipUpdate)
       if (!event.skipUpdate) {
-        return Subscriptions.updatePlan(event.identityId, event.planId);
+        return Subscriptions.updatePlan(event.identityId, event.planId, event.promoCode);
       }
       return Promise.resolve({});
     })

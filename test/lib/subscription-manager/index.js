@@ -261,3 +261,29 @@ describe('Change User Plan', function () {
   });
 
 });
+
+describe('Change User Plan with nonexisting promo code', function () {
+  let error;
+  let response;
+  this.timeout(5000);
+
+  before(done => {
+    mgr.updatePlan('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-medium', 'FI-WHIM-NONEXISTING' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should NOT have changed the user plan', () => {
+    expect(response).to.be.empty;
+  });
+
+  it('should have an error', () => {
+    expect(error).to.not.be.empty;
+  });
+});
