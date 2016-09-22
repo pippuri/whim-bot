@@ -226,9 +226,9 @@ describe('Create Portal Session', function () {
 
   it('should have a URL', () => {
     expect(response).to.be.not.empty;
-    expect(response).to.have.property('portal_session');
-    expect(response).to.have.deep.property('portal_session.access_url');
-    console.log('Portal URL', response.portal_session.access_url);
+    expect(response).to.have.property('loginURL');
+    expect(response).to.have.deep.property('expires');
+    //console.log(response);
   });
 
   it('should not have an error', () => {
