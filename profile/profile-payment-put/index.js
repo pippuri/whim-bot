@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager/index.js');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 function updateUserData(event) {
   const identityId = event.identityId;
@@ -18,13 +19,13 @@ function updateUserData(event) {
   if (typeof identityId !== 'string') {
     return Promise.reject(new Error('Invalid or missing identityId'));
   }
-
-  return Subscription.updateUserCreditCard(identityId, payload);
+  return Subscription.updateUser(identityId, payload)
+    .then( _ => Subscription.updateUserCreditCard(identityId, payload) );
 }
 
 function wrapToEnvelope(resp, event) {
   return {
-    response: resp,
+    profile: resp,
   };
 }
 
@@ -35,13 +36,11 @@ module.exports.respond = (event, callback) => {
   return updateUserData(event)
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(error => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-      if (error && error.hasOwnPropert('response')) {
-        console.info(error.response.toString());
-        callback(error.response.toString());
-      } else {
-        callback(error);
-      }
+    .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };
