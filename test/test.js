@@ -38,8 +38,9 @@ loadEnvironment();
 console.info = () => {};
 //console.warn = () => {};
 
-// Handle AWS Lambda calls locally
-process.env.maas_test_run = true;
+// Force local lambda & dynamo usage
+process.env.USE_MOCK_LAMBDA = 'TRUE';
+process.env.USE_MOCK_DYNAMO = 'TRUE';
 
 describe('MaaS.fi backend', () => {
   require('./api/index.js');
