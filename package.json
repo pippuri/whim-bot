@@ -61,6 +61,7 @@
     "deep-sort-object": "^1.0.1",
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
+    "jsonwebtoken": "^5.7.0",
     "json-schema-deref": "^0.3.2",
     "knex": "0.11.5",
     "lambda-wrapper": "^0.1.0",
@@ -71,8 +72,10 @@
     "objection": "0.5.1",
     "pg": "4.4.0",
     "powerset": "0.0.1",
+    "proj4": "^2.3.14",
     "request-promise-lite": "^0.6.1",
-    "tempfile": "^1.1.1"
+    "tempfile": "^1.1.1",
+    "xml2js": "^0.4.16"
   },
   "devDependencies": {
     "aws-sdk": "^2.2.39",
