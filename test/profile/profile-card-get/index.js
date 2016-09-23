@@ -6,7 +6,7 @@ const lambda = require('../../../profile/profile-payment-get/handler.js');
 
 module.exports = function () {
 
-  describe.skip('profile-card-get', () => {
+  describe('profile-card-get', () => {
     const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
 
     const event = {

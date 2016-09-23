@@ -122,11 +122,11 @@ describe('user by ID not found', () => {
 describe('Update user', function () {
   let error;
   let response;
-  this.timeout(5000);
+  this.timeout(8000);
 
   before(done => {
     mgr.updateUser('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', {
-      firstName: 'Tester' + Math.random() * 100,
+      firstName: 'Tester_' + Math.floor((Math.random() * 1000)),
       lastName: 'User',
       email: 'me@maas.fi',
       phone: '+358555666',
@@ -139,6 +139,8 @@ describe('Update user', function () {
       done();
     }).catch(data => {
       error = data;
+      console.log(error.toString());
+      console.log(error.response.toString());
       done();
     });
   });
@@ -260,4 +262,30 @@ describe('Change User Plan', function () {
     expect(error).to.be.empty;
   });
 
+});
+
+describe('Change User Plan with nonexisting promo code', function () {
+  let error;
+  let response;
+  this.timeout(5000);
+
+  before(done => {
+    mgr.updatePlan('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-medium', 'FI-WHIM-NONEXISTING' )
+    .then(data => {
+      response = data;
+      done();
+    }).catch(data => {
+      error = data;
+      console.log(data.toString());
+      done();
+    });
+  });
+
+  it('should NOT have changed the user plan', () => {
+    expect(response).to.be.empty;
+  });
+
+  it('should have an error', () => {
+    expect(error).to.not.be.empty;
+  });
 });
