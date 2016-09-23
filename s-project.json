@@ -26,7 +26,6 @@
     "serverless-webpack-plugin",
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
-    "serverless-plugin-autoinstall",
     "serverless-meta-sync",
     "serverless-plugin-revision",
     "serverless-plugin-autoinstall",
