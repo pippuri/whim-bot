@@ -103,6 +103,7 @@ class Decider {
                         `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
             return Promise.resolve();
           })
+          .then(() => this._notifyUser('Relax, Maas is now taking care of your trip!'))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
@@ -140,7 +141,7 @@ class Decider {
             return Promise.resolve(itinerary);
           })
           // check the bookings in leg
-          .then(itinerary => this._findLegFromItinerary(legId))
+          .then(itinerary => this._findLegFromItinerary(itinerary, legId))
           .then(leg => this._checkLegReservation(leg))
           // handle unexpected errors
           .catch(err => {
@@ -244,8 +245,8 @@ class Decider {
   /**
    * Helper to find a leg from itinerary
    */
-  _findLegFromItinerary(legId) {
-    const legs = this.itinerary.legs.filter(leg => {
+  _findLegFromItinerary(itinerary, legId) {
+    const legs = itinerary.legs.filter(leg => {
       return leg.id === legId;
     });
     return Promise.resolve(legs[0]);
@@ -258,6 +259,7 @@ class Decider {
     console.log(`[Decider] checking leg reservation '${leg.id}' in state '${leg.state}'...`);
 
     if (leg.state === 'FINISHED' || leg.state === 'CANCELLED' || leg.state === 'CANCELLED_WITH_ERRORS') {
+      console.log('[Decider] leg check done; no action');
       return Promise.resolve();
     }
 
@@ -304,11 +306,21 @@ class Decider {
    * Helper send push notification for user
    */
   _notifyUser(message) {
+    console.log(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message}'`);
     const notifData = {
       identityId: this.flow.trip.identityId,
       message: message,
     };
-    return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData);
+    return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
+      .then(result => {
+        console.log(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
+      })
+      .catch(err => {
+        console.error(`[Decider] Failed to send ush notification to user ${this.flow.trip.identityId}, err:`, err);
+      })
+      .finally(() => {
+        return Promise.resolve();
+      });
   }
 
 }

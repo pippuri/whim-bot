@@ -4,7 +4,7 @@ const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const Database = models.Database;
-const Trip = require('../../lib/trip');
+const TripEngine = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const Promise = require('bluebird');
 
@@ -52,7 +52,7 @@ module.exports.respond = function (event, callback) {
       return Promise.resolve(itinerary);
     })
 */
-    .then(itinerary => Trip.startWithItinerary(itinerary)) // Start workflow execution
+    .then(itinerary => TripEngine.startWithItinerary(itinerary)) // Start workflow execution
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
       Database.cleanup()
