@@ -9,9 +9,9 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
     then
       # Auto-deploy to test
       npm run deploy-test:all;
-      cd ./scripts;
 
       # Migrate databases to latest the DB schemas
+      cd ./scripts;
       npm install -g knex;
       SERVERLESS_STAGE=test knex migrate:latest;
       echo "Finished running autodeployment to test stage script ..."
