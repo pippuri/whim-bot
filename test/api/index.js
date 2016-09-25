@@ -1,13 +1,14 @@
 'use strict';
 
 describe('API', () => {
-  require('./autocomplete-endpoint/index.js');
-  require('./profile-endpoint/index.js');
-  require('./routes-endpoint/index.js');
-  require('./geocoding-endpoint/index.js');
-  require('./itineraries-endpoint/index.js');
-  require('./bookings-endpoint/index.js');
-  require('./store-endpoint/index.js');
-  require('./tracking-endpoint/index.js');
-  require('./trip-endpoint/index.js');
+  require('./autocomplete-endpoint');
+  require('./profile-endpoint');
+  require('./routes-endpoint');
+  require('./geocoding-endpoint');
+  require('./itineraries-endpoint');
+  require('./bookings-endpoint');
+  require('./store-endpoint');
+  require('./tracking-endpoint');
+  require('./trip-endpoint');
+  require('./api-docs');
 });

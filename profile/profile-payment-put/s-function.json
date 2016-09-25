@@ -73,7 +73,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "schemas/v1/profile.json"
+              "$ref": "maas-backend/profile/profile-payment-put/response.json"
             }
           },
           "400": {

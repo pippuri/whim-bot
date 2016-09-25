@@ -80,7 +80,7 @@
             "description": "Location that will be added to user's favoriteLocations list",
             "required": true,
             "schema": {
-              "$ref": "node_modules/maas_schemas/prebuilt/maas-backend/profile/profile-favoriteLocations-add/request.json"
+              "$ref": "maas-backend/profile/profile-favoriteLocations-add/request.json"
             }
           }
         ],
@@ -89,7 +89,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "node_modules/maas_schemas/prebuilt/maas-backend/profile/profile-favoriteLocations-add//response.json"
+              "$ref": "maas-backend/profile/profile-favoriteLocations-add/response.json"
             }
           },
           "400": {

@@ -91,10 +91,7 @@
         "responses": {
           "200": {
             "application/json": {},
-            "description": "Success",
-            "schema": {
-              "$ref": "schemas/v1/package.json#definitions/plan"
-            }
+            "description": "Success"
           },
           "400": {
             "description": "Invalid Input"
@@ -184,10 +181,7 @@
         "responses": {
           "200": {
             "application/json": {},
-            "description": "Success",
-            "schema": {
-              "$ref": "schemas/v1/package.json#definitions/addon"
-            }
+            "description": "Success"
           },
           "400": {
             "description": "Invalid Input"
