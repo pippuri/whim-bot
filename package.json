@@ -99,7 +99,6 @@
     "serverless-client-s3": "^2.0.0",
     "serverless-cors-plugin": "^0.4.1",
     "serverless-meta-sync": "https://github.com/serverless/serverless-meta-sync.git#c5e34a59a8665df703534ee18464d035ef30edc6",
-    "serverless-plugin-autoinstall": "^0.5.3",
     "serverless-plugin-autoprune": "^0.5.3",
     "serverless-plugin-revision": "^0.5.6",
     "serverless-plugin-swagger-export": "^0.5.0",

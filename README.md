@@ -88,15 +88,15 @@ npm install
 echo '{}' > _meta/variables/s-variables-dev.json
 AWS_PROFILE=maas sls meta sync -s dev
 ```
+
 Select "Apply these changes to the local version" at the prompt.
+
 ```
 echo '{}' > _meta/variables/s-variables-prod.json
 AWS_PROFILE=maas sls meta sync -s prod
 ```
+
 Select "Apply these changes to the local version" at the prompt.
-```
-sls function autoinstall -a # Installs module dependencies to lambdas
-```
 
 IMPORTANT: If you selected the wrong option at the prompt you may have
 accidentally deleted the API keys from the cloud. Do not panic however. Take a
@@ -375,7 +375,7 @@ with the branch.
 ```
 git checkout master
 git pull upstream master
-sls function autoinstall -a
+npm install
 git checkout -b <local_branch_name>
 ```
 
@@ -400,7 +400,7 @@ follows.
 ```
 git checkout master
 git pull upstream master
-sls function autoinstall -a
+npm install
 git checkout <your_branch>
 git rebase master
 git push origin <your_branch> -f
@@ -426,7 +426,7 @@ git reset --hard HEAD^
 ...
 git reset --hard HEAD^
 git pull upstream master
-sls function autoinstall -a
+npm install
 ```
 
 Note that you need to call `git reset --hard HEAD^` once for each local commit.
