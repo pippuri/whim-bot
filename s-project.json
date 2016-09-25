@@ -28,7 +28,6 @@
     "serverless-plugin-autoprune",
     "serverless-meta-sync",
     "serverless-plugin-revision",
-    "serverless-plugin-autoinstall",
     "serverless-client-s3",
     "serverless-slack-plugin"
   ],
