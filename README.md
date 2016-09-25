@@ -119,6 +119,20 @@ A basic flow goes as follows:
 
 ### Running Tests
 
+There is very little to build, as the JavaScript functions can be run-as-is.
+However, the Swagger documentation needs to be built and MaaS-Ticket keys need
+to be decrypted:
+
+```
+npm run build:dev           # builds everything with dev stage parameters
+npm run build:docs          # builds the documentation only
+npm run build:keys -- dev   # decrypts the keys, passing 'dev' as a parameter
+```
+
+You need to perform these steps in order the tests to pass.
+
+### Running Tests
+
 To run the tests you need to first install mocha:
 
 ```
