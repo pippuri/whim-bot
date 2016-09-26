@@ -4,15 +4,15 @@ const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const sns = new AWS.SNS({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
+const stage = process.env.SERVERLESS_STAGE || 'dev';
+const ARNSandbox = process.env.APNS_ARN_SANDBOX;
+const ARN = process.env.APNS_ARN;
+
 
 Promise.promisifyAll(sns);
 Promise.promisifyAll(cognitoSync);
 
 function sendPushNotification(event) {
-  const params = {
-    PlatformApplicationArn: process.env.APNS_ARN,
-  };
-  const subject = 'MaaS';
 
   const apnMessage = {
     aps: {
@@ -22,6 +22,37 @@ function sendPushNotification(event) {
     },
   };
 
+  // Queue all user devices (Apple) to the list
+  function iOScreatePlatformEndpoint(token, isSandBox) {
+    const params = {
+      Token: token,
+    };
+    const subject = 'MaaS';
+    let APNSKey;
+    if (isSandBox === true) {
+      APNSKey = 'APNS_SANDBOX';
+      params.PlatformApplicationArn = ARNSandbox;
+    } else {
+      APNSKey = 'APNS';
+      params.PlatformApplicationArn = ARN;
+    }
+    return sns.createPlatformEndpointAsync(params)
+      .then(response => sns.publishAsync({
+        TargetArn: response.EndpointArn,
+        MessageStructure: 'json',
+        Subject: subject,
+        Message: JSON.stringify({
+          [APNSKey]: JSON.stringify(apnMessage),
+        }),
+      }))
+      .then(response => {
+        return Promise.resolve(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
+      })
+      .catch(error => {
+        return Promise.reject(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
+      });
+  }
+
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: event.identityId,
@@ -30,43 +61,26 @@ function sendPushNotification(event) {
   .then(response => {
     response.Records.map(record => {
       const platformEndpointList = [];
-      params.Token = record.Value.replace(/\s/g, '');
-      console.info('Message is being sent to : ' + params.Token);
+      const token = record.Value.replace(/\s/g, '');
+      console.info('Message is being sent to : ' + token);
 
-      // Queue all user devices ( Apple ) to the list
-      platformEndpointList.push(sns.createPlatformEndpointAsync(params)
-        .then((response, error) => {
-          if (error) {
-            console.info('abc', error);
-            return Promise.reject(error);
-          }
+      // Queue all user devices (Apple) to the list
+      platformEndpointList.push(iOScreatePlatformEndpoint(token));
 
-          return sns.publishAsync({
-            TargetArn: response.EndpointArn,
-            MessageStructure: 'json',
-            Subject: subject,
-            Message: JSON.stringify({
-              APNS_SANDBOX: JSON.stringify(apnMessage),
-            }),
-          });
-        })
-        .then((response, error) => {
-          if (error) {
-            return Promise.reject(error);
-          }
-
-          return Promise.resolve(`Push notification has been sent, response: ${JSON.stringify(response)}`);
-        })
-      );
+      // If in development or test env, push also via sandbox (we don't know if
+      // the device push token has been created for sandbox or production certificate)
+      if (stage === 'dev' || stage === 'test') {
+        platformEndpointList.push(iOScreatePlatformEndpoint(token, true));
+      }
 
       return Promise.all(platformEndpointList.map(promise => {
         return promise.reflect();
       }))
       .each(inspection => {
         if (inspection.isFulfilled()) {
-          console.info('This request was fulfilled with response: ', inspection.value());
+          console.info(inspection.value());
         } else {
-          console.error('One request has been rejected with error: ', inspection.reason());
+          console.error(inspection.reason());
         }
       });
     });
