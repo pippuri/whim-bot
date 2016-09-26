@@ -73,7 +73,7 @@
     "pg": "4.4.0",
     "powerset": "0.0.1",
     "proj4": "^2.3.14",
-    "request-promise-lite": "^0.6.1",
+    "request-promise-lite": "^0.6.2",
     "tempfile": "^1.1.1",
     "xml2js": "^0.4.16"
   },
