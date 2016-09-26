@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const Chargebee = require('./chargebee.js');
 const VALID_KEYS = {
   KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
+  XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
 };
 
 
@@ -28,6 +29,7 @@ function handleWebhook(event) {
 
   switch (VALID_KEYS[key]) {
     case 'chargebee':
+    case 'chargebee-live':
       return Chargebee.call(event);
     default:
       console.info('Unhandled callback');
