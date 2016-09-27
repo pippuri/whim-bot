@@ -3,10 +3,8 @@
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
+const bus = require('../../lib/service-bus');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
-const priceConversionRate = require('../../lib/business-rule-engine/lib/priceConversionRate.js');
-const businessRuleEngine = require('../../lib/business-rule-engine');
-const Database = require('../../lib/models').Database;
 
 /**
  * Parses and validates the event input
@@ -16,6 +14,7 @@ const Database = require('../../lib/models').Database;
  * @param {object} event The input event - see the contents above
  * @return {Promise} Object of parsed parameters if success, MaaSError otherwise
  */
+
 function parseAndValidateInput(event) {
   const identityId = event.identityId;
   const mode = (utils.isEmptyValue(event.mode)) ? undefined : event.mode;
@@ -32,10 +31,6 @@ function parseAndValidateInput(event) {
   }
 
   if (typeof agencyId !== 'string') {
-    return Promise.reject(new MaaSError('Missing or invalid input agencyId', 400));
-  }
-
-  if (typeof agencyId !== 'string' || agencyId === '') {
     return Promise.reject(new MaaSError('Missing or invalid input agencyId', 400));
   }
 
@@ -86,62 +81,69 @@ function parseAndValidateInput(event) {
     endTime,
   });
 }
-/**
- * Convert input price to point based on businessRuleEngine
- * @param {UUID} identityId
- * @param {Object} booking
- * @return {Float} Price (in point)
- */
-function convertPriceToPoints(identityId, booking) {
-  const currencyAvailable = !(typeof Object.keys(priceConversionRate).find(currency => currency === booking.terms.price.currency) === typeof undefined);
-  if ( booking.terms.price.currency && currencyAvailable) {
-    return businessRuleEngine.call(
-      {
-        rule: 'convert-to-points',
-        identityId: identityId,
-        parameters: {
-          price: booking.terms.price.amount,
-          currency: booking.terms.price.currency,
-        },
-      }
-    );
-  }
-
-  throw new MaaSError('Incorrect tsp response format, no price or currency found', 500);
-}
 
 function getAgencyProductOptions(event) {
-  return TSPFactory.createFromAgencyId(event.agencyId)
-    .then(tsp => {
-      return tsp.query({
-        mode: event.mode,
-        from: event.from,
-        to: event.to,
-        startTime: event.startTime,
-        endTime: event.endTime,
-        fromRadius: event.fromRadius,
-        toRadius: event.toRadius,
-      });
-    })
-    .then(response => {
-      // If response.options is undefined, return error
-      // which is most likely inside the response
-      if (typeof response.options === typeof undefined) {
-        const message = `Invalid response from TSP: '${JSON.stringify(response.options)}'`;
-        return Promise.reject(new MaaSError(message, 500));
-      }
 
-      const options = response.options.map(utils.removeNulls)
-        .map(option => {
-          option.terms.price.amount = convertPriceToPoints(event.identityId, option);
+  return TSPFactory.createFromAgencyId(event.agencyId)
+  .then(tsp => {
+    return tsp.query({
+      mode: event.mode,
+      from: event.from,
+      to: event.to,
+      startTime: event.startTime,
+      endTime: event.endTime,
+      fromRadius: event.fromRadius,
+      toRadius: event.toRadius,
+    });
+  })
+  .then(response => {
+    if (response.errorMessage) {
+      return Promise.reject(new Error(response.errorMessage));
+    }
+    // If response.options is undefined, return error
+    // which is most likely inside the response
+    if (typeof response.options === typeof undefined) {
+      return Promise.resolve({
+        options: [],
+        meta: {},
+      });
+    }
+
+    // If empty response, do not do price conversion
+    if (response.options instanceof Array && response.options.length === 0) {
+      return response.options;
+    }
+
+    const prices = [];
+    let options = response.options
+      .map(utils.removeNulls)
+      .map(option => {
+        prices.push( { amount: option.terms.price.amount, currency: option.terms.price.currency } );
+        return option;
+      });
+
+    if (prices.length > 0  && prices[0].currency) {
+      return bus.call('MaaS-business-rule-engine', {
+        identityId: event.identityId,
+        rule: 'get-point-pricing-batch',
+        parameters: {
+          prices: prices,
+        },
+      })
+      .then( points => {
+        options = options.map( (option, index) => {
+          const price = points[index];
+          option.terms.price.amount = price;
           option.terms.price.currency = 'POINT';
           option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
-
           return option;
         });
+        return options;
+      });
+    }
 
-      return Promise.resolve(options);
-    });
+    return Promise.reject(new MaaSError('Incorrect tsp price or currency format ', 500));
+  });
 }
 
 /**
@@ -160,29 +162,20 @@ function formatResponse(options) {
 }
 
 module.exports.respond = function (event, callback) {
-  return Promise.all([
-    Database.init(),
-    parseAndValidateInput(event),
-  ])
-  .spread((_knex, parsed) => getAgencyProductOptions(parsed))
-  .then(formatResponse)
+  return parseAndValidateInput(event)
+  .then(parsed => getAgencyProductOptions(parsed))
+  .then(response => formatResponse(response))
   .then(response => {
-    Database.cleanup()
-      .then(() => callback(null, response));
+    callback(null, response);
   })
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
-
-    Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
-
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };
