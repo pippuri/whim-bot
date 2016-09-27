@@ -49,7 +49,7 @@ function sendPushNotification(event) {
         return Promise.resolve(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       })
       .catch(error => {
-        return Promise.reject(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
+        return Promise.reject(new Error(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`));
       });
   }
 
@@ -80,7 +80,7 @@ function sendPushNotification(event) {
         if (inspection.isFulfilled()) {
           console.info(inspection.value());
         } else {
-          console.error(inspection.reason());
+          console.error('Push notfication error, ignoring:', inspection.reason());
         }
       });
     });
