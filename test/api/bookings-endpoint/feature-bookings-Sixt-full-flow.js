@@ -32,7 +32,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
     const tueMoment = moment().utcOffset(120).day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
     const wedMoment = moment().utcOffset(120).day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
 
-    before(done => {
+    before(() => {
       const agencyOptionsEvent = {
         identityId: testIdentityId,
         agencyId: 'Sixt',
@@ -89,15 +89,13 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
         })
         .then(response => {
           retrieveResponse = response;
-          done();
         })
         .catch(_error => {
           error = _error;
-          done();
         });
     });
 
-    after(done => {
+    after(() => {
       return Database.init()
         .then(() => {
           if (!createResponse) {
@@ -108,9 +106,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
           return models.Booking.query().delete().where( 'id', id);
         })
         .then(() => Database.cleanup())
-        .then(() => {
-          done();
-        });
+        .then(() => {});
     });
 
     it('The whole cycle should succeed without error', () => {
