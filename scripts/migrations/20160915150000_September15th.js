@@ -22,6 +22,5 @@ exports.up = function (knex, Promise) {
 exports.down = function (knex, Promise) {
   return knex.schema
   .raw('DROP INDEX IF EXISTS "Provider_geom_gist"')
-  .dropTableIfExists('Provider')
   .raw('DROP EXTENSION IF EXISTS "postgis"');
 };
