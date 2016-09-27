@@ -14,7 +14,7 @@ const testGetTspPricing = require('./feature-get-tsp-pricing');
 
 const testPlanLevel = require('./feature-different-planlevel.js');
 
-describe('Business rule engine', function () {
+describe('business rule engine', function () {
   this.timeout(20000);
   testGetProvider();
   testGetProviderBatch();

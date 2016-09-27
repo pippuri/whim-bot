@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const bus = require('../../lib/service-bus');
-const MaaSError = require('../../lib/errors/MaaSError');
 
 module.exports = function () {
 
@@ -17,8 +16,8 @@ module.exports = function () {
       type: 'maas',
       location: {
         from: {
-          lat: 61.0104906,
-          lon: 14.5614225,
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
     };
@@ -59,8 +58,8 @@ module.exports = function () {
         type: 'maas',
         location: {
           from: {
-            lat: 61.0104906,
-            lon: 14.5614225,
+            lat: 60.1657541,
+            lon: 24.9417641,
           },
         },
       },
@@ -68,8 +67,8 @@ module.exports = function () {
         type: 'taxi',
         location: {
           from: {
-            lat: 61.0104906,
-            lon: 14.5614225,
+            lat: 60.1657541,
+            lon: 24.9417641,
           },
         },
       },
@@ -112,8 +111,8 @@ module.exports = function () {
       type: 'lorem-ipsum',
       location: {
         from: {
-          lat: 61.0104906,
-          lon: 14.5614225,
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
     };
@@ -189,8 +188,8 @@ module.exports = function () {
         type: 'tsp-hasta-lavista',
         location: {
           from: {
-            lat: 61.0104906,
-            lon: 14.5614225,
+            lat: 60.1657541,
+            lon: 24.9417641,
           },
         },
       },
@@ -198,8 +197,8 @@ module.exports = function () {
         type: 'tsp-iam-not-real',
         location: {
           from: {
-            lat: 61.0104906,
-            lon: 14.5614225,
+            lat: 60.1657541,
+            lon: 24.9417641,
           },
         },
       },
