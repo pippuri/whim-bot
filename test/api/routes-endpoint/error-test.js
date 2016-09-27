@@ -3,6 +3,7 @@
 const expect = require('chai').expect;
 const moment = require('moment');
 const bus = require('../../../lib/service-bus');
+const MaaSError = require('../../../lib/errors/MaaSError');
 
 module.exports = () => {
 
@@ -38,8 +39,9 @@ module.exports = () => {
       expect(error).not.to.be.null;
     });
 
-    it('should provide the expected error message', () => {
-      expect(error.message).to.equal('Empty response / No item found with identityId undefined');
+    it('should provide the expected error', () => {
+      expect(error).to.be.an.instanceof(MaaSError);
+      expect(error.code).to.equal(400);
     });
 
     it('should not return a response', () => {

@@ -10,8 +10,6 @@ const Database = models.Database;
 
 module.exports = function (optionsLambda) {
 
-  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
-
   describe('create a MaaS Ticket booking for a day', () => {
     const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -29,7 +27,7 @@ module.exports = function (optionsLambda) {
       return Promise.resolve()
         .then(() => new Promise((resolve, reject) => {
           const optionsEvent = {
-            identityId: testIdentityId,
+            identityId: testUserIdentity,
             agencyId: 'MaaS',
             startTime: Date.now() + 60 * 1000,
             from: '60.18948,24.97213',
@@ -41,7 +39,7 @@ module.exports = function (optionsLambda) {
             optionsError = err;
             if (err) reject(err);
             else resolve(res);
-          } );
+          });
         }))
         .then(optionsData => new Promise((resolve, reject) => {
           const createEvent = {
@@ -68,7 +66,8 @@ module.exports = function (optionsLambda) {
             if (err) reject(err);
             else resolve(res);
           });
-        }));
+        }))
+        .catch(err => Promise.reject(err));
     });
 
     after(() => {
@@ -77,9 +76,11 @@ module.exports = function (optionsLambda) {
           if (bookingId) {
             return models.Booking.query().delete().where('id', bookingId);
           }
+
           return Promise.resolve();
-        } )
-        .then(() => Database.cleanup());
+        })
+        .then(() => Database.cleanup())
+        .catch(err => Promise.reject(err));
     });
 
     it('options fetching should succeed without error', () => {
@@ -94,7 +95,6 @@ module.exports = function (optionsLambda) {
       expect(listError).to.be.null;
     });
 
-    // Skip, because the MaaS-ticket TSP currently returns RESERVED for cancelled
     it('booking list should contain created booking as RESERVED', () => {
       const matchingBookings = listResponse.bookings.filter(b => b.id === bookingId );
       expect(matchingBookings).to.have.lengthOf(1);

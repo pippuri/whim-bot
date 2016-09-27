@@ -89,9 +89,11 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
         })
         .then(response => {
           retrieveResponse = response;
+          return Promise.resolve(retrieveResponse);
         })
         .catch(_error => {
           error = _error;
+          return Promise.reject(error);
         });
     });
 
@@ -106,7 +108,10 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
           return models.Booking.query().delete().where( 'id', id);
         })
         .then(() => Database.cleanup())
-        .then(() => {});
+        .catch(err => {
+          error = err;
+          return Promise.reject(err);
+        });
     });
 
     it('The whole cycle should succeed without error', () => {
