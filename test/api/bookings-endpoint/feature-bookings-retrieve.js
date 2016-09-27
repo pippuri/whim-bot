@@ -7,6 +7,8 @@ const validator = require('../../../lib/validator/index');
 const moment = require('moment');
 const _ = require('lodash');
 const utils = require('../../../lib/utils');
+const models = require('../../../lib/models');
+const Database = models.Database;
 
 module.exports = function (optionsLambda, createLambda, retrieveLambda) {
 
@@ -14,6 +16,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
 
     let response;
     let error;
+    let bookingId;
 
     const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -64,6 +67,9 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
             done();
             return;
           }
+
+          bookingId = _response2.booking.id;
+
           const retrieveEvent = {
             identityId: testIdentityId,
             bookingId: _response2.booking.id,
@@ -79,6 +85,18 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
       });
     });
 
+    after(done => {
+      return Database.init()
+        .then(() => {
+          if (bookingId) {
+            return models.Booking.query().delete().where('id', bookingId);
+          }
+          return Promise.resolve();
+        } )
+        .then(() => Database.cleanup())
+        .then(() => done());
+    });
+
     it.skip('should return a valid response', () => {
       // FIXME change this when bookings are returning in correct states
       return validator.validate(schema, response)
@@ -90,6 +108,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
     it('should succeed without error', () => {
       expect(error).to.be.null;
     });
+
   });
 
 };
