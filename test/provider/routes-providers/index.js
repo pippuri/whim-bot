@@ -5,13 +5,25 @@ const testArriveBy = require('./feature-arrive-by.js');
 const testFromUnsupported = require('./error-from-unsupported.js');
 const testToUnsupported = require('./error-to-unsupported.js');
 const test985kAfrica = require('./check-985k-africa.js');
+const testFixtureTests = require('./feature-test-fixture.js');
+const fixture = require('./fixture.json');
 
 describe('routes provider', () => {
+
+  describe('routes-query-fixture', function () {
+    this.timeout(20000);
+
+    fixture.providers.forEach(provider => {
+      fixture.cases.forEach(test => {
+        testFixtureTests(test, provider);
+      });
+    });
+  });
 
   describe('TripGo', function () {
     this.timeout(20000);
     const lambda = require('../../../provider-tripgo/provider-tripgo-routes/handler.js');
-    testLeaveAt(lambda, { taxiSupport: true });
+    testLeaveAt(lambda, { taxiSupport: false });
     testArriveBy(lambda);
     testFromUnsupported(lambda);
     testToUnsupported(lambda);

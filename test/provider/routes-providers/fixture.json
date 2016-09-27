@@ -1,0 +1,96 @@
+{
+  "providers": [
+    {
+      "name": "TripGo",
+      "lambda": "MaaS-provider-tripgo-routes"
+    },
+    {
+      "name": "DigiTransit",
+      "lambda": "MaaS-provider-digitransit-routes"
+    },
+    {
+      "name": "HERE",
+      "lambda": "MaaS-provider-here-routes"
+    }
+  ],
+  "cases": [
+    {
+      "name": "Walking trip in Suomenlinna",
+      "input": {
+        "modes": "WALK",
+        "from": "60.170779,24.7721584",
+        "to": "60.1522116,24.930412299999944",
+        "leaveAt": 1475406000000
+      },
+      "results": {
+        "pass": true,
+        "modes": "WALK",
+        "count": [0, 100]
+      }
+    },
+    {
+      "name": "Public transport route from Kamppi to Nuuksio",
+      "input": {
+        "modes": "WALK,WAIT,TRANSFER,BUS,TRAM,TRAIN",
+        "from": "60.170779,24.7721584",
+        "to": "60.1522116,24.930412299999944",
+        "leaveAt": 1475406000000
+      },
+      "results": {
+        "pass": true,
+        "modes": "WALK,WAIT,TRANSFER,BUS,TRAM,TRAIN"
+      }
+    },
+    {
+      "name": "Any transport route from Kamppi to Nuuksio",
+      "input": {
+        "from": "60.170779,24.7721584",
+        "to": "60.1522116,24.930412299999944",
+        "leaveAt": 1475406000000
+      },
+      "results": {
+        "pass": true
+      }
+    },
+    {
+      "name": "Taxi route from Ludviginkatu 6 to Löyly, leave Tue 2.10 14:00",
+      "input": {
+        "modes": "WALK,WAIT,TRANSFER,TAXI",
+        "from": "60.16745770000001,24.931074800000033",
+        "to": "60.3,24.46666670000002",
+        "leaveAt": 1475406000000
+      },
+      "results": {
+        "pass": true,
+        "modes": "WALK,WAIT,TRANSFER,TAXI"
+      }
+    },
+    {
+      "name": "Ludviginkatu 10 to Hervanta, arrive by Tue 2.10 13:00",
+      "input": {
+        "from": "60.16745770000001,24.931074800000033",
+        "to": "60.3,24.46666670000002",
+        "arriveBy": 1475402400000
+      },
+      "results": {
+        "pass": true
+      },
+      "resultsModifiers": {
+        "HERE": {
+          "pass": false
+        }
+      }
+    },
+    {
+      "name": "Middle of ocean (0,0) to Kamppi",
+      "input": {
+        "from": "0.0,0.0",
+        "to": "60.170779,24.7721584"
+      },
+      "results": {
+        "pass": true,
+        "count": [0, 0]
+      }
+    }
+  ]
+}
