@@ -9,18 +9,19 @@ const DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/pl
 function getOTPDate(timestamp) {
   const time = new Date(timestamp);
   const zeros = '0000';
-  const yyyy = ( zeros + time.getUTCFullYear()    ).slice(0 - 'YYYY'.length);
-  const mm =   ( zeros + (time.getUTCMonth() + 1) ).slice(0 - 'MM'.length);
-  const dd =   ( zeros + time.getUTCDate()        ).slice(0 - 'DD'.length);
+  // SPi note: making this timezone naive, assuming timestamp is already in local time
+  const yyyy = ( zeros + time.getFullYear()    ).slice(0 - 'YYYY'.length);
+  const mm =   ( zeros + (time.getMonth() + 1) ).slice(0 - 'MM'.length);
+  const dd =   ( zeros + time.getDate()        ).slice(0 - 'DD'.length);
   return [yyyy, mm, dd].join('-');
 }
 
 function getOTPTime(timestamp) {
   const time = new Date(timestamp);
   const zeros = '00';
-  const hh =   ( zeros + time.getUTCHours()       ).slice(0 - 'HH'.length);
-  const mm =   ( zeros + time.getUTCMinutes()     ).slice(0 - 'mm'.length);
-  const ss =   ( zeros + time.getUTCSeconds()     ).slice(0 - 'ss'.length);
+  const hh =   ( zeros + time.getHours()       ).slice(0 - 'HH'.length);
+  const mm =   ( zeros + time.getMinutes()     ).slice(0 - 'mm'.length);
+  const ss =   ( zeros + time.getSeconds()     ).slice(0 - 'ss'.length);
   return [hh, mm, ss].join(':');
 }
 
@@ -51,13 +52,7 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
     json: true,
     qs: qs,
   })
-  .then(result => {
-    if (format === 'original') {
-      return result;
-    }
-
-    return adapter(result);
-  });
+  .then(result => adapter(result));
 }
 
 module.exports.respond = function (event, callback) {
@@ -65,8 +60,11 @@ module.exports.respond = function (event, callback) {
   .then(response => {
     callback(null, response);
   })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    callback(_error);
   });
 };

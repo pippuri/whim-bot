@@ -38,9 +38,9 @@ function convertLeg(segment, original, templates) {
     mode: mode,
     from: convertFromTo(template.from),
     to: convertFromTo(template.to),
-    route: segment.serviceNumber,
-    routeShortName: segment.serviceNumber,
-    routeLongName: segment.serviceName,
+    route: segment.serviceNumber === '' ? undefined : segment.serviceNumber,
+    routeShortName: segment.serviceNumber === '' ? undefined : segment.serviceNumber,
+    routeLongName: segment.serviceName === '' ? undefined : segment.serviceName,
     agencyId: convertAgencyId(mode, template.serviceOperator),
   };
 
@@ -100,7 +100,7 @@ function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
 
-module.exports = function (original) {
+module.exports = function (original, eventFrom) {
   let allTrips = [];
 
   // Build template hashmap
@@ -114,9 +114,11 @@ module.exports = function (original) {
     allTrips = allTrips.concat(group.trips);
   });
 
+  // If we got no trips, we can't use the 'from' from TripGo output.
+  // Hence we'll rely on the Input
   return Promise.resolve({
     plan: {
-      from: convertPlanFrom(original),
+      from: (allTrips.length > 0) ? convertPlanFrom(original) : eventFrom,
       itineraries: allTrips.map(trip => {
         return convertItinerary(trip, original, templates);
       }).sort(compareItinerary),

@@ -7,7 +7,7 @@ const adapter = require('./adapter');
 const serviceBus = require('../../lib/service-bus/index');
 const _ = require('lodash');
 
-const TRIPGO_PUBLIC_MODES = [
+const TRIPGO_PUBLIC_MODES = [ // eslint-disable-line no-unused-vars
   'pt_pub',
 
   //'ps_tax',
@@ -18,12 +18,14 @@ const TRIPGO_PUBLIC_MODES = [
   'wa_wal',
 ];
 
-const TRIPGO_MIXED_MODES = [
+const TRIPGO_MIXED_MODES = [ // eslint-disable-line no-unused-vars
   'pt_pub',
   'ps_tax',
+  'ps_tnc',
+  'wa_wal',
 ];
 
-const TRIPGO_TAXI_MODES = [
+const TRIPGO_TAXI_MODES = [ // eslint-disable-line no-unused-vars
   'ps_tax',
 ];
 
@@ -142,25 +144,25 @@ function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format) {
     return regions;
 
   }).then(regions => {
-
     return Promise.all([
       getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
       getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
       getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
     ])
     .then(results => {
+      const coords = from.split(',').map(parseFloat);
+      const formattedFrom = {
+        lat: coords[0],
+        lon: coords[1],
+      };
       const actualResults = results.filter(r => (r !== null));
       if (actualResults.length < 1) {
-        return adapter([]);
+        return adapter([], formattedFrom);
       }
 
       const response = mergeResults(actualResults);
 
-      if (format === 'original') {
-        return response;
-      }
-
-      return adapter(response);
+      return adapter(response, formattedFrom);
     });
 
   });

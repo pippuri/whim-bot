@@ -1,12 +1,13 @@
 'use strict';
 
-/**
- * Routing results adapter from Here to MaaS. Returns promise for JSON object.
- */
 const Promise = require('bluebird');
 let nextStartTime = 0;
 let nextEndTime = 0;
 const constructTo = [];
+const MaaSError = require('../../lib/errors/MaaSError');
+const _ = require('lodash');
+
+const polylineEncoder = require('polyline');
 
 /*
 function convertMode(data) {
@@ -41,77 +42,46 @@ function convertTo(data) {
   };
 }
 
-/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
-/* eslint-disable no-bitwise */
+function mergeTwoPolylines(existingPolyline, newPoints) {
+  const decodedExistingPolyline = polylineEncoder.decode(existingPolyline);
+  const decodedNewPoints = polylineEncoder.decode(newPoints);
 
-// https://developers.google.com/maps/documentation/utilities/polylinealgorithm#example
+  // Get the last coord from the existing polyline
+  const lastCoord = decodedExistingPolyline[decodedExistingPolyline.length - 1];
 
-function encodeNumber(num) {
-  let encodeString = '';
-  while (num >= 0x20) {
-    encodeString += (String.fromCharCode((0x20 | (num & 0x1f)) + 63));
-    num >>= 5;
+  const lastCoordArray = [lastCoord];
+
+  // Encode all new coords with coord from exising polyline at the beginning of this new encoding
+  decodedNewPoints.unshift(lastCoord);
+  const encodedNewPoints = polylineEncoder.encode(decodedNewPoints);
+
+  // Encode the lastCoord inside an Array
+  const encodedLastCoordArray = polylineEncoder.encode(lastCoordArray);
+
+  // Find the string of the last coordinate pair, and remove it from the new encoded polyline
+  const newPointsWithoutLastCoord = encodedNewPoints.replace(encodedLastCoordArray, '');
+
+  // And stick the new encoded polyline onto the back of the existing polyline
+  const finalPolyline = existingPolyline + newPointsWithoutLastCoord;
+
+  return finalPolyline;
+}
+
+// Parse from php implementation: http://pastebin.com/b0HKkpM6
+function mergePolylines(polylines) {
+  let cachedPolyline = polylines[0];
+  for (let i = 1; i < polylines.length; i++) {
+    cachedPolyline = mergeTwoPolylines(cachedPolyline, polylines[i]);
   }
 
-  encodeString += (String.fromCharCode(num + 63));
-
-  return encodeString;
+  return cachedPolyline;
 }
-
-function encodeSignedValue(num) {
-  let sgn_num = num << 1;
-  if (num < 0) {
-    sgn_num = ~(sgn_num);
-  }
-
-  return (encodeNumber(sgn_num));
-}
-
-function encodePoint(plat, plon, lat, lon) {
-  const platE5 = Math.round(plat * 1e5);
-  const plonE5 = Math.round(plon * 1e5);
-  const latE5 = Math.round(lat * 1e5);
-  const lonE5 = Math.round(lon * 1e5);
-
-  const dLon = lonE5 - plonE5;
-  const dLat = latE5 - platE5;
-
-  return encodeSignedValue(dLat) + encodeSignedValue(dLon);
-}
-
-function createEncodedPolyline(points) {
-
-  let plat = 0;
-  let plon = 0;
-
-  let encoded_point = '';
-
-  points.forEach((val, key) => {
-    const lat = val[0];
-    const lon = val[1];
-
-    encoded_point += encodePoint(plat, plon, lat, lon);
-
-    plat = lat;
-    plon = lon;
-  });
-
-  return encoded_point;
-}
-
-//--------------------------------------------------------------------------------
-
-/* eslint-enable no-bitwise */
-/* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
 
 function convertToLegGeometry(shapes) {
 
   // Output: [[12.12,34.23],[11.12,33.23],...]
-  const points = shapes.map(val => {
-    return JSON.parse('[' + val + ']');
-  });
-
-  return createEncodedPolyline(points);
+  const points = shapes.map(val => [Number(val.split(',')[0]), Number(val.split(',')[1])]);
+  return polylineEncoder.encode(points);
 }
 
 function legGeometry(data) {
@@ -121,15 +91,86 @@ function legGeometry(data) {
 }
 
 function convertLegType(legType) {
-  if (legType === 'railLight') {
-    return 'RAIL';
-  } else if (legType === 'busLight') {
-    return 'BUS';
-  } else if (legType === 'busPublic') {
-    return 'BUS';
-  }
+  switch (legType) {
+    case 'railLight':
+    case 'trainRegional':
+      return 'TRAIN';
 
-  throw new Error('Unknown HERE leg type.');
+    case 'busLight':
+    case 'busPublic':
+      return 'BUS';
+
+    case 'railMetro':
+      return 'SUBWAY';
+
+    case 'carPrivate':
+      return 'CAR';
+
+    default:
+      throw new MaaSError(`Unknown HERE leg type: ${legType}`, 500);
+  }
+}
+
+function convertCarLeg(leg, route, startTime, PTL, LGT ) { //PTL: Public Transport Line; LGT: LegType.
+  nextStartTime = (nextEndTime === 0 ? nextEndTime + startTime : nextEndTime);
+  nextEndTime = nextStartTime + (leg.travelTime * 1000);
+
+  return {
+    startTime: nextStartTime,
+    endTime: nextEndTime,
+    mode: 'CAR',
+    from: { name: leg.start.label, stopId: undefined, stopCode: undefined, lat: leg.start.mappedPosition.latitude, lon: leg.start.mappedPosition.longitude },
+    to: { lat: leg.end.mappedPosition.latitude, lon: leg.end.mappedPosition.longitude, name: leg.end.label, stopId: undefined, stopCode: undefined },
+    legGeometry: {
+      points: convertToLegGeometry([`${leg.start.mappedPosition.latitude},${leg.start.mappedPosition.longitude}`, `${leg.end.mappedPosition.latitude},${leg.end.mappedPosition.longitude}`]),
+    },
+    route: PTL === '' ? undefined : PTL,
+    distance: leg.length,
+  };
+}
+
+function combineWalkingLeg(legs) {
+  if (!(legs instanceof Array)) {
+    return Promise.reject(new MaaSError('Input walking legs for combination are not array.', 500));
+  }
+  if (legs.length === 0) return [];
+  // Return an array as input is array
+  return [
+    {
+      startTime: legs[0].startTime,
+      endTime: legs[legs.length - 1].endTime,
+      mode: 'WALK',
+      from: legs[0].from,
+      to: legs[legs.length - 1].to,
+      legGeometry: {
+        points: mergePolylines(legs.map(leg => leg.legGeometry.points)),
+      },
+      distance: _.sum(legs.map(leg => leg.distance)),
+    },
+  ];
+}
+
+// Input walk leg should be in chronological order
+function convertWalkLeg(legs) {
+  const result = [];
+  let walkLegs = [];
+  // Group them onto different sub walkLegs for each walkLegs of serial walking legs
+  legs.forEach((leg, index) => {
+    if (leg.mode === 'WALK') {
+      walkLegs.push(leg);
+      if (index === legs.length - 1) {
+        result.push(combineWalkingLeg(walkLegs));
+        // result.push(walkLegs);
+        walkLegs = [];
+      }
+    } else {
+      result.push(combineWalkingLeg(walkLegs));
+      // result.push(walkLegs);
+      result.push([leg]);
+      walkLegs = [];
+    }
+  });
+  return _.flatten(result);
 }
 
 function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Transport Line; LGT: LegType.
@@ -147,6 +188,8 @@ function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Tran
 
   if (LGT === '' || LGT === 'WALK') {
     LegType = 'WALK';
+  } else if (LGT === 'CAR') {
+    LegType = 'CAR';
   } else {
     LegType = convertLegType(LGT);
   }
@@ -158,42 +201,68 @@ function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Tran
     from: convertFrom(data),
     to: convertTo(data),
     legGeometry: legGeometry(data),
-    route: PTL,
-    routeShortName: '',
-    routeLongName: '',
-    agencyId: '',
+    route: PTL === '' ? undefined : PTL,
+    distance: parseFloat(data.length),
   };
 }
 
+// Here has this weird bus leg that have no distance and startTime === endTime
+function removeRedundantLeg(legs) {
+  return legs.filter(leg => {
+    return (leg.distance > 0) && (leg.startTime !== leg.endTime);
+  });
+}
+
 function convertItinerary(route) {
-  const startTime = new Date(route.summary.departure);
+  let startTime = null;
+  if (route.mode === 'CAR') {
+    if (route.startTime) {
+      startTime = new Date(parseInt(route.startTime, 10) + 120000 );
+    } else {
+      console.warn('TODO: There is no start time on the route', JSON.stringify(route, null, 2));
+    }
+  } else {
+    startTime = new Date(route.summary.departure);
+  }
   const result = [];
-  let res = '';
-  let tempRoute = 0;
-  let PTL = '';
-  let tempType = '';
-  route.leg.map(leg => {
-    leg.maneuver.forEach((data, index) => {
-      if (data._type === 'PublicTransportManeuverType') {
-        tempRoute < route.publicTransportLine.length ? PTL = route.publicTransportLine[tempRoute].lineName : PTL = '';
-        tempRoute < route.publicTransportLine.length ? tempType = route.publicTransportLine[tempRoute].type : tempType = '';
-        tempRoute++;
-      } else if (data._type === 'PrivateTransportManeuverType') {
-        tempType = 'WALK';
-      } else {
-        tempType = '';
-      }
+  let index = 0;
+  route.leg.forEach(leg => {
 
-      result.push(convertLeg(leg, data, route, startTime.getTime(), PTL, tempType));
-    });
+    // car manouvers are turn by turn, so skip the rest
+    if (route.mode === 'CAR') {
+      result.push(convertCarLeg(leg, route, startTime.getTime(), 'CAR', 'CAR'));
+    } else {
+      leg.maneuver.forEach(data => {
 
-    res = result;
+        let PTL = '';
+        let tempType = '';
+
+        if (data._type === 'PublicTransportManeuverType') {
+          if (index < route.publicTransportLine.length) {
+            PTL = route.publicTransportLine[index].lineName;
+            tempType = route.publicTransportLine[index].type;
+          }
+
+          if (PTL === '' && data.line !== '') PTL = data.line;
+          index++;
+        } else if (data._type === 'PrivateTransportManeuverType') {
+          tempType = 'WALK';
+        } else {
+          tempType = '';
+        }
+
+        result.push(convertLeg(leg, data, route, startTime.getTime(), PTL, tempType));
+      });
+    }
+
   });
 
+  // Combine all walking legs only when all leg are returned.
   return {
     startTime: startTime.getTime(),
     endTime: startTime.getTime() + (route.summary.travelTime * 1000),
-    legs: res,
+    legs: convertWalkLeg(removeRedundantLeg(result)),
+    // legs: removeRedundantLeg(result),
   };
 }
 
@@ -215,7 +284,9 @@ function convertPlanFrom(original) {
 
 }
 
-module.exports = function (original) {
+module.exports = function (original, mode, leaveAt, arriveBy) {
+
+  // TODO filter by mode
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
