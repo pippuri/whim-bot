@@ -1,0 +1,19 @@
+{
+  "name": "business-rule-engine",
+  "description": "Make decision based on different defined business rules",
+  "runtime": "nodejs4.3",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "custom": {
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": []
+    }
+  },
+  "events": [],
+  "environment": "$${environment}"
+}
