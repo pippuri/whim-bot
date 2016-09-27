@@ -21,7 +21,6 @@ module.exports = function () {
 
     let error;
     let response;
-    let profile;
 
     before(() => {
       return Promise.all(
@@ -38,7 +37,6 @@ module.exports = function () {
       )
       .spread((_profile, _engineResponse) => {
         response = _engineResponse;
-        profile = _profile;
       })
       .catch(err => {
         error = err;
