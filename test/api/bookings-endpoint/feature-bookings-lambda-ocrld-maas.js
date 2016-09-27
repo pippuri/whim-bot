@@ -24,7 +24,7 @@ module.exports = function (optionsLambda) {
 
     let bookingId;
 
-    before(done => {
+    before(() => {
 
       return Promise.resolve()
         .then(() => new Promise((resolve, reject) => {
@@ -67,17 +67,11 @@ module.exports = function (optionsLambda) {
             listError = err;
             if (err) reject(err);
             else resolve(res);
-          } );
-        } ) )
+          });
+        }));
+    });
 
-        .then(() => done())
-
-        .catch(err => {
-          done(err);
-        } );
-    } );
-
-    after(done => {
+    after(() => {
       return Database.init()
         .then(() => {
           if (bookingId) {
@@ -85,8 +79,7 @@ module.exports = function (optionsLambda) {
           }
           return Promise.resolve();
         } )
-        .then(() => Database.cleanup())
-        .then(() => done());
+        .then(() => Database.cleanup());
     });
 
     it('options fetching should succeed without error', () => {
