@@ -83,7 +83,6 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
           });
         });
       });
-
     });
 
     after(() => {
