@@ -39,6 +39,7 @@ function _userPlanIncludes(plans, provider) {
  * Populate pricing information based on context
  */
 function _setPricing(provider, userProfile) {
+  if (!provider) return provider;
   const userLevel = userProfile.planlevel;
   if (userLevel === 0) {
     // TODO for PAYG, add a small margin for everything
@@ -83,7 +84,6 @@ function getOptions(params, profile) {
 
 // NOTE TODO Why does location contains only from but not to?
 function getOptionsBatch(params, profile) {
-
   const queries = params.map(request => {
     if (!request.hasOwnProperty('location') || Object.keys(request.location) === 0) {
       // TODO Should be handled by validator, instead
@@ -104,8 +104,7 @@ function getOptionsBatch(params, profile) {
   });
 
   return getProviderRules.getProviderBatch(queries)
-    .then(providers => providers.map(provider => _setPricing(provider[0], profile)))
-    .catch(error => Promise.reject(error));
+    .then(providers => providers.map(provider => _setPricing(provider[0], profile)));
 }
 
 module.exports = {
