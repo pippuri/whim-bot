@@ -1,8 +1,9 @@
 'use strict';
 
-const businessRuleEngine = require('../../lib/business-rule-engine/index.js');
+const bus = require('../../lib/service-bus');
 const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
+const ValidationError = require('../../lib/validator/ValidationError');
 
 function validateInput(event) {
   if (!event.payload.from) {
@@ -72,22 +73,28 @@ function filterPastRoutes(leaveAt, response) {
   return response;
 }
 
-function getRoutes(identityId, from, to, leaveAt, arriveBy) {
+function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
+  if (modes !== undefined && modes.length > 0) {
+    modes = modes.split(',');
+  }
+
+  if (!leaveAt && !arriveBy) {
+    leaveAt = Date.now();
+  }
 
   const event = {
     from: from,
     to: to,
     leaveAt: leaveAt,
     arriveBy: arriveBy,
+    modes: modes,
   };
 
-  return businessRuleEngine.call(
-    {
-      rule: 'get-routes',
-      identityId: identityId,
-      parameters: event,
-    }
-  )
+  return bus.call('MaaS-business-rule-engine', {
+    identityId: identityId,
+    rule: 'get-routes',
+    parameters: event,
+  })
   .then(response => filterPastRoutes(leaveAt, response))
   .then(response => signResponse(response));
 }
@@ -98,8 +105,21 @@ module.exports.respond = function (event, callback) {
     .then(response => {
       callback(null, response);
     })
-    .catch(err => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(err);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      if (_error instanceof ValidationError) {
+        callback(new MaaSError(_error.message, 400));
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.message}`, 500));
     });
 };
