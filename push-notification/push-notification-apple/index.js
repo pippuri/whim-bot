@@ -7,28 +7,37 @@ const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const stage = process.env.SERVERLESS_STAGE || 'dev';
 const ARNSandbox = process.env.APNS_ARN_SANDBOX;
 const ARN = process.env.APNS_ARN;
-
+const validator = require('../../lib/validator');
+const queryRequestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/request.json');
+const MaaSError = require('../../lib/errors/MaaSError');
+const ValidationError = require('../../lib/validator/ValidationError');
 
 Promise.promisifyAll(sns);
 Promise.promisifyAll(cognitoSync);
 
 function sendPushNotification(event) {
 
-  const apnMessage = {
-    aps: {
-      alert: event.message,
-      badge: event.badge,
-      sound: 'default',
-    },
-  };
-
-  // Queue all user devices (Apple) to the list
+  // Helper for creating Apple Push Notification Service (APNS) endpoint
   function iOScreatePlatformEndpoint(token, isSandBox) {
+
+    // structure for APNS
+    const apnMessage = {
+      aps: {
+        alert: event.message,
+        badge: event.badge,
+        sound: event.sound || 'default',
+        severity: event.severity || 'information',
+        type: event.type,
+        data: event.data,
+      },
+    };
+    const subject = event.subject || 'Whim';
+
     const params = {
       Token: token,
     };
-    const subject = 'MaaS';
     let APNSKey;
+
     if (isSandBox === true) {
       APNSKey = 'APNS_SANDBOX';
       params.PlatformApplicationArn = ARNSandbox;
@@ -36,6 +45,7 @@ function sendPushNotification(event) {
       APNSKey = 'APNS';
       params.PlatformApplicationArn = ARN;
     }
+
     return sns.createPlatformEndpointAsync(params)
       .then(response => sns.publishAsync({
         TargetArn: response.EndpointArn,
@@ -53,14 +63,17 @@ function sendPushNotification(event) {
       });
   }
 
+  let successCount = 0;
+  let failureCount = 0;
+
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: event.identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
   })
   .then(response => {
+    const platformEndpointList = [];
     response.Records.map(record => {
-      const platformEndpointList = [];
       const token = record.Value.replace(/\s/g, '');
       console.info('Message is being sent to : ' + token);
 
@@ -72,31 +85,57 @@ function sendPushNotification(event) {
       if (stage === 'dev' || stage === 'test') {
         platformEndpointList.push(iOScreatePlatformEndpoint(token, true));
       }
-
-      return Promise.all(platformEndpointList.map(promise => {
-        return promise.reflect();
-      }))
-      .each(inspection => {
-        if (inspection.isFulfilled()) {
-          console.info(inspection.value());
-        } else {
-          console.error('Push notfication error, ignoring:', inspection.reason());
-        }
-      });
     });
+
+    return Promise.all(platformEndpointList.map(promise => {
+      return promise.reflect();
+    }))
+    .each(inspection => {
+      if (inspection.isFulfilled()) {
+        console.info(inspection.value());
+        successCount++;
+      } else {
+        console.error('Push notfication error, ignoring:', inspection.reason());
+        failureCount++;
+      }
+    })
+    .then(() => {
+      if (successCount > 0) {
+        return Promise.resolve({
+          identityId: event.identityId,
+          results: {
+            successCount: successCount,
+            failureCount: failureCount,
+          },
+        });
+      }
+      return Promise.reject(new Error(`No successful push sends out of ${failureCount} tries.`));
+    });
+
   });
 }
 
 module.exports.respond = (event, callback) => {
-  sendPushNotification(event)
-    .then(response => {
-      if (response === undefined) {
-        callback(null, 'The function has finished');
-      } else {
-        callback(response);
+  validator.validate(queryRequestSchema, event)
+    .catch(_error => {
+      if (_error instanceof ValidationError) {
+        return Promise.reject(new MaaSError(`Validation failed: ${_error.message}`, 400));
       }
+      return Promise.reject(_error);
     })
-    .catch(error => {
-      callback(error);
+    .then(validated => sendPushNotification(validated))
+    .then(response => callback(null, response))
+    .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      // Uncaught, unexpected error
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };
