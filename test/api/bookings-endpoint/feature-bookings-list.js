@@ -7,6 +7,8 @@ const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-lis
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
 const moment = require('moment');
+const models = require('../../../lib/models');
+const Database = models.Database;
 
 module.exports = function (optionsLambda, createLambda, listLambda) {
 
@@ -15,6 +17,7 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
   describe('retrieve one or more bookings, created by bookings create', () => {
     let error;
     let response;
+    let bookingId;
 
     before(done => {
 
@@ -63,6 +66,8 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
             return;
           }
 
+          bookingId = _response.booking.id;
+
           const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
           const listEvent = {
             identityId: testIdentityId,
@@ -80,6 +85,18 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
       });
     });
 
+    after(done => {
+      return Database.init()
+        .then(() => {
+          if (bookingId) {
+            return models.Booking.query().delete().where('id', bookingId);
+          }
+          return Promise.resolve();
+        } )
+        .then(() => Database.cleanup())
+        .then(() => done());
+    });
+
     it('should succeed without errors', () => {
       if (error) {
         console.log(error);
@@ -95,5 +112,6 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
           expect(validationError).to.be.null;
         });
     });
+
   });
 };

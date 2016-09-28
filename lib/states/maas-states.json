@@ -6,11 +6,11 @@
     },
     "PENDING": {
       "description": "The booking is pending for available reservation response from tsp. This state can be skipped depends on the tsp.",
-      "transition": ["PAID", "CANCELLED"]
+      "transition": ["PAID", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "PAID": {
       "description": "Ticket/ride has been paid, waiting to go into active. Can be CANCELLED here",
-      "transition": ["RESERVED", "REJECTED", "CANCELLED"]
+      "transition": ["RESERVED", "REJECTED", "CANCELLED", "CANCELLED_WITH_ERRORS"]
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
