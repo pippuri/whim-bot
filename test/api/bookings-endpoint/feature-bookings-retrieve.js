@@ -85,7 +85,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
       });
     });
 
-    after(done => {
+    after(() => {
       return Database.init()
         .then(() => {
           if (bookingId) {
@@ -93,8 +93,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
           }
           return Promise.resolve();
         } )
-        .then(() => Database.cleanup())
-        .then(() => done());
+        .then(() => Database.cleanup());
     });
 
     it.skip('should return a valid response', () => {
@@ -108,7 +107,5 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
     it('should succeed without error', () => {
       expect(error).to.be.null;
     });
-
   });
-
 };
