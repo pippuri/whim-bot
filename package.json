@@ -94,6 +94,7 @@
     "gulp-sequence": "^0.4.5",
     "gulp-util": "^3.0.7",
     "json-loader": "^0.5.4",
+    "pg-copy-streams": "^1.2.0",
     "proxyquire": "^1.7.10",
     "serverless": "^0.5.5",
     "serverless-client-s3": "^2.0.0",
