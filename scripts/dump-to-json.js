@@ -1,11 +1,10 @@
 'use strict';
 
 const pg = require('pg');
-const copyTo = require('pg-copy-streams').to;
 const knexFile = require('./knexfile');
 
 function usage() {
-  console.log('Usage: node dump-table.js <table> >dump.sql');
+  console.log('Usage: node dump-to-json.js <table> >dump.json');
 }
 
 // Read args for parameters
@@ -20,10 +19,11 @@ if (typeof table !== 'string') {
   process.exit(1);
 }
 
-const stream = client.query(copyTo(`COPY "${table}" TO STDOUT`));
-stream.pipe(process.stdout);
-stream.on('end', () => {
-});
-stream.on('error', error => {
-  console.error(`Error: ${error.message}`);
+client.query(`
+  select array_to_json(array_agg(row_to_json(t)))
+      from (
+        select * from "${table}"
+      ) t
+`, (error, result) => {
+  console.log(JSON.stringify(result.rows[0].array_to_json, null, 2));
 });
