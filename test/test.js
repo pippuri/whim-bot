@@ -4,7 +4,7 @@ const Templates = (new (require('serverless'))()).classes.Templates;
 
 function loadEnvironment() {
   // The stages we can run tests against in priority order - always fallback to dev
-  const stages = ['test', 'dev'];
+  const stages = ['dev', 'test'];
 
   // Check the stage from the existence of meta sync file
   const stage = stages.find(stage => {
