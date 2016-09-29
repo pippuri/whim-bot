@@ -3,6 +3,7 @@
 // Library
 const SubscriptionMgr = require('../../lib/subscription-manager');
 const lib = require('../../lib/utils/index');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 function formatResponse(input) {
 
@@ -36,8 +37,17 @@ module.exports.respond = function (event, callback) {
   .then(response => {
     callback(null, formatResponse(response));
   })
-  .catch(error => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(error);
+  .catch(_error => {
+    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    // Uncaught, unexpected error
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };
