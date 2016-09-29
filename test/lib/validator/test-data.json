@@ -1,0 +1,55 @@
+[
+  {
+    "name": "succeeds on fully valid input",
+    "input": {
+      "number": 5,
+      "string": "string"
+    },
+    "pass": true
+  },
+  {
+    "name": "coerces coercible input types",
+    "input": {
+      "number": "5",
+      "string": "string"
+    },
+    "options": { "coerceTypes": true },
+    "pass": true
+  },
+  {
+    "name": "fails on faulty values",
+    "input": {
+      "number": "foobar",
+      "string": "string"
+    },
+    "pass": false
+  },
+  {
+    "name": "fails on empty string values",
+    "input": {
+      "number": "",
+      "string": "string"
+    },
+    "pass": false
+  },
+  {
+    "name": "is able to transform values",
+    "input": {
+      "number": "",
+      "string": "string"
+    },
+    "options": {
+      "transform": {
+        "from": "",
+        "to": 0
+      }
+    },
+    "pass": true
+  },
+  {
+    "name": "is able to fail on multiple validation errors",
+    "input": {
+    },
+    "pass": false
+  }
+]

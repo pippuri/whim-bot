@@ -8,4 +8,5 @@ describe('Library', () => {
   require('./trip');
   require('./tsp');
   require('./utils');
+  require('./validator');
 });
