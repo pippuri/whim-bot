@@ -10,22 +10,17 @@ before_script:
 - mkdir ~/.aws && touch ~/.aws/credentials # create .aws folder with placeholder credentials file
 - echo '[profile travis]\nregion=eu-west-1' > ~/.aws/config # create .aws config file with default region
 
-# populate credential file by decrypt .secret-aws-travis / .secret-aws-travis-pullrequests
-- if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET_PULLREQUESTS" -in ./.secret-aws-travis-pullrequests -out ~/.aws/credentials -d -a && echo "I ran"; fi # When travis run PR
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./.secret-aws-travis-branch -out ~/.aws/credentials -d -a && echo "I ran"; fi # When travis run branch
+# Populate the credentials file by decrypting .secret-aws-travis / .secret-aws-travis-pullrequests
+# When Travis initiated PR
+- if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET_PULLREQUESTS" -in ./.secret-aws-travis-pullrequests -out ~/.aws/credentials -d -a && echo "Using secret-aws-travis-pullrequests secrets."; fi
+# When in Travis initiated branch build (master/alpha/prod)
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then openssl aes-256-cbc -pass "pass:$TRAVIS_CI_SECRET" -in ./.secret-aws-travis-branch -out ~/.aws/credentials -d -a && echo "Using secret-aws-travis-branch secrets."; fi
 
-# get variable from s3 test file -> continuous deployment to test stage
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f; fi fi
+# For any Travis build, we need 'test' meta to run the tests
+- echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f
 
-# get variable from s3 alpha file -> alpha stage
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f; fi fi
-
-# get variable from s3 test file -> for PRs
-- if [[ $TRAVIS_PULL_REQUEST =~ ^[0-9]+$ ]]; then echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f; fi
-
-# no script for prod meta sync, as travis is not suppose to auto deploy prod
-
-
+# Automated deployment to 'alpha' stage: Pull 'alpha' meta for an automated deployment
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f; fi fi;
 
 script:
 - npm test
@@ -34,11 +29,12 @@ after_success:
 # Current time
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
-# Auto deploy to "test" stage on master branch
-- bash scripts/deployment/travis-autodeploy-stage-test.sh
+# Auto deploy to "test" stage on merges to master branch
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then bash scripts/deployment/travis-autodeploy-stage-test.sh
 
-# Auto deploy to "alpha" stage on alpha branch with release tag
-- bash scripts/deployment/travis-autodeploy-stage-alpha.sh
+# Auto deploy to "alpha" stage on alpha branch. Also tag the release.
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then bash scripts/deployment/travis-autodeploy-stage-alpha.sh
+
 env: # Dont touch this
   global:
   - TRAVIS_CI_SECRET_PULLREQUESTS=b7a2f8902a4c11675da3e1b421c6e28d95794fed
