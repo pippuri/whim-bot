@@ -196,7 +196,7 @@ function _resolveRoutesProviders(params) {
  * @return {Object} merged output
  */
 function _mergeProviderResponses(responses, params) {
-
+  // console.log(JSON.stringify(responses, null, 2));
   const coords = params.from.split(',').map(parseFloat);
   const output = {
     plan: {
@@ -246,6 +246,10 @@ function _invokeProviders(providers, params) {
  * @return agencyId {String} agencyId of the leg
  */
 function _setLegAgency(leg) {
+  if (leg.mode && leg.agencyId) {
+    return leg;
+  }
+
   switch (leg.mode) {
     case 'CAR':
       leg.mode = 'TAXI';

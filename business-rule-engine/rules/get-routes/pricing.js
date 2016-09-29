@@ -5,7 +5,26 @@ const powerset = require('powerset');
 const _ = require('lodash');
 const getTspPricingRules = require('../get-tsp-pricing');
 const maasOperation = require('../../../lib/maas-operation');
+const tspDataDev = require('../../../lib/tsp/tspData-dev.json');
+const tspDataAlpha = require('../../../lib/tsp/tspData-alpha.json');
+const tspDataProd = require('../../../lib/tsp/tspData-prod.json');
+let tspData;
 
+switch (process.env.SERVERLESS_STAGE) {
+  case 'alpha':
+    tspData = tspDataAlpha;
+    break;
+  case 'prod':
+    tspData = tspDataProd;
+    break;
+  case 'dev':
+  case 'test':
+  default:
+    tspData = tspDataDev;
+    break;
+}
+
+const purchasableAgencyId = Object.keys(tspData);
 const MODE_WITHOUT_TICKET = ['WALK', 'BICYCLE', 'TRANSFER', 'WAIT'];
 
 /**
@@ -362,7 +381,11 @@ function resolveRoutesPrice(itineraries, profile) {
       // Give null prices to unpurchasable itineraries
       itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
-          // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary
+          // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
+          if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1) && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
+            itinerary.fare.points = null;
+          }
+
           if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1)) {
             itinerary.fare.points = null;
           }
