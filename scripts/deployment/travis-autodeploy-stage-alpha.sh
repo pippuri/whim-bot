@@ -13,20 +13,23 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       git config --global user.email "tech@maas.fi";
       git config --global user.name "travis";
 
+      # Tag the release - we would want to do this even for failing builds
+      git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP";
+      git push --tags origin;
+
       # Decrypt the maas-ticket keys
       cd ./tickets/tickets-create/keys
       bash ./decrypt-keys.sh -s alpha
       cd ../../..
 
       # Trigger build & deploy
-      #npm run deploy-alpha:all;
+      npm run deploy-alpha:all;
 
       # Migrate databases to the latest schemas
       cd ./scripts;
       npm install -g knex;
       SERVERLESS_STAGE=alpha knex migrate:latest;
-      git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP";
-      git push --tags origin;
+
       echo "Finished running autodeployment to alpha stage script ..."
   else
     echo "Stopping ... Not on alpha branch"
