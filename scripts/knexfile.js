@@ -7,14 +7,16 @@ const Templates = (new (require('serverless'))()).classes.Templates;
  * Note: Run the script like this
  * SERVERLESS_STAGE = ${stage} knex migrate:latest
  */
-function loadEnvironment(stage) {
-  let values;
-  try {
-    values = require(`../_meta/variables/s-variables-${stage}.json`);
-  } catch (e) {
-    console.log(`Failed to read _meta/variables/s-variables-${stage}.json`);
-  }
 
+/**
+ * Loads the environment with a given stage
+ * @param {string} stage the stage to use when loading env, defaults to 'dev'
+ */
+function loadEnvironment(stage) {
+  // Default to dev
+  stage = stage || 'dev';
+
+  const values = require(`../_meta/variables/s-variables-${stage}.json`);
   const variables = (new Templates(values, '../s-templates.json')).toObject();
   for (let key of Object.keys(variables)) { // eslint-disable-line prefer-const
     process.env[key] = variables[key];
