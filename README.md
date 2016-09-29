@@ -114,7 +114,7 @@ A basic flow goes as follows:
 3. Developer merges it to master
 4. Travis is invoked by the commit to master, and auto-deploys to "test" stage
 5. Lead developer rebases the current test branch into alpha, as a sprint release candidate
-6. Lead developer tags a version of alpha as the sprint release
+6. Lead developer tags a version of alpha as the sprint release, and Travis deploys to alpha automatically
 7. If Product Owner accepts the tagged release, Lead developer rebases "prod" to it and deploys it to "prod" stage manually
 
 ### Running Tests
@@ -290,15 +290,26 @@ manually. Travis cares for the deployment automatically when you rebase the
 #### Deploying to `prod`
 
 Production deployments are done by hand. You can deploy hotfixes by deploying
-individual endpoints much in the sme way as deploying to dev (just replace `dev`
+individual endpoints much in the same way as deploying to dev (just replace `dev`
 stage with `prod` stage).
 
-When you are doing a full redeployment, which includes `ticketing` endpoints,
-you need to regenerate the SSL credentials. Check `tickets/README.md` for
-further information, or just use a script to refresh the keys:
+The automated `release-prod` npm script fetches the latest alpha branch, rebases
+master against that and runs `deploy-prod:all` script that decrypts production
+keys:
+
+> npm run release-prod:all
+
+In case you something in the automated flow fails, you can decrypt maas-ticket
+keys and deploy Serverless functions and endpoints as follows:
+
+> npm run deploy-prod:all
+
+In case you ever need to refresh keys for production, do this first:
 
 > cd tickets/tickets-create/keys
 > ./refresh-key.sh
+
+#### Manual deployments of single endpoints
 
 You can deploy the *routes-query* function to development environemnt as follows
 ```
