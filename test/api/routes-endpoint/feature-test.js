@@ -31,7 +31,7 @@ module.exports = options => {
     before(done => {
       bus.call('MaaS-routes-query', event)
         .then(res => {
-          // console.log(JSON.stringify(res.plan.itineraries.filter(itinerary => typeof itinerary.legs.filter(leg => leg.mode === 'TAXI') !== typeof undefined), null, 2));
+          console.log(JSON.stringify(res.plan.itineraries.filter(itinerary => typeof itinerary.legs.filter(leg => leg.mode === 'TAXI') !== typeof undefined), null, 2));
           response = res;
         })
         .catch(err => {

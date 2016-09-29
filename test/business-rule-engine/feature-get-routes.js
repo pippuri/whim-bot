@@ -9,7 +9,7 @@ const Promise = require('bluebird');
 
 module.exports = function () {
 
-  describe('[POSITIVE] query for routes', () => {
+  describe('[POSITIVE] query for routes from Ludviginkatu to Aapelinkatu', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 

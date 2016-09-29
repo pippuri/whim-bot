@@ -57,12 +57,28 @@ function signResponse(response) {
  * @param response {Object}
  * @return response {Object} filtered response
  */
-function filterPastRoutes(response) {
+function filterPastRoutes(leaveAt, response) {
 
-  response.plan.itineraries.filter(iti => {
-    return iti.startTime < Date.now() - 20000; // Network delay
+  if (!leaveAt) {
+    return response;
+  }
+
+  const filtered = response.plan.itineraries.filter(itinerary => {
+    const waitingTimes = itinerary.legs.map(leg => {
+      const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
+      return waitingTime;
+    });
+    const shortest = Math.min.apply(null, waitingTimes);
+    const inMinutes = ((shortest / 1000) / 60);
+    const margin = 1;
+    if (inMinutes < -margin) {
+      return false;
+    }
+
+    return true;
   });
 
+  response.plan.itineraries = filtered;
   return response;
 }
 
@@ -88,7 +104,7 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, mode) {
     rule: 'get-routes',
     parameters: event,
   })
-  .then(response => filterPastRoutes(response))
+  .then(response => filterPastRoutes(leaveAt, response))
   .then(response => signResponse(response));
 }
 
