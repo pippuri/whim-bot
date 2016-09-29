@@ -340,7 +340,10 @@ function _setBookingProviders(itinerary, providers) {
   });
 }
 
-function resolveRoutesPrice(itineraries, profile) {
+/**
+ * Calculate costs in points and co2 for all itineraries based on pricing
+ */
+function _calculateCost(itineraries, profile) {
   const bookingAgencies = {};
   itineraries.map(itinerary => {
     itinerary.legs.forEach(leg => {
@@ -376,23 +379,44 @@ function resolveRoutesPrice(itineraries, profile) {
       });
 
       return Promise.resolve(itineraries);
-    })
-    .then(itineraries => {
-      // Give null prices to unpurchasable itineraries
-      itineraries.forEach(itinerary => {
-        itinerary.legs.forEach(leg => {
-          // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
-          if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1) && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
-            itinerary.fare.points = null;
-          }
-
-          if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1)) {
-            itinerary.fare.points = null;
-          }
-        });
-      });
-      return itineraries;
     });
+}
+
+/**
+ * If received multiple Taxi leg, use only those that cost less
+ */
+function _filterOutMultipleTaxiItineraries(itineraries) {
+  // Move all non taxi itineraries to an array
+  const newItinerariesSet = itineraries.filter(itinerary => itinerary.legs.every(leg => leg.mode !== 'TAXI'));
+
+  // Move all taxi itineraries to an array and get the cheapest one
+  const taxiItineraries = itineraries.filter(itinerary => itinerary.legs.some(leg => leg.mode === 'TAXI'));
+  const cheapestTaxiRoute = taxiItineraries.sort((a, b) => a.fare.points - b.fare.points)[0];
+
+  newItinerariesSet.push(cheapestTaxiRoute);
+  return newItinerariesSet;
+}
+
+function _nullifyUnpurchasableItineraries(itineraries) {
+  itineraries.forEach(itinerary => {
+    itinerary.legs.forEach(leg => {
+      // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
+      if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1) && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
+        itinerary.fare.points = null;
+      }
+
+      if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1)) {
+        itinerary.fare.points = null;
+      }
+    });
+  });
+  return itineraries;
+}
+
+function resolveRoutesPrice(itineraries, profile) {
+  return _calculateCost(itineraries, profile)
+    .then(itineraries => _nullifyUnpurchasableItineraries(itineraries))
+    .then(itineraries => _filterOutMultipleTaxiItineraries(itineraries));
 }
 
 module.exports = {
