@@ -18,6 +18,14 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Support only leaveAt or arriveBy, not both', 400));
   }
 
+  if (event.payload.mode && !event.payload.mode.match(/^[\w\S]+[^,\s]$/g)) {
+    return Promise.reject(new MaaSError('Input mode must satisfy this regex', new RegExp(/^[\w\S]+[^,\s]$/g).toString()));
+  }
+
+  if (event.payload.mode && event.payload.mode.split(',').length > 1) {
+    return Promise.reject(new MaaSError('Routes query currently support either 1 input mode or none'));
+  }
+
   return Promise.resolve();
 }
 
@@ -49,33 +57,18 @@ function signResponse(response) {
  * @param response {Object}
  * @return response {Object} filtered response
  */
-function filterPastRoutes(leaveAt, response) {
-  if (!leaveAt) {
-    return response;
-  }
+function filterPastRoutes(response) {
 
-  const filtered = response.plan.itineraries.filter(itinerary => {
-    const waitingTimes = itinerary.legs.map(leg => {
-      const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
-      return waitingTime;
-    });
-    const shortest = Math.min.apply(null, waitingTimes);
-    const inMinutes = ((shortest / 1000) / 60);
-    const margin = 1;
-    if (inMinutes < -margin) {
-      return false;
-    }
-
-    return true;
+  response.plan.itineraries.filter(iti => {
+    return iti.startTime < Date.now() - 20000; // Network delay
   });
 
-  response.plan.itineraries = filtered;
   return response;
 }
 
-function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
-  if (modes !== undefined && modes.length > 0) {
-    modes = modes.split(',');
+function getRoutes(identityId, from, to, leaveAt, arriveBy, mode) {
+  if (mode !== undefined && mode.length > 0) {
+    mode = mode.split(',');
   }
 
   if (!leaveAt && !arriveBy) {
@@ -87,7 +80,7 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
     to: to,
     leaveAt: leaveAt,
     arriveBy: arriveBy,
-    modes: modes,
+    mode: mode,
   };
 
   return bus.call('MaaS-business-rule-engine', {
@@ -95,7 +88,7 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
     rule: 'get-routes',
     parameters: event,
   })
-  .then(response => filterPastRoutes(leaveAt, response))
+  .then(response => filterPastRoutes(response))
   .then(response => signResponse(response));
 }
 

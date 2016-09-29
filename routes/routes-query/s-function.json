@@ -32,8 +32,7 @@
         "integration.request.querystring.from": "method.request.querystring.from",
         "integration.request.querystring.to": "method.request.querystring.to",
         "integration.request.querystring.leaveAt": "method.request.querystring.leaveAt",
-        "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy",
-        "integration.request.querystring.modes": "method.request.querystring.modes"
+        "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy"
       },
       "requestTemplates": {
         "application/json": {
@@ -43,7 +42,8 @@
             "from": "$input.params('from')",
             "to": "$input.params('to')",
             "leaveAt": "$input.params('leaveAt')",
-            "arriveBy": "$input.params('arriveBy')"
+            "arriveBy": "$input.params('arriveBy')",
+            "mode": "$input.params('mode')"
           }
         }
       },
@@ -111,7 +111,13 @@
             "name": "arriveBy",
             "type": "integer",
             "in": "query",
-            "description": "Arrive by query time - provide either this or leaveAt",
+            "description": "Arrive by query time, provide this",
+            "required": false
+          },
+          {
+            "name": "modes",
+            "in": "query",
+            "description": "Modes that you want to query for",
             "required": false
           }
         ],
