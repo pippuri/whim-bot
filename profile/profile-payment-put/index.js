@@ -39,7 +39,7 @@ function updateUserData(event) {
         // chargebee did not have this user, let's add
         return createChargebeeUser(event);
       }
-      return Promise.reject(new MaaSError(`Error with payment ${_error}`, 500));
+      return Promise.reject(new MaaSError(`Error with payment ${_error}, ${_error.response.toString()}`, 500));
     });
 }
 
@@ -66,6 +66,6 @@ module.exports.respond = (event, callback) => {
       console.warn(_error.stack);
       console.warn(`Response error: ${err}`);
 
-      callback(new MaaSError(`Internal server error: ${err}`, 500));
+      callback(new MaaSError(`Internal server error: ${err}`, _error.statusCode || 500));
     });
 };

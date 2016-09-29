@@ -61,6 +61,11 @@ function setActivePlan(event) {
         })
         .catch( _error => {
           // check if the error was a 404
+          let reason = '';
+          if (_error.response) {
+            reason = JSON.stringify(_error.response, null, 2);
+          }
+          console.log(`Subscription error ${_error}, ${reason}`);
           if (_error.statusCode === 404) {
             console.log('Running createUser');
             return createChargebeeUser(event);
@@ -110,7 +115,7 @@ function setActivePlan(event) {
       let newBalance = oldBalance;
       if (newPlan.level > 0 && (newPlan.level > oldLevel)) {
         // handle upgrade
-        const slices = newPlan.tiers.slice(oldLevel, newPlan.level); // slice the array with tiers from zero
+        const slices = newPlan.tiers.slice(oldLevel, newPlan.level + 1); // slice the array with tiers from zero
         for (const level of slices) {
           newBalance += level;
         }
