@@ -9,6 +9,7 @@ const ARNSandbox = process.env.APNS_ARN_SANDBOX;
 const ARN = process.env.APNS_ARN;
 const validator = require('../../lib/validator');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/request.json');
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/response.json');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
 
@@ -116,14 +117,17 @@ function sendPushNotification(event) {
 }
 
 module.exports.respond = (event, callback) => {
-  validator.validate(requestSchema, event)
-    .catch(error => {
-      if (error instanceof ValidationError) {
-        return Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400));
-      }
-      return Promise.reject(error);
-    })
+  return Promise.resolve()
+    .then(() => validator.validate(requestSchema, event))
+    .catch(ValidationError, error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
     .then(validated => sendPushNotification(validated))
+    .then(response => validator.validate(responseSchema, response))
+    .catch(ValidationError, error => {
+      console.error('Warning! Response validation failed, ignoring!');
+      console.error('Errors:', error.message);
+      console.error('Response:', error.object);
+      return Promise.resolve(error.object);
+    })
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
