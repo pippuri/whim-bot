@@ -6,6 +6,25 @@ const bus = require('../../lib/service-bus/index');
 const Subscriptions = require('../../lib/subscription-manager/index');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 
+function createChargebeeUser(event) {
+  return bus.call('MaaS-profile-info', { identityId: event.identityId })
+    .then( res => {
+      const profile = res.Item;
+      return Subscriptions.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: profile.phone })
+        .then( user => {
+          console.log(`Created user ${user}`);
+          return Promise.resolve(user);
+        })
+        .catch( _err => {
+          console.log('Error creating user:', _err.response.toString());
+          return Promise.reject(new MaaSError(`Error creating Subscription: ${_err}`, 500));
+        });
+    })
+    .catch(_error => {
+      return Promise.reject(new MaaSError(`Error fetching Subscription: ${_error}`, 500));
+    });
+}
+
 function setActivePlan(event) {
   let oldLevel;
   let oldBalance;
@@ -26,17 +45,28 @@ function setActivePlan(event) {
   return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
     .then(documentExist => {
       if (documentExist === false) { // False if not existed
-        return Promise.reject(new Error('User Not Existed'));
+        return Promise.reject(new MaaSError('User Not Existed', 404));
       }
       return Promise.resolve();
     })
     .then( _ => {
-      // update chargebee with the plan,
-      // webhook will specify (skipUpdate)
-      if (!event.skipUpdate) {
-        return Subscriptions.updatePlan(event.identityId, event.planId, event.promoCode);
-      }
-      return Promise.resolve({});
+      return Subscriptions.getUserSubscription(event.identityId)
+        .then( _ => {
+          // update chargebee with the plan,
+          // webhook will specify (skipUpdate)
+          if (!event.skipUpdate) {
+            return Subscriptions.updatePlan(event.identityId, event.planId, event.promoCode);
+          }
+          return Promise.resolve({});
+        })
+        .catch( _error => {
+          // check if the error was a 404
+          if (_error.statusCode === 404) {
+            console.log('Running createUser');
+            return createChargebeeUser(event);
+          }
+          return Promise.reject(new MaaSError(`Error requesting Subscription: ${_error}`, 500));
+        });
     })
     .then( _ => {
       return bus.call('MaaS-profile-info', { // Then get user balance
