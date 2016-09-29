@@ -105,7 +105,7 @@ function sendPushNotification(event) {
         return Promise.resolve({
           identityId: event.identityId,
           results: {
-            successCount: successCount,
+            saaaaauccessCount: successCount,
             failureCount: failureCount,
           },
         });
@@ -123,7 +123,7 @@ module.exports.respond = (event, callback) => {
     .then(validated => sendPushNotification(validated))
     .then(response => validator.validate(responseSchema, response))
     .catch(ValidationError, error => {
-      console.error('Warning! Response validation failed, ignoring!');
+      console.error('Warning! Response validation failed, but responding with success');
       console.error('Errors:', error.message);
       console.error('Response:', error.object);
       return Promise.resolve(error.object);
