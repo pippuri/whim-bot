@@ -8,7 +8,7 @@ const stage = process.env.SERVERLESS_STAGE || 'dev';
 const ARNSandbox = process.env.APNS_ARN_SANDBOX;
 const ARN = process.env.APNS_ARN;
 const validator = require('../../lib/validator');
-const queryRequestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/request.json');
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/request.json');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
 
@@ -116,12 +116,12 @@ function sendPushNotification(event) {
 }
 
 module.exports.respond = (event, callback) => {
-  validator.validate(queryRequestSchema, event)
-    .catch(_error => {
-      if (_error instanceof ValidationError) {
-        return Promise.reject(new MaaSError(`Validation failed: ${_error.message}`, 400));
+  validator.validate(requestSchema, event)
+    .catch(error => {
+      if (error instanceof ValidationError) {
+        return Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400));
       }
-      return Promise.reject(_error);
+      return Promise.reject(error);
     })
     .then(validated => sendPushNotification(validated))
     .then(response => callback(null, response))
