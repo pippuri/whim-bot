@@ -30,10 +30,10 @@ after_success:
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
 # Auto deploy to "test" stage on merges to master branch
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then bash scripts/deployment/travis-autodeploy-stage-test.sh
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "master" ]]; then bash scripts/deployment/travis-autodeploy-stage-test.sh; fi fi;
 
 # Auto deploy to "alpha" stage on alpha branch. Also tag the release.
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then bash scripts/deployment/travis-autodeploy-stage-alpha.sh
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then bash scripts/deployment/travis-autodeploy-stage-alpha.sh; fi fi;
 
 env: # Dont touch this
   global:
