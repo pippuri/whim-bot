@@ -29,6 +29,11 @@ function convertFromTo(from) {
   };
 }
 
+function mergeParkingLegs(itinerary) {
+  itinerary.legs = itinerary.legs.filter((leg, index) => leg.mode !== 'PARKING' && index !== itinerary.legs[itinerary.legs.length - 1]);
+  return itinerary;
+}
+
 function convertLeg(segment, original, templates) {
   const template = templates[segment.segmentTemplateHashCode] || {};
   const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
@@ -66,13 +71,11 @@ function convertLeg(segment, original, templates) {
 }
 
 function convertItinerary(trip, original, templates) {
-  return {
+  return mergeParkingLegs({
     startTime: trip.depart * 1000,
     endTime: trip.arrive * 1000,
-    legs: trip.segments.map(segment => {
-      return convertLeg(segment, original, templates);
-    }),
-  };
+    legs: trip.segments.map(segment => convertLeg(segment, original, templates)),
+  });
 }
 
 function convertPlanFrom(original) {

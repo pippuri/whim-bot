@@ -9,14 +9,6 @@ const _ = require('lodash');
 
 const polylineEncoder = require('polyline');
 
-/*
-function convertMode(data) {
-
-  //strip out html tag from instruction
-  return (data.instruction).replace(/(<([^>]+)>)/ig, '');
-}
-*/
-
 function convertFrom(from) {
   return {
     name: from.roadName,
@@ -94,6 +86,7 @@ function convertLegType(legType) {
   switch (legType) {
     case 'railLight':
     case 'trainRegional':
+    case 'railRegional':
       return 'TRAIN';
 
     case 'busLight':
@@ -129,17 +122,27 @@ function convertCarLeg(leg, route, startTime, PTL, LGT ) { //PTL: Public Transpo
   };
 }
 
-function combineWalkingLeg(legs) {
+/**
+ * Merge all maneuver legs into one
+ */
+function mergeManeuverLegs(legs) {
   if (!(legs instanceof Array)) {
     return Promise.reject(new MaaSError('Input walking legs for combination are not array.', 500));
   }
   if (legs.length === 0) return [];
   // Return an array as input is array
+
+  if (legs.length === 1) return legs;
+
+  if (legs.length > 1 && legs[0].mode !== legs[1].mode) {
+    return Promise.reject(new MaaSError('Cannot merge maneuver legs, different mode input', 500));
+  }
+
   return [
     {
       startTime: legs[0].startTime,
       endTime: legs[legs.length - 1].endTime,
-      mode: 'WALK',
+      mode: legs[0].mode,
       from: legs[0].from,
       to: legs[legs.length - 1].to,
       legGeometry: {
@@ -150,26 +153,31 @@ function combineWalkingLeg(legs) {
   ];
 }
 
-// Input walk leg should be in chronological order
-function convertWalkLeg(legs) {
+// Group all maneuver legs into 1
+function groupManeuverLegs(legs) {
   const result = [];
-  let walkLegs = [];
-  // Group them onto different sub walkLegs for each walkLegs of serial walking legs
-  legs.forEach((leg, index) => {
-    if (leg.mode === 'WALK') {
-      walkLegs.push(leg);
-      if (index === legs.length - 1) {
-        result.push(combineWalkingLeg(walkLegs));
-        // result.push(walkLegs);
-        walkLegs = [];
+  let sameModeLegs = [];
+
+  for (let i = 0; i < legs.length - 1; i++) {
+    if (legs[i].mode === legs[i + 1].mode) {
+      sameModeLegs.push(legs[i]);
+
+      if (i === legs.length - 2) { // eslint-disable-line
+        sameModeLegs.push(legs[i + 1]);
+        result.push(mergeManeuverLegs(sameModeLegs));
       }
     } else {
-      result.push(combineWalkingLeg(walkLegs));
-      // result.push(walkLegs);
-      result.push([leg]);
-      walkLegs = [];
+      sameModeLegs.push(legs[i]);
+      result.push(mergeManeuverLegs(sameModeLegs));
+      sameModeLegs = [];
+
+      if (i === legs.length - 2) { // eslint-disable-line
+        result.push(mergeManeuverLegs(sameModeLegs));
+        result.push([legs[i + 1]]);
+      }
     }
-  });
+  }
+
   return _.flatten(result);
 }
 
@@ -186,12 +194,22 @@ function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Tran
     }
   }
 
-  if (LGT === '' || LGT === 'WALK') {
-    LegType = 'WALK';
-  } else if (LGT === 'CAR') {
-    LegType = 'CAR';
-  } else {
-    LegType = convertLegType(LGT);
+  switch (LGT) {
+    case '':
+    case 'WALK':
+      LegType = 'WALK';
+      break;
+    case 'CAR':
+      LegType = 'CAR';
+      break;
+    case 'TAXI':
+      LegType = 'TAXI';
+      break;
+    case 'BICYCLE':
+      LegType = 'BICYCLE';
+      break;
+    default:
+      LegType = convertLegType(LGT);
   }
 
   return {
@@ -206,23 +224,31 @@ function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Tran
   };
 }
 
-// Here has this weird bus leg that have no distance and startTime === endTime
+// Here has this weird leg that have no distance and startTime === endTime
 function removeRedundantLeg(legs) {
   return legs.filter(leg => {
     return (leg.distance > 0) && (leg.startTime !== leg.endTime);
   });
 }
 
-function convertItinerary(route) {
+function convertItinerary(route, mode, leaveAt, arriveBy) {
   let startTime = null;
-  if (route.mode === 'CAR') {
-    if (route.startTime) {
-      startTime = new Date(parseInt(route.startTime, 10) + 120000 );
-    } else {
-      console.warn('TODO: There is no start time on the route', JSON.stringify(route, null, 2));
-    }
-  } else {
-    startTime = new Date(route.summary.departure);
+  // Route mode should be only one
+  switch (route.mode.transportModes.toString().toUpperCase()) {
+    case 'CAR':
+    case 'TAXI':
+      if (route.startTime) {
+        startTime = new Date(parseInt(route.startTime, 10) + 120000);
+      } else {
+        startTime = new Date(Number(leaveAt) + 120000 ); // Add 2 min prep time for MaaS to prep the booking
+      }
+      break;
+    case 'BICYCLE':
+    case 'WALK':
+      startTime = leaveAt ? new Date(Number(leaveAt)) : new Date(Date.now());
+      break;
+    default:
+      startTime = new Date(route.summary.departure);
   }
   const result = [];
   let index = 0;
@@ -246,7 +272,21 @@ function convertItinerary(route) {
           if (PTL === '' && data.line !== '') PTL = data.line;
           index++;
         } else if (data._type === 'PrivateTransportManeuverType') {
-          tempType = 'WALK';
+          switch (mode) {
+            case 'CAR':
+              tempType = 'CAR';
+              break;
+            case 'TAXI':
+              tempType = 'TAXI';
+              break;
+            case 'BICYCLE':
+              tempType = 'BICYCLE';
+              break;
+            case 'WALK':
+            default:
+              tempType = 'WALK';
+              break;
+          }
         } else {
           tempType = '';
         }
@@ -261,8 +301,7 @@ function convertItinerary(route) {
   return {
     startTime: startTime.getTime(),
     endTime: startTime.getTime() + (route.summary.travelTime * 1000),
-    legs: convertWalkLeg(removeRedundantLeg(result)),
-    // legs: removeRedundantLeg(result),
+    legs: groupManeuverLegs(removeRedundantLeg(result)),
   };
 }
 
@@ -285,12 +324,10 @@ function convertPlanFrom(original) {
 }
 
 module.exports = function (original, mode, leaveAt, arriveBy) {
-
-  // TODO filter by mode
   return Promise.resolve({
     plan: {
       from: convertPlanFrom(original),
-      itineraries: original.response.route.map(convertItinerary),
+      itineraries: original.response.route.map(route => convertItinerary(route, mode, leaveAt, arriveBy)),
     },
   });
 };
