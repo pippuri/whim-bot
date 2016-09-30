@@ -1,0 +1,49 @@
+{
+  "HSL": {
+    "id": "HSL",
+    "baseUrl": "https://tsp.test.maas.global/hsl/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "cancel": "bookings/"
+    }
+  },
+  "Valopilkku": {
+    "id": "Valopilkku",
+    "baseUrl": "https://tsp.test.maas.global/taxi/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/"
+    }
+  },
+  "Sixt": {
+    "id": "Sixt",
+    "baseUrl": "https://tsp.test.maas.global/sixt/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
+      "query": "bookings/options/"
+    }
+  },
+  "MaaS": {
+    "id": "MaaS",
+    "baseUrl": "https://tsp.test.maas.global/maas/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "query": "bookings/options/"
+    }
+  }
+}
