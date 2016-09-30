@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 
-const DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/hsl/plan';
+const DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/finland/plan';
 
 function getOTPDate(timestamp) {
   const time = new Date(timestamp);
@@ -25,9 +25,20 @@ function getOTPTime(timestamp) {
   return [hh, mm, ss].join(':');
 }
 
+function convertDigitransitModes(eventModes) {
+  return eventModes.split(',').map(mode => {
+    switch (mode) {
+      case 'RAIL':
+        return 'TRAIN';
+      default:
+        return mode;
+    }
+  }).join(',');
+}
+
 // Docs: http://dev.opentripplanner.org/apidoc/0.15.0/resource_PlannerResource.html
 
-function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
+function getDigitransitRoutes(from, to, mode, leaveAt, arriveBy, format) {
 
   const qs = {
     fromPlace: from,
@@ -48,6 +59,10 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
     // Current routes. No need to add any parameters.
   }
 
+  if (mode) {
+    qs.modes = convertDigitransitModes(mode);
+  }
+
   return request.get(DIGITRANSIT_HSL_URL, {
     json: true,
     qs: qs,
@@ -56,7 +71,11 @@ function getDigitransitRoutes(from, to, leaveAt, arriveBy, format) {
 }
 
 module.exports.respond = function (event, callback) {
-  getDigitransitRoutes(event.from, event.to, event.leaveAt, event.arriveBy, event.format)
+  if (event.mode) {
+    return Promise.reject(new Error('Currently Digitransit adapter does not accept "mode" parameter'));
+  }
+
+  return getDigitransitRoutes(event.from, event.to, event.mode, event.leaveAt, event.arriveBy, event.format)
   .then(response => {
     callback(null, response);
   })

@@ -29,7 +29,7 @@ function convertFromTo(from) {
 }
 
 function convertLeg(leg) {
-  let agencyId = 'HSL';
+  let agencyId = typeof Number(leg.agencyId) === 'number' && !isNaN(Number(leg.agencyId)) ? leg.agencyName : leg.agencyId;
   if (leg.mode === 'WALK') {
     agencyId = undefined;
   }
