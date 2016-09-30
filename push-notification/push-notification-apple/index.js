@@ -123,9 +123,9 @@ module.exports.respond = (event, callback) => {
     .then(validated => sendPushNotification(validated))
     .then(response => validator.validate(responseSchema, response))
     .catch(ValidationError, error => {
-      console.error('WARNING ---- Response validation failed, but responding with success');
-      console.error('Errors:', error.message);
-      console.error('Response:', error.object);
+      console.warn('Warning; Response validation failed, but responding with success');
+      console.warn('Errors:', error.message);
+      console.warn('Response:', JSON.stringify(error.object, null, 2));
       return Promise.resolve(error.object);
     })
     .then(response => callback(null, response))
