@@ -3,7 +3,6 @@
 const expect = require('chai').expect;
 const moment = require('moment');
 const bus = require('../../lib/service-bus');
-const Promise = require('bluebird');
 
 // NOTE test library for this rule is not nessesary need to be extensive as many tests for routes-query has been written for routes-query API
 
