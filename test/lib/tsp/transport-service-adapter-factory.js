@@ -8,16 +8,12 @@ module.exports = function (TSPFactory, TSPAdapter) {
     let response;
     let error;
 
-    before(done => {
-      TSPFactory.createFromAgencyId('FullMock')
-      .then(data => {
-        response = data;
-        done();
-      })
-      .catch(err => {
-        error = err;
-        done();
-      });
+    before(() => {
+      return TSPFactory.createFromAgencyId('FullMock')
+        .then(
+          data => (response = data),
+          err => (error = err)
+        );
     });
 
     it('should succeed without errors', () => {
@@ -31,21 +27,12 @@ module.exports = function (TSPFactory, TSPAdapter) {
   });
 
   describe('fails on non-existing adapters', () => {
-    let error;
-
-    before(done => {
-      TSPFactory.createFromAgencyId('NoSuchAdapter')
-      .then(data => {
-        done();
-      })
-      .catch(err => {
-        error = err;
-        done();
-      });
-    });
-
     it('should reject with an Error', () => {
-      expect(error).to.be.an.instanceof(Error);
+      return TSPFactory.createFromAgencyId('NoSuchAdapter')
+        .then(
+          data => Promise.reject('Adapter created even if there is none.'),
+          error => Promise.resolve()
+        );
     });
   });
 };
