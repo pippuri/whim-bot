@@ -37,6 +37,16 @@
   "author": "Sami Pippuri, Lauri Svan, Kenneth Falck, James Nguyen",
   "description": "MaaS serverless infrastructure",
   "swaggerExport": {
+    "info": {
+      "title": "MaaS Backend",
+      "description": "Swagger documentation for maas-backend project, intended for app developer use",
+      "termsOfService": "Private API, negotiate separately with MaaS Global",
+      "contact": {
+        "name": "MaaS Technical Team",
+        "email": "tech@maas.global"
+      },
+      "version": "1.0"
+    },
     "host": "api.dev.maas.global",
     "schemes": [
       "https"

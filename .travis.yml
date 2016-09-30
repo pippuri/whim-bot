@@ -23,9 +23,10 @@ before_script:
 - if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f; fi fi;
 
 script:
+- npm run build:test
 - npm test
-after_success:
 
+after_success:
 # Current time
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 

@@ -42,8 +42,8 @@ process.env.USE_MOCK_LAMBDA = 'TRUE';
 process.env.USE_MOCK_DYNAMO = 'TRUE';
 
 describe('MaaS.fi backend', () => {
-  require('./api/index.js');
-  require('./profile/index.js');
-  require('./provider/index.js');
-  require('./lib/index.js');
+  require('./api');
+  require('./profile');
+  require('./provider');
+  require('./lib');
 });

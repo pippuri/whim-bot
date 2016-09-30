@@ -62,7 +62,6 @@
     "geojson-utils": "^1.1.0",
     "haversine": "^1.0.0",
     "jsonwebtoken": "^5.7.0",
-    "json-schema-deref": "^0.3.2",
     "knex": "0.11.5",
     "lambda-wrapper": "^0.1.0",
     "lodash": "^4.13.1",
@@ -106,18 +105,23 @@
     "serverless-slack-plugin": "https://github.com/blackevil245/serverless-slack-plugin",
     "serverless-webpack-plugin": "^0.4.5",
     "sinon": "^1.17.5",
+    "swagger-schema-official": "^2.0.0-bab6bed",
     "webpack": "^1.13.2"
   },
   "scripts": {
     "test": "gulp test",
-    "export:docs": "sls swagger export > swagger/swagger-maas-api-json/maas-api.json && sls function run -s dev swagger-populate",
-    "deploy:docs": "npm run export:docs && sls function deploy -s dev swagger-maas-api-json && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/",
-    "deploy-static-files": "aws --profile maas s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",
-    "deploy-dev:all": "npm run export:docs && aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/ && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
-    "deploy-prod:all": "npm run test && (cd tickets/tickets-create/keys && ./decrypt-keys.sh -s prod) && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
-    "deploy-test:all": "sls function deploy -a -s test && sls endpoint deploy -a -s test",
-    "deploy-alpha:all": "(cd tickets/tickets-create/keys && ./decrypt-keys.sh -s alpha) && sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
-    "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha",
-    "release-prod": "git checkout alpha && git pull --rebase upstream alpha && git checkout -B prod && git rebase prod && git push --force upstream prod:prod && npm run deploy-prod:all"
+    "build:dev": "npm run build:docs && npm run build:keys -- dev",
+    "build:test": "npm run build:docs && npm run build:keys -- test",
+    "build:alpha": "npm run build:docs && npm run build:keys -- alpha",
+    "build:prod": "npm run build:docs && npm run build:keys -- prod",
+    "build:docs": "mkdir -p www/apidocs.maas.global/api && sls swagger export > www/apidocs.maas.global/api/maas-api.json && cp -r node_modules/maas-schemas/prebuilt/maas-backend www/apidocs.maas.global/api",
+    "build:keys": "cd tickets/tickets-create/keys && ./decrypt-keys.sh -s",
+    "deploy:docs": "aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/",
+    "deploy:static-files": "aws --profile maas s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",
+    "deploy-dev:all": "npm run build:dev && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
+    "deploy-prod:all": "npm run build:prod && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
+    "deploy-test:all": "npm run build:test && npm run test && npm run deploy:docs && npm run deploy:static-files && sls function deploy -a -s test && sls endpoint deploy -a -s test",
+    "deploy-alpha:all": "npm run build:alpha && npm run test && sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
+    "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha"
   }
 }

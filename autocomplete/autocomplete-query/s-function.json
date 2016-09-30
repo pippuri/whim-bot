@@ -123,7 +123,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "maas-schemas/maas-backend/autocomplete/autocomplete-query/response.json"
+              "$ref": "maas-backend/autocomplete/autocomplete-query/response.json"
             }
           },
           "400": {

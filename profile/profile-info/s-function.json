@@ -90,7 +90,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "$ref": "schemas/v1/profile.json#properties"
+                "$ref": "maas-backend/profile/profile-info/response.json"
               }
             }
           },

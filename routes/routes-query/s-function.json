@@ -93,26 +93,30 @@
         "parameters": [
           {
             "name": "from",
+            "type": "string",
             "in": "query",
             "description": "Geolocation of the 'from' location",
             "required": true
           },
           {
             "name": "to",
+            "type": "string",
             "in": "query",
             "description": "Geolocation of the 'to' location",
             "required": true
           },
           {
             "name": "leaveAt",
+            "type": "integer",
             "in": "query",
-            "description": "Leave at query time, provide either this or arriveBy",
+            "description": "Leave at query time - provide either this or arriveBy",
             "required": false
           },
           {
             "name": "arriveBy",
+            "type": "integer",
             "in": "query",
-            "description": "Arrive by query time, prodive this ",
+            "description": "Arrive by query time - provide either this or leaveAt",
             "required": false
           }
         ],
@@ -121,7 +125,7 @@
             "application/json": {},
             "description": "Success",
             "schema": {
-              "$ref": "maas-schemas/maas-backend/routes/routes-query/response.json"
+              "$ref": "maas-backend/routes/routes-query/response.json"
             }
           },
           "400": {

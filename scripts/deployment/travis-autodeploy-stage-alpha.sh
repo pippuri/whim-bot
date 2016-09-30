@@ -17,11 +17,6 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       git tag -a "$RELEASE_TAG" $(echo $TRAVIS_COMMIT | cut -c1-7) -m "$CURRENT_TIMESTAMP";
       git push --tags origin;
 
-      # Decrypt the maas-ticket keys
-      cd ./tickets/tickets-create/keys
-      bash ./decrypt-keys.sh -s alpha
-      cd ../../..
-
       # Trigger build & deploy
       npm run deploy-alpha:all;
 
