@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "id": "https://api.maas.global/test/schema",
+  "description": "MaaS test schema for verifying the validator",
+  "type": "object",
+  "properties": {
+    "number": {
+      "type": "number"
+    },
+    "string": {
+      "type":"string"
+    }
+  },
+  "required": ["number", "string"],
+  "additionalProperties": false
+}

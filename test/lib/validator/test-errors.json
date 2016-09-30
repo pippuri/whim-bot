@@ -1,0 +1,76 @@
+[
+  {
+    "keyword": "required",
+    "dataPath": "",
+    "schemaPath": "#/required",
+    "params": {
+      "missingProperty": "number"
+    },
+    "message": "should have required property 'number'",
+    "schema": {
+      "number": {
+        "type": "number"
+      },
+      "string": {
+        "type": "string"
+      }
+    },
+    "parentSchema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "https://api.maas.global/test/schema",
+      "description": "MaaS test schema for verifying the validator",
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "number"
+        },
+        "string": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "number",
+        "string"
+      ],
+      "additionalProperties": false
+    },
+    "data": {}
+  },
+  {
+    "keyword": "required",
+    "dataPath": "",
+    "schemaPath": "#/required",
+    "params": {
+      "missingProperty": "string"
+    },
+    "message": "should have required property 'string'",
+    "schema": {
+      "number": {
+        "type": "number"
+      },
+      "string": {
+        "type": "string"
+      }
+    },
+    "parentSchema": {
+      "$schema": "http://json-schema.org/draft-04/schema#",
+      "id": "https://api.maas.global/test/schema",
+      "description": "MaaS test schema for verifying the validator",
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "number"
+        },
+        "string": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "number",
+        "string"
+      ],
+      "additionalProperties": false
+    },
+    "data": {}
+  }
+]
