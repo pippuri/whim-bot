@@ -164,7 +164,7 @@ class Decider {
           })
           // find and check the leg
           .then(itinerary => this._findLegFromItinerary(itinerary, legId))
-          .then(leg => this._checkLeg(leg))
+          .then(leg => this._activateLeg(leg))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] error while checking leg -- ignoring, err:', err.stack || err);
