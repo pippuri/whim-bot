@@ -74,26 +74,35 @@ class Decider {
     console.log(`[Decider] Processing task '${taskName}'...`);
     let legId;
     switch (taskName) {
+      // do some trip starting actions
       case TripWorkFlow.TASK_START_TRIP:
-        // process whole itinerary
         return Itinerary.retrieve(this.flow.trip.referenceId)
-          // check itinerary actions
           .then(itinerary => {
+            // check if itinerary in bad state
             if (['CANCELLED', 'CANCELLED_WITH_ERRORS', 'FINISHED', 'ABANDONED'].indexOf(itinerary.state) !== -1) {
               console.warn(`[Decider] Cannot start trip as Itinerary in state '${itinerary.state}'`);
-              return Promise.reject(`Cannot start trip as Itinerary in state '${itinerary.state}'`);
+              return Promise.reject(new Error(`Cannot start trip as Itinerary in state '${itinerary.state}'`));
             }
+            // check if itinerary need to be paid
             if (itinerary.state === 'PLANNED') {
               return itinerary.pay()
                 .catch(err => {
                   console.warn('[Decider] cannot pay itinerary, err:', err.stack || err);
-                  return this._notifyUser('Failed to make payment for the journey!')
-                    .then(() => Promise.reject('Payment failed'));
+                  const message = 'Payment of the trip failed; please check your points and rebook';
+                  return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert')
+                    .then(() => Promise.reject(new Error('Payment failed')));
                 });
             }
-            return Promise.resolve(itinerary);
+            // activate trip if starting in 5 mins, or schedule for later
+            if (itinerary.startTime > this.now + (5 * 60 * 1000)) {
+              this.decision.scheduleTimedTask(itinerary.startTime, TripWorkFlow.TASK_ACTIVATE_TRIP);
+              console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_ACTIVATE_TRIP}' ` +
+                          `itinerary id '${this.flow.trip.referenceId}' into ${new Date(itinerary.startTime)}.`);
+              return Promise.resolve(itinerary);
+            }
+            return this._activateItinerary(itinerary);
           })
-          // check the bookings in leg
+          // process the legs
           .then(itinerary => this._processLegs(itinerary))
           // schedule trip closing into end, defaulting to one day
           .then(() => {
@@ -103,13 +112,33 @@ class Decider {
                         `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
             return Promise.resolve();
           })
-          .then(() => this._notifyUser('Relax, Maas is now taking care of your trip!'))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
             this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
             return Promise.resolve();
           });
+
+      // activation of trip
+      case TripWorkFlow.TASK_ACTIVATE_TRIP:
+        return Itinerary.retrieve(this.flow.trip.referenceId)
+          .then(itinerary => {
+            // check if in bad state
+            if (['CANCELLED', 'CANCELLED_WITH_ERRORS', 'FINISHED', 'ABANDONED'].indexOf(itinerary.state) !== -1) {
+              console.warn(`[Decider] Cannot start trip as Itinerary in state '${itinerary.state}'`);
+              return Promise.reject(new Error(`Cannot start trip as Itinerary in state '${itinerary.state}'`));
+            }
+            return this._activateItinerary(itinerary);
+          })
+          // process the legs
+          .then(itinerary => this._processLegs(itinerary))
+          // handle unexpected errors
+          .catch(err => {
+            console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
+            this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
+            return Promise.resolve();
+          });
+
       case TripWorkFlow.TASK_CHECK_ITINERARY:
         legId = this.flow.task && this.flow.task.params && this.flow.task.params.legId;
         // fetch itinerary & check legs from that leg
@@ -129,6 +158,7 @@ class Decider {
             this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
             return Promise.resolve();
           });
+
       case TripWorkFlow.TASK_CHECK_LEG:
         legId = this.flow.task && this.flow.task.params && this.flow.task.params.legId;
         // fetch itinerary & check leg
@@ -142,22 +172,27 @@ class Decider {
           })
           // check the bookings in leg
           .then(itinerary => this._findLegFromItinerary(itinerary, legId))
-          .then(leg => this._checkLegReservation(leg))
+          .then(leg => this._checkLeg(leg))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] cannot process itinerary -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
+
       case TripWorkFlow.TASK_CLOSE_TRIP:
         console.log(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        // fetch itinerary & end it
         this.decision.closeFlow('Decider: closing ended trip');
-        return Promise.resolve();
+        return Itinerary.retrieve(this.flow.trip.referenceId)
+          .then(itinerary => itinerary.finish());
+
       case TripWorkFlow.TASK_CANCEL_TRIP:
         // Cancel requested by user or external entity.
-        // Later this can e.g. do some booking cancelling etc.
+        // This assumes Itinerary is already cancelled, this just cleans the work flow
         console.log(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
         this.decision.closeFlow('Decider: user requested cancellation');
         return Promise.resolve();
+
       default:
         console.warn(`[Decider] unknown taskName '${taskName}', aboring...`);
         this.decision.abortFlow(`Decider: unknown action '${taskName}' -- aborting`);
@@ -190,9 +225,6 @@ class Decider {
    * Helper traverse itinerary legs and decide what to do them.
    */
   _processLegs(itinerary, currentLegId) {
-    if (!this.decision || !this.now || !this.flow) {
-      throw new Error('Cannot parse itinerary; missing parameter(s)');
-    }
     const promiseQueue = [];
 
     let startIndex = 0;
@@ -203,20 +235,28 @@ class Decider {
       }
     }
 
-    // check next legs
+    // check legs
     for (let i = startIndex; i < itinerary.legs.length; i++) {
       const leg = itinerary.legs[i];
-      // this point we are only interested in ongoing or future legs with a booking
-      if (!leg.booking || leg.endTime < this.now) {
-        console.log(`[Decider] Skipping checking leg id '${leg.id}'; too old or no booking`);
-        continue;
+      // past / current one(s)
+      if (leg.startTime < this.now) {
+        // check if there are legs that can be closed
+        if (leg.endTime < this.now && leg.state === 'ACTIVATED' && itinerary.legs[i + 1] && itinerary.legs[i + 1] === 'ACTIVATED') {
+          console.log(`[Decider] Finishing leg id '${leg.id}'...`);
+          promiseQueue.push(leg.finish().reflect());
+        } else {
+          console.log(`[Decider] Skipping checking leg id '${leg.id}'`);
+          continue;
+        }
       }
+      // upcoming legs
       const checkWakeUpTime = leg.startTime - (BOOKING_CHECK_TIME[leg.mode] || (30 * 60 * 1000));
       if (checkWakeUpTime < this.now) {
-        // need to check this leg rightaway
-        promiseQueue.push(this._checkLegReservation(leg).reflect());
+        // need to activate this leg rightaway
+        promiseQueue.push(this._activateLeg(leg).reflect());
       } else {
-        // No near time upcoming legs anymore; stop checking them but schedule next checking point.
+        // No near time upcoming legs anymore; stop checking them but schedule next checking point,
+        // which is either next leg check time or in two hours, which ever comes first.
         // Strong assumption legs are in time ordered!
         this.decision.scheduleTimedTask(checkWakeUpTime, TripWorkFlow.TASK_CHECK_ITINERARY, { legId: leg.id });
         console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' leg id '${leg.id}' ` +
@@ -236,7 +276,8 @@ class Decider {
       })
       .then(() => {
         if (hasErrors === true) {
-          return this._notifyUser('Check the journey plan: Was not able to confirm all bookings');
+          const message = 'Check the trip plan - Problems with one or more bookings';
+          return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert');
         }
         return Promise.resolve();
       });
@@ -253,37 +294,47 @@ class Decider {
   }
 
   /**
+   * Helper check to activate itinerary
+   */
+  _activateItinerary(itinerary) {
+    console.log(`[Decider] activating itinerary '${itinerary.id}'...`);
+    return itinerary.activate()
+      .then(itinerary => {
+        let message = 'Your trip is about to start';
+        // dig out bit information to form more informal message
+        const legs = itinerary.legs;
+        if (legs[0] && legs[1] && legs[1].isTransport()) {
+          if (legs[0].isWalking()) {
+            message += ` - leave for the ${legs[1].mode.toLowerCase()} now`;
+          } else if (legs[0].isWaiting()) {
+            message += ` - wait for the ${legs[1].mode.toLowerCase()}`;
+          }
+        }
+        return this._notifyUser(message, 'TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' });
+      });
+  }
+
+  /**
    * Helper check leg reservation & act if needed (TBD)
    */
-  _checkLegReservation(leg) {
-    console.log(`[Decider] checking leg reservation '${leg.id}' in state '${leg.state}'...`);
+  _activateLeg(leg) {
+    console.log(`[Decider] activating leg '${leg.id}' in state '${leg.state}'...`);
 
-    if (leg.state === 'FINISHED' || leg.state === 'CANCELLED' || leg.state === 'CANCELLED_WITH_ERRORS') {
-      console.log('[Decider] leg check done; no action');
+    if (['FINISHED', 'CANCELLED', 'CANCELLED_WITH_ERRORS'].some(state => state === leg.state)) {
+      console.log('[Decider] leg already done; ignoring');
       return Promise.resolve();
     }
 
-    if (leg.state !== 'PAID' && leg.state !== 'ACTIVATED') {
-      return this._notifyUser('Check the journey plan: Problems with one of the legs');
-    }
-
-    const booking = leg.booking;
-
-    // try to reserve booking if needed, otherwise just refresh booking
-    let bookingAction;
-    if (booking.state === 'PAID') {
-      bookingAction = booking.reserve()
-        .then(() => this._notifyUser('Ticket to your journey has been just confirmed'))
-        .catch(err => this._notifyUser('Problems in booking tickets; please check your journey plan!'));
-    } else {
-      bookingAction = leg.booking.refresh();
-    }
-
-    return bookingAction
+    // try to activate leg
+    return leg.activate()
       .then(() => {
-        // check that booking is now OK (e.g. refresh has happened)
-        if (booking.state !== 'RESERVED' && booking.state !== 'CONFIRMED' && booking.state !== 'ACTIVATED') {
-          return this._notifyUser('Check the journey plan: Problems with one of the bookings');
+        // check booking if leg have one
+        if (leg.booking) {
+          const booking = leg.booking;
+          if (booking.state !== 'RESERVED' && booking.state !== 'CONFIRMED' && booking.state !== 'ACTIVATED') {
+            const message = `Problems with your ${leg.mode.toLowerCase()} ticket booking, please check`;
+            return this._notifyUser(message, 'ObjectChange', { ids: [booking.id], objectType: 'Booking' }, 'Alert');
+          }
         }
         return Promise.resolve();
       })
@@ -305,11 +356,14 @@ class Decider {
   /**
    * Helper send push notification for user
    */
-  _notifyUser(message) {
+  _notifyUser(message, type, data) {
     console.log(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message}'`);
     const notifData = {
       identityId: this.flow.trip.identityId,
       message: message,
+      badge: 0,
+      type,
+      data,
     };
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
       .then(result => {
