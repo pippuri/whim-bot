@@ -35,20 +35,28 @@ fi
 if [[ ! -f ../../../_meta/variables/s-variables-$STAGE.json ]]
   then
     echo "No s-variables-$STAGE found"
-    exit 1
-  else
-    # Extract necessary variable from s-variables-$STAGE
-    echo "Extracting deploy secret"
-    MAAS_TICKET_DEPLOY_SECRET=$(node -p -e "require('../../../_meta/variables/s-variables-$STAGE.json').MAAS_TICKET_DEPLOY_SECRET")
-
-    # Encrypt the file with the secret
-    echo "Encrypting files"
-    openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./$STAGE-latest.js.asc -out ./$STAGE-latest.js -d -a
-    openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./$STAGE-transitional.js.asc -out ./$STAGE-transitional.js -d -a
-
-    echo "Please remember to remove changes on $STAGE-latest.js and $STAGE-transitional.js from git after deployment"
-    # Checkout file changes
-    # git checkout $STAGE-latest.js
-    # git checkout $STAGE-transitional.js
-
+    exit 2
 fi
+
+if [[ ! -f ./$STAGE-latest.js.asc ]]
+  then
+    echo "No key file ./$STAGE-latest.js.asc found"
+    exit 2
+fi
+
+if [[ ! -f ./$STAGE-transitional.js.asc]]
+  then
+    echo "No key file ./$STAGE-transitional.js.asc found"
+    exit 2
+fi
+
+# Extract necessary variable from s-variables-$STAGE
+echo "Extracting deploy secret"
+MAAS_TICKET_DEPLOY_SECRET=$(node -p -e "require('../../../_meta/variables/s-variables-$STAGE.json').MAAS_TICKET_DEPLOY_SECRET")
+
+# Encrypt the file with the secret
+echo "Encrypting files"
+openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./$STAGE-latest.js.asc -out ./$STAGE-latest.js -d -a
+openssl aes-256-cbc -pass "pass:$MAAS_TICKET_DEPLOY_SECRET" -in ./$STAGE-transitional.js.asc -out ./$STAGE-transitional.js -d -a
+
+echo "Please remember to remove changes on $STAGE-latest.js and $STAGE-transitional.js from git after deployment"
