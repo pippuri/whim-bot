@@ -80,11 +80,6 @@ class Decider {
       case TripWorkFlow.TASK_START_TRIP:
         return Itinerary.retrieve(this.flow.trip.referenceId)
           .then(itinerary => {
-            // check if itinerary in bad state
-            if (['CANCELLED', 'CANCELLED_WITH_ERRORS', 'FINISHED', 'ABANDONED'].indexOf(itinerary.state) !== -1) {
-              console.warn(`[Decider] Cannot start trip as Itinerary in state '${itinerary.state}'`);
-              return Promise.reject(new Error(`Cannot start trip as Itinerary in state '${itinerary.state}'`));
-            }
             // check if itinerary need to be paid
             if (itinerary.state === 'PLANNED') {
               return itinerary.pay()
@@ -116,8 +111,7 @@ class Decider {
           })
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
-            this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
+            console.error('[Decider] ERROR while starting the trip -- ingoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -128,16 +122,15 @@ class Decider {
             // check if in bad state
             if (['CANCELLED', 'CANCELLED_WITH_ERRORS', 'FINISHED', 'ABANDONED'].indexOf(itinerary.state) !== -1) {
               console.warn(`[Decider] Cannot start trip as Itinerary in state '${itinerary.state}'`);
-              return Promise.reject(new Error(`Cannot start trip as Itinerary in state '${itinerary.state}'`));
+              this.decision.abortFlow(`Decider: Itinerary already done (${itinerary.state}) -- aborting flow`);
+              return Promise.resolve();
             }
-            return this._activateItinerary(itinerary);
+            return this._activateItinerary(itinerary)
+              .then(itinerary => this._processLegs(itinerary));
           })
-          // process the legs
-          .then(itinerary => this._processLegs(itinerary))
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
-            this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
+            console.error('[Decider] ERROR while activating trip -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -147,7 +140,6 @@ class Decider {
         return Itinerary.retrieve(this.flow.trip.referenceId)
           .then(itinerary => {
             if (itinerary.state !== 'PAID' && itinerary.state !== 'ACTIVATED') {
-              console.warn(`[Decider] Cannot check Itinerary as in state '${itinerary.state}'`);
               return Promise.reject(`Cannot check Itinerary as in state '${itinerary.state}'`);
             }
             return Promise.resolve(itinerary);
@@ -156,8 +148,7 @@ class Decider {
           .then(itinerary => this._processLegs(itinerary))
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
-            this.decision.abortFlow(`Decider: cannot process itinerary -- aborting, err: ${err}`);
+            console.error('[Decider] ERROR while checking itinerary -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -167,17 +158,16 @@ class Decider {
         return Itinerary.retrieve(this.flow.trip.referenceId)
           .then(itinerary => {
             if (itinerary.state !== 'PAID' && itinerary.state !== 'ACTIVATED') {
-              console.warn(`[Decider] Cannot check leg as Itinerary in state '${itinerary.state}'`);
               return Promise.reject(`Cannot check leg as Itinerary in state '${itinerary.state}'`);
             }
             return Promise.resolve(itinerary);
           })
-          // check the bookings in leg
+          // find and check the leg
           .then(itinerary => this._findLegFromItinerary(itinerary, legId))
           .then(leg => this._checkLeg(leg))
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] cannot process itinerary -- ignoring, err:', err.stack || err);
+            console.error('[Decider] error while checking leg -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -186,7 +176,12 @@ class Decider {
         // fetch itinerary & end it
         this.decision.closeFlow('Decider: closing ended trip');
         return Itinerary.retrieve(this.flow.trip.referenceId)
-          .then(itinerary => itinerary.finish());
+          .then(itinerary => itinerary.finish())
+          // handle unexpected errors
+          .catch(err => {
+            console.error('[Decider] error while closing trip -- ignoring, err:', err.stack || err);
+            return Promise.resolve();
+          });
 
       case TripWorkFlow.TASK_CANCEL_TRIP:
         // Cancel requested by user or external entity.
