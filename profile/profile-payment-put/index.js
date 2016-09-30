@@ -39,7 +39,11 @@ function updateUserData(event) {
         // chargebee did not have this user, let's add
         return createChargebeeUser(event);
       }
-      return Promise.reject(new MaaSError(`Error with payment ${_error}, ${_error.response.toString()}`, 500));
+      let message = _error.message;
+      if (_error.response) {
+        message = _error.response.toString();
+      }
+      return Promise.reject(new MaaSError(`Error with payment ${_error}, ${message}`, 500));
     });
 }
 
