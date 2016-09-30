@@ -112,10 +112,11 @@ function setActivePlan(event) {
       console.info('Old balance: ', oldBalance);
       console.info('Old level: ', oldLevel);
       console.info('New level: ', newPlan.level);
+      console.log('Point Tiers are', newPlan.tiers);
       let newBalance = oldBalance;
-      if (newPlan.level > 0 && (newPlan.level > oldLevel)) {
+      if (newPlan.level > 0 && (newPlan.level > oldLevel) && (newPlan.level < newPlan.tiers.length)) {
         // handle upgrade
-        const slices = newPlan.tiers.slice(oldLevel, newPlan.level + 1); // slice the array with tiers from zero
+        const slices = newPlan.tiers.slice(oldLevel + 1, newPlan.level + 1); // slice the array with tiers from zero
         for (const level of slices) {
           newBalance += level;
         }
