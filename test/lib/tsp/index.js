@@ -48,6 +48,7 @@ describe('tsp', () => {
   });
   const TSPFactory = proxyquire('../../../lib/tsp/TransportServiceAdapterFactory', {
     './tspData-dev.json': mockConfigurations,
+    './tspData-test.json': mockConfigurations,
   });
 
   describe('TransportServiceAdapterFactory', () =>  {
