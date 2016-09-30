@@ -8,6 +8,8 @@ const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const AWS = require('aws-sdk');
 const Itinerary = require('../../lib/business-objects/Itinerary');
+const models = require('../../lib/models');
+const Database = models.Database;
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
@@ -52,7 +54,7 @@ class Decider {
     if (!this.flow.event && !this.flow.task) {
       console.warn('Decider: lost flow event & task -- aborting');
       this.decision.abortFlow('Decider: lost flow event & task -- aborting');
-      return this._notifyUser('Check the journey plans: Automatic ticket booking stopped abruptly');
+      return this._notifyUser('Automatic ticket booking stopped abruptly. Click to check the trip');
     }
 
     // check if somethings have failed
@@ -88,7 +90,7 @@ class Decider {
               return itinerary.pay()
                 .catch(err => {
                   console.warn('[Decider] cannot pay itinerary, err:', err.stack || err);
-                  const message = 'Payment of the trip failed; please check your points and rebook';
+                  const message = 'Payment of the trip failed. Click check your points and rebook the trip';
                   return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert')
                     .then(() => Promise.reject(new Error('Payment failed')));
                 });
@@ -151,7 +153,7 @@ class Decider {
             return Promise.resolve(itinerary);
           })
           // check the bookings in leg
-          .then(itinerary => this._processLegs(itinerary, legId))
+          .then(itinerary => this._processLegs(itinerary))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] cannot process itinerary -- aborting, err:', err.stack || err);
@@ -224,19 +226,11 @@ class Decider {
   /**
    * Helper traverse itinerary legs and decide what to do them.
    */
-  _processLegs(itinerary, currentLegId) {
+  _processLegs(itinerary) {
     const promiseQueue = [];
 
-    let startIndex = 0;
-    if (currentLegId) {
-      const currentLegIdIndex = this.itinerary.legs.indexOf(currentLegId);
-      if (currentLegIdIndex !== -1) {
-        startIndex = currentLegIdIndex;
-      }
-    }
-
     // check legs
-    for (let i = startIndex; i < itinerary.legs.length; i++) {
+    for (let i = 0; i < itinerary.legs.length; i++) {
       const leg = itinerary.legs[i];
       // past / current one(s)
       if (leg.startTime < this.now) {
@@ -270,15 +264,16 @@ class Decider {
     return Promise.all(promiseQueue)
       .each(inspection => {
         if (!inspection.isFulfilled()) {
-          console.error('[Decider] Error: Failed check/act for a leg, ignoring: ', inspection.reason());
+          console.error('[Decider] Error: Failed check/act for a leg: ', inspection.reason());
           hasErrors = true;
         }
       })
       .then(() => {
         if (hasErrors === true) {
-          const message = 'Check the trip plan - Problems with one or more bookings';
+          const message = 'Problems with one or more bookings. Click to check the trip.';
           return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert');
         }
+        console.info('[Decider] legs processed');
         return Promise.resolve();
       });
   }
@@ -310,7 +305,8 @@ class Decider {
             message += ` - wait for the ${legs[1].mode.toLowerCase()}`;
           }
         }
-        return this._notifyUser(message, 'TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' });
+        return this._notifyUser(message, 'TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' })
+          .then(() => Promise.resolve(itinerary));
       });
   }
 
@@ -392,11 +388,28 @@ module.exports.respond = function (event, callback) {
     return callback(new MaaSError(err.message || err, 400));
   }
 
-  return decider.decide()
-    .then(response => callback(null, response))
-    .catch(err => {
-      console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
-      callback(err);
+  return Database.init()
+    .then(() => decider.decide())
+    .then(response => {
+      Database.cleanup()
+        .then(() => callback(null, response));
+    })
+    .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      // Uncaught, unexpected error
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
+
     });
 };
 
