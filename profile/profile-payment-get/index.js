@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager/index.js');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 function getUserData(event) {
   const identityId = event.identityId;
@@ -31,6 +32,6 @@ module.exports.respond = (event, callback) => {
     .then(envelope => callback(null, envelope))
     .catch(error => {
       console.info('This event caused error: ' + JSON.stringify(event, null, 2), error);
-      callback(error);
+      callback(new MaaSError(`Internal server error: ${error}`, error.statusCode || 500));
     });
 };
