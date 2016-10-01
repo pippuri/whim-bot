@@ -29,7 +29,8 @@ function loadEnvironment() {
   const values = require(`../_meta/variables/s-variables-${stage}.json`);
   const variables = (new Templates(values, '../s-templates.json')).toObject();
   for (let key of Object.keys(variables)) { // eslint-disable-line prefer-const
-    process.env[key] = variables[key];
+    // Use the environment if given, fallback to SLS meta
+    process.env[key] = process.env[key] ? process.env[key] : variables[key];
   }
 }
 
