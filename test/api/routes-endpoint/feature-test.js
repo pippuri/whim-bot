@@ -291,7 +291,7 @@ module.exports = options => {
     });
 
     it('should return an error', () => {
-      expect(error.message).to.equal('500: Internal server error: Could not retrieve any routes provider');
+      expect(error.message).to.equal('500: Internal server error: Error: Could not retrieve any routes provider');
       expect(response).to.be.undefined;
     });
   });

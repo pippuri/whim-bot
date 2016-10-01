@@ -1,9 +1,8 @@
 'use strict';
 
 const Promise = require('bluebird');
-
-//const lib = require('../../lib/utils');
 const bus = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 function updateUserData(event) {
   const table = process.env.DYNAMO_USER_PROFILE;
@@ -68,8 +67,16 @@ module.exports.respond = (event, callback) => {
   return updateUserData(event)
     .then(response => wrapToEnvelope(response.Attributes, event))
     .then(envelope => callback(null, envelope))
-    .catch(error => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(error);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

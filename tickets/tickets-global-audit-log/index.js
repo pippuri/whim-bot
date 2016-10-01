@@ -93,15 +93,16 @@ module.exports.respond = (event, callback) => {
       Database.cleanup()
         .then(() => callback(null, { log: formattedEntries } ));
     } )
-    .catch( error => {
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      Database.cleanup()
-        .then(() => {
-          if (error instanceof MaaSError) {
-            callback(error);
-            return;
-          }
-          callback(new MaaSError(`Internal server error: ${error.toString()}`, 500));
-        });
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

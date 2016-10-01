@@ -3,6 +3,7 @@
 const jwt = require('jsonwebtoken');
 const maasOperation = require('../../lib/maas-operation');
 const utils = require('../../lib/utils');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 module.exports.respond = function (event, callback) {
   const userToken = event.body.split('=').splice(1).join('=');
@@ -32,7 +33,11 @@ module.exports.respond = function (event, callback) {
         const jwtResult = jwt.sign( jwtPayload, process.env.ZENDESK_JWT_SECRET );
         callback( null, { jwt: jwtResult } );
       } );
-  } catch (err) {
-    callback('400: Could not verify token.');
+  } catch (_error) {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    callback(new MaaSError(`Could not verify token: ${_error.toString()}`, 400));
   }
 };
