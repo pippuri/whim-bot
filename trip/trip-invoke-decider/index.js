@@ -17,9 +17,10 @@ Promise.promisifyAll(swfClient);
 const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
 
 const BOOKING_CHECK_TIME = {
-  TRAM: (15 * 60 * 1000),
+  BUS: (10 * 60 * 1000),
+  TRAM: (10 * 60 * 1000),
   TRAIN: (25 * 60 * 1000),
-  TAXI: (15 * 60 * 1000),
+  TAXI: (10 * 60 * 1000),
 };
 
 /**
@@ -52,21 +53,21 @@ class Decider {
 
     // check did we understand the flow situation
     if (!this.flow.event && !this.flow.task) {
-      console.warn('Decider: lost flow event & task -- aborting');
+      console.error('[Decider] ERROR: lost flow event & task -- aborting');
       this.decision.abortFlow('Decider: lost flow event & task -- aborting');
-      return this._notifyUser('Automatic ticket booking stopped abruptly. Click to check the trip');
+      return Promise.resolve();
     }
 
     // check if somethings have failed
     if (this.flow.event === 'LambdaFunctionFailed') {
-      console.warn('Decider: LambdaFunctionFailed -- aborting');
+      console.warn('[Decider] LambdaFunctionFailed -- aborting');
       this.decision.abortFlow('Decider: LambdaFunctionFailed -- aborting');
       return Promise.resolve();
     }
 
     // cannot do anything if not based on itinerary..
     if (this.flow.trip.referenceType !== Trip.REF_TYPE_ITINERARY) {
-      console.warn('Decider: not itinerary based trip -- aborting');
+      console.warn('[Decider] not itinerary based trip -- aborting');
       this.decision.abortFlow('Decider: not itinerary based trip -- aborting');
       return Promise.resolve();
     }
@@ -230,7 +231,8 @@ class Decider {
       // past / current one(s)
       if (leg.startTime < this.now) {
         // check if there are legs that can be closed
-        if (leg.endTime < this.now && leg.state === 'ACTIVATED' && itinerary.legs[i + 1] && itinerary.legs[i + 1] === 'ACTIVATED') {
+        if (leg.endTime < this.now && leg.state === 'ACTIVATED' &&                // eslint-disable-line max-depth
+            itinerary.legs[i + 1] && itinerary.legs[i + 1] === 'ACTIVATED') {
           console.log(`[Decider] Finishing leg id '${leg.id}'...`);
           promiseQueue.push(leg.finish().reflect());
         } else {
@@ -339,7 +341,8 @@ class Decider {
         }
       })
       .catch(err => {
-        console.error('Decider: Could not check leg!', err);
+        console.error('[Decider] Could not check leg!', err);
+        console.error(err.stack);
         return Promise.reject(`error while checking leg '${leg.id}', err: ${err}`);
       });
   }
