@@ -4,7 +4,7 @@ const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');
 const expect = chai.expect;
 const moment = require('moment');
-const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
+const schema = require('maas-schemas/');
 const validator = require('../../../lib/validator');
 
 

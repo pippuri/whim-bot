@@ -6,6 +6,13 @@
 const Promise = require('bluebird');
 
 function convertMode(mode) {
+  switch (mode) {
+    case 'RAIL':
+      mode = 'TRAIN';
+      break;
+    default:
+      break;
+  }
   return mode;
 }
 
@@ -22,6 +29,11 @@ function convertFromTo(from) {
 }
 
 function convertLeg(leg) {
+  let agencyId = typeof Number(leg.agencyId) === 'number' && !isNaN(Number(leg.agencyId)) ? leg.agencyName : leg.agencyId;
+  if (leg.mode === 'WALK') {
+    agencyId = undefined;
+  }
+
   return {
     startTime: leg.startTime,
     endTime: leg.endTime,
@@ -35,10 +47,11 @@ function convertLeg(leg) {
     route: leg.route !== '' ? leg.route : undefined,
     routeShortName: leg.routeShortName,
     routeLongName: leg.routeLongName,
-    agencyId: leg.agencyId,
-
-    // excluded: distance, duration, departureDelay, arrivalDelay, realTime, pathway, agencyUrl, agencyName, agencyTimeZoneOffset,
-    // routeType, routeId, interlineWithPreviousLeg, headsign, agencyId, tripId, serviceDate, rentedBike, transitLeg, steps
+    agencyId: agencyId === '' ? undefined : agencyId, // HSL hardcoded in digitransit
+    distance: Math.floor(leg.distance), // used to calculate prices for km-based fares
+    duration: leg.duration,
+    // excluded: departureDelay, arrivalDelay, realTime, pathway, agencyUrl, agencyName, agencyTimeZoneOffset,
+    // routeType, routeId, interlineWithPreviousLeg, headsign, tripId, serviceDate, rentedBike, transitLeg, steps
   };
 }
 
@@ -47,8 +60,8 @@ function convertItinerary(itinerary) {
     startTime: itinerary.startTime,
     endTime: itinerary.endTime,
     legs: itinerary.legs.map(convertLeg),
-
-    // excluded: duration, walkTime, transitTime, waitingTime, walkDistance, walkLimitExceeded, elevationLost, elevationGained, transfers, tooSloped
+    duration: itinerary.duration,
+    // excluded: walkTime, transitTime, waitingTime, walkDistance, walkLimitExceeded, elevationLost, elevationGained, transfers, tooSloped
   };
 }
 
@@ -66,10 +79,9 @@ function compareItinerary(a, b) {
 }
 
 module.exports = function (original) {
-
   if (typeof original.plan === typeof undefined) {
 
-    // Handle 404 - no routes found
+    // Handle 404 - no routes found, this is not error in our system
     if (original.error && original.error.id === 404) {
       const coords = original.requestParameters.fromPlace
         .split(',')
@@ -79,6 +91,9 @@ module.exports = function (original) {
         plan: {
           from: { lat: coords[0], lon: coords[1] },
           itineraries: [],
+        },
+        debug: {
+          error: original.error,
         },
       });
     }

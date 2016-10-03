@@ -1,203 +1,14 @@
 'use strict';
 
+const MaaSError = require('../../lib/errors/MaaSError');
+const lib = require('./lib');
+
+let nextLegStartTime;
+
 /**
- * Routing results adapter from Here to MaaS. Returns promise for JSON object.
+ * Construct response 'from' field
  */
-const Promise = require('bluebird');
-let nextStartTime = 0;
-let nextEndTime = 0;
-const constructTo = [];
-
-/*
-function convertMode(data) {
-
-  //strip out html tag from instruction
-  return (data.instruction).replace(/(<([^>]+)>)/ig, '');
-}
-*/
-
-function convertFrom(from) {
-  return {
-    name: from.roadName,
-    stopId: undefined,
-    stopCode: undefined,
-    lon: from.position.longitude,
-    lat: from.position.latitude,
-
-    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
-  };
-}
-
-function convertTo(data) {
-  const position = constructTo.shift();
-  return {
-    name: data.nextRoadName,
-    stopId: undefined,
-    stopCode: undefined,
-    lon: position.longitude,
-    lat: position.latitude,
-
-    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
-  };
-}
-
-/* jscs:disable requireCamelCaseOrUpperCaseIdentifiers */
-/* eslint-disable no-bitwise */
-
-// https://developers.google.com/maps/documentation/utilities/polylinealgorithm#example
-
-function encodeNumber(num) {
-  let encodeString = '';
-  while (num >= 0x20) {
-    encodeString += (String.fromCharCode((0x20 | (num & 0x1f)) + 63));
-    num >>= 5;
-  }
-
-  encodeString += (String.fromCharCode(num + 63));
-
-  return encodeString;
-}
-
-function encodeSignedValue(num) {
-  let sgn_num = num << 1;
-  if (num < 0) {
-    sgn_num = ~(sgn_num);
-  }
-
-  return (encodeNumber(sgn_num));
-}
-
-function encodePoint(plat, plon, lat, lon) {
-  const platE5 = Math.round(plat * 1e5);
-  const plonE5 = Math.round(plon * 1e5);
-  const latE5 = Math.round(lat * 1e5);
-  const lonE5 = Math.round(lon * 1e5);
-
-  const dLon = lonE5 - plonE5;
-  const dLat = latE5 - platE5;
-
-  return encodeSignedValue(dLat) + encodeSignedValue(dLon);
-}
-
-function createEncodedPolyline(points) {
-
-  let plat = 0;
-  let plon = 0;
-
-  let encoded_point = '';
-
-  points.forEach((val, key) => {
-    const lat = val[0];
-    const lon = val[1];
-
-    encoded_point += encodePoint(plat, plon, lat, lon);
-
-    plat = lat;
-    plon = lon;
-  });
-
-  return encoded_point;
-}
-
-//--------------------------------------------------------------------------------
-
-/* eslint-enable no-bitwise */
-/* jscs:enable requireCamelCaseOrUpperCaseIdentifiers */
-
-function convertToLegGeometry(shapes) {
-
-  // Output: [[12.12,34.23],[11.12,33.23],...]
-  const points = shapes.map(val => {
-    return JSON.parse('[' + val + ']');
-  });
-
-  return createEncodedPolyline(points);
-}
-
-function legGeometry(data) {
-  return {
-    points: convertToLegGeometry(data.shape),
-  };
-}
-
-function convertLegType(legType) {
-  if (legType === 'railLight') {
-    return 'RAIL';
-  } else if (legType === 'busLight') {
-    return 'BUS';
-  } else if (legType === 'busPublic') {
-    return 'BUS';
-  }
-
-  throw new Error('Unknown HERE leg type.');
-}
-
-function convertLeg(leg, data, route, startTime, PTL, LGT ) { //PTL: Public Transport Line; LGT: LegType.
-  let LegType = '';
-  nextStartTime = (nextEndTime === 0 ? nextEndTime + startTime : nextEndTime);
-  nextEndTime = nextStartTime + (data.travelTime * 1000);
-
-  //creates "To" node from "From" node by establishing the initial element for "To" - to be the next element of "From" node
-  for (let i = 1; i < leg.maneuver.length; i++) {
-    constructTo.push(leg.maneuver[i].position);
-    if (i === leg.maneuver.length - 1) {
-      constructTo.push(leg.maneuver[i].position);
-    }
-  }
-
-  if (LGT === '' || LGT === 'WALK') {
-    LegType = 'WALK';
-  } else {
-    LegType = convertLegType(LGT);
-  }
-
-  return {
-    startTime: nextStartTime,
-    endTime: nextEndTime,
-    mode: LegType,
-    from: convertFrom(data),
-    to: convertTo(data),
-    legGeometry: legGeometry(data),
-    route: PTL,
-    routeShortName: '',
-    routeLongName: '',
-    agencyId: '',
-  };
-}
-
-function convertItinerary(route) {
-  const startTime = new Date(route.summary.departure);
-  const result = [];
-  let res = '';
-  let tempRoute = 0;
-  let PTL = '';
-  let tempType = '';
-  route.leg.map(leg => {
-    leg.maneuver.forEach((data, index) => {
-      if (data._type === 'PublicTransportManeuverType') {
-        tempRoute < route.publicTransportLine.length ? PTL = route.publicTransportLine[tempRoute].lineName : PTL = '';
-        tempRoute < route.publicTransportLine.length ? tempType = route.publicTransportLine[tempRoute].type : tempType = '';
-        tempRoute++;
-      } else if (data._type === 'PrivateTransportManeuverType') {
-        tempType = 'WALK';
-      } else {
-        tempType = '';
-      }
-
-      result.push(convertLeg(leg, data, route, startTime.getTime(), PTL, tempType));
-    });
-
-    res = result;
-  });
-
-  return {
-    startTime: startTime.getTime(),
-    endTime: startTime.getTime() + (route.summary.travelTime * 1000),
-    legs: res,
-  };
-}
-
-function convertPlanFrom(original) {
+function convertResponseFrom(original) {
 
   if (!original.response || !original.response.route[0] || !original.response.route[0].waypoint[0]) {
     return new Error('Invalid HERE response.');
@@ -206,20 +17,182 @@ function convertPlanFrom(original) {
   const lon = (original.response.route[0].waypoint[0].originalPosition.longitude);
   const lat = (original.response.route[0].waypoint[0].originalPosition.latitude);
 
-  const from = {
+  return {
     lon: lon,
     lat: lat,
   };
 
-  return from;
-
 }
 
-module.exports = function (original) {
-  return Promise.resolve({
-    plan: {
-      from: convertPlanFrom(original),
-      itineraries: original.response.route.map(convertItinerary),
+/**
+ * Parse leg 'from' field from original
+ */
+function convertLegFrom(position, roadName) {
+  return {
+    name: roadName ? roadName : '', // eslint-disable-line
+    // stopId: undefined,
+    // stopCode: undefined,
+    lat: position.latitude,
+    lon: position.longitude,
+
+    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
+  };
+}
+
+/**
+ * Parse leg 'to' field from original
+ */
+function convertLegTo(position, nextRoadName) {
+  return {
+    name: nextRoadName,
+    // stopId: undefined,
+    // stopCode: undefined,
+    lon: position.longitude,
+    lat: position.latitude,
+
+    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
+  };
+}
+
+/**
+ * Parse HERE leg response to MaaS leg format
+ */
+function convertLeg(original) {
+  let legMode;
+  nextLegStartTime = original.endTime;
+  switch (original.transportLine.type) {
+    case '':
+    case 'WALK':
+      legMode = 'WALK';
+      break;
+    case 'CAR':
+      legMode = 'CAR';
+      break;
+    case 'TAXI':
+      legMode = 'TAXI';
+      break;
+    case 'BICYCLE':
+      legMode = 'BICYCLE';
+      break;
+    case 'railLight':
+      legMode = 'TRAM';
+      break;
+    case 'trainRegional':
+    case 'railRegional':
+      legMode = 'TRAIN';
+      break;
+    case 'busPublic':
+    case 'busIntercity':
+      legMode = 'BUS';
+      break;
+    case 'railMetro':
+    case 'railMetroRegional':
+      legMode = 'SUBWAY';
+      break;
+    case 'carPrivate':
+      legMode = 'CAR';
+      break;
+    default:
+      throw new MaaSError(`Unknown HERE adapter leg type: ${legMode}`, 500);
+  }
+
+  if (original.transportLine.companyName && original.transportLine.companyName === 'Helsingin seudun liikenne') {
+    original.transportLine.companyName = 'HSL';
+  }
+
+  const HSL_TRAINS  = ['I', 'K', 'N', 'A', 'E', 'L', 'P', 'U', 'X'];
+
+  if (HSL_TRAINS.some(train => train === original.transportLine.lineName)) {
+    original.transportLine.companyName = 'HSL';
+  }
+
+  return {
+    startTime: original.startTime,
+    endTime: original.endTime,
+    mode: legMode,
+    from: convertLegFrom(original.position, original.roadName),
+    to: convertLegTo(original.position, original.nextRoadName),
+    legGeometry: {
+      points: lib.convertToLegGeometry(original.shape),
     },
+    route: original.transportLine.lineName,
+    agencyId: original.transportLine.companyName,
+  };
+}
+
+/**
+ * Parse original data into Maas Itinerary format
+ * @NOTE arriveBy's behavior not yet functioning properly
+ */
+function convertItinerary(route, mode, leaveAt, arriveBy) {
+  // Start time default as leaveAt, use HERE departure data if exists
+  let startTime = new Date(leaveAt).getTime();
+
+  if (route.summary.departure) {
+    startTime = new Date(route.summary.departure).getTime();
+  }
+
+  if (mode === 'TAXI') {
+    startTime = startTime + 120000; // Add 2 min to startTime if mode is taxi
+  }
+
+  // Init next leg startTime
+  nextLegStartTime = startTime;
+  const legs = route.leg[0].maneuver.map(data => {
+    let transportLine = {};
+    if (data._type === 'PublicTransportManeuverType') {
+      // Map public mode depends on HERE response
+      // Here have this weird format that put subway line number as "id" instead of "line" as others
+      // FIXME check this again
+      if (!data.line) {
+        transportLine = route.publicTransportLine.find(line => line.id === data.id);
+      } else {
+        transportLine = route.publicTransportLine.find(line => line.id === data.line);
+      }
+    } else if (data._type === 'PrivateTransportManeuverType') {
+      // Map private mode depends on request
+      switch (mode) {
+        case 'CAR':
+          transportLine.type = 'CAR';
+          break;
+        case 'TAXI':
+          transportLine.type = 'TAXI';
+          break;
+        case 'BICYCLE':
+          transportLine.type = 'BICYCLE';
+          break;
+        case 'WALK':
+        default:
+          transportLine.type = 'WALK';
+          break;
+      }
+    } else {
+      transportLine.type = '';
+    }
+
+    return convertLeg({
+      startTime: nextLegStartTime,
+      endTime: nextLegStartTime + data.travelTime * 1000,
+      position: data.position,
+      roadName: data.roadName,
+      nextRoadName: data.nextRoadName,
+      shape: data.shape,
+      transportLine: transportLine,
+    });
   });
+
+  return {
+    startTime: startTime,
+    endTime: startTime + route.summary.travelTime * 1000,
+    legs: lib.groupManeuverLegs(lib.removeRedundantLeg(legs)),
+  };
+}
+
+module.exports = function (original, mode, leaveAt, arriveBy) {
+  return {
+    plan: {
+      from: convertResponseFrom(original),
+      itineraries: original.response.route.map(route => convertItinerary(route, mode, leaveAt, arriveBy)),
+    },
+  };
 };

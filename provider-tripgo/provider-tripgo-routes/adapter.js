@@ -29,6 +29,11 @@ function convertFromTo(from) {
   };
 }
 
+function mergeParkingLegs(itinerary) {
+  itinerary.legs = itinerary.legs.filter((leg, index) => leg.mode !== 'PARKING' && index !== itinerary.legs[itinerary.legs.length - 1]);
+  return itinerary;
+}
+
 function convertLeg(segment, original, templates) {
   const template = templates[segment.segmentTemplateHashCode] || {};
   const mode = convertMode(template.modeInfo && template.modeInfo.localIcon);
@@ -38,12 +43,12 @@ function convertLeg(segment, original, templates) {
     mode: mode,
     from: convertFromTo(template.from),
     to: convertFromTo(template.to),
-    route: segment.serviceNumber,
-    routeShortName: segment.serviceNumber,
-    routeLongName: segment.serviceName,
+    route: segment.serviceNumber === '' ? undefined : segment.serviceNumber,
+    routeShortName: segment.serviceNumber === '' ? undefined : segment.serviceNumber,
+    routeLongName: segment.serviceName === '' ? undefined : segment.serviceName,
     agencyId: convertAgencyId(mode, template.serviceOperator),
   };
-
+  console.log(leg);
   // Handle the case of different ways TripGo reports leg geometries
   const streets = template.streets;
   const shapes = template.shapes;
@@ -66,13 +71,11 @@ function convertLeg(segment, original, templates) {
 }
 
 function convertItinerary(trip, original, templates) {
-  return {
+  return mergeParkingLegs({
     startTime: trip.depart * 1000,
     endTime: trip.arrive * 1000,
-    legs: trip.segments.map(segment => {
-      return convertLeg(segment, original, templates);
-    }),
-  };
+    legs: trip.segments.map(segment => convertLeg(segment, original, templates)),
+  });
 }
 
 function convertPlanFrom(original) {
@@ -100,7 +103,7 @@ function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
 
-module.exports = function (original) {
+module.exports = function (original, eventFrom) {
   let allTrips = [];
 
   // Build template hashmap
@@ -114,9 +117,11 @@ module.exports = function (original) {
     allTrips = allTrips.concat(group.trips);
   });
 
+  // If we got no trips, we can't use the 'from' from TripGo output.
+  // Hence we'll rely on the Input
   return Promise.resolve({
     plan: {
-      from: convertPlanFrom(original),
+      from: (allTrips.length > 0) ? convertPlanFrom(original) : eventFrom,
       itineraries: allTrips.map(trip => {
         return convertItinerary(trip, original, templates);
       }).sort(compareItinerary),

@@ -9,22 +9,26 @@ const _ = require('lodash');
 
 const TRIPGO_PUBLIC_MODES = [
   'pt_pub',
-
-  //'ps_tax',
-  //'me_car',
-  //'me_car-s_Ekorent',
-  //'me_mot',
-  //'cy_bic',
   'wa_wal',
 ];
 
 const TRIPGO_MIXED_MODES = [
   'pt_pub',
   'ps_tax',
+  'ps_tnc',
+  'wa_wal',
 ];
 
 const TRIPGO_TAXI_MODES = [
   'ps_tax',
+];
+
+const TRIPGO_WALK_MODES = [
+  'wa_wal',
+];
+
+const TRIPGO_CAR_MODES = [
+  'me_car',
 ];
 
 function isInsideRegion(coords, area) {
@@ -135,7 +139,7 @@ function mergeResults(results) {
   return response;
 }
 
-function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format) {
+function getCombinedTripGoRoutes(from, to, mode, leaveAt, arriveBy, format) {
   return serviceBus.call('MaaS-provider-tripgo-regions').then(regionsResponse => {
 
     const regions = regionsResponse.regions;
@@ -143,26 +147,48 @@ function getCombinedTripGoRoutes(from, to, leaveAt, arriveBy, format) {
 
   }).then(regions => {
 
-    return Promise.all([
-      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES),
-      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES),
-      getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES),
-    ])
-    .then(results => {
-      const actualResults = results.filter(r => (r !== null));
-      if (actualResults.length < 1) {
-        return adapter([]);
-      }
+    const queue = [];
 
-      const response = mergeResults(actualResults);
+    if (!mode || mode.split(',').length === 0) {
+      queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES));
+      queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES));
+      queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES));
+    } else if (mode.split(',').length > 1) {
+      throw new Error('Support either no input mode or only 1 input mode');
+    } else {
+      mode.split(',').forEach(mode => {
+        switch (mode) {
+          case 'CAR':
+            queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_CAR_MODES));
+            break;
+          case 'TAXI':
+            queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES));
+            break;
+          case 'WALK':
+            queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_WALK_MODES));
+            break;
+          default:
+            break;
+        }
+      });
+    }
 
-      if (format === 'original') {
-        return response;
-      }
+    return Promise.all(queue)
+      .then(results => {
+        const coords = from.split(',').map(parseFloat);
+        const formattedFrom = {
+          lat: coords[0],
+          lon: coords[1],
+        };
+        const actualResults = results.filter(r => (r !== null));
+        if (actualResults.length < 1) {
+          return adapter([], formattedFrom);
+        }
 
-      return adapter(response);
-    });
+        const response = mergeResults(actualResults);
 
+        return adapter(response, formattedFrom);
+      });
   });
 }
 

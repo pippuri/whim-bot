@@ -103,8 +103,11 @@ exports.up = function (knex) {
 
 exports.down = function (knex) {
   return knex.schema
+    .raw('DROP TRIGGER IF EXISTS "trig_update_modified_timestamp" ON "Leg"')
+    .raw('DROP TRIGGER IF EXISTS "trig_update_modified_timestamp" ON "Itinerary"')
+    .raw('DROP TRIGGER IF EXISTS "trig_update_modified_timestamp" ON "Booking"')
+    .dropTableIfExists('StateLog')
     .dropTableIfExists('Leg')
     .dropTableIfExists('Itinerary')
-    .dropTableIfExists('Booking')
-    .dropTableIfExists('StateLog');
+    .dropTableIfExists('Booking');
 };

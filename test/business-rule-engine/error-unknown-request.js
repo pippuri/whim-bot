@@ -1,12 +1,12 @@
 'use strict';
 
-const Promise = require('bluebird');
 const expect = require('chai').expect;
 const moment = require('moment');
+const bus = require('../../lib/service-bus');
 
-module.exports = function (engine) {
+module.exports = function () {
 
-  describe('unknown transformation', () => {
+  describe('[NEGATIVE] Unknown request', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
@@ -18,33 +18,24 @@ module.exports = function (engine) {
 
     const calls = [];
     let error;
+    let response;
 
-    const serviceBusDummy = {
-      call: serviceName => new Promise((resolve, reject) => {
-        calls.push(serviceName);
-        return resolve();
-      }),
-    };
-
-    const ruleObject = {
-      rule: 'get-something-that-does-not-exist',
-      identityId: identityId,
-      parameters: event,
-    };
-
-    const options = {
-      serviceBus: serviceBusDummy,
-    };
-
-    before(done => {
-      engine.call(ruleObject, options)
-      .then(() => {
-        done();
+    before(() => {
+      return bus.call('MaaS-business-rule-engine', {
+        identityId: identityId,
+        rule: 'get-something-that-does-not-exist',
+        parameters: event,
+      })
+      .then(res => {
+        response = res;
       })
       .catch(err => {
         error = err;
-        done();
       });
+    });
+
+    it('should not return a response', () => {
+      expect(response).to.be.undefined;
     });
 
     it('should raise an error', () => {

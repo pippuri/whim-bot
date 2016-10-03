@@ -1,5 +1,6 @@
 {
   "Booking": ["state", "terms", "meta", "token"],
   "Itinerary": ["state", "fare"],
-  "Leg": ["state"]
+  "Leg": ["state"],
+  "Provider": ["state", "priority"]
 }
