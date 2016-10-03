@@ -401,11 +401,11 @@ function _nullifyUnpurchasableItineraries(itineraries) {
   itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
       // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
-      if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1) && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
+      if (leg.agencyId && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
         itinerary.fare.points = null;
       }
 
-      if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1)) {
+      if (!leg.agencyId && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode)) === -1) {
         itinerary.fare.points = null;
       }
     });
