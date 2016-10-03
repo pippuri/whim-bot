@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const iot = new AWS.Iot({ region: process.env.AWS_REGION });
 Promise.promisifyAll(iot);
@@ -57,8 +58,16 @@ module.exports.respond = function (event, callback) {
   .then(response => {
     callback(null, response);
   })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

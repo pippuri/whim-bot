@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
-const MaasError = require('../../lib/errors/MaaSError');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
@@ -14,19 +14,19 @@ function saveDeviceToken(event) {
   const patches = [];
 
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaasError('Missing identityId', 400));
+    return Promise.reject(new MaaSError('Missing identityId', 400));
   }
 
   if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new MaasError('Missing Payload', 400));
+    return Promise.reject(new MaaSError('Missing Payload', 400));
   }
 
   if (!event.payload.hasOwnProperty('devicePushToken') || event.payload.devicePushToken === '') {
-    return Promise.reject(new MaasError('devicePushToken missing from payload', 400));
+    return Promise.reject(new MaaSError('devicePushToken missing from payload', 400));
   }
 
   if (!event.payload.hasOwnProperty('deviceIdentifier')) {
-    return Promise.reject(new MaasError('deviceIdentifier missing from payload', 400));
+    return Promise.reject(new MaaSError('deviceIdentifier missing from payload', 400));
   }
 
   return cognitoSync.listRecordsAsync({
@@ -82,9 +82,16 @@ module.exports.respond = (event, callback) => {
   .then(response => {
     callback(null, response);
   })
-  .catch(error => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(error);
-  });
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
 
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+  });
 };

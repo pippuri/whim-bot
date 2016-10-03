@@ -1,8 +1,8 @@
 'use strict';
 
 const Promise = require('bluebird');
+const MaaSError = require('../../lib/errors/MaaSError');
 const _ = require('lodash/core');
-
 const serviceBus = require('../../lib/service-bus/index.js');
 
 /**
@@ -47,8 +47,16 @@ module.exports.respond = (event, callback) => {
         callback(null, response);
       }
     })
-    .catch(error => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-      callback(error);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

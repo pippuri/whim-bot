@@ -30,8 +30,16 @@ module.exports.respond = (event, callback) => {
   return getUserData(event)
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(error => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2), error);
-      callback(new MaaSError(`Internal server error: ${error}`, error.statusCode || 500));
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

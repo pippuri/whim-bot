@@ -129,6 +129,6 @@ module.exports.respond = function (event, callback) {
         return;
       }
 
-      callback(new MaaSError(`Internal server error: ${_error.message}`, 500));
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

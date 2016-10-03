@@ -3,6 +3,8 @@
 const Promise = require('bluebird');
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
+const MaaSError = require('../../lib/errors/MaaSError');
+
 const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
@@ -50,8 +52,16 @@ module.exports.respond = function (event, callback) {
   .then(response => {
     callback(null, response);
   })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

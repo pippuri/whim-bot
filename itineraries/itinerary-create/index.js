@@ -4,7 +4,6 @@ const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const Database = models.Database;
-//const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const Promise = require('bluebird');
 
@@ -16,7 +15,6 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-
   const legErrors = [];
 
   return Database.init()
@@ -58,6 +56,7 @@ module.exports.respond = function (event, callback) {
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
       Database.cleanup()
         .then(() => {

@@ -1,6 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
+const MaaSError = require('../../lib/errors/MaaSError');
 const Chargebee = require('./chargebee.js');
 const VALID_KEYS = {
   KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
@@ -50,9 +51,16 @@ module.exports.respond = (event, callback) => {
   return handleWebhook(event)
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(error => {
-      console.info('This event caused an error, but ignoring: ' + JSON.stringify(event, null, 2), error);
-      callback(null, { result: 'ERROR' });
-      //callback(error);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

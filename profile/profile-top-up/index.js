@@ -2,11 +2,9 @@
 
 // Dependency
 const Promise = require('bluebird');
-
-// Library
+const MaaSError = require('../../lib/errors/MaaSError');
 const SubscriptionMgr = require('../../lib/subscription-manager');
 const lib = require('../../lib/maas-operation/index');
-const MaaSError = require('../../lib/errors/MaaSError');
 
 /**
  * make the addon product purchase and update profile with new points tally
@@ -66,9 +64,16 @@ module.exports.respond = function (event, callback) {
     .then(response => {
       callback(null, response);
     })
-    .catch(error => {
-      console.info('This event caused an error: ' + JSON.stringify(event, null, 2));
-      console.warn('Error: ' + error.message);
-      callback(error);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

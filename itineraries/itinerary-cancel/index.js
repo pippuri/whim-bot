@@ -5,7 +5,6 @@ const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
 const Database = models.Database;
-//const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 
 function validateInput(event) {
@@ -20,7 +19,6 @@ function validateInput(event) {
 
   return Promise.resolve(event);
 }
-
 
 function formatResponse(itinerary) {
   return Promise.resolve({
@@ -43,6 +41,7 @@ module.exports.respond = (event, callback) => {
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
       Database.cleanup()
         .then(() => {
