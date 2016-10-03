@@ -16,13 +16,6 @@ Promise.promisifyAll(swfClient);
 
 const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
 
-const BOOKING_CHECK_TIME = {
-  BUS: (10 * 60 * 1000),
-  TRAM: (10 * 60 * 1000),
-  TRAIN: (25 * 60 * 1000),
-  TAXI: (10 * 60 * 1000),
-};
-
 /**
  * Decider object owns flow and decision. When run with decide(), Decider
  * looks into flow, makes decions and finally sends the decisions to SWF.
@@ -215,6 +208,7 @@ class Decider {
       })
       .catch(err => {
         console.error(`[Decider] responding decision for workflowId FAILED '${this.flow.id}'`, err);
+        console.error(`decisionTaskCompletedParams: ${JSON.stringify(this.decision.decisionTaskCompletedParams, null, 2)}`);
         return Promise.reject(err);
       });
   }
@@ -232,16 +226,16 @@ class Decider {
       if (leg.startTime < this.now) {
         // check if there are legs that can be closed
         if (leg.endTime < this.now && leg.state === 'ACTIVATED' &&                // eslint-disable-line max-depth
-            itinerary.legs[i + 1] && itinerary.legs[i + 1] === 'ACTIVATED') {
+            itinerary.legs[i + 1] && itinerary.legs[i + 1].state === 'ACTIVATED') {
           console.log(`[Decider] Finishing leg id '${leg.id}'...`);
           promiseQueue.push(leg.finish().reflect());
-        } else {
-          console.log(`[Decider] Skipping checking leg id '${leg.id}'`);
+        } else if (leg.state === 'ACTIVATED') {
+          console.log(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
           continue;
         }
       }
       // upcoming legs
-      const checkWakeUpTime = leg.startTime - (BOOKING_CHECK_TIME[leg.mode] || (30 * 60 * 1000));
+      const checkWakeUpTime = leg.bookingTime();
       if (checkWakeUpTime < this.now) {
         // need to activate this leg rightaway
         promiseQueue.push(this._activateLeg(leg).reflect());
@@ -339,6 +333,7 @@ class Decider {
           console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_LEG}' leg id '${leg.id}' ` +
                       `into ${new Date(checkWakeUpTime)}.`);
         }
+        return Promise.resolve();
       })
       .catch(err => {
         console.error('[Decider] Could not check leg!', err);
