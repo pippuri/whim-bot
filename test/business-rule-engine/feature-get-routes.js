@@ -27,7 +27,7 @@ module.exports = function () {
         rule: 'get-routes',
         parameters: event,
       })
-      .spread(_engineResponse => {
+      .then(_engineResponse => {
         response = _engineResponse;
       })
       .catch(err => {
@@ -46,14 +46,15 @@ module.exports = function () {
       expect(response.plan.itineraries).to.be.an('array');
     });
 
-    it('all itineraries startTime must the same with first leg startTime', () => {
+    it('all itineraries startTime must the same with its first leg startTime', () => {
       response.plan.itineraries.forEach(itinerary => {
         expect(itinerary.startTime).to.equal(itinerary.legs[0].startTime);
       });
     });
 
-    it('have 1 itinerary with SUBWAY, and its first leg startTime must equal itinerary startTime', () => {
-      response.plan.itineraries.map(itinerary => itinerary.legs.map(leg => leg.mode));
+    it('have at least 1 itinerary with SUBWAY', () => {
+      const subwayItinerary = response.plan.itineraries.filter(itinerary => itinerary.legs.some(leg => leg.mode === 'SUBWAY'));
+      expect(subwayItinerary).to.have.length.least(1);
     });
 
     it('all itineraries should not have connected WALKING legs', () => {
@@ -139,9 +140,9 @@ module.exports = function () {
       expect(response.plan.itineraries).to.be.an('array');
     });
 
-    it('all itineraries startTime must the same with first leg startTime', () => {
+    it('all itineraries startTime must the same with its first leg startTime', () => {
       response.plan.itineraries.forEach(itinerary => {
-        expect(itinerary.startTime).to.equal(itinerary.legs[0].startTime);
+        expect(itinerary.legs[0].startTime).to.equal(itinerary.startTime);
       });
     });
 

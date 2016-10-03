@@ -41,7 +41,7 @@ module.exports = (test, provider) => {
         expect(error).to.be.undefined;
       });
 
-      xit('should trigger a valid response', () => {
+      it('should trigger a valid response', () => {
         return validator.validate(schema, response);
       });
 

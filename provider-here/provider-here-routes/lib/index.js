@@ -85,7 +85,8 @@ function _mergeManeuverLegs(legs) {
       legGeometry: {
         points: polylineEncoder.mergePolylines(legs.map(leg => leg.legGeometry.points)),
       },
-      distance: _.sum(legs.map(leg => leg.distance)),
+      route: legs[0].route,
+      agencyId: legs[0].agencyId,
     },
   ];
 }

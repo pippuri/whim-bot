@@ -9,7 +9,8 @@ const polylineEncoder = require('polyline-extended');
 const haversine = require('haversine');
 
 const MAX_PARALLEL = 1; // how many common provider to use
-const HSL_TRAINS  = ['D', 'I', 'K', 'N', 'R', 'T', 'Z', 'A', 'E', ' L', 'P', 'U', 'X', 'Y'];
+// @NOTE support partially train route (go to Leppavaraa on train E)
+const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
 
 /**
  * Calculate haversine length base on leg information
@@ -260,13 +261,12 @@ function _setLegAgency(leg) {
       break;
     case 'TRAIN':
       // hook to see about VR and others
-      if (_.includes(HSL_TRAINS, leg.route)) {
+      if (!leg.agencyId && _.includes(HSL_TRAINS, leg.route)) {
         leg.agencyId = 'HSL';
       }
       break;
     case 'BUS':
       // NOTE cannot brute force all bus to HSL
-      leg.agencyId = 'HSL';
       break;
     default:
       leg.agencyId = undefined;

@@ -58,7 +58,6 @@ function convertLegTo(position, nextRoadName) {
  * Parse HERE leg response to MaaS leg format
  */
 function convertLeg(original) {
-  let route;
   let legMode;
   nextLegStartTime = original.endTime;
   switch (original.transportLine.type) {
@@ -76,15 +75,18 @@ function convertLeg(original) {
       legMode = 'BICYCLE';
       break;
     case 'railLight':
+      legMode = 'TRAM';
+      break;
     case 'trainRegional':
     case 'railRegional':
       legMode = 'TRAIN';
       break;
-    case 'busLight':
     case 'busPublic':
+    case 'busIntercity':
       legMode = 'BUS';
       break;
     case 'railMetro':
+    case 'railMetroRegional':
       legMode = 'SUBWAY';
       break;
     case 'carPrivate':
@@ -98,6 +100,12 @@ function convertLeg(original) {
     original.transportLine.companyName = 'HSL';
   }
 
+  const HSL_TRAINS  = ['I', 'K', 'N', 'A', 'E', 'L', 'P', 'U', 'X'];
+
+  if (HSL_TRAINS.some(train => train === original.transportLine.lineName)) {
+    original.transportLine.companyName = 'HSL';
+  }
+
   return {
     startTime: original.startTime,
     endTime: original.endTime,
@@ -107,7 +115,7 @@ function convertLeg(original) {
     legGeometry: {
       points: lib.convertToLegGeometry(original.shape),
     },
-    route,
+    route: original.transportLine.lineName,
     agencyId: original.transportLine.companyName,
   };
 }
@@ -130,13 +138,17 @@ function convertItinerary(route, mode, leaveAt, arriveBy) {
 
   // Init next leg startTime
   nextLegStartTime = startTime;
-
   const legs = route.leg[0].maneuver.map(data => {
     let transportLine = {};
-
     if (data._type === 'PublicTransportManeuverType') {
       // Map public mode depends on HERE response
-      transportLine = route.publicTransportLine.find(line => line.id === data.line);
+      // Here have this weird format that put subway line number as "id" instead of "line" as others
+      // FIXME check this again
+      if (!data.line) {
+        transportLine = route.publicTransportLine.find(line => line.id === data.id);
+      } else {
+        transportLine = route.publicTransportLine.find(line => line.id === data.line);
+      }
     } else if (data._type === 'PrivateTransportManeuverType') {
       // Map private mode depends on request
       switch (mode) {
@@ -157,6 +169,7 @@ function convertItinerary(route, mode, leaveAt, arriveBy) {
     } else {
       transportLine.type = '';
     }
+
     return convertLeg({
       startTime: nextLegStartTime,
       endTime: nextLegStartTime + data.travelTime * 1000,

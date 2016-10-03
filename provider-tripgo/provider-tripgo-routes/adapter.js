@@ -48,7 +48,7 @@ function convertLeg(segment, original, templates) {
     routeLongName: segment.serviceName === '' ? undefined : segment.serviceName,
     agencyId: convertAgencyId(mode, template.serviceOperator),
   };
-
+  console.log(leg);
   // Handle the case of different ways TripGo reports leg geometries
   const streets = template.streets;
   const shapes = template.shapes;
