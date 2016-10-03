@@ -5,7 +5,7 @@ const getProviderRules = require('../get-provider');
 const _getProviderBatch = getProviderRules.getProviderBatch;
 const bus = require('../../../lib/service-bus');
 const _ = require('lodash');
-const polyline = require('polyline');
+const polylineEncoder = require('polyline-extended');
 const haversine = require('haversine');
 
 const MAX_PARALLEL = 1; // how many common provider to use
@@ -294,7 +294,7 @@ function _calculateLegsDistance(route) {
   route.plan.itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
       if (leg.legGeometry && leg.legGeometry.points) { // Default leg distance is so bad?
-        const decodedPolyline = polyline.decode(leg.legGeometry.points);
+        const decodedPolyline = polylineEncoder.decode(leg.legGeometry.points);
         leg.distance = 0;
         for (let i = 0; i < decodedPolyline.length - 1; i++) {
           const line = {
