@@ -1,0 +1,108 @@
+[
+  {
+    "name": "HSL from Ludviginkatu to Kattila, Nuuksio next Tuesday at 14",
+    "skip": false,
+    "input": {
+      "event": {
+        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "payload": {
+          "from": "60.16576,24.94514",
+          "to": "60.32752,24.49536",
+          "leaveAt": "1475578800000"
+        }
+      },
+      "filter": {
+        "modes": [ "WAIT", "WALK", "TRANSFER", "TRAM", "SUBWAY", "RAIL", "BUS", "TRAIN" ],
+        "agencies": [ "HSL", null ],
+        "bookable": [ "HSL" ]
+      }
+    },
+    "results": {
+      "pass": true
+    }
+  },
+  {
+    "name": "HSL or Valopilkku from Ludviginkatu to Kirkkonummi next Tuesday at 14",
+    "skip": true,
+    "input": {
+      "event": {
+        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "payload": {
+          "from": "60.16576,24.94514",
+          "to": "60.1235171,24.4412629",
+          "leaveAt": "1475578800000"
+        }
+      },
+      "filter": {
+        "modes": [ "WAIT", "WALK", "TRANSFER", "TRAM", "SUBWAY", "RAIL", "BUS", "TRAIN" ],
+        "bookable": [ "HSL", "Valopilkku" ]
+      }
+    },
+    "results": {
+      "pass": true
+    }
+  },
+  {
+    "name": "Pure Taxi: Valopilkku from Ludviginkatu to Hernesaarenranta 4 next Tuesday at 14",
+    "skip": false,
+    "input": {
+      "event": {
+        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "payload": {
+          "from": "60.16576,24.94514",
+          "to": "60.1520255,24.9302539",
+          "leaveAt": "1475578800000"
+        }
+      },
+      "filter": {
+        "modes": [ "WAIT", "WALK", "TRANSFER", "TAXI" ],
+        "bookable": [ "Valopilkku" ]
+      }
+    },
+    "results": {
+      "pass": true
+    }
+  },
+  {
+    "name": "Ludviginkatu to Oulu next Tuesday at 14",
+    "skip": false,
+    "input": {
+      "event": {
+        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "payload": {
+          "from": "60.16576,24.94514",
+          "to": "65.012362,25.4450749",
+          "leaveAt": "1475578800000"
+        }
+      },
+      "filter": {
+        "bookable": [ "HSL", "Valopilkku" ]
+      }
+    },
+    "results": {
+      "pass": true
+    }
+  },
+  {
+    "name": "Ludviginkatu to Turku next Tuesday at 14",
+    "skip": true,
+    "input": {
+      "event": {
+        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "payload": {
+          "from": "60.16576,24.94514",
+          "to": "60.4519802,22.265428",
+          "leaveAt": "1475578800000"
+        }
+      },
+      "filter": {
+        "modes": [ "WAIT", "WALK", "TRANSFER", "TRAM", "SUBWAY", "RAIL", "BUS", "TRAIN" ],
+        "agencies": [ "HSL", null ],
+        "bookable": [ "HSL", "Valopilkku" ]
+      }
+    },
+    "results": {
+      "pass": false
+    }
+  }
+]
