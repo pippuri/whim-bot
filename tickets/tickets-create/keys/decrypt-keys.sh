@@ -44,7 +44,7 @@ if [[ ! -f ./$STAGE-latest.js.asc ]]
     exit 2
 fi
 
-if [[ ! -f ./$STAGE-transitional.js.asc]]
+if [[ ! -f ./$STAGE-transitional.js.asc ]]
   then
     echo "No key file ./$STAGE-transitional.js.asc found"
     exit 2
