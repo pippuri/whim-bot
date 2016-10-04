@@ -73,7 +73,7 @@
     "polyline-extended": "^1.0.1",
     "powerset": "0.0.1",
     "proj4": "^2.3.14",
-    "request-promise-lite": "^0.6.2",
+    "request-promise-lite": "^0.7.0",
     "tempfile": "^1.1.1",
     "xml2js": "^0.4.16"
   },
