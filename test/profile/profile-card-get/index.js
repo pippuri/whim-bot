@@ -20,14 +20,16 @@ module.exports = function () {
       wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
-        if (err) {
-          console.log('Error', err);
-        }
         done();
       });
     });
 
     it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error: ${error.message}`);
+        console.log(error.stack);
+      }
+
       expect(error).to.be.null;
     });
 

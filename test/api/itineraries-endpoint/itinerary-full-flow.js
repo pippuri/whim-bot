@@ -23,7 +23,6 @@ function runLambda(lambda, event) {
 }
 
 module.exports = function (input, results) {
-  let error;
   let queriedItinerary;
   let createdItinerary;
   let retrievedItinerary;
@@ -44,8 +43,6 @@ module.exports = function (input, results) {
     });
 
     let itineraries;
-    let error;
-
     const event = utils.cloneDeep(input.event);
 
     // Move the query by one week we are already at the same day
@@ -66,7 +63,7 @@ module.exports = function (input, results) {
             console.error(`Caught an error: ${_error.message}`);
             console.error(`Event: ${JSON.stringify(event, null, 2)}`);
             console.error(_error.stack);
-            return Promise.reject(_error = error);
+            return Promise.reject(_error);
           }
         );
     });
@@ -138,7 +135,7 @@ module.exports = function (input, results) {
             console.log(`Caught an error: ${_error.message}`);
             console.log(`Event: ${JSON.stringify(event, null, 2)}`);
             console.log(_error.stack);
-            return Promise.reject(_error = error);
+            return Promise.reject(_error);
           }
         );
     });
@@ -209,7 +206,7 @@ module.exports = function (input, results) {
             console.log(`Caught an error: ${_error.message}`);
             console.log(`Event: ${JSON.stringify(event, null, 2)}`);
             console.log(_error.stack);
-            return Promise.reject(_error = error);
+            return Promise.reject(_error);
           }
         );
     });
@@ -255,7 +252,7 @@ module.exports = function (input, results) {
             console.log(`Caught an error: ${_error.message}`);
             console.log(`Event: ${JSON.stringify(event, null, 2)}`);
             console.log(_error.stack);
-            return Promise.reject(_error = error);
+            return Promise.reject(_error);
           }
         );
     });
@@ -292,7 +289,7 @@ module.exports = function (input, results) {
             console.log(`Caught an error: ${_error.message}`);
             console.log(`Event: ${JSON.stringify(event, null, 2)}`);
             console.log(_error.stack);
-            return Promise.reject(_error = error);
+            return Promise.reject(_error);
           }
         );
     });

@@ -30,7 +30,7 @@ module.exports = function (lambda) {
 
     it('should succeed without errors', () => {
       if (error) {
-        console.log(error);
+        console.log(`Caught an error: ${error.message}`);
         console.log(error.stack);
       }
 
@@ -64,7 +64,7 @@ module.exports = function (lambda) {
 
     it('should succeed without errors', () => {
       if (error) {
-        console.log(error);
+        console.log(`Caught an error: ${error.message}`);
         console.log(error.stack);
       }
 

@@ -7,7 +7,6 @@ const lambda = require('../../../profile/profile-webhook/handler.js');
 module.exports = function () {
 
   describe('profile-webhook', () => {
-
     const event = {
       id: 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM',
       payload: {
@@ -30,15 +29,16 @@ module.exports = function () {
       wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
-        console.log(data);
-        if (err) {
-          console.log('Error', err);
-        }
         done();
       });
     });
 
     it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error: ${error.message}`);
+        console.log(error.stack);
+      }
+
       expect(error).to.be.null;
     });
 

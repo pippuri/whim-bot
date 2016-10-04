@@ -31,7 +31,6 @@ module.exports = options => {
     before(done => {
       bus.call('MaaS-routes-query', event)
         .then(res => {
-          console.log(JSON.stringify(res.plan.itineraries.filter(itinerary => typeof itinerary.legs.filter(leg => leg.mode === 'TAXI') !== typeof undefined), null, 2));
           response = res;
         })
         .catch(err => {
@@ -253,7 +252,6 @@ module.exports = options => {
       const taxiLegs = _.flatten(response.plan.itineraries.map(itinerary => {
         return itinerary.legs.filter(leg => (leg.mode === 'TAXI'));
       }));
-      console.log(JSON.stringify(taxiLegs));
 
       const valopilkkuTaxiLegs = taxiLegs.filter(leg => leg.agencyId === 'Valopilkku');
       expect(valopilkkuTaxiLegs).to.be.empty;

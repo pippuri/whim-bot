@@ -49,7 +49,7 @@ module.exports = function (createLambda, setActiveLambda) {
 
     it('should succeed without errors', () => {
       if (error) {
-        console.log(error);
+        console.log(`Caught an error: ${error.message}`);
         console.log(error.stack);
       }
 

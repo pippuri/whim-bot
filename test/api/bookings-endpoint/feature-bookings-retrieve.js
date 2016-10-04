@@ -14,6 +14,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
 
   describe('refresh an existing booking', () => {
 
+    let event;
     let response;
     let error;
     let bookingId;
@@ -29,7 +30,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
       const nextTuesday = moment().day(dowTuesday).valueOf();
       const nextWednesday = moment().day(dowWednesday).valueOf();
 
-      const validEvent = {
+      event = {
         identityId: testIdentityId,
         agencyId: 'Sixt',
         mode: 'CAR',
@@ -40,7 +41,9 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
       };
 
       // get options
-      wrap(optionsLambda).run(validEvent, (_error, _response1) => {
+      wrap(optionsLambda).run(event, (_error, _response1) => {
+        error = _error;
+        response = _response1;
 
         if (_error) {
           error = _error;
@@ -50,16 +53,16 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
           return;
         }
 
-        // take first option
-        const newEvent = {
+        // Take the first option
+        event = {
           payload: _.cloneDeep(_response1.options[0]),
           identityId: testIdentityId,
         };
-        delete newEvent.payload.signature;
-        newEvent.payload.signature = utils.sign(newEvent.payload, process.env.MAAS_SIGNING_SECRET);
+        delete event.payload.signature;
+        event.payload.signature = utils.sign(event.payload, process.env.MAAS_SIGNING_SECRET);
 
         // Create a booking, then refresh it
-        wrap(createLambda).run(newEvent, (_error, _response2) => {
+        wrap(createLambda).run(event, (_error, _response2) => {
           if (_error) {
             error = _error;
             response = _response2;
@@ -70,13 +73,13 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
 
           bookingId = _response2.booking.id;
 
-          const retrieveEvent = {
+          event = {
             identityId: testIdentityId,
             bookingId: _response2.booking.id,
             refresh: 'true',
           };
 
-          wrap(retrieveLambda).run(retrieveEvent, (_error, _response3) => {
+          wrap(retrieveLambda).run(event, (_error, _response3) => {
             error = _error;
             response = _response3;
             done();
@@ -92,7 +95,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
             return models.Booking.query().delete().where('id', bookingId);
           }
           return Promise.resolve();
-        } )
+        })
         .then(() => Database.cleanup());
     });
 
@@ -105,6 +108,12 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
     });
 
     it('should succeed without error', () => {
+      if (error) {
+        console.log(`Caught an error: ${error.message}`);
+        console.log(`Event: ${JSON.stringify(event)}`);
+        console.log(error.stack);
+      }
+
       expect(error).to.be.null;
     });
   });

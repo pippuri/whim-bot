@@ -197,7 +197,6 @@ function _resolveRoutesProviders(params) {
  * @return {Object} merged output
  */
 function _mergeProviderResponses(responses, params) {
-  // console.log(JSON.stringify(responses, null, 2));
   const coords = params.from.split(',').map(parseFloat);
   const output = {
     plan: {

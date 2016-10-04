@@ -86,7 +86,7 @@ function storeTicketAuditLog( event, payload, partner ) {
     partnerId: partner.partnerId,
   };
 
-  console.log( 'Starting to store Audit Log:', logEntry );
+  console.info( 'Starting to store Audit Log:', logEntry );
 
   // TODO: inform all of the relevant webhooks about new data in the audit log
 
@@ -121,7 +121,7 @@ function sendWebhookPingsAndCleanupDatabase( payload ) {
         .then( () => {
           domainPartners.forEach( partner => {
             if ( partner.auditWebhookUrl ) {
-              console.log(`Pinging partner ${partner.partnerId} at ${partner.auditWebhookUrl}`);
+              console.info(`Pinging partner ${partner.partnerId} at ${partner.auditWebhookUrl}`);
               request.post( partner.auditWebhookUrl, { json: true, body: { ping: 1 } } );
             }
           } );
