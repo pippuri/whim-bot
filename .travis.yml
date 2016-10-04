@@ -7,6 +7,9 @@ before_install:
 - if [[ `npm -v` != 3.9.6* ]]; then npm i -g npm@3.9.6; fi
 - npm --version
 
+install:
+- npm install --quiet --no-optional --depth=0
+
 before_script:
 - export AWS_PROFILE=travis
 - mkdir ~/.aws && touch ~/.aws/credentials # create .aws folder with placeholder credentials file
