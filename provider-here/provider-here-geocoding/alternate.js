@@ -2,6 +2,8 @@
 
 /**
  * GeoJSON format compatible implementation of places, using HERE places API.
+ * Note: This API disregards the locale information (it is not supported).
+ *
  * Sample:
  * {
  * "type": "Feature",
@@ -15,19 +17,21 @@
  * }
  *
  * @see https://developer.here.com/rest-apis/documentation/places/topics_api/resource-search.html
- * @see https://developer.here.com/rest-apis/documentation/geocoder/topics/examples-reverse-geocoding.html
  * @see https://en.wikipedia.org/wiki/GeoJSON
  */
+
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 const MaaSError = require('../../lib/errors/MaaSError');
 
-const ENDPOINT_URL = 'https://reverse.geocoder.cit.api.here.com/6.2/reversegeocode.json';
+const ENDPOINT_URL = 'https://geocoder.api.here.com/6.2/search.json';
 const SEARCH_RADIUS = 500; // Find within 500m distance by default
 const SEARCH_COUNT = 10;   // Find a maximum of 10 results by default
 
 function parseResults(response) {
+  console.log(JSON.stringify(response, null, 2));
+
   if (!response.Response || !util.isArray(response.Response.View) ||
     !response.Response.View[0] || !response.Response.View[0].Result ||
     !util.isArray(response.Response.View[0].Result)) {
@@ -72,10 +76,10 @@ function adapt(input) {
   const radius = input.radius || SEARCH_RADIUS;
   const count = input.count || SEARCH_COUNT;
   const query = {
-    mode: 'retrieveAddresses',
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     prox: `${input.lat},${input.lon},${radius}`,
+    searchtext: input.name,
     language: input.lang,
     // Prune away anything except for the address
     locationattributes: 'ar,-mr,-mv,-dt,-sd,-ad,-ai,-li,-in,-tz,-nb,-rn',
@@ -83,15 +87,17 @@ function adapt(input) {
     addressattributes: 'ctr,-sta,-cty,cit,-dis,-sdi,str,hnr,pst,-aln,-add',
     // Prune away performed search, match quality, match code, parsed request
     responseattributes: '-ps,mq,-mt,-mc,-pr',
-    // Try to get at minimum & maximum 'count' results in one page
-    minresults: count,
+    // Try to get maximum 'count' results in one page
     maxresults: count,
     gen: 9,
-    // Match at least city level information
-    level: 'city',
   };
+  console.log(query);
 
-  return request.get(ENDPOINT_URL, { json: true, qs: query })
+  return request.get(ENDPOINT_URL, {
+    json: true,
+    headers: {},
+    qs: query,
+  })
   .then(parseResults)
   .then(features => {
     // TODO Reformat to the new style responses
@@ -105,11 +111,20 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   adapt(event)
-  .then(response => (callback(null, response)))
+  .then(response => {
+    return callback(null, response);
+  })
   .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
-    callback(_error);
+
+    // Uncaught, unexpected error
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };
