@@ -299,6 +299,10 @@ class Decider {
         let message = 'Your trip is about to start';
         // dig out bit information to form more informal message
         const legs = itinerary.legs;
+        const lastLeg = legs[legs.length - 1];
+        if (lastLeg.destination()) {
+          message = `Your trip to ${lastLeg.destination()} is about to start`;
+        }
         if (legs[0] && legs[1] && legs[1].isTransport()) {
           if (legs[0].isWalking()) {
             message += ` - leave for the ${legs[1].mode.toLowerCase()} now`;
@@ -326,12 +330,16 @@ class Decider {
     return leg.activate()
       .then(() => {
         // check booking if leg have one
-        if (leg.booking) {
-          const booking = leg.booking;
-          if (booking.state !== 'RESERVED' && booking.state !== 'CONFIRMED' && booking.state !== 'ACTIVATED') {
-            const message = `Problems with your ${leg.mode.toLowerCase()} ticket booking, please check`;
-            return this._notifyUser(message, 'ObjectChange', { ids: [booking.id], objectType: 'Booking' }, 'Alert');
+        if (!leg.booking) {
+          return Promise.resolve();
+        }
+        const booking = leg.booking;
+        if (booking.state !== 'RESERVED' && booking.state !== 'CONFIRMED' && booking.state !== 'ACTIVATED') {
+          let message = `Problems with your ${leg.mode.toLowerCase()} ticket, please check`;
+          if (leg.destination()) {
+            message = `Problems with your ${leg.mode.toLowerCase()} ticket to ${leg.destination()}, please check`;
           }
+          return this._notifyUser(message, 'ObjectChange', { ids: [booking.id], objectType: 'Booking' }, 'Alert');
         }
         return Promise.resolve();
       })
