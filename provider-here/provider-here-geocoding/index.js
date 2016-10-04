@@ -2,6 +2,8 @@
 
 /**
  * GeoJSON format compatible implementation of places, using HERE places API.
+ * Note: This API disregards the locale information (it is not supported).
+ *
  * Sample:
  * {
  * "type": "Feature",
@@ -30,7 +32,6 @@ function parseResults(response) {
     features: [],
   };
   const items = response.results.items;
-  const context = response.search.context;
 
   if (!util.isArray(items)) {
     const error = new Error('Invalid response from HERE - invalid format.');
@@ -38,17 +39,10 @@ function parseResults(response) {
   }
 
   items.forEach(item => {
-    const address = context.location.address;
-
     const feature = {
       type: 'Feature',
       properties: {
         name: item.title,
-        country: address.country,
-        countryCode: address.countryCode,
-        city: address.city,
-        zipCode: address.postalCode,
-        streetName: item.vicinity && item.vicinity.split('<br/>')[0],
       },
       geometry: {
         type: 'Point',
@@ -70,8 +64,14 @@ function adapt(input) {
     app_code: process.env.HERE_APP_CODE,
     q: input.name,
     size: input.count,
-    at: [input.lat, input.lon].join(','),
+    tf: 'plain',
   };
+  // Use different query format if radius is given
+  if (input.radius) {
+    query.in = `${input.lat},${input.lon};r=${input.radius}`;
+  } else {
+    query.at = `${input.lat},${input.lon}`;
+  }
 
   return request.get(ENDPOINT_URL, {
     json: true,
@@ -80,7 +80,6 @@ function adapt(input) {
   })
   .then(parseResults)
   .then(response => {
-
     // Inject query to the response
     // Note: This is a bit unsafe, since we're actually modifying
     // the call parameter. Should be ok in this case, though.
@@ -96,12 +95,12 @@ module.exports.respond = function (event, callback) {
     callback(new Error('Missing HERE_APP_CODE'));
   } else {
     adapt(event)
-    .then(response => {
-      return callback(null, response);
-    })
-    .catch(err => {
-      console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-      return callback(err);
+    .then(response => (callback(null, response)))
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+      callback(_error);
     });
   }
 };

@@ -37,11 +37,11 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   adapt(event)
-  .then(response => {
-    return callback(null, response);
-  })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    return callback(err);
+  .then(response => (callback(null, response)))
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+    callback(_error);
   });
 };

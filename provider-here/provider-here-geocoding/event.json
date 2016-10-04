@@ -1,7 +1,8 @@
 {
-  "name": "Kamppi Bus Station",
+  "name": "Kamp*",
   "count": 5,
-  "lat": 60.1675800,
-  "lon": 24.9302260,
-  "radius": 5
+  "radius": 5000,
+  "lon": 24.9310337,
+  "lat": 60.1691596,
+  "lang": "fi"
 }
