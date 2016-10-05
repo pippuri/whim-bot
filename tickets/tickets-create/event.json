@@ -1,11 +1,28 @@
 {
-  "partnerId": "HSL",
-  "partnerKey": "secret!",
-  "startTime": 1480314671,
-  "endTime": 1480315671,
-  "from": "Ludviginkatu 6, Helsinki",
-  "to": "Paimionkatu 16, Lahti",
-  "ownerName": "Antti Vähäkotamäki",
-  "custom": "1234",
-  "meta": {}
+    "partnerId": "HSL",
+    "partnerKey": "secret!",
+    "startTime": 1458832380000,
+    "endTime": 1458837180000,
+    "from": {
+        "name": "Töölöntori",
+        "lon": 24.92371,
+        "lat": 60.17971
+    },
+    "to": {
+        "name": "Helsinginkatu",
+        "lon": 24.95391,
+        "lat": 60.18708
+    },
+    "ownerName": "",
+    "custom": "",
+    "domainId": "",
+    "meta": {
+        "customer": {
+            "id": "1234",
+            "firstName": "John",
+            "lastName": "Doe",
+            "phone": "+358501234567",
+            "email": "joe@maas.global"
+        }
+    }
 }

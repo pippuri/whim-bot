@@ -1,3 +1,3 @@
 'use strict';
 
-module.exports = ( new Date().getTime() > 1475849804972 ) ? require('./test-latest') : require('./test-transitional');
+module.exports = ( Date.now() > 1476213210929 ) ? require('./test-latest') : require('./test-transitional');
