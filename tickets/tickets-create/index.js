@@ -8,14 +8,9 @@ const utils = require('../../lib/utils');
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 
-let privateKey;
-
-if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test' || process.env.SERVERLESS_STAGE === 'alpha') {
-  privateKey = require('./keys/dev').getKey();
-} else if ( ( '' + process.env.SERVERLESS_STAGE ).indexOf('prod') === 0) {
-  privateKey = require('./keys/prod').getKey();
-} else {
-  throw new Error( 'Unknown SERVERLESS_STAGE when initializing tickets-create' );
+const privateKey = require(`./keys/${process.env.SERVERLESS_STAGE}`).getKey();
+if (!privateKey) {
+  throw new Error('Unknown SERVERLESS_STAGE when initializing tickets-create');
 }
 
 function validateEvent( event ) {
