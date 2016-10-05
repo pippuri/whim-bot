@@ -80,6 +80,7 @@
   "devDependencies": {
     "aws-sdk": "^2.2.39",
     "chai": "^3.5.0",
+    "del": "^2.2.2",
     "eslint": "^2.13.1",
     "eslint-config-airbnb": "^9.0.1",
     "eslint-plugin-import": "^1.9.2",
@@ -102,11 +103,12 @@
     "serverless-meta-sync": "https://github.com/serverless/serverless-meta-sync.git#c5e34a59a8665df703534ee18464d035ef30edc6",
     "serverless-plugin-autoprune": "^0.5.3",
     "serverless-plugin-revision": "^0.5.6",
-    "serverless-plugin-swagger-export": "^0.5.0",
+    "serverless-plugin-swagger-export": "^0.5.5",
     "serverless-slack-plugin": "https://github.com/blackevil245/serverless-slack-plugin",
     "serverless-webpack-plugin": "^0.4.5",
     "sinon": "^1.17.5",
     "swagger-schema-official": "^2.0.0-bab6bed",
+    "swagger-ui": "^2.2.5",
     "webpack": "^1.13.2"
   },
   "scripts": {
@@ -115,7 +117,7 @@
     "build:test": "npm run build:docs && npm run build:keys -- test",
     "build:alpha": "npm run build:docs && npm run build:keys -- alpha",
     "build:prod": "npm run build:docs && npm run build:keys -- prod",
-    "build:docs": "mkdir -p www/apidocs.maas.global/api && sls swagger export > www/apidocs.maas.global/api/maas-api.json && cp -r node_modules/maas-schemas/prebuilt/maas-backend www/apidocs.maas.global/api",
+    "build:docs": "gulp build:swagger && sls swagger export > www/apidocs.maas.global/api/maas-api.json",
     "build:keys": "cd tickets/tickets-create/keys && bash ./decrypt-keys.sh -s",
     "deploy:docs": "aws s3 sync --acl public-read www/apidocs.maas.global/ s3://apidocs.maas.global/",
     "deploy:static-files": "aws s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",

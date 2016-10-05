@@ -1,13 +1,14 @@
 'use strict';
 
-const gulp = require('gulp');
-const jsonlint = require('gulp-jsonlint');
-const jsonclint = require('gulp-json-lint');
+const del = require('del');
 const eslint = require('gulp-eslint');
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
 const gutil = require('gulp-util');
+const gulp = require('gulp');
 const istanbul = require('gulp-istanbul');
+const jsonlint = require('gulp-jsonlint');
+const jsonclint = require('gulp-json-lint');
 
 const jsoncFiles = ['.eslintrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
@@ -37,6 +38,24 @@ gulp.task('eslint', () => {
     .pipe(eslint.failAfterError());
 });
 
+gulp.task('clean:swagger', () => {
+  return del([
+    'www/apidocs.maas.global/**/*',
+    '!www/apidocs.maas.global/index.html',
+  ]);
+});
+
+gulp.task('copy:swagger-ui', () => {
+  // Copies everything
+  return gulp.src(['node_modules/swagger-ui/dist/**/*', '!node_modules/swagger-ui/dist/index.html'])
+    .pipe(gulp.dest('www/apidocs.maas.global/'));
+});
+
+gulp.task('copy:json-schemas', () => {
+  return gulp.src('node_modules/maas-schemas/prebuilt/maas-backend/**/*')
+    .pipe(gulp.dest('www/apidocs.maas.global/api/maas-backend/'));
+});
+
 gulp.task('mocha', () => {
   return gulp.src(jsFiles)
   .pipe(istanbul())
@@ -52,7 +71,7 @@ gulp.task('mocha', () => {
 });
 
 gulp.task('validate', ['jsonclint', 'jsonlint', 'eslint']);
-
 gulp.task('test', gulpSequence('validate', 'mocha'));
+gulp.task('build:swagger', gulpSequence('clean:swagger', ['copy:swagger-ui', 'copy:json-schemas']));
 
 gulp.task('default');
