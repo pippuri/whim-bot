@@ -117,7 +117,7 @@
     "build:prod": "npm run build:docs && npm run build:keys -- prod",
     "build:docs": "mkdir -p www/apidocs.maas.global/api && sls swagger export > www/apidocs.maas.global/api/maas-api.json && cp -r node_modules/maas-schemas/prebuilt/maas-backend www/apidocs.maas.global/api",
     "build:keys": "cd tickets/tickets-create/keys && bash ./decrypt-keys.sh -s",
-    "deploy:docs": "aws --profile maas s3 sync www/apidocs.maas.global/ s3://apidocs.maas.global/",
+    "deploy:docs": "aws --profile maas s3 sync --acl public-read www/apidocs.maas.global/ s3://apidocs.maas.global/",
     "deploy:static-files": "aws --profile maas s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",
     "deploy-dev:all": "npm run build:dev && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
     "deploy-prod:all": "npm run build:prod && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
