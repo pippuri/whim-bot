@@ -124,13 +124,8 @@ describe('user by ID not found', () => {
     expect(response).to.be.empty;
   });
 
-  it('should not have errored', () => {
-    if (error) {
-      console.log(`Caught an error: ${error.message}`);
-      console.log(error.stack);
-    }
-
-    expect(error).to.be.empty;
+  it('should have errored', () => {
+    expect(error).to.exist;
   });
 });
 
