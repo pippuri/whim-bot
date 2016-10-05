@@ -33,8 +33,4 @@ describe('API documentation', function () {
     // TODO Add missing response definitions and correct the faulty ones
     expect(validationError).to.be.undefined;
   });
-
-  xit('TODO catches the known Swagger UI problems', () => {
-    // TODO Implement test, e.g. find missing 'type' definitions
-  });
 });
