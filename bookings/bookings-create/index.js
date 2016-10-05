@@ -59,8 +59,9 @@ module.exports.respond = (event, callback) => {
 
   return Database.init()
     .then(() => validateInput(event))
-    .then(() => utils.validateSignatures(event.payload))        // Validate request signature
-    .then(validBookingData => Booking.create(validBookingData, event.identityId))
+    .then(() => utils.validateSignatures(event.payload))
+    .then(signedBooking => utils.without(signedBooking, ['signature']))
+    .then(unsignedBooking => Booking.create(unsignedBooking, event.identityId))
     .then(booking => booking.pay())
     .then(booking => booking.reserve())
     .then(booking => formatResponse(booking.toObject()))
