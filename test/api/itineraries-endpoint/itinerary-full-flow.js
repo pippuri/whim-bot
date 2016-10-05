@@ -45,11 +45,15 @@ module.exports = function (input, results) {
     let itineraries;
     const event = utils.cloneDeep(input.event);
 
-    // Move the query by one week we are already at the same day
+    // Move leaveAt week to match a date in the future (this or next week)
     const original = moment(parseFloat(event.payload.leaveAt));
+    const leaveAt = moment(original);
     const now = moment().utcOffset(120);
-    const day = (now.day() < original.day()) ? original.day() : original.day() + 7;
-    const leaveAt = original.day(day);
+    leaveAt.year(now.year());
+    leaveAt.week(now.week());
+    if (now.day() >= leaveAt.day()) {
+      leaveAt.week(now.week() + 1);
+    }
     event.payload.leaveAt = `${leaveAt.valueOf()}`;
 
     it(`Queries a route leaving at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss')}'`, () => {
