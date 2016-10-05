@@ -25,7 +25,7 @@ function pollForDecisionTasks(params) {
 
   if (!params || !params.maxBlockingTimeInSec) {
     params.maxBlockingTimeInSec = 150;
-    console.log('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 150 sec');
+    console.info('pollForDecisionTasks() defaulting maxBlockingTimeInSec into 150 sec');
   }
   if (typeof(params.maxBlockingTimeInSec) !== 'number'
       || params.maxBlockingTimeInSec < 10
@@ -42,19 +42,19 @@ function pollForDecisionTasks(params) {
    */
   function nextPoll() {
     // current execution time (ms) > maxRunTime timeout (sec) - pollForDecisionTaskAsync timeout (sec)
-    console.log(`pollForDecisionTasks() polling was started ${moment().diff(pollingStartTime, 'seconds')} seconds ago`);
+    console.info(`pollForDecisionTasks() polling was started ${moment().diff(pollingStartTime, 'seconds')} seconds ago`);
     if (Date.now() - pollingStartTime > (params.maxBlockingTimeInSec - 70) * 1000) {
-      console.log('pollForDecisionTasks() reaching maxBlockingTimeInSec, exiting');
+      console.info('pollForDecisionTasks() reaching maxBlockingTimeInSec, exiting');
       return Promise.resolve();
     }
 
-    console.log('pollForDecisionTasks() waiting a decision from SWF...');
+    console.info('pollForDecisionTasks() waiting a decision from SWF...');
 
     const flow = new TripWorkFlow();
     // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
     return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
       .then(data => {
-        //console.log('pollForDecisionTasks() got data:', JSON.stringify(data));
+        //console.info('pollForDecisionTasks() got data:', JSON.stringify(data));
 
         // check do we have proper decition to process...
         if (!data.startedEventId || data.startedEventId === 0 ) {
@@ -62,10 +62,10 @@ function pollForDecisionTasks(params) {
           return nextPoll();
         }
 
-        console.log('pollForDecisionTasks() invoking decider to process inbound decision task...');
+        console.info('pollForDecisionTasks() invoking decider to process inbound decision task...');
         bus.call(LAMBDA_TRIP_INVOKE_DECIDER, data)
           .then(result => {
-            console.log(`pollForDecisionTask() decider handled workflowId '${result.workFlowId}'`);
+            console.info(`pollForDecisionTask() decider handled workflowId '${result.workFlowId}'`);
           })
           .catch(err => {
             console.error('pollForDecisionTask() decider FAILED; ', err);
@@ -90,8 +90,11 @@ module.exports.respond = function (event, callback) {
   // defined in s-function.json.
   return pollForDecisionTasks(event)
     .then(() => callback(null, null))
-    .catch(err => {
-      console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
-      callback(err);
+    .catch(_error => {
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      callback(_error);
     });
 };

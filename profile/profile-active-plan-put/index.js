@@ -12,11 +12,11 @@ function createChargebeeUser(event) {
       const profile = res.Item;
       return Subscriptions.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: profile.phone })
         .then( user => {
-          console.log(`Created user ${user}`);
+          console.info(`Created user ${user}`);
           return Promise.resolve(user);
         })
         .catch( _err => {
-          console.log('Error creating user:', _err.response.toString());
+          console.info('Error creating user:', _err.response.toString());
           return Promise.reject(new MaaSError(`Error creating Subscription: ${_err}`, 500));
         });
     })
@@ -65,9 +65,9 @@ function setActivePlan(event) {
           if (_error.response) {
             reason = JSON.stringify(_error.response, null, 2);
           }
-          console.log(`Subscription error ${_error}, ${reason}`);
+          console.info(`Subscription error ${_error}, ${reason}`);
           if (_error.statusCode === 404) {
-            console.log('Running createUser');
+            console.info('Running createUser');
             return createChargebeeUser(event);
           }
           return Promise.reject(new MaaSError(`Error requesting Subscription: ${_error}`, 500));
@@ -112,7 +112,7 @@ function setActivePlan(event) {
       console.info('Old balance: ', oldBalance);
       console.info('Old level: ', oldLevel);
       console.info('New level: ', newPlan.level);
-      console.log('Point Tiers are', newPlan.tiers);
+      console.info('Point Tiers are', newPlan.tiers);
       let newBalance = oldBalance;
       if (newPlan.level > 0 && (newPlan.level > oldLevel) && (newPlan.level < newPlan.tiers.length)) {
         // handle upgrade

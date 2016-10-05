@@ -5,14 +5,14 @@ const Subscription = require('../../lib/subscription-manager/index.js');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 function createChargebeeUser(event) {
-  console.log('Creating Chargebee user who did not exist', event);
+  console.info('Creating Chargebee user who did not exist', event);
   return Subscription.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, event.payload)
     .then( user => {
-      console.log(`Created user ${user}`);
+      console.info(`Created user ${user}`);
       return Promise.resolve(user);
     })
     .catch( _err => {
-      console.log('Error creating user:', _err.response.toString());
+      console.info('Error creating user:', _err.response.toString());
       return Promise.reject(new MaaSError(`Error creating Subscription: ${_err}`, 500));
     });
 }

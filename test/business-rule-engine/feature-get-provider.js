@@ -116,7 +116,6 @@ module.exports = function () {
     });
 
     it(`should return an array with at least 1 provider with providerMeta, which contains agencyId ${params.agencyId}`, () => {
-      console.log(response);
       expect(response).to.not.be.undefined;
       expect(response).to.be.an('array');
       expect(response[0]).to.be.an('object');

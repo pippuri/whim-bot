@@ -39,7 +39,6 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
       };
 
       wrap(optionsLambda).run(validEvent, (err, data) => {
-
         if (err) {
           error = err;
           response = data;
@@ -92,13 +91,13 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
             return models.Booking.query().delete().where('id', bookingId);
           }
           return Promise.resolve();
-        } )
+        })
         .then(() => Database.cleanup());
     });
 
     it('should succeed without errors', () => {
       if (error) {
-        console.log(error);
+        console.log(`Caught an error: ${error.message}`);
         console.log(error.stack);
       }
 

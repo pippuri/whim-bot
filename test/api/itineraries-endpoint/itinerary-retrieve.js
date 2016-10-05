@@ -45,7 +45,7 @@ module.exports = function (createLambda, retrieveLambda) {
 
     it('should succeed without errors', () => {
       if (error) {
-        console.log(error);
+        console.log(`Caught an error: ${error.message}`);
         console.log(error.stack);
       }
 
