@@ -31,10 +31,9 @@ script:
 - npm run build:test
 - npm test
 
-before_deploy:
+after_success:
 - pip install --user awscli
 
-deploy:
 # Current time
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
 
