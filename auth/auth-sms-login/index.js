@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 const bus = require('../../lib/service-bus/index');
-const MaaSError = require('../lib/errors/MaaSError');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
