@@ -25,6 +25,7 @@ const request = require('request-promise-lite');
 const util = require('util');
 
 const ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
+const SEARCH_COUNT = 10;   // Find a maximum of 10 results by default
 
 function parseResults(response) {
   const result = {
@@ -63,7 +64,7 @@ function adapt(input) {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     q: input.name,
-    size: input.count,
+    size: input.count || SEARCH_COUNT,
     tf: 'plain',
   };
   // Use different query format if radius is given
@@ -77,6 +78,7 @@ function adapt(input) {
     json: true,
     headers: {},
     qs: query,
+    verbose: true,
   })
   .then(parseResults)
   .then(response => {
