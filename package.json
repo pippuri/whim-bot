@@ -121,8 +121,8 @@
     "deploy:static-files": "aws s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",
     "deploy-dev:all": "npm run build:dev && npm run test && sls function deploy -a -s dev && sls endpoint deploy -a -s dev",
     "deploy-prod:all": "npm run build:prod && npm run test && sls function deploy -a -s prod && sls endpoint deploy -a -s prod",
-    "deploy-test:all": "npm run build:test && npm run test && npm run deploy:docs && npm run deploy:static-files && sls function deploy -a -s test && sls endpoint deploy -a -s test",
-    "deploy-alpha:all": "npm run build:alpha && npm run test && sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
+    "deploy-test:all": "npm run deploy:docs && npm run deploy:static-files && sls function deploy -a -s test && sls endpoint deploy -a -s test",
+    "deploy-alpha:all": "npm run test && sls function deploy -a -s alpha && sls endpoint deploy -a -s alpha",
     "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha"
   }
 }
