@@ -23,8 +23,10 @@ module.exports.respond = function (event, callback) {
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
     .then(unsignedItinerary => Itinerary.create(unsignedItinerary, event.identityId))
     .then(itinerary => itinerary.pay())
-
 /*
+    // Testing bold version where all bookings are handled in TripEngine side. If finding
+    // problems, reverting back that legs are activated (booking happens) already here.
+
     .then(itinerary => {
       // Activate itinerary and legs rightaway. Later these are done by TripEngine
       // in the background.
