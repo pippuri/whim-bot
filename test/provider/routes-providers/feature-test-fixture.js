@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment');
 const bus = require('../../../lib/service-bus');
 const expect = require('chai').expect;
 const schema = require('maas-schemas/');
@@ -8,7 +9,35 @@ const utils = require('../../../lib/utils');
 
 module.exports = (test, provider) => {
 
-  describe(`${provider.name}: ${test.name}`, () => {
+  function updateTime(originalUTCMillis) {
+    // Move leaveAt week to match a date in the future (this or next week)
+    const original = moment(parseFloat(originalUTCMillis));
+    const updated = moment(original);
+    const now = moment().utcOffset(120);
+    updated.year(now.year());
+    updated.week(now.week());
+    if (now.day() >= updated.day()) {
+      updated.week(now.week() + 1);
+    }
+
+    return updated.valueOf();
+  }
+
+  let testName = `${provider.name}: ${test.name}`;
+
+  if (test.input.leaveAt) {
+    const updated = updateTime(test.input.leaveAt);
+    test.input.leaveAt = updated;
+    testName += `, leave at: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss')}`;
+  }
+
+  if (test.input.arriveBy) {
+    const updated = updateTime(test.input.arriveBy);
+    test.input.arriveBy = updated;
+    testName += `, arrive by: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss')}`;
+  }
+
+  describe(testName, () => {
 
     // Parse the test test params for this individual provider
     const lambda = provider.lambda;

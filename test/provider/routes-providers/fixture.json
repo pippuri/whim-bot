@@ -53,7 +53,7 @@
       }
     },
     {
-      "name": "Taxi route from Ludviginkatu 6 to Löyly, leave Tue 2.10 14:00",
+      "name": "Taxi route from Ludviginkatu 6 to Löyly",
       "input": {
         "modes": "WALK,WAIT,TRANSFER,TAXI",
         "from": "60.16745770000001,24.931074800000033",
@@ -66,7 +66,7 @@
       }
     },
     {
-      "name": "Ludviginkatu 10 to Hervanta, arrive by Tue 2.10 13:00",
+      "name": "Ludviginkatu 10 to Hervanta",
       "input": {
         "from": "60.16745770000001,24.931074800000033",
         "to": "60.3,24.46666670000002",
