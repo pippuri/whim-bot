@@ -15,7 +15,7 @@ function validateEvent( event ) {
     return Promise.reject(new MaaSError('Missing auditorKey', 400));
   }
   if ( ! event.startTime ) {
-    event.startTime = new Date().getTime() - 1000 * 60 * 60 * 24;
+    event.startTime = Date.now() - 1000 * 60 * 60 * 24;
   }
   if ( isNaN( event.startTime ) ) {
     return Promise.reject(new MaaSError('Input startTime should be a milli epoch', 400));
@@ -98,11 +98,14 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+      .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      });
     });
 };

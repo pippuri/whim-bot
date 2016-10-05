@@ -8,11 +8,6 @@ const utils = require('../../lib/utils');
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 
-const privateKey = require(`./keys/${process.env.SERVERLESS_STAGE}`).getKey();
-if (!privateKey) {
-  throw new Error('Unknown SERVERLESS_STAGE when initializing tickets-create');
-}
-
 function validateEvent( event ) {
   if (!event.partnerId) {
     return Promise.reject(new MaaSError('Missing partnerId', 400));
@@ -103,8 +98,18 @@ function storeTicketAuditLog( event, payload, partner ) {
     } );
 }
 
-function signPayload( payload ) {
-  return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+function signPayload(payload) {
+  const privateKey = require(`./keys/${process.env.SERVERLESS_STAGE}`).getKey();
+  if (!privateKey) {
+    throw new MaaSError('Unknown SERVERLESS_STAGE when initializing tickets-create', 500);
+  }
+
+  try {
+    return jwt.sign(payload, privateKey, { algorithm: 'RS256' });
+  } catch (error) {
+    console.warn(`Error signing the message: payload='${JSON.stringify(payload)}', privateKey='${privateKey}'`);
+    throw new MaaSError('Error signing the message', 500);
+  }
 }
 
 // TODO: this should really use a queue instead of a hack like this.
@@ -146,11 +151,14 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+      .then(() => {
+        if (_error instanceof MaaSError) {
+          callback(_error);
+          return;
+        }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      });
     });
 };

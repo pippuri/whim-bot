@@ -104,7 +104,7 @@ Currently the secret key is supplied with within the codebase, and can be refres
 1. Get a milliepoch timestamp which is 7 days from now:
 
 ```
-node -p -e 'new Date().getTime()+1000*60*60*24*7'
+node -p -e 'Date.now()+1000*60*60*24*7'
 ```
 
 2. Replace the milliepoch in the `tickets/tickets-create/keys/prod.js` with the new one.

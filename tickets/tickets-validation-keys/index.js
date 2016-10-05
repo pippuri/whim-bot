@@ -2,40 +2,18 @@
 
 'use strict';
 
-const publicKeysMap = { dev: [], prod: [] };
-let publicKeys;
-
-if ( process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test' || process.env.SERVERLESS_STAGE === 'alpha') {
-  publicKeys = publicKeysMap.dev;
-} else if ( ( '' + process.env.SERVERLESS_STAGE ).indexOf('prod') === 0) {
-  publicKeys = publicKeysMap.prod;
-} else {
-  throw new Error( 'Unknown SERVERLESS_STAGE when initializing tickets-validation-keys' );
-}
+const MaaSError = require('../../lib/errors/MaaSError');
+const publicKeysMap = { dev: [], test: [], alpha: [], prod: [] };
+const publicKeys = publicKeysMap[process.env.SERVERLESS_STAGE];
 
 module.exports.respond = (event, callback) => {
-  return callback(null, { keys: publicKeys || [] } );
+  if (!publicKeys) {
+    const message = 'Unknown SERVERLESS_STAGE when initializing tickets-validation-keys';
+    return callback(new MaaSError(message, 500));
+  }
+
+  return callback(null, { keys: publicKeys } );
 };
-
-publicKeysMap.dev.push( {
-  validityStartMilliEpoch: 0,
-  validityEndMilliEpoch: 1470748367398,
-  publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhANLriSaQ1mE4QSRusJ8AxqDNc98Wuvsd
-VK7o2j4ST3Yvh5amStJPpmYfzRJ5vo3bzU0rRcZhO9ez9YsO9hP1QGGYnjTqKuSN
-eMAKFhJ6Xew88q8OkvxMvsZbtQwQYTs0QwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap.dev.push( {
-  validityStartMilliEpoch: 1470748367398,
-  validityEndMilliEpoch: 1735682400000, // 2025
-  publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAPad/1cNq1sZr+Uxt6mNJGpbrxNNUeAd
-7Mdwj/NLShpfZalJQKfiDuqmI2MYroRzkqsLqgvAuDuo/d0CGOTXRzNdrAVml5oR
-xd75bQDz1BBO0yamLRw4B7/jatPxZZM0awIDAQAB
------END PUBLIC KEY-----`,
-} );
 
 publicKeysMap.prod.push( {
   validityStartMilliEpoch: 0,
@@ -79,42 +57,22 @@ aDq9idYE5GpFVyA+BJ57BET0lENT2fNFRwIDAQAB
 -----END PUBLIC KEY-----`,
 } );
 
-publicKeysMap.test.push( {
-	validityStartMilliEpoch: undefined,
-	validityEndMilliEpoch: NaN,
+publicKeysMap.dev.push( {
+	validityStartMilliEpoch: 1476247156059,
+	validityEndMilliEpoch: 1476247351714,
 	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAOn37G+3mdcMrvWJ4YwAo4MLxv3ToZse
-qm8XiHpEY4YKzDDx4gdblRIgN5Vust9JfGBpCEWKTGkhe5Hj5HqqcOJc0qPyYRPu
-Cv8MckQuLRiN8y1Q+tR+b2Zf7gXzNglfOwIDAQAB
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAN/eUKaQ3A9UT6FrR0ODDHzEJiNtZley
+r8qU62ZLpY8vI3z/5ChAXBVcMPyelFfqIY/2VkE7YQlomBrb/SYFcsxWF64ca3Kk
+H+KtlMZwiYk5W5U1i51r8gyu9H792Nz8bQIDAQAB
 -----END PUBLIC KEY-----`,
 } );
 
-publicKeysMap.test.push( {
-	validityStartMilliEpoch: null,
-	validityEndMilliEpoch: NaN,
+publicKeysMap.dev.push( {
+	validityStartMilliEpoch: 1476247351714,
+	validityEndMilliEpoch: 1476247357075,
 	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAMa7+qSzgyQr9dOeC4Db5TD0ao01+qnA
-kNkvBAydUkctcOu+yGNuPSp25xISeZGUKfVMB96LOJPpl4rPsmhBLQJZ52fAdJtJ
-0d5afhhnQWazleWTiu+PHpqmqWihN2L+dwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap.test.push( {
-	validityStartMilliEpoch: null,
-	validityEndMilliEpoch: NaN,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAPWFIaFijnTlRcrE0j0JARvO4orUO3gD
-7A/l+awe1T0NRhJ58mZHd+iayHB9BWJTDUQ4SK8p2OwAQ8+lJb+R0ePUg8t49OJ5
-w9vrVRrVwNFRKNGtc3HN4pnEl8l1OAWKNwIDAQAB
------END PUBLIC KEY-----`,
-} );
-
-publicKeysMap.test.push( {
-	validityStartMilliEpoch: null,
-	validityEndMilliEpoch: 1475849804972,
-	publicKey: `-----BEGIN PUBLIC KEY-----
-MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAM6y7f7HOtVOkkz3tlgOihsq9CQADHmt
-tmwRZPU6RLO3D5RQTehKXa8O6JrFcKIbiUGtcQmchi1OWK6ZAscw/rr+Z9AsMskm
-nMvBCITyXFVG38x+gWoL0VYnZn3J6TjbWwIDAQAB
+MHwwDQYJKoZIhvcNAQEBBQADawAwaAJhAJz386SpKtYcQkg60s1QKetDgyLu4Y41
+St3yv2JKa1Mnv+Z7Rk5KnqTJh6mLis7Yejzc7BteAZ5myzNS4tPI5EyS63aLndY2
+gL+66qiZSjI1P3ULIZz4D/BIt7jDY/susQIDAQAB
 -----END PUBLIC KEY-----`,
 } );
