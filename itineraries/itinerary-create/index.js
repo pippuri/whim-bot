@@ -18,8 +18,9 @@ module.exports.respond = function (event, callback) {
   const legErrors = [];
 
   return Database.init()
-    .then(() => utils.validateSignatures(event.itinerary))        // Validate request signature
-    .then(validItineraryData => Itinerary.create(validItineraryData, event.identityId))
+    .then(() => utils.validateSignatures(event.itinerary))
+    .then(signedItinerary => utils.without(signedItinerary, ['signature']))
+    .then(unsignedItinerary => Itinerary.create(unsignedItinerary, event.identityId))
     .then(itinerary => itinerary.pay())
     .then(itinerary => {
       // Itinerary does not offer reserve itself. Legs must be handled individually.
