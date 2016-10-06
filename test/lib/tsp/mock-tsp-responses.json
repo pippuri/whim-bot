@@ -20,11 +20,11 @@
           "mock": true
         }
       },
+      "cost":{
+        "amount":1522,
+        "currency":"EUR"
+      },
       "terms":{
-        "price":{
-          "amount":1522,
-          "currency":"EUR"
-        }
       },
       "customer": {
         "firstName": "John",
@@ -55,11 +55,11 @@
           "mock": true
         }
       },
+      "cost":{
+        "amount":1522,
+        "currency":"EUR"
+      },
       "terms":{
-        "price":{
-          "amount":1522,
-          "currency":"EUR"
-        }
       },
       "token": {
         "validityDuration": {
@@ -72,11 +72,11 @@
       "meta":{
         "mock":true
       },
+      "cost":{
+        "amount":1522,
+        "currency":"EUR"
+      },
       "terms":{
-        "price":{
-          "amount":1522,
-          "currency":"EUR"
-        }
       },
       "extraField":{
         "extraAttribute":true

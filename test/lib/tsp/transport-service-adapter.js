@@ -24,6 +24,7 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
     it('should have a valid response', () => {
       expect(response).to.have.deep.property('tspId');
       expect(response).to.have.deep.property('leg');
+      expect(response).to.have.deep.property('cost');
       expect(response).to.have.deep.property('terms');
       expect(response).to.have.deep.property('meta');
       expect(response).to.not.have.deep.property('customer');
@@ -99,6 +100,7 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
       // Attributes that should be transmitted
       expect(response).to.have.property('tspId');
       expect(response).to.have.property('leg');
+      expect(response).to.have.property('cost');
       expect(response).to.have.property('terms');
       expect(response).to.have.property('meta');
       expect(response.state).to.be.a('string');
@@ -140,6 +142,7 @@ module.exports = function (TSPAdapter, mockConfigurations, mockData) {
 
     it('should have a valid response', () => {
       expect(response).to.have.deep.property('options[0].leg');
+      expect(response).to.have.deep.property('options[0].cost');
       expect(response).to.have.deep.property('options[0].terms');
       expect(response).to.have.deep.property('options[0].meta');
       expect(response).to.not.have.deep.property('options[0].customer');
