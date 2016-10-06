@@ -301,12 +301,17 @@ module.exports = function (input, results) {
     it('Cancelled itinerary has \'CANCELLED\' or \'CANCELLED_WITH_ERRORS\' state', () => {
       // FIXME When the implementation is in, accept CANCELLED_WITH_ERRORS only for legs
       // of which bookings are CONFIRMED (=cannot be cancelled anymore)
-      //expect(cancelledItinerary.state).to.equal('CANCELLED');
       expect(cancelledItinerary.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
       cancelledItinerary.legs.forEach(leg => {
-        expect(leg.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
         if (leg.booking) {
-          expect(leg.booking.state).to.be.oneOf(['CANCELLED', 'CANCELLED_WITH_ERRORS']);
+          if (leg.booking.state === 'CONFIRMED') {
+            expect(leg.state).to.be.oneOf(['CANCELLED_WITH_ERRORS']);
+          } else {
+            expect(leg.state).to.be.oneOf(['CANCELLED']);
+            expect(leg.booking.state).to.be.oneOf(['CANCELLED']);
+          }
+        } else {
+          expect(leg.state).to.be.oneOf(['CANCELLED']);
         }
       });
 
