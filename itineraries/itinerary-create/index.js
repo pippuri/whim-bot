@@ -23,13 +23,12 @@ module.exports.respond = function (event, callback) {
     .then(unsignedItinerary => Itinerary.create(unsignedItinerary, event.identityId))
     .then(itinerary => itinerary.pay())
     .then(itinerary => {
-      // Itinerary does not offer reserve itself. Legs must be handled individually.
-      // Leg reserving will be handled later by workflow engine. Workflow may, for example,
-      // decide to reserve individual log (booking) in later.
-      const legReserves = itinerary.legs.map(leg => {
-        return leg.reserve().reflect();
+      // Activate itinerary and legs rightaway. Later these are done by TripEngine
+      // in the background.
+      const legActivates = itinerary.legs.map(leg => {
+        return leg.activate().reflect();
       });
-      return Promise.all(legReserves)
+      return Promise.all(legActivates)
         .each(inspection => {
           if (!inspection.isFulfilled()) {
             legErrors.push(inspection.reason());
@@ -37,11 +36,17 @@ module.exports.respond = function (event, callback) {
         })
         .then(() => {
           if (legErrors.length > 0) {
-            console.warn('Errors while reserving legs; cancelling itinerary...', legErrors);
+            console.warn('Errors while activating legs; cancelling itinerary...', legErrors);
             return itinerary.cancel();
           }
-          return itinerary.activate(); // TODO: Do not activate after UI supports PAID state itineraries
+          return itinerary.activate();
         });
+    })
+    .then(itinerary => {
+      if (itinerary.state === 'CANCELLED' || itinerary.state === 'CANCELLED_WITH_ERRORS') {
+        return Promise.reject(new MaaSError(`Failed to reserve legs: ${legErrors}`, 400));
+      }
+      return Promise.resolve(itinerary);
     })
     .then(itinerary => {
       if (itinerary.state === 'CANCELLED' || itinerary.state === 'CANCELLED_WITH_ERRORS') {
