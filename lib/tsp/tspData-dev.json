@@ -19,7 +19,8 @@
     "endpoints": {
       "reserve": "bookings/",
       "retrieve": "bookings/",
-      "cancel": "bookings/"
+      "cancel": "bookings/",
+      "query": "bookings/options/"
     }
   },
   "Sixt": {
