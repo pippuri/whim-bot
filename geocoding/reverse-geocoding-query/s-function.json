@@ -29,7 +29,7 @@
       "authorizerFunction": false,
       "apiKeyRequired": false,
       "requestParameters": {
-        "integration.request.querystring.lang": "method.request.querystring.lang",
+        "integration.request.querystring.locale": "method.request.querystring.locale",
         "integration.request.querystring.count": "method.request.querystring.count",
         "integration.request.querystring.lat": "method.request.querystring.lat",
         "integration.request.querystring.lon": "method.request.querystring.lon"
@@ -38,7 +38,7 @@
         "application/json": {
           "identityId": "",
           "payload": {
-            "lang": "$input.params('lang')",
+            "locale": "$input.params('locale')",
             "count": "$input.params('count')",
             "lat": "$input.params('lat')",
             "lon": "$input.params('lon')"
