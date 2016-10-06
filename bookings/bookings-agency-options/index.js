@@ -115,10 +115,10 @@ function getAgencyProductOptions(event) {
     }
 
     const prices = [];
-    let options = response.options
+    const options = response.options
       .map(utils.removeNulls)
       .map(option => {
-        prices.push( { amount: option.terms.price.amount, currency: option.terms.price.currency } );
+        prices.push( { amount: option.cost.amount, currency: option.cost.currency } );
         return option;
       });
 
@@ -130,14 +130,17 @@ function getAgencyProductOptions(event) {
           prices: prices,
         },
       })
-      .then( points => {
-        options = options.map( (option, index) => {
+      .then(points => {
+        options.forEach((option, index) => {
           const price = points[index];
-          option.terms.price.amount = price;
-          option.terms.price.currency = 'POINT';
+          option.fare = {
+            amount: price,
+            currency: 'POINT',
+          };
           option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
           return option;
         });
+
         return options;
       });
     }
@@ -165,13 +168,12 @@ module.exports.respond = function (event, callback) {
   return parseAndValidateInput(event)
   .then(parsed => getAgencyProductOptions(parsed))
   .then(response => formatResponse(response))
-  .then(response => {
-    callback(null, response);
-  })
+  .then(response => (callback(null, response)))
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
+
     if (_error instanceof MaaSError) {
       callback(_error);
       return;
