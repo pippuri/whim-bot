@@ -35,6 +35,10 @@
             "additionalMiles": null
         }
     },
+    "fare": {
+        "amount": 8392.67,
+        "currency": "POINT"
+    },
     "terms": {
         "mileageLimit": null,
         "stations": {
@@ -156,10 +160,6 @@
                     "Information": "You can park the Sixt vehicle to any Sixt parking spot in parking hall P3B. Please leave the GPS and child seat in the car and lock the doors. Then return the keys to the Sixt counter between Terminals 1 and 2 and drop them into the key box, which is located on the left side of the Sixt counter."
                 }
             }
-        },
-        "price": {
-            "amount": 8392.67,
-            "currency": "POINT"
         }
     },
     "signature": "76cbd20378d349ba7bba6d0b87faa958c596b099cb92d4e59df17ec97151a7cb"
