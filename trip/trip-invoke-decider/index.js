@@ -103,9 +103,13 @@ class Decider {
                         `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
             return Promise.resolve();
           })
-          // handle unexpected errors
+          // handle  errors
           .catch(err => {
-            console.error('[Decider] ERROR while starting the trip -- ingoring, err:', err.stack || err);
+            if (err instanceof MaaSError && err.status === 404) {
+              console.error(`[Decider] Itinerary ${this.flow.trip.referenceId} not found from DB, aborting flow`);
+              this.decision.abortFlow(`Itinerary ${this.flow.trip.referenceId} not found from DB`);
+            }
+            console.error('[Decider] ERROR while starting the trip, err:', err.stack || err);
             return Promise.resolve();
           });
 
