@@ -145,9 +145,7 @@ module.exports = function (input, results) {
     });
 
     it('Creates the itinerary in \'PAID\' state', () => {
-      // FIXME Change this when jubilem's new work is in
-      //expect(createdItinerary.state).to.equal('PAID');
-      expect(createdItinerary.state).to.equal('ACTIVATED');
+      expect(createdItinerary.state).to.equal('PAID');
     });
 
     it('Creates bookings for legs that are bookable', () => {
@@ -173,15 +171,10 @@ module.exports = function (input, results) {
     });
 
     it('Creates the itinerary, legs as PAID', () => {
-      // FIXME Change this when jubilem's new work is in
-      //expect(createdItinerary.state).to.equal('PAID');
-      expect(createdItinerary.state).to.equal('ACTIVATED');
-
+      expect(createdItinerary.state).to.equal('PAID');
       // Check each bookable leg is actually booked
       createdItinerary.legs.forEach(leg => {
-        // FIXME Change this when jubilem's new work is in
-        //expect(leg.state).to.equal('PAID');
-        expect(leg.state).to.equal('ACTIVATED');
+        expect(leg.state).to.equal('PAID');
       });
 
       skip = false;
@@ -216,13 +209,9 @@ module.exports = function (input, results) {
     });
 
     it('Retrieves the itinerary & legs in PAID state, bookings in PAID, RESERVED or CONFIRMED state', () => {
-      // FIXME Change this when jubilem's new work is in
-      //expect(retrievedItinerary.state).to.equal('PAID');
-      expect(retrievedItinerary.state).to.equal('ACTIVATED');
+      expect(retrievedItinerary.state).to.equal('PAID');
       retrievedItinerary.legs.forEach(leg => {
-        // FIXME Change this when jubilem's new work is in
-        //expect(leg.state).to.equal('PAID');
-        expect(leg.state).to.equal('ACTIVATED');
+        expect(leg.state).to.equal('PAID');
         if (leg.booking) {
           expect(leg.booking.state).to.be.oneOf(['PAID', 'RESERVED', 'CONFIRMED']);
         }
@@ -244,9 +233,7 @@ module.exports = function (input, results) {
     it('Lists the itineraries that are \'PAID\'', () => {
       const event = {
         identityId: input.event.identityId,
-        // FIXME Change this when jubilem's new work is in
-        //states: 'PAID',
-        states: 'ACTIVATED',
+        states: 'PAID',
       };
 
       return runLambda(itineraryListLambda, event)
