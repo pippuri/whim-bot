@@ -3,7 +3,7 @@
 const agencyOptionsTest = require('./feature-agency-options.js');
 const bookingsRetrieveTest = require('./feature-bookings-retrieve');
 const bookingsListTest = require('./feature-bookings-list');
-const bookingsOcrldTest = require('./feature-bookings-lambda-ocrld-maas');
+const bookingsMaaSFullFlow = require('./feature-bookings-maas-full-flow');
 const bookingsSixtFullFlowTest = require('./feature-bookings-Sixt-full-flow.js');
 
 describe('bookings endpoint', function () {
@@ -43,8 +43,8 @@ describe('bookings endpoint', function () {
     bookingsSixtFullFlowTest(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
   });
 
-  describe('bookings-ocrld', function () {
+  describe('bookings-MaaS-full-flow', function () {
     this.timeout(20000);
-    bookingsOcrldTest(agencyOptionsLambda);
+    bookingsMaaSFullFlow(agencyOptionsLambda);
   });
 });
