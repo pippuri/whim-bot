@@ -1,7 +1,0 @@
-{
-    "functionId" : "MaaS-geocoding-query-1464868359096",
-    "functionName": "reverse-geocoding",
-    "parameters": "lat=12094123, lon=654325",
-    "invokeTime": "0002112",
-    "flag": "FAILED"
-}
