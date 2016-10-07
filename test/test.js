@@ -27,6 +27,7 @@ function loadEnvironment() {
 
   // Read the variables from the given path
   console.info(`Using stage '${stage}' variables for running the tests.`);
+  console.info(`Running against datacenter '${dataCenter}' setup.`);
 
   const valuesFile = require(`../_meta/variables/s-variables-${stage}.json`);
   const dataCenterValuesFile = require(`../_meta/variables/s-variables-${stage}-${dataCenter}.json`);
