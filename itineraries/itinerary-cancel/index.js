@@ -5,6 +5,7 @@ const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
 const Database = models.Database;
+const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 
 function validateInput(event) {
@@ -33,10 +34,11 @@ module.exports.respond = (event, callback) => {
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
     .then(itinerary => itinerary.cancel())
+    .then(itinerary => Trip.cancelWithItinerary(itinerary))
     .then(itinerary => formatResponse(itinerary.toObject()))
-    .then(itinerary => {
+    .then(response => {
       Database.cleanup()
-        .then(() => callback(null, itinerary));
+        .then(() => callback(null, response));
     })
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

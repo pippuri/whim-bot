@@ -1,5 +1,5 @@
 {
-  "name": "trip-poll-decision",
+  "name": "trip-poll-decision-runner2",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function to run AWS SWF decision task polling",
   "customName": false,
@@ -14,7 +14,7 @@
   "endpoints": [],
   "events": [
     {
-      "name": "MaaSSWFDecisionPollScheduler",
+      "name": "MaaSSWFDecisionPoll2",
       "type": "schedule",
       "config": {
         "schedule": "rate(1 minute)",

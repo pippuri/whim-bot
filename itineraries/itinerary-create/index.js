@@ -4,6 +4,7 @@ const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const Database = models.Database;
+const TripEngine = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const Promise = require('bluebird');
 
@@ -15,13 +16,17 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  const legErrors = [];
+//  const legErrors = [];
 
   return Database.init()
     .then(() => utils.validateSignatures(event.itinerary))
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
     .then(unsignedItinerary => Itinerary.create(unsignedItinerary, event.identityId))
     .then(itinerary => itinerary.pay())
+/*
+    // Testing bold version where all bookings are handled in TripEngine side. If finding
+    // problems, reverting back that legs are activated (booking happens) already here.
+
     .then(itinerary => {
       // Activate itinerary and legs rightaway. Later these are done by TripEngine
       // in the background.
@@ -48,16 +53,12 @@ module.exports.respond = function (event, callback) {
       }
       return Promise.resolve(itinerary);
     })
-    .then(itinerary => {
-      if (itinerary.state === 'CANCELLED' || itinerary.state === 'CANCELLED_WITH_ERRORS') {
-        return Promise.reject(new MaaSError(`Failed to reserve legs: ${legErrors}`, 400));
-      }
-      return Promise.resolve(itinerary);
-    })
+*/
+    .then(itinerary => TripEngine.startWithItinerary(itinerary)) // Start workflow execution
     .then(itinerary => formatResponse(itinerary.toObject()))
-    .then(itinerary => {
+    .then(response => {
       Database.cleanup()
-        .then(() => callback(null, itinerary));
+        .then(() => callback(null, response));
     })
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
