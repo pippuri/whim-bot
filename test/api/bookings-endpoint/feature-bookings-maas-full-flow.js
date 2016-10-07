@@ -31,7 +31,8 @@ module.exports = function (optionsLambda) {
     let event;
     let error;
 
-    const startTime = Date.now() + 60 * 1000;
+    // 10 minutes from now
+    const startTime = Date.now() + 10 * 60 * 1000;
 
     // Before each test we check if a previous test has errored. If so, skip
     // the test.
