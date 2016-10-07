@@ -67,7 +67,7 @@ class Decider {
 
     // act according flow stage
     const taskName = this.flow.task && this.flow.task.name;
-    console.log(`[Decider] Processing task '${taskName}'...`);
+    console.info(`[Decider] Processing task '${taskName}'...`);
     let legId;
     switch (taskName) {
       // do some trip starting actions
@@ -87,7 +87,7 @@ class Decider {
             // activate trip if starting in 5 mins, or schedule for later
             if (itinerary.startTime > this.now + (5 * 60 * 1000)) {
               this.decision.scheduleTimedTask(itinerary.startTime, TripWorkFlow.TASK_ACTIVATE_TRIP);
-              console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_ACTIVATE_TRIP}' ` +
+              console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_ACTIVATE_TRIP}' ` +
                           `itinerary id '${this.flow.trip.referenceId}' into ${new Date(itinerary.startTime)}.`);
               return Promise.resolve(itinerary);
             }
@@ -99,7 +99,7 @@ class Decider {
           .then(() => {
             const timeout = (this.flow.trip.endTime || Date.now() + (24 * 60 * 60 * 1000)) + (30 * 60 * 1000);
             this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
-            console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
+            console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
                         `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
             return Promise.resolve();
           })
@@ -166,7 +166,7 @@ class Decider {
           });
 
       case TripWorkFlow.TASK_CLOSE_TRIP:
-        console.log(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        console.info(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
         // fetch itinerary & end it
         this.decision.closeFlow('Decider: closing ended trip');
         return Itinerary.retrieve(this.flow.trip.referenceId)
@@ -180,7 +180,7 @@ class Decider {
       case TripWorkFlow.TASK_CANCEL_TRIP:
         // Cancel requested by user or external entity.
         // This assumes Itinerary is already cancelled, this just cleans the work flow
-        console.log(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        console.info(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
         this.decision.closeFlow('Decider: user requested cancellation');
         return Promise.resolve();
 
@@ -203,7 +203,7 @@ class Decider {
     // send decision to SWF
     return swfClient.respondDecisionTaskCompletedAsync(this.decision.decisionTaskCompletedParams)
       .then(data => {
-        console.log(`[Decider] done with workflowId '${this.flow.id}'`);
+        console.info(`[Decider] done with workflowId '${this.flow.id}'`);
         return Promise.resolve({ workFlowId: this.flow.id });
       })
       .catch(err => {
@@ -224,14 +224,14 @@ class Decider {
       const leg = itinerary.legs[i];
       // skip finished
       if (leg.state === 'FINISHED') {
-        console.log(`[Decider] Skipping checking FINISHED leg id '${leg.id}'`);
+        console.info(`[Decider] Skipping checking FINISHED leg id '${leg.id}'`);
         continue;
       } else if (leg.state === 'ACTIVATED') {
         if (leg.endTime < this.now) { // eslint-disable-line max-depth
-          console.log(`[Decider] Finishing leg id '${leg.id}'...`);
+          console.info(`[Decider] Finishing leg id '${leg.id}'...`);
           promiseQueue.push(leg.finish().reflect());
         } else {
-          console.log(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
+          console.info(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
         }
         continue;
       }
@@ -246,7 +246,7 @@ class Decider {
         // Strong assumption legs are in time ordered!
         const checkWakeUpTime = activationTime + (5 * 1000);
         this.decision.scheduleTimedTask(checkWakeUpTime, TripWorkFlow.TASK_CHECK_ITINERARY, { legId: leg.id });
-        console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' leg id '${leg.id}' ` +
+        console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' leg id '${leg.id}' ` +
                     `into ${new Date(checkWakeUpTime)}.`);
         break;
       }
@@ -267,7 +267,7 @@ class Decider {
         if (lastLegState === 'ACTIVATED' || lastLegState === 'FINISHED') {
           const timeout = Date.now() + (30 * 60 * 1000);
           this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
-          console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
+          console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
                       `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
         }
         if (hasErrors === true) {
@@ -293,7 +293,7 @@ class Decider {
    * Helper check to activate itinerary
    */
   _activateItinerary(itinerary) {
-    console.log(`[Decider] activating itinerary '${itinerary.id}'...`);
+    console.info(`[Decider] activating itinerary '${itinerary.id}'...`);
     return itinerary.activate()
       .then(itinerary => {
         let message = 'Your trip is about to start';
@@ -319,10 +319,10 @@ class Decider {
    * Helper check leg reservation & act if needed (TBD)
    */
   _activateLeg(leg) {
-    console.log(`[Decider] activating leg '${leg.id}' in state '${leg.state}'...`);
+    console.info(`[Decider] activating leg '${leg.id}' in state '${leg.state}'...`);
 
     if (['FINISHED', 'CANCELLED', 'CANCELLED_WITH_ERRORS'].some(state => state === leg.state)) {
-      console.log('[Decider] leg already done; ignoring');
+      console.info('[Decider] leg already done; ignoring');
       return Promise.resolve();
     }
 
@@ -348,7 +348,7 @@ class Decider {
         const checkWakeUpTime = leg.startTime - (2 * 60 * 1000);
         if (this.now < checkWakeUpTime) {
           this.decision.scheduleTimedTask(checkWakeUpTime, TripWorkFlow.TASK_CHECK_LEG, { legId: leg.id });
-          console.log(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_LEG}' leg id '${leg.id}' ` +
+          console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_LEG}' leg id '${leg.id}' ` +
                       `into ${new Date(checkWakeUpTime)}.`);
         }
         return Promise.resolve();
@@ -364,7 +364,7 @@ class Decider {
    * Helper send push notification for user
    */
   _notifyUser(message, type, data) {
-    console.log(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message}'`);
+    console.info(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message}'`);
     const notifData = {
       identityId: this.flow.trip.identityId,
       message: message,
@@ -374,7 +374,7 @@ class Decider {
     };
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
       .then(result => {
-        console.log(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
+        console.info(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
       })
       .catch(err => {
         console.error(`[Decider] Failed to send ush notification to user ${this.flow.trip.identityId}, err:`, err);
@@ -395,7 +395,7 @@ module.exports.respond = function (event, callback) {
     flow.assignDecisionTaskInput(event);
     decider = new Decider(flow);
   } catch (err) {
-    console.log(`This event caused error: ${JSON.stringify(event, null, 2)}`);
+    console.info(`This event caused error: ${JSON.stringify(event, null, 2)}`);
     return callback(new MaaSError(err.message || err, 400));
   }
 
