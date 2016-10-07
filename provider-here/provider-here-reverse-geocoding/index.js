@@ -25,7 +25,7 @@ const MaaSError = require('../../lib/errors/MaaSError');
 
 const ENDPOINT_URL = 'https://reverse.geocoder.cit.api.here.com/6.2/reversegeocode.json';
 const SEARCH_RADIUS = 500; // Find within 500m distance by default
-const SEARCH_COUNT = 10;   // Find a maximum of 10 results by default
+//const SEARCH_COUNT = 10;   // Find a maximum of 10 results by default
 
 function parseResults(response) {
   if (!response.Response || !util.isArray(response.Response.View) ||
@@ -70,25 +70,24 @@ function parseResults(response) {
 
 function adapt(input) {
   const radius = input.radius || SEARCH_RADIUS;
-  const count = input.count || SEARCH_COUNT;
+  // TODO Here does not support sorting by the quality of the data (e.g. whether we
+  // have a street number), hence we cannot use minresult or maxresults nor use counts
+  //const count = input.count || SEARCH_COUNT;
   const query = {
     mode: 'retrieveAddresses',
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     prox: `${input.lat},${input.lon},${radius}`,
-    language: input.lang,
+    language: input.locale,
     // Prune away anything except for the address
     locationattributes: 'ar,-mr,-mv,-dt,-sd,-ad,-ai,-li,-in,-tz,-nb,-rn',
     // Prune away state, county, district, subdistrict, address line, add. data
     addressattributes: 'ctr,-sta,-cty,cit,-dis,-sdi,str,hnr,pst,-aln,-add',
     // Prune away performed search, match quality, match code, parsed request
     responseattributes: '-ps,mq,-mt,-mc,-pr',
-    // Try to get at minimum & maximum 'count' results in one page
-    minresults: count,
-    maxresults: count,
     gen: 9,
     // Match at least city level information
-    level: 'city',
+    level: 'postalCode',
   };
 
   return request.get(ENDPOINT_URL, { json: true, qs: query })
