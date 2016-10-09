@@ -23,10 +23,19 @@ module.exports = function () {
     before(() => {
       return Promise.all(usersIdentityIds.map((identityId, index) => {
 
+        // Monday 10.10 17:00 to be moved to monday next week
+        const leaveAt = moment(1476108000000);
+        const now = moment().utcOffset(120);
+        leaveAt.year(now.year());
+        leaveAt.week(now.week());
+        if (now.day() >= leaveAt.day()) {
+          leaveAt.week(now.week() + 1);
+        }
+
         const params = {
           from: '60.1657520782836,24.9449517015989', // Ludviginkatu
           to: '60.220307,24.7752453', // Kilonrinne
-          leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+          leaveAt: `${leaveAt.valueOf()}`,
         };
 
         return bus.call('MaaS-business-rule-engine', {
