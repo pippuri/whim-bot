@@ -10,7 +10,7 @@ function getUserData(event) {
     return Promise.reject(new Error('Invalid or missing identityId'));
   }
 
-  return Subscription.getUserSubscription(identityId);
+  return Subscription.getLoginURL(identityId);
 }
 
 function wrapToEnvelope(profile, event) {
