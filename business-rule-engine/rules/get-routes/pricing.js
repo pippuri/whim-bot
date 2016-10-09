@@ -377,7 +377,6 @@ function _calculateCost(itineraries, profile) {
           co2: _calculateItineraryCo2(itinerary),
         };
       });
-
       return Promise.resolve(itineraries);
     });
 }
@@ -391,9 +390,15 @@ function _filterOutMultipleTaxiItineraries(itineraries) {
 
   // Move all taxi itineraries to an array and get the cheapest one
   const taxiItineraries = itineraries.filter(itinerary => itinerary.legs.some(leg => leg.mode === 'TAXI'));
-  const cheapestTaxiRoute = taxiItineraries.sort((a, b) => a.fare.points - b.fare.points)[0];
 
+  if (taxiItineraries.length === 0) {
+    // If no taxi route available, skip finding the cheapest taxi route return itineraries
+    return itineraries;
+  }
+
+  const cheapestTaxiRoute = taxiItineraries.sort((a, b) => a.fare.points - b.fare.points)[0];
   newItinerariesSet.push(cheapestTaxiRoute);
+
   return newItinerariesSet;
 }
 
