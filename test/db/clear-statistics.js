@@ -1,6 +1,5 @@
 'use strict';
 
-const assert = require('chai').assert;
 const Database = require('../../lib/models').Database;
 
 // A DB query that investigates Postgres performance for tables > 10000 bytes
