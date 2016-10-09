@@ -1,7 +1,7 @@
 {
-  "name": "profile-edit-payment",
+  "name": "profile-manage",
   "version": "0.0.1",
-  "description": "Profile modification for adding payment details",
+  "description": "Endpoint for creating user portal session",
   "author": "Sami Pippuri",
   "license": "UNLICENSED",
   "private": true,
