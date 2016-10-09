@@ -71,7 +71,6 @@ module.exports = options => {
     it('response should have direct Valopilkku taxi route', () => {
 
       const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
-      console.log(response.plan.itineraries);
       // Filter out everythign else than taxi only route
       const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
         const modes = itinerary.legs.map(leg => leg.mode);

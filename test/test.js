@@ -53,9 +53,16 @@ process.env.USE_MOCK_LAMBDA = 'TRUE';
 process.env.USE_MOCK_DYNAMO = 'TRUE';
 
 describe('MaaS.fi backend', () => {
+  // DB performance pre-setup (clear statistics)
+  require('./db/clear-statistics.js');
+
+  // The actual suite
   require('./business-rule-engine');
   require('./api');
   require('./profile');
   require('./provider');
   require('./lib');
+
+  // DB performance post-analysis
+  require('./db');
 });

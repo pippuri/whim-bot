@@ -56,7 +56,7 @@ module.exports = function (input, results) {
     }
     event.payload.leaveAt = `${leaveAt.valueOf()}`;
 
-    it(`Queries a route leaving at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss')}'`, () => {
+    it(`Queries a route leaving at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       return runLambda(routesQueryLambda, event)
         .then(
           response => {
@@ -320,10 +320,11 @@ module.exports = function (input, results) {
         return Promise.map(createdItinerary.legs, leg => {
           const legId = leg.id;
           const bookingId = (leg.booking) ? leg.booking.id : null;
-          return Promise.all([
-            models.Leg.query().delete().where('id', legId),
-            ((leg.booking) ? models.Booking.query().delete().where('id', bookingId) : null),
-          ]);
+
+          return models.Leg.query().delete().where('id', legId)
+            .then(() => {
+              return ((leg.booking) ? models.Booking.query().delete().where('id', bookingId) : null);
+            });
         })
         .then(() => {
           return models.Itinerary.query().delete().where('id', itineraryId);

@@ -14,11 +14,9 @@ module.exports = function () {
 
     const params = {
       type: 'maas',
-      location: {
-        from: {
-          lat: 60.1657541,
-          lon: 24.9417641,
-        },
+      from: {
+        lat: 60.1657541,
+        lon: 24.9417641,
       },
     };
 
@@ -56,20 +54,16 @@ module.exports = function () {
     const params = [
       {
         type: 'maas',
-        location: {
-          from: {
-            lat: 60.1657541,
-            lon: 24.9417641,
-          },
+        from: {
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
       {
         type: 'taxi',
-        location: {
-          from: {
-            lat: 60.1657541,
-            lon: 24.9417641,
-          },
+        from: {
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
     ];
@@ -109,11 +103,9 @@ module.exports = function () {
 
     const params = {
       type: 'lorem-ipsum',
-      location: {
-        from: {
-          lat: 60.1657541,
-          lon: 24.9417641,
-        },
+      from: {
+        lat: 60.1657541,
+        lon: 24.9417641,
       },
     };
 
@@ -135,22 +127,20 @@ module.exports = function () {
       expect(error).to.be.undefined;
     });
 
-    it('Should return an empty array as response', () => {
+    it('Should return a null as the response', () => {
       expect(response).to.not.be.undefined;
-      expect(response).to.be.an('array');
-      expect(response.length).to.equal(0);
+      expect(response).to.be.null;
     });
-
   });
 
-  describe('[NEGATIVE] query for tsp pricing with empty or missing location', () => {
+  describe('[NEGATIVE] query for tsp pricing with empty or missing \'from\'', () => {
 
     let response;
     let error;
 
     const params = {
       type: 'lorem-ipsum',
-      location: {},
+      from: {},
     };
 
     before(() => {
@@ -167,12 +157,12 @@ module.exports = function () {
       });
     });
 
-    it('Should not return an error', () => {
+    it('Should return an error', () => {
       expect(error).to.not.be.undefined;
-      expect(error.message).to.equal('No location supplied to TSP engine');
+      expect(error.message).to.equal('No \'from\' supplied to the TSP engine');
     });
 
-    it('Should return an empty array as response', () => {
+    it('Should not return a response', () => {
       expect(response).to.be.undefined;
     });
 
@@ -186,20 +176,16 @@ module.exports = function () {
     const params = [
       {
         type: 'tsp-hasta-lavista',
-        location: {
-          from: {
-            lat: 60.1657541,
-            lon: 24.9417641,
-          },
+        from: {
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
       {
         type: 'tsp-iam-not-real',
-        location: {
-          from: {
-            lat: 60.1657541,
-            lon: 24.9417641,
-          },
+        from: {
+          lat: 60.1657541,
+          lon: 24.9417641,
         },
       },
     ];
@@ -218,12 +204,16 @@ module.exports = function () {
       });
     });
 
-    it('Should return a response', () => {
-      expect(response).to.not.be.undefined;
-    });
-
     it('Should not return an error', () => {
       expect(error).to.be.undefined;
+    });
+
+    it('Should return a response', () => {
+      expect(response).to.not.be.undefined;
+      expect(response).to.be.an('array');
+      response.forEach(value => {
+        expect(value).to.be.a.null;
+      });
     });
   });
 
@@ -238,7 +228,7 @@ module.exports = function () {
       },
       {
         type: 'tsp-iam-not-real',
-        location: {},
+        from: {},
       },
     ];
 
@@ -263,8 +253,6 @@ module.exports = function () {
     it('Should return an error', () => {
       expect(error).to.not.be.undefined;
       expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal('One or more request does not supply location to the TSP engine');
     });
-
   });
 };

@@ -11,25 +11,88 @@
  *      - agencyId {String}
  */
 const Promise = require('bluebird');
-const _ = require('lodash');
-
+const geoUtils = require('geojson-utils');
 const models = require('../../../lib/models/index');
+const utils = require('../../../lib/utils');
 const Provider = models.Provider;
 
+// Static provider cache to speed up queries, refreshes every 5min.
+let cachedProviders;
+let cacheLastUpdated = 0;
+const cacheTTL = 5 * 60 * 1000;
+
 /**
- * Get single provider data by providerName
- * @param providerName {String}
+ * Fetches all the providers from database and caches the result.
+ *
+ * @return {Array} of providers
  */
-function _getProviderByName(providerName) {
-  if (!providerName || typeof providerName !== 'string') {
-    // TODO Move into validation code
-    return Promise.reject(new Error('Invalid of no providerName in params'));
+function queryProviders() {
+  if (Date.now() < (cacheLastUpdated + cacheTTL)) {
+    return Promise.resolve(utils.cloneDeep(cachedProviders));
   }
 
+  // Fetch all providers - it is a small batch, and much quicker than
+  // running several SQL queries
   return Provider.query()
-    .select('providerName', 'providerType', 'providerPrio', 'providerMeta')
-    .where('providerName', providerName)
-    .orderBy('providerPrio');
+    .select('Provider.*', Provider.raw('ST_AsGeoJSON("Provider"."the_geom") as geometry'))
+    .where('active', true)
+    .orderBy('providerPrio')
+    .then(providers => {
+      cacheLastUpdated = Date.now();
+      cachedProviders = providers;
+      return utils.cloneDeep(cachedProviders);
+    });
+}
+
+/**
+ * Checks whether a given point is inside the polygon
+ *
+ * @param {object} location - a {lat,lon} pair
+ * @param {object} polygon - a GeoJSON polygon
+ * @return true if it is inside polygon, false otherwise
+ */
+function isInside(location, polygon) {
+  const point = {
+    type: 'Point',
+    coordinates: [location.lon, location.lat],
+  };
+
+  return geoUtils.pointInPolygon(point, polygon);
+}
+
+/**
+ * Filters a a list of providers by a given rule
+ *
+ * @param {array} providers - A list of providers, returned by a query
+ * @param {object} rule - A filtering rule w/ type, name, agencyId & location
+ */
+function filterProviders(providers, rule) {
+  // Validate the rule
+  if (typeof rule.type !== 'string' && typeof rule.agencyId !== 'string'
+  && typeof rule.providerName !== 'string') {
+    throw new Error('Missing rule parameters: type, agencyId or providerName expected');
+  }
+
+  // Filter
+  return providers.filter(provider => {
+    if (rule.type && rule.type === provider.providerType) {
+      // OK
+    } else if (rule.agencyId && rule.agencyId === provider.agencyId) {
+       // OK
+    } else if (rule.providerName && rule.providerName === provider.providerName) {
+      // OK
+    } else {
+       // Not OK
+      return false;
+    }
+
+    // Geographic match
+    if (rule.location) {
+      const geometry = JSON.parse(provider.geometry);
+      return isInside(rule.location, geometry);
+    }
+    return true;
+  });
 }
 
 /**
@@ -38,36 +101,8 @@ function _getProviderByName(providerName) {
  * @return {Object} provider
  */
 function getProvider(params) {
-  // Get provider by providerName
-  if (params.hasOwnProperty('providerName')) return _getProviderByName(params.providerName);
-
-  // TODO Move into validation code
-  if (!params.type) return Promise.reject(new Error('Provider type undefined'));
-
-  if (!params.hasOwnProperty('agencyId')) {
-    if (!params.hasOwnProperty('location')) {
-      return Promise.reject(new Error(`No location in params ${params}`));
-    }
-
-    if (!params.location.hasOwnProperty('lat') || !params.location.hasOwnProperty('lon')) {
-      // TODO Move into validation code
-      return Promise.reject(new Error(`No location components in params ${params}`));
-    }
-  }
-
-  const location = {
-    lat: params.location ? params.location.lat || 0 : 0,
-    lon: params.location ? params.location.lon || 0 : 0,
-  };
-
-  params = {
-    location: location,
-    type: params.type,
-    agencyId: params.agencyId ? params.agencyId : undefined,
-  };
-  return Provider.selectProvider(params.type, params)
-    .then(response => Promise.resolve(response.rows))
-    .catch(error => Promise.reject(new Error(`Cannot run get-provider rule, error: ${error.message}`)));
+  return queryProviders()
+    .then(providers => filterProviders(providers, params));
 }
 
 /**
@@ -79,69 +114,35 @@ function getProvider(params) {
  * check get-routes/routes.js/_resolveRoutesProviders() for reference
  */
 function getProviderBatch(requests) {
+  // Handling of types [{<request data>}, {<request data>}]
   if (requests instanceof Array) {
-    const queue = [];
-    requests.forEach(request => {
-      const query = Provider.selectProvider(request.type, request);
-      queue.push(query);
-    });
-
-    // .. and execute them
-    return Promise.all(queue)
-      .then(results => Promise.resolve(results.map(result => result.rows)))
-      .catch(error => Promise.reject(new Error(`Cannot run get-provider-batch rule, error: ${error.message}`)));
-  }
-
-  if (typeof requests === 'object') {
-    const queue = [];
-
-    // If 'requests' is an object, queue will be a 2 level Array
-    Object.keys(requests).forEach((key, index) => {
-      queue[index] = [];
-      requests[key].forEach(request => {
-        const query = Provider.selectProvider(request.type, request);
-        queue[index].push(query);
-      });
-    });
-
-    // Populate placeholder response object with same key as requests
-    const response = Object.assign(requests);
-    Object.keys(response).forEach(key => {
-      response[key] = [];
-    });
-
-    // Save the length of each object key here to regenerate back to pre-flatten
-    const objectKeyLength = queue.map(item => {
-      return item.length;
-    });
-
-    return Promise.all(_.flatten(queue))
-      .then(results => {
-        const resultRows = results.map(result => result.rows);
-
-        let count = 0;
-        let currentKeyIndex = 0;
-        resultRows.forEach(row => {
-          if (objectKeyLength[currentKeyIndex] === 0) {
-            currentKeyIndex++;
-            response[Object.keys(response)[currentKeyIndex]].push(row);
-          } else if (count < objectKeyLength[currentKeyIndex] - 1 ) {
-            response[Object.keys(response)[currentKeyIndex]].push(row);
-            count++;
-
-          } else if (count < objectKeyLength[currentKeyIndex]) {
-            response[Object.keys(response)[currentKeyIndex]].push(row);
-            currentKeyIndex++;
-            count = 0;
-          }
+    // Fetch all providers - it is a small batch, and much quicker than
+    // running several SQL queries
+    return queryProviders()
+      .then(providers => {
+        return requests.map(request => {
+          return filterProviders(providers, request);
         });
-        return Promise.resolve(response);
-      })
-      .catch(error => Promise.reject(new Error(`Cannot run get-provider-batch rule, error: ${error.message}`)));
+      });
   }
 
-  // We should never get there - the error should have been caught in validation earlier
-  return Promise.reject(new Error('Batch provider should have input as object or array'));
+  // Handling of types { key: [<request data>], [key2: <request data>] }
+  if (typeof requests === 'object') {
+    const queries = {};
+    const keys = Object.keys(requests);
+
+    if (keys.length === 0) {
+      return Promise.reject(new Error('Request with no keys given'));
+    }
+
+    keys.forEach(key => {
+      queries[key] = getProviderBatch(requests[key]);
+    });
+
+    return Promise.props(queries);
+  }
+
+  return Promise.reject(new Error('Invalid request, expecting array or object'));
 }
 
 module.exports = {
