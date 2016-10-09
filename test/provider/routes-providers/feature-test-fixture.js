@@ -28,13 +28,13 @@ module.exports = (test, provider) => {
   if (test.input.leaveAt) {
     const updated = updateTime(test.input.leaveAt);
     test.input.leaveAt = updated;
-    testName += `, leave at: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss')}`;
+    testName += `, leave at: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss Z')}`;
   }
 
   if (test.input.arriveBy) {
     const updated = updateTime(test.input.arriveBy);
     test.input.arriveBy = updated;
-    testName += `, arrive by: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss')}`;
+    testName += `, arrive by: ${moment(updated).format('DD.MM.YYYY, HH:mm:ss Z')}`;
   }
 
   describe(testName, () => {

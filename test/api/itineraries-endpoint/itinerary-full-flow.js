@@ -56,7 +56,7 @@ module.exports = function (input, results) {
     }
     event.payload.leaveAt = `${leaveAt.valueOf()}`;
 
-    it(`Queries a route leaving at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss')}'`, () => {
+    it(`Queries a route leaving at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       return runLambda(routesQueryLambda, event)
         .then(
           response => {

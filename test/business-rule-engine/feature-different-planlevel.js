@@ -7,7 +7,16 @@ const mockProfiles = require('../../lib/service-bus/mockDynamoProfiles.json');
 
 module.exports = function () {
 
-  describe('Pricing for different planlevels', () => {
+  // Monday 10.10 17:00 to be moved to monday next week
+  const leaveAt = moment(1476108000000);
+  const now = moment().utcOffset(120);
+  leaveAt.year(now.year());
+  leaveAt.week(now.week());
+  if (now.day() >= leaveAt.day()) {
+    leaveAt.week(now.week() + 1);
+  }
+
+  describe(`Pricing for different planlevels from Ludviginkatu to Kilonrinne at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'}`, () => {
 
     // Last digit coresponds to the userlevel
     const usersIdentityIds = [
@@ -22,16 +31,6 @@ module.exports = function () {
 
     before(() => {
       return Promise.all(usersIdentityIds.map((identityId, index) => {
-
-        // Monday 10.10 17:00 to be moved to monday next week
-        const leaveAt = moment(1476108000000);
-        const now = moment().utcOffset(120);
-        leaveAt.year(now.year());
-        leaveAt.week(now.week());
-        if (now.day() >= leaveAt.day()) {
-          leaveAt.week(now.week() + 1);
-        }
-
         const params = {
           from: '60.1657520782836,24.9449517015989', // Ludviginkatu
           to: '60.220307,24.7752453', // Kilonrinne

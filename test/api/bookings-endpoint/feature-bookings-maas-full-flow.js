@@ -42,7 +42,7 @@ module.exports = function (optionsLambda) {
       }
     });
 
-    it(`Lists the MaaS ticket options at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss')}'`, () => {
+    it(`Lists the MaaS ticket options at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       event = {
         identityId: testUserIdentity,
         agencyId: 'MaaS',
@@ -107,7 +107,7 @@ module.exports = function (optionsLambda) {
         });
     });
 
-    it(`Lists the ticket as part of CONFIRMED tickets starting at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss')}'`, () => {
+    it(`Lists the ticket as part of CONFIRMED tickets starting at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       event = {
         identityId: testUserIdentity,
         startTime: startTime,
