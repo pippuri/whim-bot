@@ -34,31 +34,6 @@ function convertLegType(legType) {
   }
 }
 
-function convertCarLeg(leg, route, startTime, travelTime) {
-
-  return {
-    startTime: startTime,
-    endTime: startTime + travelTime * 1000,
-    mode: 'CAR',
-    from: {
-      name: leg.start.label,
-      lat: leg.start.mappedPosition.latitude,
-      lon: leg.start.mappedPosition.longitude,
-    },
-    to: {
-      lat: leg.end.mappedPosition.latitude,
-      lon: leg.end.mappedPosition.longitude,
-      name: leg.end.label,
-    },
-    legGeometry: {
-      points: convertToLegGeometry([
-        `${leg.start.mappedPosition.latitude},${leg.start.mappedPosition.longitude}`, `${leg.end.mappedPosition.latitude},${leg.end.mappedPosition.longitude}`,
-      ]),
-    },
-    distance: leg.length,
-  };
-}
-
 /**
  * Merge all maneuver legs into one
  */
@@ -129,7 +104,6 @@ function removeRedundantLeg(legs) {
 module.exports = {
   convertToLegGeometry,
   convertLegType,
-  convertCarLeg,
   groupManeuverLegs,
   removeRedundantLeg,
 };
