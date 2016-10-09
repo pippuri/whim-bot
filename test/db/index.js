@@ -32,6 +32,10 @@ describe('Database performance', () => {
           assert(row.num_sequential_scans < minSequentialScans || row.hit_rate >=  minCacheHitRate,
             `Schema '${row.schema}' index hit rate is ${Math.round(row.hit_rate)}% - should be >= ${minCacheHitRate}%`);
         });
-      });
+      })
+      .then(
+        () => Database.cleanup(),
+        () => Database.cleanup()
+      );
   });
 });
