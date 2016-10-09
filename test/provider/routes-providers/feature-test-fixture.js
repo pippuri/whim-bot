@@ -57,7 +57,12 @@ module.exports = (test, provider) => {
 
     before(() => {
       return bus.call(lambda, input)
-        .then(_response => (response = _response), _error => (error = _error));
+        .then(_response => {
+          response = _response;
+        })
+        .catch(_error => {
+          error = _error;
+        });
     });
 
     if (results.pass) {
@@ -66,9 +71,10 @@ module.exports = (test, provider) => {
           console.log('Caught an error:', error.message);
           console.log(error.stack);
         }
-
+        expect(response).to.not.be.undefined;
         expect(error).to.be.undefined;
       });
+
 
       it('should trigger a valid response', () => {
         return validator.validate(schema, response);
@@ -76,7 +82,7 @@ module.exports = (test, provider) => {
 
       if (results.modes) {
         // TODO Disabled until we explicitly support modes in providers
-        xit('should only contain legs with the given modes', () => {
+        it('should only contain legs with the given modes', () => {
           response.plan.itineraries.forEach(itinerary => {
             itinerary.legs.forEach(leg => {
               expect(leg.mode).to.be.oneOf(results.modes.split(','));

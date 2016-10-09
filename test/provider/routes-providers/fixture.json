@@ -31,7 +31,7 @@
     {
       "name": "Public transport route from Kamppi to Nuuksio",
       "input": {
-        "modes": "WALK,WAIT,TRANSFER,BUS,TRAM,TRAIN",
+        "modes": "PUBLIC_TRANSIT",
         "from": "60.170779,24.7721584",
         "to": "60.1522116,24.930412299999944",
         "leaveAt": 1475406000000
@@ -55,7 +55,7 @@
     {
       "name": "Taxi route from Ludviginkatu 6 to Löyly",
       "input": {
-        "modes": "WALK,WAIT,TRANSFER,TAXI",
+        "modes": "TAXI",
         "from": "60.16745770000001,24.931074800000033",
         "to": "60.3,24.46666670000002",
         "leaveAt": 1475406000000

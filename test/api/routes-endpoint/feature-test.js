@@ -20,7 +20,8 @@ module.exports = options => {
       payload: {
         from: '60.1684126,24.9316739', // SC5 Office
         to: '60.170779,24.7721584', // Gallows Bird Pub
-        leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+        leaveAt: '' + moment().utcOffset(180).isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+        // leaveAt: 1476532800000,
       },
       headers: {},
     };
@@ -28,17 +29,13 @@ module.exports = options => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -74,7 +71,7 @@ module.exports = options => {
     it('response should have direct Valopilkku taxi route', () => {
 
       const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
-
+      console.log(response.plan.itineraries);
       // Filter out everythign else than taxi only route
       const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
         const modes = itinerary.legs.map(leg => leg.mode);
