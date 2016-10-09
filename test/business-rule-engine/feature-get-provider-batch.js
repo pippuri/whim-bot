@@ -67,6 +67,7 @@ module.exports = function () {
 
     const params = [
       {
+        // Location with no type
         location: {
           name: 'Rautatieasema',
           stopId: 'HSL:1531116',
@@ -76,6 +77,7 @@ module.exports = function () {
         },
       },
       {
+        // Booking provider -- wrong type
         type: 'tsp-booking-hsl',
       },
     ];
@@ -182,7 +184,7 @@ module.exports = function () {
 
   });
 
-  describe('[NEGATIVE] batch query for provider with object input', () => {
+  describe('[NEGATIVE] batch query for provider with empty object input', () => {
 
     let response;
     let error;

@@ -2,7 +2,6 @@
 
 const Promise = require('bluebird');
 const getProviderRules = require('../get-provider');
-const _getProviderBatch = getProviderRules.getProviderBatch;
 const bus = require('../../../lib/service-bus');
 const _ = require('lodash');
 const polylineEncoder = require('polyline-extended');
@@ -141,7 +140,7 @@ function _buildMixedRoutesProvidersQuery(modes, from, to) {
 }
 
 /**
- * Combine all routes provider query and run them though _getProviderBatch
+ * Combine all routes provider query and run them though getProviderBatch
  * @param params {Object} contains modes, from, to, leaveAt and arriveBy
  * @return common {Common provider}
  */
@@ -160,7 +159,7 @@ function _resolveRoutesProviders(params) {
     },
   };
 
-  return _getProviderBatch(
+  return getProviderRules.getProviderBatch(
     {
       ptRoutes: _buildPtRoutesProvidersQuery(params.modes, location.from, location.to),
       carRoutes: _buildCarRoutesProvidersQuery(location.from, location.to),

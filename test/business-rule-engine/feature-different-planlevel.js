@@ -7,7 +7,7 @@ const mockProfiles = require('../../lib/service-bus/mockDynamoProfiles.json');
 
 module.exports = function () {
 
-  describe('Pricing for different planlevel', () => {
+  describe('Pricing for different planlevels', () => {
 
     // Last digit coresponds to the userlevel
     const usersIdentityIds = [
@@ -44,11 +44,11 @@ module.exports = function () {
     });
 
     usersIdentityIds.forEach((identityId, index) => {
-
       // Get plan level by the last character
       const planlevel = Number(identityId.charAt(identityId.length - 1));
       const publicTransits = ['TRAIN', 'BUS', 'TRAM', 'SUBWAY'];
       const privateTransits = ['CAR', 'TAXI'];
+      const freeModes = ['WAIT', 'TRANSFER', 'WALK'];
       const transitModes = publicTransits.concat(privateTransits);
 
       it('planlevel should be a positive number', () => {
@@ -61,23 +61,65 @@ module.exports = function () {
       });
 
       if (planlevel === 0) {
-        it(`planlevel ${planlevel} user should not have any free ticket for transits itinerary`, () => {
-          const itineraryWithTransits = response[index].plan.itineraries.filter(iti => iti.legs.some(leg => transitModes.indexOf(leg.mode) !== -1));
-          expect(itineraryWithTransits.map(itinerary => itinerary.fare.points).every(cost => cost !== 0)).to.be.true;
+        it(`planlevel ${planlevel} user should not have any free transits`, () => {
+          const itineraries = response[index].plan.itineraries;
+          const itinerariesWithTransits = itineraries.filter(iti => {
+            return iti.legs.some(leg => transitModes.indexOf(leg.mode) !== -1);
+          });
 
+          expect(itinerariesWithTransits.length).to.be.above(0);
+          itinerariesWithTransits.forEach(itinerary => {
+            expect(itinerary.fare.points).to.be.above(0);
+          });
         });
-      } else if (planlevel > 0) {
-        const matchedProfile = mockProfiles.find(profile => profile.planlevel === planlevel && profile.identityId === identityId);
-
-        it(`planlevel ${planlevel} user should have free ticket for the providers listed in his plan feature`, () => {
-          const freeItinerary = response[index].plan.itineraries.filter(iti => iti.legs.every(leg => {
-            if (!leg.agencyId) return true;
-            return matchedProfile.plans.some(plan => plan.feature.map(fea => fea.name.toUpperCase()).indexOf(leg.agencyId.toUpperCase()) !== -1);
-          }));
-          expect(freeItinerary.map(iti => iti.fare.points).every(cost => cost === 0)).to.be.true;
-        });
+        return;
       }
 
+      it(`planlevel ${planlevel} user should have one or more free HSL itinerary`, () => {
+        const matchedProfile = mockProfiles.find(profile => profile.planlevel === planlevel);
+        const itineraries = response[index].plan.itineraries;
+        const freeFeatures = matchedProfile.plans
+          .map(plan => plan.feature)                     // Pick features of each
+          .reduce((arr1, arr2) => arr1.concat(arr2), []) // Combine the arrays
+          .map(feature => feature.name.toUpperCase());   // Pick 'name' property
+
+        const freeItineraries = itineraries.filter(iti => {
+          const featuredLegs = iti.legs.filter(leg => {
+            return freeFeatures.some(feature => {
+              // Cast to string for comparison
+              return feature === `${leg.agencyId}`.toUpperCase();
+            });
+          });
+
+          const freeLegs = iti.legs.filter(leg => {
+            // Accept either free mode legs or agencyIds included in plan
+            return freeModes.some(mode => mode === leg.mode);
+          });
+
+          // Exclude walking only etc. normally free itineraries
+          if (freeLegs.length === iti.legs.length) {
+            return false;
+          }
+
+          // Exclude itineraries that contain sth else than featured or free legs
+          if (freeLegs.length + featuredLegs.length !== iti.legs.length) {
+            return false;
+          }
+
+          return true;
+        });
+        /*console.log(freeItineraries.map(i => {
+          return {
+            agencies: i.legs.map(l => l.agencyId),
+            fare: i.fare.points,
+          };
+        }));*/
+
+        expect(freeItineraries.length).to.be.above(0);
+        freeItineraries.forEach(itinerary => {
+          expect(itinerary.fare.points).to.equal(0);
+        });
+      });
     });
   });
 };
