@@ -4,28 +4,15 @@ const Promise = require('bluebird');
 const powerset = require('powerset');
 const _ = require('lodash');
 const getTspPricingRules = require('../get-tsp-pricing');
-const maasOperation = require('../../../lib/maas-operation');
-const tspDataDev = require('../../../lib/tsp/tspData-dev.json');
-const tspDataAlpha = require('../../../lib/tsp/tspData-alpha.json');
-const tspDataProd = require('../../../lib/tsp/tspData-prod.json');
-let tspData;
 
-switch (process.env.SERVERLESS_STAGE) {
-  case 'alpha':
-    tspData = tspDataAlpha;
-    break;
-  case 'prod':
-    tspData = tspDataProd;
-    break;
-  case 'dev':
-  case 'test':
-  default:
-    tspData = tspDataDev;
-    break;
-}
-
-const purchasableAgencyId = Object.keys(tspData);
-const MODE_WITHOUT_TICKET = ['WALK', 'BICYCLE', 'TRANSFER', 'WAIT'];
+const tspData = {
+  dev: require('../../../lib/tsp/tspData-dev.json'),
+  test: require('../../../lib/tsp/tspData-alpha.json'),
+  alpha: require('../../../lib/tsp/tspData-alpha.json'),
+  prod: require('../../../lib/tsp/tspData-prod.json'),
+}[process.env.SERVERLESS_STAGE];
+const PURCHASABLE_AGENCY_IDS = Object.keys(tspData);
+const MODES_WITHOUT_TICKET = ['WALK', 'BICYCLE', 'TRANSFER', 'WAIT', 'LEG_SWITCH'];
 
 /**
  * Calculate co2 cost for a leg
@@ -98,34 +85,14 @@ function _calculateItineraryCo2(itinerary) {
   return co2Cost;
 }
 
-function _getApplicablePrices(leg, index, tspPrices) {
-  if (MODE_WITHOUT_TICKET.indexOf(leg.mode) !== -1) {
-    const spec = {
-      type: 'U_NA',
-    };
-
-    return [spec];
+function _getApplicablePrices(leg, providers) {
+  // Walking etc. legs are free
+  if (MODES_WITHOUT_TICKET.some(mode => mode === leg.mode)) {
+    return [{ type: 'U_NA' }];
   }
 
-  const applicablePrices = tspPrices.filter(priceSpec => {
-    if (!priceSpec) {
-      return false;
-    }
-
-    // If the time window is wrong, don't use the ticket
-    const payableUntil = Date.now() + priceSpec.payableUntil;
-    const bookableUntil = Date.now() + priceSpec.bookableUntil;
-
-    if (index === 0 || (leg.startTime > payableUntil && leg.startTime < bookableUntil)) {
-      //console.info(`Might need to skip unschedulable leg on ${leg.startTime} for ${leg.agencyId}, ${leg.startTime > payableUntil}, ${leg.startTime < bookableUntil}`);
-      // return false;
-    }
-
-    return true;
-  });
-  return applicablePrices.map(price => {
-    return price.providerMeta;
-  });
+  return providers
+    .map(provider => provider.providerMeta);
 }
 
 function _createNotApplicableTicket(priceSpec) {
@@ -202,29 +169,13 @@ function _createTicket(leg, priceSpec) {
 }
 
 /**
- * TODO: replace this with a lambda call to check location etc
- */
-function _getPointsPrices(identityId) { // eslint-disable-line
-  return maasOperation.fetchCustomerProfile(identityId)
-    .then(profile => Promise.resolve(
-      {
-        identityId: profile.identityId,
-        level: 0,
-        profile: profile,
-      }
-    ));
-}
-
-/**
  * Create ticket options for the leg that have applicable prices
  * @param leg {Object}
  * @param index {Int}
  * @param tspPrices {}
  */
-function _getLegTicketOptions(leg, index, tspPrices) {
-  const applicablePrices = _getApplicablePrices(leg, index, tspPrices);
-
-  // spec includes ticket type
+function _getLegTicketOptions(leg, providers) {
+  const applicablePrices = _getApplicablePrices(leg, providers);
   const ticketOptions = applicablePrices.map(spec => _createTicket(leg, spec));
   return ticketOptions;
 }
@@ -274,17 +225,17 @@ function _isItineraryTraversableWithTickets(ticketOptionsForLegs, ticketCombo) {
 }
 
 // FIXME figure out how to ensure the taxi leg cost is always included as a ticket
-function _calculateItineraryCost(itinerary, tspPrices) {
+function _calculateItineraryCost(itinerary, providers) {
 
-  // Save the leg agencyId to ensure its ticket's presense in the end
+  // Save the leg agencyId to ensure ticket's presence in the end
   const requiredProviders = _.uniq(
     itinerary.legs
       .map(leg => leg.agencyId)
       .filter(agencyId => agencyId !== '' && agencyId)
   );
 
-  const ticketOptionsForLegs = itinerary.legs.map((leg, index) => {
-    return _getLegTicketOptions(leg, index, tspPrices);
+  const ticketOptionsForLegs = itinerary.legs.map(leg => {
+    return _getLegTicketOptions(leg, providers);
   });
 
   const allTickets = _.flatten(ticketOptionsForLegs);
@@ -319,6 +270,7 @@ function _calculateItineraryCost(itinerary, tspPrices) {
       break;
     }
   }
+
   const cost = _.sumBy(cheapestCombo, 'cost');
   return cost;
 }
@@ -327,13 +279,15 @@ function _calculateItineraryCost(itinerary, tspPrices) {
  * Decide which provider from the list of possible provider to handle the leg
  */
 function _setBookingProviders(itinerary, providers) {
-  if (!itinerary || !itinerary.legs) return;
-  if (!providers || providers.length < 1) return;
-
   itinerary.legs.forEach(leg => {
-    if (!leg.agencyId) return;
+    if (!leg.agencyId) {
+      return;
+    }
 
-    const booker = providers.find(provider => provider.agencyId.indexOf(leg.agencyId) > 0);
+    const booker = providers.find(provider => {
+      return provider.agencyId === leg.agencyId;
+    });
+
     if (!booker) return;
 
     leg.agencyId = booker.agencyId;
@@ -344,39 +298,36 @@ function _setBookingProviders(itinerary, providers) {
  * Calculate costs in points and co2 for all itineraries based on pricing
  */
 function _calculateCost(itineraries, profile) {
+  // Create a list of agencies we want to price
   const bookingAgencies = {};
-  itineraries.map(itinerary => {
+  itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
-      if (leg.agencyId && !bookingAgencies.hasOwnProperty(leg.agencyId) && !_.includes(MODE_WITHOUT_TICKET, leg.mode)) {
-        bookingAgencies[leg.agencyId] = {
-          agencyId: leg.agencyId,
-          location: { from: leg.from, to: leg.to },
+      // If the leg has an agency for a bookable leg, add it to our query
+      const agencyId = leg.agencyId;
+      if (agencyId && !bookingAgencies[agencyId] && !MODES_WITHOUT_TICKET.some(mode => mode === leg.mode)) {
+        const query = {
+          agencyId: agencyId,
+          from: leg.from,
+          to: leg.to,
         };
+        bookingAgencies[agencyId] = query;
       }
     });
   });
+
   return getTspPricingRules.getOptionsBatch(_.values(bookingAgencies), profile)
-    .then(tspPrices => {
+    .then(providers => {
+      // Filter null responses (e.g. no provider found)
+      const filteredProviders = providers.filter(provider => provider !== null);
 
-      tspPrices.map(price => {
-        if (!price || !price.length) { return null; }
-        return Object.assign({ agencyName: price[0].providerName }, price[0].providerMeta );
-      });
-
-      tspPrices = tspPrices.filter(x => {
-        if (!x) {
-          return false;
-        }
-        return true;
-      });
-
-      itineraries.map(itinerary => {
-        _setBookingProviders(itinerary, tspPrices);
+      itineraries.forEach(itinerary => {
+        _setBookingProviders(itinerary, filteredProviders);
         itinerary.fare = {
-          points: _calculateItineraryCost(itinerary, tspPrices),
+          points: _calculateItineraryCost(itinerary, filteredProviders),
           co2: _calculateItineraryCo2(itinerary),
         };
       });
+
       return Promise.resolve(itineraries);
     });
 }
@@ -406,7 +357,7 @@ function _nullifyUnpurchasableItineraries(itineraries) {
   itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
       // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
-      if (leg.agencyId && purchasableAgencyId.indexOf(leg.agencyId) === -1) {
+      if (leg.agencyId && PURCHASABLE_AGENCY_IDS.indexOf(leg.agencyId) === -1) {
         itinerary.fare.points = null;
       }
 

@@ -65,6 +65,11 @@ module.exports = function () {
       });
 
       it(`should return a response without error for user with planlevel ${planlevel}`, () => {
+        if (error[index]) {
+          console.log('Caught an error:', error[index].message);
+          console.log(error[index].stack);
+        }
+
         expect(response[index]).to.not.be.undefined;
         expect(error[index]).to.be.undefined;
       });
@@ -72,8 +77,9 @@ module.exports = function () {
       if (planlevel === 0) {
         it(`planlevel ${planlevel} user should not have any free transits`, () => {
           const itineraries = response[index].plan.itineraries;
+
           const itinerariesWithTransits = itineraries.filter(iti => {
-            return iti.legs.some(leg => transitModes.indexOf(leg.mode) !== -1);
+            return iti.legs.some(leg => transitModes.some(mode => leg.mode === mode));
           });
 
           expect(itinerariesWithTransits.length).to.be.above(0);

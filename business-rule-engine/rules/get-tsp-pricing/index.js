@@ -7,12 +7,12 @@
  *      - method {String}
  *      - startTime {Float}
  *      - endTime {Float}
- *      - location {Object} contains {from} and {to}
+ *      - from {Object} start of the leg
+ *      - to {Object} end of the leg (not used)
  *      - userProfile {Object}
  */
 
 const getProviderRules = require('../get-provider');
-const Promise = require('bluebird');
 
 /**
  * Check if user's plan includes provider as a feature
@@ -21,9 +21,7 @@ const Promise = require('bluebird');
  *
  * @return {Boolean} return truthy value if is, and vice versa
  */
-function _userPlanIncludes(plans, provider) {
-
-  if (!plans) return false;
+function _userPlanIncludesProvider(plans, provider) {
   if (provider && provider.agencyId) {
     return plans.some(plan => {
       if (!plan.feature || plan.feature.length === 0) return false;
@@ -32,6 +30,7 @@ function _userPlanIncludes(plans, provider) {
       });
     });
   }
+
   return false;
 }
 
@@ -39,19 +38,22 @@ function _userPlanIncludes(plans, provider) {
  * Populate pricing information based on context
  */
 function _setPricing(provider, userProfile) {
-  if (!provider) return provider;
-  const userLevel = userProfile.planlevel;
-  if (userLevel === 0) {
+  if (!provider) {
+    throw new Error('No provider found, cannot set price');
+  }
+
+  const planLevel = userProfile.planlevel;
+  if (planLevel === 0) {
     // TODO for PAYG, add a small margin for everything
     provider.providerMeta.value = provider.providerMeta.value + 0;
-  } else if (userLevel > 0) {
-    if (_userPlanIncludes(userProfile.plans, provider)) {
+  } else if (planLevel > 0) {
+    if (_userPlanIncludesProvider(userProfile.plans, provider)) {
       provider.providerMeta.value = 0;
       provider.providerMeta.baseValue = 0;
     }
   } else {
     // TODO Should be solved in validation code
-    throw new Error(`Invalid planlevel from Chargebee: '${userProfile.planlevel}'`);
+    throw new Error(`Invalid planlevel from Chargebee: '${planLevel}'`);
   }
 
   return provider;
@@ -65,46 +67,60 @@ function _setPricing(provider, userProfile) {
  * @return {Object} TSP pricing structure
  */
 function getOptions(params, profile) {
-  if (!params.hasOwnProperty('location') || Object.keys(params.location).length === 0) {
+  if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
     // TODO Should be handled by validator, instead
-    throw new Error('No location supplied to TSP engine');
+    throw new Error('No \'from\' supplied to the TSP engine');
   }
 
   const query = {
     type: 'tsp-booking-' + params.type.toLowerCase(),
-    location: params.location.from,
+    from: params.from,
   };
   return getProviderRules.getProvider(query)
-    .then(provider => {
-      if (provider.length < 1) return Promise.resolve(provider);
-      // use only the first pricing provider in order of priority (should only be one really anyway)
-      return _setPricing(provider[0], profile);
+    .then(providers => {
+      if (providers.length < 1) {
+        console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
+        return null;
+      }
+
+      // use only the pricing provider in the order of priority
+      return _setPricing(providers[0], profile);
     });
 }
 
-// NOTE TODO Why does location contains only from but not to?
+// TODO Why do we only use from, but not to?
 function getOptionsBatch(params, profile) {
   const queries = params.map(request => {
-    if (!request.hasOwnProperty('location') || Object.keys(request.location) === 0) {
-      // TODO Should be handled by validator, instead
-      throw new Error('One or more request does not supply location to the TSP engine');
+    if (!request.hasOwnProperty('from')) {
+      throw new Error(`The request does not supply 'from' to the TSP engine: ${JSON.stringify(request)}`);
     }
 
     if (request.agencyId) {
       return {
         agencyId: request.agencyId,
-        location: request.location.from,
+        location: request.from,
       };
     }
 
     return {
       type: `tsp-booking-${request.type.toLowerCase()}`,
-      location: request.location.from,
+      location: request.from,
     };
   });
 
   return getProviderRules.getProviderBatch(queries)
-    .then(providers => providers.map(provider => _setPricing(provider[0], profile)));
+    .then(responses => {
+      return responses.map((providers, index) => {
+        // Always pick the first provider - they are in priority order
+        if (providers.length < 1) {
+          console.warn(`Could not find pricing provider for ${JSON.stringify(queries[index])}`);
+          return null;
+        }
+
+        return _setPricing(providers[0], profile);
+      })
+      .filter(provider => typeof provider !== typeof undefined);
+    });
 }
 
 module.exports = {

@@ -13,6 +13,7 @@
 const Promise = require('bluebird');
 const geoUtils = require('geojson-utils');
 const models = require('../../../lib/models/index');
+const utils = require('../../../lib/utils');
 const Provider = models.Provider;
 
 // Static provider cache to speed up queries, refreshes every 5min.
@@ -27,7 +28,7 @@ const cacheTTL = 5 * 60 * 1000;
  */
 function queryProviders() {
   if (Date.now() < (cacheLastUpdated + cacheTTL)) {
-    return Promise.resolve(cachedProviders);
+    return Promise.resolve(utils.cloneDeep(cachedProviders));
   }
 
   // Fetch all providers - it is a small batch, and much quicker than
@@ -39,7 +40,7 @@ function queryProviders() {
     .then(providers => {
       cacheLastUpdated = Date.now();
       cachedProviders = providers;
-      return cachedProviders;
+      return utils.cloneDeep(cachedProviders);
     });
 }
 
@@ -79,7 +80,7 @@ function filterProviders(providers, rule) {
     } else if (rule.agencyId && rule.agencyId === provider.agencyId) {
        // OK
     } else if (rule.providerName && rule.providerName === provider.providerName) {
-      // OK - even without location
+      // OK
     } else {
        // Not OK
       return false;

@@ -230,7 +230,7 @@ function _invokeProviders(providers, params) {
     .filter(inspection => {
       if (!inspection.isFulfilled()) {
         const error = inspection.reason();
-        console.log(`Provider call failed: ${error.message}`);
+        console.warn(`Provider call failed: ${error.message}`);
         return false;
       }
       return true;
