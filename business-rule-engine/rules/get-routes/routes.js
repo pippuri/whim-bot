@@ -211,6 +211,8 @@ function _mergeProviderResponses(responses, params) {
   responses.forEach(item => {
     output.plan.itineraries = output.plan.itineraries.concat(item.plan.itineraries);
   });
+  // Remove null responses before return
+  output.plan.itineraries = output.plan.itineraries.filter(item => item !== null);
   return output;
 }
 
@@ -222,7 +224,6 @@ function _mergeProviderResponses(responses, params) {
  */
 function _invokeProviders(providers, params) {
   if (providers && providers instanceof Array && providers.length === 0) return [];
-
   // Call multiple providers; If we got at least one succesful response, then return
   // all the succesful responses. If none found, reject with error.
   // (as long as one succeeds, we consider this a success).
@@ -230,10 +231,9 @@ function _invokeProviders(providers, params) {
     .filter(inspection => {
       if (!inspection.isFulfilled()) {
         const error = inspection.reason();
-        console.warn(`Provider call failed: ${error.message}`);
+        console.log(`Provider call failed: ${error.message}`);
         return false;
       }
-
       return true;
     })
     .map(inspection => inspection.value());

@@ -3,8 +3,13 @@
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
+const MaaSError = require('../../lib/errors/MaaSError');
+const validator = require('../../lib/validator');
 
-const DIGITRANSIT_HSL_URL = 'http://api.digitransit.fi/routing/v1/routers/finland/plan';
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
+
+// const DIGITRANSIT_FINLAND_API_URL = 'http://api.digitransit.fi/routing/v1/routers/finland/plan';
+const DIGITRANSIT_FINLAND_API_URL = 'https://api.digitransit.fi/routing/v1/routers/finland/index/graphql';
 
 function getOTPDate(timestamp) {
   const time = new Date(timestamp);
@@ -26,10 +31,16 @@ function getOTPTime(timestamp) {
 }
 
 function convertDigitransitModes(eventModes) {
+  if (!eventModes) return 'BUS,TRAM,RAIL,SUBWAY,FERRY,WALK,BICYCLE';
   return eventModes.split(',').map(mode => {
     switch (mode) {
-      case 'RAIL':
-        return 'TRAIN';
+      case 'PUBLIC_TRANSIT':
+        return 'BUS,TRAM,RAIL,SUBWAY,FERRY,WALK';
+      case 'TAXI':
+        return 'CAR';
+      case 'CAR':
+      case 'WALK':
+      case 'BICYCLE':
       default:
         return mode;
     }
@@ -37,12 +48,21 @@ function convertDigitransitModes(eventModes) {
 }
 
 // Docs: http://dev.opentripplanner.org/apidoc/0.15.0/resource_PlannerResource.html
+// @see https://digitransit.fi/en/developers/services-and-apis/1-routing-api/itinerary-planning/
 
-function getDigitransitRoutes(from, to, mode, leaveAt, arriveBy, format) {
+function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
 
   const qs = {
-    fromPlace: from,
-    toPlace: to,
+    coords: {
+      from: {
+        lat: parseFloat(from.split(',')[0]),
+        lon: parseFloat(from.split(',')[1]),
+      },
+      to: {
+        lat: parseFloat(to.split(',')[0]),
+        lon: parseFloat(to.split(',')[1]),
+      },
+    },
   };
 
   if (leaveAt && arriveBy) {
@@ -56,29 +76,85 @@ function getDigitransitRoutes(from, to, mode, leaveAt, arriveBy, format) {
     qs.date = getOTPDate(parseInt(arriveBy, 10));
     qs.time = getOTPTime(parseInt(arriveBy, 10));
   } else {
-    // Current routes. No need to add any parameters.
+    qs.arriveBy = false;
+    qs.date = getOTPDate(Date.now(), 10);
+    qs.time = getOTPDate(Date.now(), 10);
   }
 
-  if (mode) {
-    qs.modes = convertDigitransitModes(mode);
+  if (modes) {
+    qs.modes = convertDigitransitModes(modes);
   }
 
-  return request.get(DIGITRANSIT_HSL_URL, {
-    json: true,
-    qs: qs,
+  const constructedGraphQL = `{
+    plan(
+      from: {lat: ${qs.coords.from.lat}, lon: ${qs.coords.from.lon}},
+      to: {lat: ${qs.coords.to.lat}, lon: ${qs.coords.to.lon}},
+      modes: "${convertDigitransitModes(modes)}",
+      walkSpeed: 1.2,
+      date: "${qs.date}"
+      time: "${qs.time}"
+    ) {
+      itineraries{
+        startTime
+        endTime
+        legs {
+          mode
+          startTime
+          endTime
+          route {
+            shortName
+            longName
+          }
+          distance
+          from {
+            lat
+            lon
+            name
+            stop {
+              code
+              name
+            }
+          },
+          to {
+            lat
+            lon
+            name
+            stop {
+              code
+              name
+            }
+          },
+          agency {
+            name
+          }
+          legGeometry {
+            points
+          }
+        }
+      }
+    }
+  }
+  `;
+
+  // Digitransit GraphQL require method to be POST
+  return request.post(DIGITRANSIT_FINLAND_API_URL, {
+    headers: {
+      'Content-Type': 'application/graphql',
+    },
+    body: constructedGraphQL,
   })
-  .then(result => adapter(result));
+  .then(buffer => adapter(qs.coords.from, JSON.parse(buffer.toString())));
 }
 
 module.exports.respond = function (event, callback) {
-  if (event.mode) {
-    return Promise.reject(new Error('Currently Digitransit adapter does not accept "mode" parameter'));
+
+  if (event.modes && event.modes.split(',').length > 1) {
+    return Promise.reject(new MaaSError('Currently support either no input mode or a single one', 400));
   }
 
-  return getDigitransitRoutes(event.from, event.to, event.mode, event.leaveAt, event.arriveBy, event.format)
-  .then(response => {
-    callback(null, response);
-  })
+  return getDigitransitRoutes(event.from, event.to, event.modes, event.leaveAt, event.arriveBy, event.format)
+  .then(response => validator.validate(responseSchema, response))
+  .then(response => callback(null, response))
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));

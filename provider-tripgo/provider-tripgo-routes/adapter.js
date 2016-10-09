@@ -77,27 +77,6 @@ function convertItinerary(trip, original, templates) {
   });
 }
 
-function convertPlanFrom(original) {
-  let from;
-  if (original.groups && original.groups[0] && original.groups[0].trips && original.groups[0].trips[0] && original.groups[0].trips[0].segments && original.groups[0].trips[0].segments[0]) {
-    const hashCode = original.groups[0].trips[0].segments[0].segmentTemplateHashCode;
-    (original.segmentTemplates || []).map(segmentTemplate => {
-      if (segmentTemplate.hashCode === hashCode && typeof segmentTemplate.from === 'object') {
-
-        // Found the starting point
-        from = {
-          name: segmentTemplate.from.address,
-          lon: segmentTemplate.from.lng,
-          lat: segmentTemplate.from.lat,
-        };
-      }
-
-    });
-  }
-
-  return from;
-}
-
 function compareItinerary(a, b) {
   return a.startTime - b.startTime;
 }
@@ -120,7 +99,7 @@ module.exports = function (original, eventFrom) {
   // Hence we'll rely on the Input
   return Promise.resolve({
     plan: {
-      from: (allTrips.length > 0) ? convertPlanFrom(original) : eventFrom,
+      from: eventFrom,
       itineraries: allTrips.map(trip => {
         return convertItinerary(trip, original, templates);
       }).sort(compareItinerary),

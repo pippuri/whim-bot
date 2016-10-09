@@ -4,6 +4,9 @@ const bus = require('../../lib/service-bus');
 const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
+const validator = require('../../lib/validator');
+
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 
 function validateInput(event) {
   if (!event.payload.from) {
@@ -18,12 +21,12 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Support only leaveAt or arriveBy, not both', 400));
   }
 
-  if (event.payload.mode && !event.payload.mode.match(/^[\w\S]+[^,\s]$/g)) {
-    return Promise.reject(new MaaSError('Input mode must satisfy this regex', new RegExp(/^[\w\S]+[^,\s]$/g).toString()));
+  if (event.payload.modes && !event.payload.modes.match(/^[\w\S]+[^,\s]$/g)) {
+    return Promise.reject(new MaaSError('Input modes must satisfy this regex', new RegExp(/^[\w\S]+[^,\s]$/g).toString()));
   }
 
-  if (event.payload.mode && event.payload.mode.split(',').length > 1) {
-    return Promise.reject(new MaaSError('Routes query currently support either 1 input mode or none'));
+  if (event.payload.modes && event.payload.modes.split(',').length > 1) {
+    return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none'));
   }
 
   return Promise.resolve();
@@ -82,10 +85,7 @@ function filterPastRoutes(leaveAt, response) {
   return response;
 }
 
-function getRoutes(identityId, from, to, leaveAt, arriveBy, mode) {
-  if (mode !== undefined && mode.length > 0) {
-    mode = mode.split(',');
-  }
+function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
 
   if (!leaveAt && !arriveBy) {
     leaveAt = Date.now();
@@ -96,7 +96,7 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, mode) {
     to: to,
     leaveAt: leaveAt,
     arriveBy: arriveBy,
-    mode: mode,
+    modes: modes,
   };
 
   return bus.call('MaaS-business-rule-engine', {
@@ -105,12 +105,13 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, mode) {
     parameters: event,
   })
   .then(response => filterPastRoutes(leaveAt, response))
+  .then(response => validator.validate(responseSchema, response))
   .then(response => signResponse(response));
 }
 
 module.exports.respond = function (event, callback) {
   return validateInput(event)
-    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy))
+    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy, event.payload.modes))
     .then(response => {
       callback(null, response);
     })

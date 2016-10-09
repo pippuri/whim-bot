@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const serviceBus = require('../../lib/service-bus/index');
 const _ = require('lodash');
@@ -139,7 +140,7 @@ function mergeResults(results) {
   return response;
 }
 
-function getCombinedTripGoRoutes(from, to, mode, leaveAt, arriveBy, format) {
+function getCombinedTripGoRoutes(from, to, modes, leaveAt, arriveBy, format) {
   return serviceBus.call('MaaS-provider-tripgo-regions').then(regionsResponse => {
 
     const regions = regionsResponse.regions;
@@ -149,15 +150,18 @@ function getCombinedTripGoRoutes(from, to, mode, leaveAt, arriveBy, format) {
 
     const queue = [];
 
-    if (!mode || mode.split(',').length === 0) {
+    if (!modes || modes.split(',').length === 0) {
       queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES));
       queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES));
       queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES));
-    } else if (mode.split(',').length > 1) {
+    } else if (modes.split(',').length > 1) {
       throw new Error('Support either no input mode or only 1 input mode');
     } else {
-      mode.split(',').forEach(mode => {
+      modes.split(',').forEach(mode => {
         switch (mode) {
+          case 'PUBLIC_TRANSIT':
+            queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_PUBLIC_MODES));
+            break;
           case 'CAR':
             queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_CAR_MODES));
             break;
@@ -167,6 +171,8 @@ function getCombinedTripGoRoutes(from, to, mode, leaveAt, arriveBy, format) {
           case 'WALK':
             queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_WALK_MODES));
             break;
+          case 'BICYCLE':
+            throw new MaaSError('Tripgo does not support BICYCLE route', 500);
           default:
             break;
         }

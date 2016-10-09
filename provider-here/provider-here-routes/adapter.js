@@ -126,8 +126,7 @@ function convertLeg(original) {
  */
 function convertItinerary(route, mode, leaveAt, arriveBy) {
   // Start time default as leaveAt, use HERE departure data if exists
-  let startTime = new Date(leaveAt).getTime();
-
+  let startTime = new Date(Number(leaveAt)).getTime();
   if (route.summary.departure) {
     startTime = new Date(route.summary.departure).getTime();
   }

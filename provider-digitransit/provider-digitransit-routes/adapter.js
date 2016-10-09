@@ -4,11 +4,15 @@
  * Routing results adapter from Digitransit to MaaS. Returns promise for JSON object.
  */
 const Promise = require('bluebird');
+const utils = require('../../lib/utils');
 
 function convertMode(mode) {
   switch (mode) {
     case 'RAIL':
       mode = 'TRAIN';
+      break;
+    case 'CAR':
+      mode = 'TAXI';
       break;
     default:
       break;
@@ -28,11 +32,15 @@ function convertFromTo(from) {
   };
 }
 
-function convertLeg(leg) {
-  let agencyId = typeof Number(leg.agencyId) === 'number' && !isNaN(Number(leg.agencyId)) ? leg.agencyName : leg.agencyId;
-  if (leg.mode === 'WALK') {
-    agencyId = undefined;
+function convertAgencyId(input) {
+  if (input === 'Helsingin seudun liikenne') {
+    return 'HSL';
   }
+  return input;
+}
+
+function convertLeg(leg) {
+  leg = utils.removeNulls(leg);
 
   return {
     startTime: leg.startTime,
@@ -44,12 +52,11 @@ function convertLeg(leg) {
       points: leg.legGeometry.points,
       length: leg.legGeometry.length,
     } : undefined,
-    route: leg.route !== '' ? leg.route : undefined,
-    routeShortName: leg.routeShortName,
-    routeLongName: leg.routeLongName,
-    agencyId: agencyId === '' ? undefined : agencyId, // HSL hardcoded in digitransit
+    route: leg.route ? leg.route.shortName : undefined,
+    routeShortName: leg.route ? leg.route.shortName : undefined,
+    routeLongName: leg.route ? leg.route.longName : undefined,
+    agencyId: leg.agency ? convertAgencyId(leg.agency.name) : undefined,
     distance: Math.floor(leg.distance), // used to calculate prices for km-based fares
-    duration: leg.duration,
     // excluded: departureDelay, arrivalDelay, realTime, pathway, agencyUrl, agencyName, agencyTimeZoneOffset,
     // routeType, routeId, interlineWithPreviousLeg, headsign, tripId, serviceDate, rentedBike, transitLeg, steps
   };
@@ -60,54 +67,15 @@ function convertItinerary(itinerary) {
     startTime: itinerary.startTime,
     endTime: itinerary.endTime,
     legs: itinerary.legs.map(convertLeg),
-    duration: itinerary.duration,
     // excluded: walkTime, transitTime, waitingTime, walkDistance, walkLimitExceeded, elevationLost, elevationGained, transfers, tooSloped
   };
 }
 
-function convertPlanFrom(from) {
-  if (!from) return undefined;
-  return {
-    name: from.name,
-    lon: from.lon,
-    lat: from.lat,
-  };
-}
-
-function compareItinerary(a, b) {
-  return a.startTime - b.startTime;
-}
-
-module.exports = function (original) {
-  if (typeof original.plan === typeof undefined) {
-
-    // Handle 404 - no routes found, this is not error in our system
-    if (original.error && original.error.id === 404) {
-      const coords = original.requestParameters.fromPlace
-        .split(',')
-        .map(parseFloat);
-
-      return Promise.resolve({
-        plan: {
-          from: { lat: coords[0], lon: coords[1] },
-          itineraries: [],
-        },
-        debug: {
-          error: original.error,
-        },
-      });
-    }
-
-    // Throw Error on all other cases
-    return Promise.reject(new Error('Invalid Digitransit query'));
-  }
-
+module.exports = function (from, original) {
   return Promise.resolve({
     plan: {
-      from: convertPlanFrom(original.plan.from),
-      itineraries: original.plan.itineraries.map(convertItinerary).sort(compareItinerary),
+      from: from,
+      itineraries: original.data.plan.itineraries.map(convertItinerary).sort((a, b) => a.startTime - b.startTime),
     },
-
-    // excluded: requestParameters, debugOutput
   });
 };
