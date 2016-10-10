@@ -2,80 +2,49 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const lib = require('../../lib/utils/index');
-const bus = require('../../lib/service-bus/index');
-const _ = require('lodash/core');
+const models = require('../../lib/models');
 
-function addfavoriteLocations(event) {
-  if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
-    if (!_.isEmpty(event.payload)) {
-      // No problem
-    } else {
-      return Promise.reject('405: Payload empty');
-    }
-  } else {
-    return Promise.reject('400: Missing identityId or payload');
+const Database = models.Database;
+const Profile = models.Profile;
+
+function validateInput(event) {
+
+  if (!event || !event.identityId) {
+    return Promise.reject(new MaaSError('Missing identityId', 403));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then(response => {
-      if (response === false) { // False means NOT existed
-        return Promise.reject(new Error('User Not Existed'));
-      }
+  if (!event.payload || Object.keys(event.payload) === 0) {
+    return Promise.reject(new MaaSError('Payload empty', 400));
+  }
 
-      // Check FL existance
-      const query = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        ExpressionAttributeNames: {
-          '#priKey': 'identityId',
-        },
-        ExpressionAttributeValues: {
-          ':priKeyValue': event.identityId,
-        },
-        KeyConditionExpression: '#priKey = :priKeyValue',
-        ProjectionExpression: 'favoriteLocations',
-      };
-      return bus.call('Dynamo-query', query);
-    })
-    .then(response => {
-      const favoriteLocations = response.Items[0].favoriteLocations;
+  return Promise.resolve();
+}
 
-      for (let i = 0; i < favoriteLocations.length; i++) {
-        if (favoriteLocations[i].name === event.payload.name) {
-          return Promise.reject(new Error('favoriteLocations name existed'));
-        }
-      }
-
-      const params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          identityId: event.identityId,
-        },
-        UpdateExpression: 'SET #attr = list_append(#attr, :value)',
-        ExpressionAttributeNames: {
-          '#attr': 'favoriteLocations',
-        },
-        ExpressionAttributeValues: {
-          ':value': [event.payload],
-        },
-      };
-      return bus.call('Dynamo-update', params);
-    });
+function addFavoriteLocations(event) {
+  return Profile.addFavoriteLocation(event.identityId, event.payload);
 }
 
 module.exports.respond = (event, callback) => {
-  return addfavoriteLocations(event)
-    .then(response => callback(null, response))
+  return Database.init()
+    .then(() => validateInput(event))
+    .then(() => addFavoriteLocations(event))
+    .then(profile => {
+      Database.cleanup()
+        .then(() => callback(null, profile));
+    })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

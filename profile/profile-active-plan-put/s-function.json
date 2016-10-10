@@ -21,7 +21,10 @@
         "integration.request.path.planId": "method.request.path.planId"
       },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"planId\": \"$input.params('planId')\"}"
+        "application/json": {
+          "identityId":"$context.authorizer.principalId",
+          "planId": "$input.params('planId')"
+        }
       },
       "responses": {
         "^400.*": {

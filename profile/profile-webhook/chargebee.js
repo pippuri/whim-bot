@@ -56,7 +56,7 @@ function handleDetailsUpdate(event, payload) {
     email: profile.email,
     country: profile.address.country,
     city: profile.address.city,
-    zip: profile.address.zip,
+    zipCode: profile.address.zip,
   } );
 }
 

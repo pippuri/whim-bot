@@ -1,15 +1,17 @@
 'use strict';
 
 const Promise = require('bluebird');
-const lib = require('../../lib/utils/index');
 const bus = require('../../lib/service-bus/index');
 const Subscriptions = require('../../lib/subscription-manager/index');
 const MaaSError = require('../../lib/errors/MaaSError.js');
+const models = require('../../lib/models');
+
+const Database = models.Database;
+const Profile = models.Profile;
 
 function createChargebeeUser(event) {
-  return bus.call('MaaS-profile-info', { identityId: event.identityId })
-    .then( res => {
-      const profile = res.Item;
+  return Profile.retrieve(event.identityId)
+    .then(profile => {
       return Subscriptions.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: profile.phone })
         .then( user => {
           console.info(`Created user ${user}`);
@@ -28,7 +30,6 @@ function createChargebeeUser(event) {
 function setActivePlan(event) {
   let oldLevel;
   let oldBalance;
-  let newPlan;
   if (Object.keys(event).length === 0) {
     return Promise.reject(new MaaSError('Missing input keys', 400));
   }
@@ -42,9 +43,9 @@ function setActivePlan(event) {
   }
 
   // First check user existence
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then(documentExist => {
-      if (documentExist === false) { // False if not existed
+  return Profile.exists(event.identityId)
+    .then(exist => {
+      if (exist === false) { // False if not existed
         return Promise.reject(new MaaSError('User Not Existed', 404));
       }
       return Promise.resolve();
@@ -73,41 +74,16 @@ function setActivePlan(event) {
           return Promise.reject(new MaaSError(`Error requesting Subscription: ${_error}`, 500));
         });
     })
-    .then( _ => {
-      return bus.call('MaaS-profile-info', { // Then get user balance
-        identityId: event.identityId,
-        attributes: 'balance,planlevel',
-      });
-    })
+    .then( _ => Profile.retrieve(event.identityId, 'balance,planLevel'))
     .then(response => { // Then retrieve plan information
-      oldBalance = response.Item.balance;
-      oldLevel = response.Item.planlevel ? response.Item.planlevel : 0;
+      oldBalance = response.balance;
+      oldLevel = response.planLevel;
       return bus.call('MaaS-store-single-package', {
         id: event.planId,
         type: 'plan',
       });
     })
-    .then(plan => { // Then update user profile with new plan information
-      newPlan = plan;
-      const params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          identityId: event.identityId,
-        },
-        UpdateExpression: 'SET #plan_list = :value',
-        ExpressionAttributeNames: {
-          '#plan_list': 'plans',
-        },
-        ExpressionAttributeValues: {
-          ':value': [newPlan],
-        },
-        ReturnValues: 'UPDATED_NEW',
-        ReturnConsumedCapacity: 'INDEXES',
-      };
-
-      return bus.call('Dynamo-update', params);
-    })
-    .then(response => { // Then set the new point balance
+    .then(newPlan => { // Then update user profile with new plan information with new balances
       console.info('New pointGrant: ', newPlan.pointGrant);
       console.info('Old balance: ', oldBalance);
       console.info('Old level: ', oldLevel);
@@ -122,7 +98,7 @@ function setActivePlan(event) {
         }
         console.info('New tier grant', newBalance);
       } else if (newPlan.level === oldLevel) {
-        return Promise.resolve( { message: 'Old plan already the same level' } );
+        return Promise.resolve( { message: 'Old plan is already on the same level' } );
       } else {
         // this was a downgrade
         if (newBalance > newPlan.pointGrant) {
@@ -130,43 +106,36 @@ function setActivePlan(event) {
         }
         console.info('Downgrade: points', newBalance);
       }
-      const params2 = {
-        identityId: event.identityId,
-        payload: {
-          balance: newBalance,
-          planlevel: newPlan.level,
-        },
+      const params = {
+        plans: [newPlan],
+        balance: newBalance,
+        planLevel: newPlan.level,
       };
-      console.info(params2);
-      return bus.call('MaaS-profile-edit', params2);
-    })
-    .then(response => { // Then get new profile information
-      const params3 = {
-        identityId: event.identityId,
-      };
-      return bus.call('MaaS-profile-info', params3);
+
+      return Profile.update(params);
     });
 }
 
 module.exports.respond = (event, callback) => {
-  setActivePlan(event)
-    .then(response => { // Finally delete identityId from response if it exist
-      if (response.Item.hasOwnProperty('identityId')) {
-        delete response.Item.identityId;
-      }
-
-      callback(null, response);
+  return Database.init()
+    .then(() => setActivePlan(event))
+    .then(profile => {
+      Database.cleanup()
+        .then(() => callback(null, profile));
     })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

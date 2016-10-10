@@ -2,72 +2,49 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const lib = require('../../lib/utils/index');
-const bus = require('../../lib/service-bus/index');
-const _ = require('lodash/core');
+const models = require('../../lib/models');
 
-function removefavoriteLocations(event) {
-  if (event.hasOwnProperty('identityId') && event.hasOwnProperty('payload')) {
-    if (!_.isEmpty(event.payload)) {
-      // No problem
-    } else {
-      return Promise.reject('400 Payload empty');
-    }
-  } else {
-    return Promise.reject('400 Missing identityId or payload');
+const Database = models.Database;
+const Profile = models.Profile;
+
+function validateInput(event) {
+
+  if (!event || !event.identityId) {
+    return Promise.reject(new MaaSError('Missing identityId', 403));
   }
 
-  return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null)
-    .then(response => {
-      if (response === false) { // True means Existed
-        return Promise.reject(new Error('User Not Existed'));
-      }
+  if (!event.payload || Object.keys(event.payload) === 0) {
+    return Promise.reject(new MaaSError('Payload empty', 400));
+  }
 
-      const params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          identityId: event.identityId,
-        },
-      };
-      return bus.call('Dynamo-get', params);
-    })
-    .then(response => {
-      for (let i = response.Item.favoriteLocations.length - 1; i > -1; i--) {
-        if (response.Item.favoriteLocations[i].name === event.payload.name) {
-          response.Item.favoriteLocations.splice(i, 1);
-        }
-      }
+  return Promise.resolve();
+}
 
-      const params = {
-        TableName: process.env.DYNAMO_USER_PROFILE,
-        Key: {
-          identityId: event.identityId,
-        },
-        UpdateExpression: 'SET #attr = :value',
-        ExpressionAttributeNames: {
-          '#attr': 'favoriteLocations',
-        },
-        ExpressionAttributeValues: {
-          ':value': response.Item.favoriteLocations,
-        },
-      };
-      return bus.call('Dynamo-update', params);
-    });
+function removeFavoriteLocations(event) {
+  return Profile.removeFavoriteLocation(event.identityId, event.payload.name);
 }
 
 module.exports.respond = (event, callback) => {
-  return removefavoriteLocations(event)
-    .then(response => callback(null, response))
+  return Database.init()
+    .then(() => validateInput(event))
+    .then(() => removeFavoriteLocations(event))
+    .then(profile => {
+      Database.cleanup()
+        .then(() => callback(null, profile));
+    })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

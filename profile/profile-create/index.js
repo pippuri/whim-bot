@@ -2,82 +2,62 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const lib = require('../../lib/utils/index');
-const bus = require('../../lib/service-bus/index');
 const mgr = require('../../lib/subscription-manager');
-const _ = require('lodash');
+const models = require('../../lib/models');
+
+const Database = models.Database;
+const Profile = models.Profile;
 
 /**
- * Save data to DynamoDB
+ * Validate lambda event input
  */
-function persistUserData(event) {
+function validateInput(event) {
+  if (!event) return Promise.reject(new MaaSError('Missing or empty event input', 400));
+  if (!event.identityId) return Promise.reject(new MaaSError('Missing identityId', 401));
+  if (!event.payload || !event.payload.phone) return Promise.reject(new MaaSError('Missing payload or phone number inside payload', 400));
 
-  let defaultPlan;
+  return Promise.resolve();
+}
 
-  if (_.isEmpty(event)) {
-    return Promise.reject(new Error('Input missing'));
-  }
+/**
+ * Create new user profile and persist it to postgres
+ */
+function createProfile(event) {
 
   if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
     return Promise.reject(new Error('Missing identityId'));
   }
 
-  return bus.call('MaaS-store-single-package', {
-    id: process.env.DEFAULT_WHIM_PLAN,
-    type: 'plan',
-  })
-  .then(plan => {
-    defaultPlan = plan;
-    return lib.documentExist(process.env.DYNAMO_USER_PROFILE, 'identityId', event.identityId, null, null);
-  })
-  .then(documentExist => {
-    if (documentExist === true) { // True if existed
-      return Promise.reject(new Error('User Existed'));
-    }
-
-    const record = {
-      identityId: event.identityId,
-      balance: 0,
-      plans: [defaultPlan],
-      // Default to pay as you go
-      planlevel: 0,
-      favoriteLocations: [],
-      phone: event.payload.phone,
-      profileImage: 'http://maas.fi/wp-content/uploads/2016/01/mugshot-sampo.png',
-    };
-
-    const params = {
-      Item: record,
-      TableName: process.env.DYNAMO_USER_PROFILE,
-    };
-
-    return bus.call('Dynamo-put', params);
-  })
-  .then(user => {
-    return mgr.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, { phone: event.payload.phone })
-      .then( _ => {
-        return user;
+  return Profile.create(event.identityId, event.payload.phone)
+    .then(user => {
+      return mgr.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, {
+        phone: event.payload.phone,
       });
-  });
-
+    });
 }
 
-/**
- * Export respond to Handler
- */
 module.exports.respond = (event, callback) => {
-  return persistUserData(event)
-    .then(response => callback(null, response))
+
+  return Database.init()
+    .then(() => validateInput(event))
+    .then(() => createProfile(event))
+    .then(profile => {
+      Database.cleanup()
+        .then(() => callback(null, profile));
+    })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };
