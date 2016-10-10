@@ -44,7 +44,7 @@
       }
     ],
     "balance":15000,
-    "planlevel":0,
+    "planLevel":0,
     "phone":"10983012",
     "favoriteLocations":[
       {
@@ -109,7 +109,7 @@
       }
     ],
     "balance":15000,
-    "planlevel":1,
+    "planLevel":1,
     "phone":"10983012",
     "favoriteLocations": [
       {
@@ -174,7 +174,7 @@
       }
     ],
     "balance":15000,
-    "planlevel":2,
+    "planLevel":2,
     "phone":"10983012",
     "favoriteLocations": [
       {
@@ -239,7 +239,7 @@
       }
     ],
     "balance":15000,
-    "planlevel":3,
+    "planLevel":3,
     "phone":"10983012",
     "favoriteLocations":[
       {
