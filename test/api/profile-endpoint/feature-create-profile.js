@@ -1,7 +1,7 @@
 'use strict';
 
-const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
+const bus = require('../../../lib/service-bus');
 
 module.exports = function (lambda) {
 
@@ -14,27 +14,35 @@ module.exports = function (lambda) {
     const event = {
       identityId: identityId,
       payload: {
-        phone: Math.random() * 1000,
+        phone: '+358' + Math.ceil(Math.random() * 1000000000),
       },
     };
 
     let error;
     let response;
 
-    before(done => {
-      wrap(lambda).run(event, (err, data) => {
-        error = err;
-        response = data;
-        done();
-      });
+    before(() => {
+      return bus.call('MaaS-profile-create', event)
+        .then(res => {
+          response = res;
+        })
+        .catch(err => {
+          error = err;
+        });
     });
 
     it('should not raise an error', () => {
-      expect(error).to.be.null;
+      expect(error).to.be.undefined;
     });
 
-    it('should return empty', () => {
-      expect(response).to.deep.equal({});
+    it(`should return profile with identityId ${identityId}`, () => {
+      expect(response).to.not.be.undefined;
+      expect(response).to.have.property('identityId');
+      expect(response).to.have.property('phone');
+      expect(response).to.have.property('balance');
+      expect(response.identityId).to.equal(event.identityId);
+      expect(response.phone).to.equal(event.payload.phone);
+      expect(response.balance).to.equal(0);
     });
 
   });

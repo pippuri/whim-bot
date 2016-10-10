@@ -3,7 +3,7 @@
 const bus = require('../../lib/service-bus/');
 const moment = require('moment');
 const expect = require('chai').expect;
-const mockProfiles = require('../../lib/service-bus/mockDynamoProfiles.json');
+const mockProfiles = require('../../lib/service-bus/mockProfiles.json');
 
 module.exports = function () {
 
@@ -16,7 +16,7 @@ module.exports = function () {
     leaveAt.week(now.week() + 1);
   }
 
-  describe(`Pricing for different planlevels from Ludviginkatu to Kilonrinne at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'}`, () => {
+  describe(`Pricing for different planLevels from Ludviginkatu to Kilonrinne at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'}`, () => {
 
     // Last digit coresponds to the userlevel
     const usersIdentityIds = [
@@ -53,17 +53,17 @@ module.exports = function () {
 
     usersIdentityIds.forEach((identityId, index) => {
       // Get plan level by the last character
-      const planlevel = Number(identityId.charAt(identityId.length - 1));
+      const planLevel = Number(identityId.charAt(identityId.length - 1));
       const publicTransits = ['TRAIN', 'BUS', 'TRAM', 'SUBWAY'];
       const privateTransits = ['CAR', 'TAXI'];
       const freeModes = ['WAIT', 'TRANSFER', 'WALK'];
       const transitModes = publicTransits.concat(privateTransits);
 
-      it('planlevel should be a positive number', () => {
-        expect(planlevel).to.be.least(0);
+      it('planLevel should be a positive number', () => {
+        expect(planLevel).to.be.least(0);
       });
 
-      it(`should return a response without error for user with planlevel ${planlevel}`, () => {
+      it(`should return a response without error for user with planLevel ${planLevel}`, () => {
         if (error[index]) {
           console.log('Caught an error:', error[index].message);
           console.log(error[index].stack);
@@ -73,8 +73,8 @@ module.exports = function () {
         expect(error[index]).to.be.undefined;
       });
 
-      if (planlevel === 0) {
-        it(`planlevel ${planlevel} user should not have any free transits`, () => {
+      if (planLevel === 0) {
+        it(`planLevel ${planLevel} user should not have any free transits`, () => {
           const itineraries = response[index].plan.itineraries;
 
           const itinerariesWithTransits = itineraries.filter(iti => {
@@ -89,8 +89,8 @@ module.exports = function () {
         return;
       }
 
-      it(`planlevel ${planlevel} user should have one or more free HSL itinerary`, () => {
-        const matchedProfile = mockProfiles.find(profile => profile.planlevel === planlevel);
+      it(`planLevel ${planLevel} user should have one or more free HSL itinerary`, () => {
+        const matchedProfile = mockProfiles.find(profile => profile.planLevel === planLevel);
         const itineraries = response[index].plan.itineraries;
         const freeFeatures = matchedProfile.plans
           .map(plan => plan.feature)                     // Pick features of each

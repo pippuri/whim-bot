@@ -28,8 +28,7 @@ module.exports = function (lambda) {
     });
 
     it('should raise an error', () => {
-      const errorMessage = '' + error;
-      expect(errorMessage).to.contain('User Existed');
+      expect(error.message).to.equal('400: [Profile create] Profile existed');
     });
 
     it('should not return a response', () => {

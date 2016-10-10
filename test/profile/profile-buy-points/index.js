@@ -76,7 +76,7 @@ module.exports = function () {
     });
 
     it('should return profile with new amount', () => {
-      expect(response).to.have.deep.property('profile');
+      expect(response).to.have.property('profile');
     });
   });
 };

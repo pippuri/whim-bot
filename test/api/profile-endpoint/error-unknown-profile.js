@@ -25,8 +25,7 @@ module.exports = function (lambda) {
     });
 
     it('should raise an error', () => {
-      const errorMessage = '' + error;
-      expect(errorMessage).to.contain('No item found with identityId');
+      expect(error.message).to.equal('403: Profile not available');
     });
 
     it('should not return a response', () => {
