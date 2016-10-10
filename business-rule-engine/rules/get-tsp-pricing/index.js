@@ -42,7 +42,7 @@ function _setPricing(provider, userProfile) {
     throw new Error('No provider found, cannot set price');
   }
 
-  const planLevel = userProfile.planlevel;
+  const planLevel = userProfile.planLevel;
   if (planLevel === 0) {
     // TODO for PAYG, add a small margin for everything
     provider.providerMeta.value = provider.providerMeta.value + 0;
