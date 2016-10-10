@@ -18,7 +18,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.path.agencyId": "method.request.path.agencyId",
         "integration.request.querystring.startTime": "method.request.querystring.startTime",

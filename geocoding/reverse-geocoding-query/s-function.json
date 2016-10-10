@@ -27,7 +27,7 @@
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.locale": "method.request.querystring.locale",
         "integration.request.querystring.count": "method.request.querystring.count",

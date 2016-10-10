@@ -27,7 +27,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"legId\":$input.json('$.legId'),\"lat\":$input.json('$.lat'),\"lon\":$input.json('$.lon'),\"timestamp\":$input.json('$.timestamp')}"

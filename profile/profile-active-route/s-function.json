@@ -27,7 +27,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
         "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"timestamp\":$input.json('$.timestamp'),\"active_route\":\"$input.json('$.active_route')\"}"

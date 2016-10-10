@@ -24,7 +24,7 @@
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
         "application/x-www-form-urlencoded": {

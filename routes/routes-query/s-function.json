@@ -27,7 +27,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.from": "method.request.querystring.from",
         "integration.request.querystring.to": "method.request.querystring.to",
