@@ -78,8 +78,9 @@
     "xml2js": "^0.4.16"
   },
   "devDependencies": {
-    "aws-sdk": "^2.2.39",
+    "aws-sdk": "^2.6.7",
     "chai": "^3.5.0",
+    "commander": "^2.9.0",
     "del": "^2.2.2",
     "eslint": "^2.13.1",
     "eslint-config-airbnb": "^9.0.1",
