@@ -80,7 +80,7 @@ class Decider {
                 .catch(err => {
                   console.warn('[Decider] cannot pay itinerary, err:', err.stack || err);
                   const message = 'Payment of the trip failed. Click check your points and rebook the trip';
-                  return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert')
+                  return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, message, 'Alert')
                     .then(() => Promise.reject(new Error('Payment failed')));
                 });
             }
@@ -110,7 +110,7 @@ class Decider {
               this.decision.abortFlow(`Itinerary ${this.flow.trip.referenceId} not found from DB`);
             }
             console.error('[Decider] ERROR while starting the trip, err:', err.stack || err);
-            return Promise.resolve();
+            return this._sendPushNotification('ObjectChange', { ids: [this.flow.trip.referenceId], objectType: 'Itinerary' });
           });
 
       // activation of trip
@@ -121,7 +121,7 @@ class Decider {
             if (['CANCELLED', 'CANCELLED_WITH_ERRORS', 'FINISHED', 'ABANDONED'].indexOf(itinerary.state) !== -1) {
               console.warn(`[Decider] Cannot start trip as Itinerary in state '${itinerary.state}'`);
               this.decision.abortFlow(`Decider: Itinerary already done (${itinerary.state}) -- aborting flow`);
-              return Promise.resolve();
+              return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' });
             }
             return this._activateItinerary(itinerary)
               .then(itinerary => this._processLegs(itinerary));
@@ -161,8 +161,11 @@ class Decider {
             return Promise.resolve(itinerary);
           })
           // find and check the leg
-          .then(itinerary => this._findLegFromItinerary(itinerary, legId))
-          .then(leg => this._activateLeg(leg))
+          .then(itinerary => {
+            return this._findLegFromItinerary(itinerary, legId)
+              .then(leg => this._activateLeg(leg))
+              .then(() => this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }));
+          })
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] error while checking leg -- ignoring, err:', err.stack || err);
@@ -175,6 +178,7 @@ class Decider {
         this.decision.closeFlow('Decider: closing ended trip');
         return Itinerary.retrieve(this.flow.trip.referenceId)
           .then(itinerary => itinerary.finish())
+          .then(itinerary => this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }))
           // handle unexpected errors
           .catch(err => {
             console.error('[Decider] error while closing trip -- ignoring, err:', err.stack || err);
@@ -275,11 +279,12 @@ class Decider {
                       `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
         }
         if (hasErrors === true) {
+          console.warn('[Decider] legs processed, warning user about errors');
           const message = 'Problems with one or more bookings. Click to check the trip.';
-          return this._notifyUser(message, 'ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, 'Alert');
+          return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, message, 'Alert');
         }
         console.info('[Decider] legs processed');
-        return Promise.resolve();
+        return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' });
       });
   }
 
@@ -314,7 +319,7 @@ class Decider {
             message += ` - wait for the ${legs[1].mode.toLowerCase()}`;
           }
         }
-        return this._notifyUser(message, 'TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' })
+        return this._sendPushNotification('TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' }, message)
           .then(() => Promise.resolve(itinerary));
       });
   }
@@ -343,7 +348,7 @@ class Decider {
           if (leg.destination()) {
             message = `Problems with your ${leg.mode.toLowerCase()} ticket to ${leg.destination()}, please check`;
           }
-          return this._notifyUser(message, 'ObjectChange', { ids: [booking.id], objectType: 'Booking' }, 'Alert');
+          return this._sendPushNotification('ObjectChange', { ids: [booking.id], objectType: 'Booking' }, message, 'Alert');
         }
         return Promise.resolve();
       })
@@ -365,23 +370,30 @@ class Decider {
   }
 
   /**
-   * Helper send push notification for user
+   * Helper send push notification for user devices
    */
-  _notifyUser(message, type, data) {
-    console.info(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message}'`);
+  _sendPushNotification(type, data, message, severity) {
+    console.info(`[Decider] Sending push notification to user ${this.flow.trip.identityId}: '${message || '(no message)'}'`);
+
     const notifData = {
       identityId: this.flow.trip.identityId,
-      message: message,
       badge: 0,
       type,
       data,
     };
+    if (typeof message !== 'undefined') {
+      notifData.message = message;
+    }
+    if (typeof severity !== 'undefined') {
+      notifData.severity = severity;
+    }
+
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
       .then(result => {
         console.info(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
       })
       .catch(err => {
-        console.error(`[Decider] Failed to send ush notification to user ${this.flow.trip.identityId}, err:`, err);
+        console.error(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
       })
       .finally(() => {
         return Promise.resolve();
