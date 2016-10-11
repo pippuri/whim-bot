@@ -39,6 +39,8 @@ function persistUserData(event) {
       identityId: event.identityId,
       balance: 0,
       plans: [defaultPlan],
+      // Default to pay as you go
+      planlevel: 0,
       favoriteLocations: [],
       phone: event.payload.phone,
       profileImage: 'http://maas.fi/wp-content/uploads/2016/01/mugshot-sampo.png',
