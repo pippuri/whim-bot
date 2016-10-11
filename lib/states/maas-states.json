@@ -14,22 +14,18 @@
     },
     "RESERVED": {
       "description": "The booking has been reserved for purchase.",
-      "transition": ["CONFIRMED", "ACTIVATED", "CANCELLED", "CANCELLED_WITH_ERRORS", "EXPIRED"]
+      "transition": ["CONFIRMED", "ACTIVATED", "CANCELLED", "EXPIRED"]
     },
     "CONFIRMED": {
       "description": "Booking is confirmed, cannot be cancelled anymore.",
-      "transition": ["EXPIRED", "ACTIVATED", "CANCELLED_WITH_ERRORS"]
+      "transition": ["EXPIRED", "ACTIVATED"]
     },
     "ACTIVATED": {
       "description": "Booking is activated. Can be CANCELLED and will go EXPIRED if not",
-      "transition": ["EXPIRED", "ACTIVATED", "CANCELLED_WITH_ERRORS"]
+      "transition": ["EXPIRED", "ACTIVATED"]
     },
     "CANCELLED": {
       "description": "Booking is cancelled, will be sent for RECONCILING",
-      "transition": ["RECONCILING", "RESOLVED"]
-    },
-    "CANCELLED_WITH_ERRORS": {
-      "description": "Booking is cancelled with errors, will be reconciled, or directly RESOLVED based on terms",
       "transition": ["RECONCILING", "RESOLVED"]
     },
     "EXPIRED": {
