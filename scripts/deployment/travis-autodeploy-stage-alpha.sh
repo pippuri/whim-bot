@@ -23,6 +23,7 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       SERVERLESS_STAGE=alpha knex migrate:latest;
 
       # Trigger build & deploy
+      npm run build:alpha;
       npm run deploy-alpha:all;
 
       echo "Finished running autodeployment to alpha stage script ..."

@@ -126,6 +126,6 @@
     "deploy-alpha:all": "sls function deploy -a -s alpha && sls event deploy -s alpha && sls endpoint deploy -a -s alpha",
     "deploy-prod:all": "sls function deploy -a -s prod && sls event deploy -s prod && sls endpoint deploy -a -s prod",
     "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha",
-    "release-prod": "git checkout master && git pull --rebase upstream master && git checkout -B prod && git rebase master && git push --force upstream prod:prod"
+    "release-prod": "git checkout alpha && git pull --rebase upstream alpha && git checkout -B prod && git rebase master && git push --force upstream prod:prod"
   }
 }
