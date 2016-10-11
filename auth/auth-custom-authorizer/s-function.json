@@ -11,9 +11,7 @@
     "type": "TOKEN",
     "identitySource": "method.request.header.Authorization"
   },
-  "custom": {
-    "excludePatterns": []
-  },
+  "custom": {},
   "endpoints": [],
   "events": [],
   "environment": "$${environment}",

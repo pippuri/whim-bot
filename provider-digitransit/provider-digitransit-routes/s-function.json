@@ -8,18 +8,7 @@
   "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [],
   "events": [],
   "environment": "$${environment}",

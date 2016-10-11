@@ -1,6 +1,17 @@
 {
   "name": "MaaS",
   "custom": {
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": [
+        "API-Revision",
+        "Content-Type",
+        "X-Amz-Date",
+        "Authorization",
+        "X-Api-Key"
+      ]
+    },
     "meta": {
       "name": "maas-serverless",
       "region": "eu-west-1"
@@ -50,13 +61,6 @@
     "host": "api.dev.maas.global",
     "schemes": [
       "https"
-    ],
-    "securityDefinitions": {
-      "Bearer": {
-        "type": "apiKey",
-        "name": "Authorization",
-        "in": "header"
-      }
-    }
+    ]
   }
 }

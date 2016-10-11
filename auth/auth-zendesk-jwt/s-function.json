@@ -8,15 +8,7 @@
   "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "auth/zendesk-jwt",

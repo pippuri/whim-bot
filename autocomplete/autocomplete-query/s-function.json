@@ -8,16 +8,7 @@
   "timeout": 20,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type",
-        "Authorization"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "autocomplete",
