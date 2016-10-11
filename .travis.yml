@@ -29,15 +29,18 @@ before_script:
 # For any Travis build, we need 'test' meta to run the tests
 - echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f >/dev/null
 
-# Automated deployment to 'alpha' stage: Pull 'alpha' meta for an automated deployment
-- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f >/dev/null; fi fi;
-
 script:
 - npm run build:test
 - npm test
 
 after_success:
 - pip install --user awscli
+
+# Automated deployment to 'alpha' stage: Pull 'alpha' meta for an automated deployment
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "alpha" ]]; then echo '{}' > _meta/variables/s-variables-alpha.json && sls meta sync -s alpha -f >/dev/null; fi fi;
+
+# Automated deployment to 'prod' stage: Pull 'prod' meta for an automated deployment
+- if [[ $TRAVIS_PULL_REQUEST == "false" ]]; then if [[ $TRAVIS_BRANCH == "prod" ]]; then echo '{}' > _meta/variables/s-variables-prod.json && sls meta sync -s prod -f >/dev/null; fi fi;
 
 # Current time
 - d=$(date) && export CURRENT_TIMESTAMP="$d" && echo $CURRENT_TIMESTAMP
@@ -47,6 +50,9 @@ after_success:
 
 # Auto deploy to "alpha" stage on alpha branch. Also tag the release.
 - if [[ $TRAVIS_BRANCH == "alpha" ]]; then bash scripts/deployment/travis-autodeploy-stage-alpha.sh; fi;
+
+# Auto deploy to "prod" stage on prod branch. Also tag the release.
+- if [[ $TRAVIS_BRANCH == "prod" ]]; then bash scripts/deployment/travis-autodeploy-stage-prod.sh; fi;
 
 env: # Dont touch this
   global:

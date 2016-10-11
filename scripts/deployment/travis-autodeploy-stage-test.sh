@@ -7,13 +7,15 @@ echo "Using autodeployment to test stage script ..."
 if [[ $TRAVIS_PULL_REQUEST == "false" ]];
   then if [[ $TRAVIS_BRANCH == "master" ]];
     then
-      # Auto-deploy to test
-      npm run deploy-test:all;
-
       # Migrate databases to latest the DB schemas
       cd ./scripts;
       npm install -g knex;
       SERVERLESS_STAGE=test knex migrate:latest;
+
+      # Auto-deploy to test
+      npm run build:test;
+      npm run deploy-test:all;
+
       echo "Finished running autodeployment to test stage script ..."
   else
     echo "Stopping ... Not on master branch"

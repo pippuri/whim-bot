@@ -113,9 +113,8 @@ A basic flow goes as follows:
 2. Travis runs the tests; another developer checks it out and accepts;
 3. Developer merges it to master
 4. Travis is invoked by the commit to master, and auto-deploys to "test" stage
-5. Lead developer rebases the current test branch into alpha, as a sprint release candidate
-6. Lead developer tags a version of alpha as the sprint release, and Travis deploys to alpha automatically
-7. If Product Owner accepts the tagged release, Lead developer rebases "prod" to it and deploys it to "prod" stage manually
+5. Lead developer rebases the current master branch auto-deploys it through Travis using `npm run deploy-alpha`. Travis tags the alpha release by build number.
+6. If Product Owner accepts the tagged alpha release, Lead developer auto-deploys rebases "prod" to point to the accepted alpha, and auto-deploys it running `npm run deploy-prod`.
 
 ### Running Tests
 
@@ -298,31 +297,17 @@ manually. Travis cares for the deployment automatically when you accept a PR.
 
 #### Deploying to `alpha`
 
-Nothing should be done to deploy into `alpha`, and you should not deploy there
-manually. Travis cares for the deployment automatically when you rebase the
-`alpha` branch to point to the latest `master` branch and push your changes.
+Alpha releases are done by rebasing `alpha` branch to point to the current
+`master`. This can be done by running `npm run release-alpha`. Travis picks
+up the change, migrates database, deploys documentation, functions, endpoints
+and events, and tags the release by Travis build number.
 
 #### Deploying to `prod`
 
-Production deployments are done by hand. You can deploy hotfixes by deploying
-individual endpoints much in the same way as deploying to dev (just replace `dev`
-stage with `prod` stage).
-
-The automated `release-prod` npm script fetches the latest alpha branch, rebases
-master against that and runs `deploy-prod:all` script that decrypts production
-keys:
-
-> npm run release-prod:all
-
-In case you something in the automated flow fails, you can decrypt maas-ticket
-keys and deploy Serverless functions and endpoints as follows:
-
-> npm run deploy-prod:all
-
-In case you ever need to refresh keys for production, do this first:
-
-> cd tickets/tickets-create/keys
-> ./refresh-key.sh
+Alpha releases are done by rebasing `prod` branch to point to the current
+`alpha`. This can be done by running `npm run release-prod`. Travis picks
+up the change, migrates database,  deploys documentation, functions, endpoints
+and events, and tags the release by Travis build number.
 
 #### Manual deployments of single endpoints
 
@@ -353,31 +338,12 @@ on the subject.
 
 #### Deploying Static Files/images to a S3 Bucket
 
-Add files/folders to client/dist folder. Then run the following command:
+S3 buckets are used for storing Swagger API docs and icon files used by the
+application. Both can be deployed by running:
 
 ```
-sls client deploy -s dev #stage should be specified
+npm run deploy-docs
 ```
-
-> Note: DO NOT REMOVE ANY EXISTING FILES/FOLDERS, THE FUNCTION REMOVE EVERYTHING IN THE S3 BUCKET AND REDEPLOY ALL FILES.
-
-## Tagging a Release
-
-We may tag a sprint release to have a reference point between old and new
-production releases. The tags follow [semver 2.0 format](http://semver.org/),
-but semantically the major and minor versions refer to our roadmap in JIRA and
-the suffix changes every sprint. A sample: `0.1-sprint2`. Create new tags as
-follows:
-
-1. Make sure that you're in the commit that refers to the sprint results.
-2. Create the tag and push it upstream.
-
-```
-git tag -a 0.1-sprint2
-git push --tags upstream
-```
-
-3. Repeat the procedure to the other repositories you may have (app, TSPs etc.).
 
 ## Working with Linked NPM Modules
 

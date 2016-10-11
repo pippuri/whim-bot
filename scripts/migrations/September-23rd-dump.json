@@ -8,7 +8,7 @@
     "providerMeta": {
       "name": "HSL",
       "type": "U_PITI",
-      "value": 60,
+      "value": 100,
       "agencyId": "HSL",
       "validFor": null,
       "payableUntil": 600000,
@@ -147,10 +147,10 @@
     "providerMeta": {
       "name": "Taksi",
       "type": "U_PKM",
-      "value": 30,
+      "value": 32,
       "agencyId": "TAXI",
       "validFor": null,
-      "baseValue": 80,
+      "baseValue": 118,
       "payableUntil": 600000,
       "bookableUntil": 1800000
     },
