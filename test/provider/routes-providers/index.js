@@ -49,4 +49,12 @@ describe('routes provider', () => {
     test985kAfrica(lambda);
   });
 
+  describe('Valopilkku', () => {
+    const lambda = require('../../../provider-valopilkku/provider-valopilkku-routes/handler.js');
+    testLeaveAt(lambda, { taxiSupport: true });
+    testFromUnsupported(lambda, { skip: true });
+    testToUnsupported(lambda, { skip: true });
+    test985kAfrica(lambda, { skip: true });
+  });
+
 });

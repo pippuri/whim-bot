@@ -11,6 +11,10 @@
     {
       "name": "HERE",
       "lambda": "MaaS-provider-here-routes"
+    },
+    {
+      "name": "Valopilkku",
+      "lambda": "MaaS-provider-valopilkku-routes"
     }
   ],
   "cases": [
