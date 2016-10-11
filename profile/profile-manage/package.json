@@ -1,0 +1,16 @@
+{
+  "name": "profile-manage",
+  "version": "0.0.1",
+  "description": "Endpoint for creating user portal session",
+  "author": "Sami Pippuri",
+  "license": "UNLICENSED",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/"
+  },
+  "keywords": [],
+  "devDependencies": {},
+  "dependencies": {
+  }
+}
