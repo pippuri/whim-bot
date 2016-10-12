@@ -61,6 +61,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
           return runLambda(createLambda, bookingEvent);
         })
         .then(response => {
+
           createResponse = response;
 
           if (response.booking.state !== 'RESERVED') {

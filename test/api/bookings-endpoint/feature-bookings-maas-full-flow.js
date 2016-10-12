@@ -4,11 +4,13 @@ const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const Promise = require('bluebird');
 const moment = require('moment');
+const utils = require('../../../lib/utils');
 
 const createLambda = require('../../../bookings/bookings-create/handler.js');
 const retrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
 const cancelLambda = require('../../../bookings/bookings-cancel/handler.js');
 const listLambda = require('../../../bookings/bookings-list/handler.js');
+const getProfileLambda = require('../../../profile/profile-info/handler.js');
 
 const models = require('../../../lib/models');
 const Database = models.Database;
@@ -24,12 +26,19 @@ module.exports = function (optionsLambda) {
   }
 
   describe('create a MaaS Ticket booking for a day', () => {
-    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000004';
 
     let optionsResponse;
     let createResponse;
     let event;
     let error;
+
+    let startingBalance;
+    let midBalance;
+    let endBalance;
+
+    let cancelError;
+    let cancelResponse;
 
     // 10 minutes from now
     const startTime = Date.now() + 10 * 60 * 1000;
@@ -41,6 +50,22 @@ module.exports = function (optionsLambda) {
         this.skip();
       }
     });
+
+    before(done => {
+      if (error) {
+        this.skip();
+      }
+
+      // fetch user data to get account starting balance
+      const event = {
+        identityId: testUserIdentity,
+      };
+      wrap(getProfileLambda).run(event, (err, data) => {
+        startingBalance = data.Item.balance;
+        done();
+      });
+    });
+
 
     it(`Lists the MaaS ticket options at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       event = {
@@ -60,15 +85,37 @@ module.exports = function (optionsLambda) {
     });
 
     it('Can create the MaaS ticket', () => {
+      // put fare is there was none
+      if (!optionsResponse.options[0].fare.amount || optionsResponse.options[0].fare.amount === 0) {
+        optionsResponse.options[0].fare.amount = 123;
+        delete optionsResponse.options[0].signature;
+        optionsResponse.options[0].signature = utils.sign(optionsResponse.options[0], process.env.MAAS_SIGNING_SECRET);
+      }
       event = {
         identityId: testUserIdentity,
         payload: optionsResponse.options[0],
       };
+
       return runLambda(createLambda, event)
         .then(
           res => Promise.resolve(createResponse = res),
           err => Promise.reject(error = err)
-        );
+        )
+        .then(() => {
+          // fetch user data to get account current balance
+          const event = {
+            identityId: testUserIdentity,
+          };
+          wrap(getProfileLambda).run(event, (err, data) => {
+            midBalance = data.Item.balance;
+            return Promise.resolve();
+          });
+        });
+
+    });
+
+    it('User balance is reduced by fare', () => {
+      expect(startingBalance - (createResponse.booking.fare.amount || 0)).to.equal(midBalance);
     });
 
     it('Can retrieve the MaaS ticket', () => {
@@ -94,8 +141,6 @@ module.exports = function (optionsLambda) {
         identityId: testUserIdentity,
         bookingId: createResponse.booking.id,
       };
-      let cancelError;
-      let cancelResponse;
       return runLambda(cancelLambda, event)
         .then(
           res => Promise.resolve(cancelResponse = res),
@@ -104,7 +149,26 @@ module.exports = function (optionsLambda) {
         .then(() => {
           expect(cancelResponse).to.not.exist;
           expect(cancelError).to.be.instanceof(Error);
+        })
+        .then(() => {
+          // fetch user data to get account current balance
+          const event = {
+            identityId: testUserIdentity,
+          };
+          wrap(getProfileLambda).run(event, (err, data) => {
+            endBalance = data.Item.balance;
+            return Promise.resolve();
+          });
         });
+
+    });
+
+    it('Fare is refunded if clean cancel', () => {
+      if (cancelResponse && cancelResponse.state === 'CANCELLED') {
+        expect(startingBalance).to.equal(endBalance);
+      } else {
+        expect(startingBalance - (createResponse.booking.fare.amount || 0)).to.equal(endBalance);
+      }
     });
 
     it(`Lists the ticket as part of CONFIRMED tickets starting at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
