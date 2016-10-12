@@ -5,6 +5,9 @@ const polylineEncoder = require('polyline-extended');
 const serviceBus = require('../../../lib/service-bus');
 const utils = require('../../../lib/utils');
 
+const GEOMETRY_QUERY_MODE = 'TAXI';
+
+
 function selectOptions(original) {
   /*[XXX: this is in place to handle multiple result options,
           but currently is only returning the first one if available.]
@@ -32,18 +35,48 @@ function extractEndTime(option) {
   return option.leg.startTime;
 }
 
+function extractGeometry(response) {
+  // Extract the geometry from the HERE route response
+  if (response.plan &&
+      response.plan.itineraries &&
+      response.plan.itineraries.length > 0 &&
+      response.plan.itineraries[0].legs &&
+      response.plan.itineraries[0].legs.length > 0) {
+
+    // find the first leg with mode == GEOMETRY_QUERY_MODE
+    const ret = response.plan.itineraries[0].legs.find(leg => {
+      return leg.mode === GEOMETRY_QUERY_MODE;
+    });
+
+    // Only return the geometry if we have actually found something
+    if (ret) {
+      return ret.legGeometry.points;
+    }
+  }
+
+  // Throw this so that the error handler can sort it out
+  console.warn('WARNING: Could not extract geometry from HERE route request');
+  throw new Error('Could not extract Geometry');
+}
+
 function getLegGeometryPoints(option) {
-  return new Promise((resolve, reject) => {
-    /*[XXX: For now just a straight line, `from` -> `to`
-            but promisified in case we want to call another service/etc.]
-    */
+  // Call the HERE route provider for a likely driving route
+  return serviceBus.call('MaaS-provider-here-routes', {
+    from: `${option.leg.from.lat},${option.leg.from.lon}`,
+    to: `${option.leg.to.lat},${option.leg.to.lon}`,
+    leaveAt: Date.now(),
+    modes: GEOMETRY_QUERY_MODE,
+  })
+  .then(response => extractGeometry(response))
+  .catch(error => {
+    // If this fails, default to the straght line A -> B geometry
     const points = [
       [option.leg.from.lat, option.leg.from.lon],
       [option.leg.to.lat, option.leg.to.lon],
     ];
 
     // Return an encoded polyline
-    return resolve(polylineEncoder.encode(points));
+    return polylineEncoder.encode(points);
   });
 }
 
