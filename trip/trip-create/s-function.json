@@ -8,9 +8,7 @@
   "timeout": 30,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": []
-  },
+  "custom": {},
   "endpoints": [],
   "events": [],
   "environment": "$${environment}"

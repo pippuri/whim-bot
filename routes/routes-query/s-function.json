@@ -8,18 +8,7 @@
   "timeout": 30,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "routes",
@@ -27,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.from": "method.request.querystring.from",
         "integration.request.querystring.to": "method.request.querystring.to",
@@ -49,28 +38,16 @@
       },
       "responses": {
         "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "400"
         },
         "^403.*": {
-          "statusCode": "403",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "403"
         },
         "^\\d{3}.*": {
-          "statusCode": "500",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "500"
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""

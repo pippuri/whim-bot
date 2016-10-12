@@ -8,9 +8,7 @@
   "timeout": 20,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": []
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "store/packages/plan/{id}",
@@ -18,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.path.id": "method.request.path.id"
       },
@@ -108,7 +106,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.path.id": "method.request.path.id"
       },

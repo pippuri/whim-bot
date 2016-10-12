@@ -8,18 +8,7 @@
   "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "auth/sms-request-code",
@@ -27,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.phone": "method.request.querystring.phone"
       },
@@ -36,34 +25,19 @@
       },
       "responses": {
         "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "400"
         },
         "^401.*": {
-          "statusCode": "401",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "401"
         },
         "^404.*": {
-          "statusCode": "404",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "404"
         },
         "^\\d{3}.*": {
-          "statusCode": "500",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "500"
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""

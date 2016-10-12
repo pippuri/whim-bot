@@ -8,9 +8,7 @@
   "timeout": 30,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": []
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "monitor",
@@ -18,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
         "application/json": ""

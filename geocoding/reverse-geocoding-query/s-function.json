@@ -8,18 +8,7 @@
   "timeout": 10,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": [],
-    "cors": {
-      "allowOrigin": "*",
-      "allowHeaders": [
-        "Content-Type",
-        "X-Amz-Date",
-        "Authorization",
-        "X-Api-Key"
-      ]
-    }
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "geocoding/reverse",
@@ -27,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "none",
       "authorizerFunction": false,
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.locale": "method.request.querystring.locale",
         "integration.request.querystring.count": "method.request.querystring.count",
@@ -47,16 +36,10 @@
       },
       "responses": {
         "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "400"
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""

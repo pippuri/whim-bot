@@ -8,9 +8,7 @@
   "timeout": 20,
   "memorySize": 1024,
   "authorizer": {},
-  "custom": {
-    "excludePatterns": []
-  },
+  "custom": {},
   "endpoints": [
     {
       "path": "bookings/options/{agencyId}",
@@ -18,7 +16,7 @@
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
-      "apiKeyRequired": false,
+      "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.path.agencyId": "method.request.path.agencyId",
         "integration.request.querystring.startTime": "method.request.querystring.startTime",
@@ -40,40 +38,22 @@
       },
       "responses": {
         "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "400"
         },
         "^403.*": {
-          "statusCode": "403",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "403"
         },
         "^401.*": {
-          "statusCode": "401",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "401"
         },
         "^404.*": {
-          "statusCode": "404",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "404"
         },
         "^500.*": {
-          "statusCode": "500",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "500"
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""
