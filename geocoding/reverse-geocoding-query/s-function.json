@@ -36,16 +36,10 @@
       },
       "responses": {
         "^400.*": {
-          "statusCode": "400",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
+          "statusCode": "400"
         },
         "default": {
           "statusCode": "200",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          },
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""
