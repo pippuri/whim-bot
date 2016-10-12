@@ -8,6 +8,7 @@ const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: proc
 Promise.promisifyAll(iotData);
 
 function updateUserLocation(identityId, lat, lon, timestamp, legId) {
+
   const thingName = identityId.replace(/:/, '-');
   const payload = JSON.stringify({
     state: {
@@ -21,7 +22,7 @@ function updateUserLocation(identityId, lat, lon, timestamp, legId) {
       },
     },
   });
-  console.info('Thing shadow payload:', payload);
+
   return iotData.updateThingShadowAsync({
     thingName: thingName,
     payload: payload,
@@ -29,7 +30,8 @@ function updateUserLocation(identityId, lat, lon, timestamp, legId) {
 }
 
 module.exports.respond = function (event, callback) {
-  updateUserLocation(event.identityId, event.lat, event.lon, event.timestamp, event.legId)
+  return Promise.resolve()
+    .then(() => updateUserLocation(event.identityId, event.lat, event.lon, event.timestamp, event.legId))
   .then(response => {
     callback(null, response);
   })

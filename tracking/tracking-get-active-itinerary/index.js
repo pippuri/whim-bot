@@ -23,12 +23,13 @@ function getActiveItinerary(identityId) {
       return payload.state.reported.itinerary;
     }
 
-    return Promise.reject(new Error('404 No Active Itinerary'));
+    return Promise.reject(new MaaSError('No Active Itinerary', 404));
   });
 }
 
 module.exports.respond = function (event, callback) {
-  return getActiveItinerary(event.identityId)
+  return Promise.resolve()
+    .then(() => getActiveItinerary(event.identityId))
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
