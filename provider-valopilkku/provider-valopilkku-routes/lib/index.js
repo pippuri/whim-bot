@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
+const serviceBus = require('../../../lib/service-bus');
 const utils = require('../../../lib/utils');
 
 function selectOptions(original) {
@@ -41,12 +42,12 @@ function getLegGeometryPoints(option) {
       [option.leg.to.lat, option.leg.to.lon],
     ];
 
-    return resolve(points);
+    // Return an encoded polyline
+    return resolve(polylineEncoder.encode(points));
   });
 }
 
-function buildLeg(option, points) {
-  const polyline = polylineEncoder.encode(points);
+function buildLeg(option, polyline) {
   const distance = polylineEncoder.length(polyline);
 
   return {
@@ -78,7 +79,7 @@ function extractWalkingLegs(option) {
 
 function extractTaxiLeg(option) {
   return getLegGeometryPoints(option)
-    .then(points => buildLeg(option, points))
+    .then(polyline => buildLeg(option, polyline))
     .then(leg => signLeg(leg));
 }
 
