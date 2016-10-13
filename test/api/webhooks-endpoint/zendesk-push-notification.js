@@ -3,11 +3,6 @@
 const Promise = require('bluebird');
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const moment = require('moment');
-const models = require('../../../lib/models');
-const utils = require('../../../lib/utils');
-const Database = models.Database;
-
 
 const zendeskPushNotiticationLambda = require('../../../webhooks/zendesk-push-notification/handler');
 const positiveEvents = require('./zendesk-push-notification-positive-events.json');
@@ -22,8 +17,6 @@ function runLambda(lambda, event) {
 }
 
 module.exports = function (input, results) {
-  let lambdaResponse;
-
   describe('send push notifications', () => {
 
     it('valid ones to be succesful or fail with none sent', () => {
@@ -56,4 +49,4 @@ module.exports = function (input, results) {
 
     });
   });
-}
+};
