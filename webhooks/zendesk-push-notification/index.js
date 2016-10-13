@@ -6,11 +6,11 @@ const sns = new AWS.SNS({ region: process.env.AWS_REGION });
 const stage = process.env.SERVERLESS_STAGE || 'dev';
 const ARNSandbox = process.env.APNS_ARN_SANDBOX;
 const ARN = process.env.APNS_ARN;
-// const validator = require('../../lib/validator');
-// const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/request.json');
-// const responseSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/push-notification-apple/response.json');
+const validator = require('../../lib/validator');
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/zendesk-push-notification/request.json');
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/zendesk-push-notification/response.json');
 const MaaSError = require('../../lib/errors/MaaSError');
-// const ValidationError = require('../../lib/validator/ValidationError');
+const ValidationError = require('../../lib/validator/ValidationError');
 
 Promise.promisifyAll(sns);
 
@@ -68,7 +68,7 @@ function forwardPushNotification(event) {
 
   event.devices.forEach(device => {
     if (device.type === 'ios') {
-      console.info('Message is being sent to: ' + device.identifier);
+      console.info('Message is being sent to iOS device: ' + device.identifier);
 
       // Queue all user devices (Apple) to the list
       platformEndpointList.push(iOScreatePlatformEndpoint(device.identifier));
@@ -78,6 +78,8 @@ function forwardPushNotification(event) {
       if (stage === 'dev' || stage === 'test') {
         platformEndpointList.push(iOScreatePlatformEndpoint(device.identifier, true));
       }
+    } else if (device.type === 'android') {
+      console.warn('Warning; ingoring push notification forwarding to Android; not supported');
     }
   });
 
@@ -111,16 +113,16 @@ function forwardPushNotification(event) {
 
 module.exports.respond = (event, callback) => {
   return Promise.resolve()
-    // .then(() => validator.validate(requestSchema, event))
-    // .catch(ValidationError, error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
+    .then(() => validator.validate(requestSchema, event))
+    .catch(ValidationError, error => Promise.reject(new MaaSError(`Validation failed: ${error.message}`, 400)))
     .then(validated => forwardPushNotification(event))
-    // .then(response => validator.validate(responseSchema, response))
-    // .catch(ValidationError, error => {
-    //   console.warn('Warning; Response validation failed, but responding with success');
-    //   console.warn('Errors:', error.message);
-    //   console.warn('Response:', JSON.stringify(error.object, null, 2));
-    //   return Promise.resolve(error.object);
-    // })
+    .then(response => validator.validate(responseSchema, response))
+    .catch(ValidationError, error => {
+      console.warn('Warning; Response validation failed, but responding with success');
+      console.warn('Errors:', error.message);
+      console.warn('Response:', JSON.stringify(error.object, null, 2));
+      return Promise.resolve(error.object);
+    })
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
