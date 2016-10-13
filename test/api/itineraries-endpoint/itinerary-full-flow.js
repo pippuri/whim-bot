@@ -13,6 +13,7 @@ const itineraryCreateLambda = require('../../../itineraries/itinerary-create/han
 const itineraryRetrieveLambda = require('../../../itineraries/itinerary-retrieve/handler');
 const itineraryListLambda = require('../../../itineraries/itinerary-list/handler');
 const itineraryCancelLambda = require('../../../itineraries/itinerary-cancel/handler');
+const getProfileLambda = require('../../../profile/profile-info/handler.js');
 
 function runLambda(lambda, event) {
   return new Promise((resolve, reject) => {
@@ -28,6 +29,10 @@ module.exports = function (input, results) {
   let retrievedItinerary;
   let paidItineraries;
   let cancelledItinerary;
+
+  let startingBalance;
+  let midBalance;
+  let endBalance;
 
   // Dynamic control flag: toggle true in the beginning of a suite,
   // put back to false if the previous phase ran ok.
@@ -116,11 +121,20 @@ module.exports = function (input, results) {
 
   describe('Creates an itinerary', () => {
     // Skip this part of the suite if skip flag has been raised
-    before(function () {
+    before(done => {
       if (skip) {
         this.skip();
       }
       skip = true;
+
+      // fetch user data to get account starting balance
+      const event = {
+        identityId: input.event.identityId,
+      };
+      wrap(getProfileLambda).run(event, (err, data) => {
+        startingBalance = data.Item.balance;
+        done();
+      });
     });
 
     it(`Creates an itinerary for user '${input.event.identityId}'`, () => {
@@ -141,7 +155,17 @@ module.exports = function (input, results) {
             console.log(_error.stack);
             return Promise.reject(_error);
           }
-        );
+        )
+        .then(createdItinerary => {
+          // fetch user data to get account current balance
+          const event = {
+            identityId: input.event.identityId,
+          };
+          wrap(getProfileLambda).run(event, (err, data) => {
+            midBalance = data.Item.balance;
+            return Promise.resolve(createdItinerary);
+          });
+        });
     });
 
     it('Creates the itinerary in \'PAID\' state', () => {
@@ -179,6 +203,11 @@ module.exports = function (input, results) {
 
       skip = false;
     });
+
+    it('User balance is reduced by fare', () => {
+      expect(startingBalance - (createdItinerary.fare.points || 0)).to.equal(midBalance);
+    });
+
   });
 
   describe('Retrieves the itinerary', () => {
@@ -282,7 +311,18 @@ module.exports = function (input, results) {
             console.log(_error.stack);
             return Promise.reject(_error);
           }
-        );
+        )
+        .then(cancelledItinerary => {
+          // fetch user data to get account current balance
+          const event = {
+            identityId: input.event.identityId,
+          };
+          wrap(getProfileLambda).run(event, (err, data) => {
+            endBalance = data.Item.balance;
+            return Promise.resolve(cancelledItinerary);
+          });
+        });
+
     });
 
     it('Cancelled itinerary has \'CANCELLED\' or \'CANCELLED_WITH_ERRORS\' state', () => {
@@ -304,6 +344,15 @@ module.exports = function (input, results) {
 
       skip = false;
     });
+
+    it('Fare is refunded if clean cancel', () => {
+      if (cancelledItinerary.state === 'CANCELLED') {
+        expect(startingBalance).to.equal(endBalance);
+      } else {
+        expect(startingBalance - (cancelledItinerary.fare.points || 0)).to.equal(endBalance);
+      }
+    });
+
   });
 
   after(() => {
