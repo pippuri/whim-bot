@@ -69,6 +69,7 @@ describe('MaaS.fi backend', () => {
   require('./provider');
   require('./lib');
   require('./db/test-statistics');
+  require('./auth');
 
   // DB performance pre-setup (clear statistics) & seed data
   after(() => {

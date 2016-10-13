@@ -1,0 +1,85 @@
+'use strict';
+
+const bus = require('../../../lib/service-bus/index');
+const expect = require('chai').expect;
+
+const LAMBDA = 'MaaS-auth-sms-request-code';
+
+
+module.exports = function () {
+
+  describe('auth-sms-request-code', function () { //eslint-disable-line
+    this.timeout(10000);
+    const PHONE = '+292123456789';
+
+    const event = {
+      phone: PHONE,
+    };
+
+    let error;
+    let response;
+
+    before(done => {
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.undefined;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.have.property('message');
+      expect(response.message).to.contain('Verification code sent');
+      expect(response.message).to.contain(PHONE);
+    });
+  });
+
+  describe('auth-sms-request-code failure', function () { //eslint-disable-line
+    this.timeout(10000);
+    const BAD_PHONE = '+292';
+
+    const event = {
+      phone: BAD_PHONE,
+    };
+
+    let error;
+    let response;
+
+    before(done => {
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should raise an error', () => {
+      expect(error).to.not.be.undefined;
+      expect(response).to.be.undefined;
+    });
+
+    it('should not return empty', () => {
+      expect(error).to.have.property('message');
+      expect(error.message).to.contain('Invalid phone number');
+    });
+  });
+
+
+};
