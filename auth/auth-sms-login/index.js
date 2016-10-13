@@ -205,9 +205,13 @@ function smsLogin(phone, code) {
     return createUserThing(identityId, plainPhone, isSimulationUser);
   })
   .then(() => {
+    const profilePayload = {
+      identityId: identityId,
+      payload: {
+        phone: phone,
+      },
+    };
 
-  })
-  .then(() => {
     // First try to fetch an existing identity
     return Profile.retrieve(identityId)
       .catch(error => {
@@ -215,7 +219,7 @@ function smsLogin(phone, code) {
         return Profile.create(identityId, phone);
       });
   })
-  .then(_empty => {
+  .then(() => {
     // Create a signed JSON web token
     const token = jwt.sign({ id: identityId }, process.env.JWT_SECRET);
     const zendeskToken = jwt.sign({ zendeskJwt: 1, userId: identityId }, process.env.JWT_SECRET);
