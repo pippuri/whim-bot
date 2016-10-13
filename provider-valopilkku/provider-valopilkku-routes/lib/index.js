@@ -32,11 +32,11 @@ function extractStartTime(option) {
 }
 
 function extractEndTime(option) {
-  return option.leg.startTime;
+  return option.leg.endTime;
 }
 
-function extractGeometry(response) {
-  // Extract the geometry from the HERE route response
+function extractTaxiLegFromHereResponse(response) {
+  // Extract the endTime from the HERE route response
   if (response.plan &&
       response.plan.itineraries &&
       response.plan.itineraries.length > 0 &&
@@ -48,15 +48,33 @@ function extractGeometry(response) {
       return leg.mode === GEOMETRY_QUERY_MODE;
     });
 
-    // Only return the geometry if we have actually found something
+    // Only return the leg if we have actually found something
     if (ret) {
-      return ret.legGeometry.points;
+      return ret;
     }
   }
 
   // Throw this so that the error handler can sort it out
-  console.warn('WARNING: Could not extract geometry from HERE route request');
-  throw new Error('Could not extract Geometry');
+  throw new Error('Could not extract taxi leg from HERE response');
+}
+
+function extractEndTimeFromHereLegIntoOption(leg, option) {
+  if (leg && leg.endTime && option.leg) {
+    option.leg.endTime = leg.endTime;
+    return;
+  }
+
+  // Throw this so that the error handler can sort it out
+  throw new Error('Could not extract endTime from HERE leg');
+}
+
+function extractGeometryFromHereLeg(leg) {
+  if (leg && leg.legGeometry) {
+    return leg.legGeometry.points;
+  }
+
+  // Throw this so that the error handler can sort it out
+  throw new Error('Could not extract Geometry from HERE leg');
 }
 
 function getLegGeometryPoints(option) {
@@ -66,17 +84,6 @@ function getLegGeometryPoints(option) {
     to: `${option.leg.to.lat},${option.leg.to.lon}`,
     leaveAt: Date.now(),
     modes: GEOMETRY_QUERY_MODE,
-  })
-  .then(response => extractGeometry(response))
-  .catch(error => {
-    // If this fails, default to the straght line A -> B geometry
-    const points = [
-      [option.leg.from.lat, option.leg.from.lon],
-      [option.leg.to.lat, option.leg.to.lon],
-    ];
-
-    // Return an encoded polyline
-    return polylineEncoder.encode(points);
   });
 }
 
@@ -112,8 +119,13 @@ function extractWalkingLegs(option) {
 
 function extractTaxiLeg(option) {
   return getLegGeometryPoints(option)
+    .then(response => extractTaxiLegFromHereResponse(response))
+    .then(hereLeg  => {
+      extractEndTimeFromHereLegIntoOption(hereLeg, option);
+      return extractGeometryFromHereLeg(hereLeg);
+    })
     .then(polyline => buildLeg(option, polyline))
-    .then(leg => signLeg(leg));
+    .then(leg      => signLeg(leg));
 }
 
 function extractAllTaxiLegs(option) {
