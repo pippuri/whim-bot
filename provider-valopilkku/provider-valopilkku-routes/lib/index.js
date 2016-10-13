@@ -69,7 +69,7 @@ function extractEndTimeFromHereLegIntoOption(leg, option) {
 }
 
 function extractGeometryFromHereLeg(leg) {
-  if (leg && leg.legGeometry) {
+  if (leg && leg.legGeometry && leg.legGeometry.points) {
     return leg.legGeometry.points;
   }
 
@@ -88,7 +88,7 @@ function getLegGeometryPoints(option) {
 }
 
 function buildLeg(option, polyline) {
-  const distance = polylineEncoder.length(polyline);
+  const distance = polylineEncoder.length(polyline, 'meter');
 
   return {
     startTime: option.leg.startTime,
