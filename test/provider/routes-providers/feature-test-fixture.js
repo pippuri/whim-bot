@@ -6,6 +6,7 @@ const expect = require('chai').expect;
 const schema = require('maas-schemas/');
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
+const clone = require('lodash/clone');
 
 module.exports = (test, provider) => {
 
@@ -42,8 +43,10 @@ module.exports = (test, provider) => {
     // Parse the test test params for this individual provider
     const lambda = provider.lambda;
     const providerName = provider.name;
-    const input = test.input;
-    const results = test.results;
+
+    // These are clones so that possible modifiers don't affect other providers
+    const input = clone(test.input);
+    const results = clone(test.results);
 
     if (test.inputModifiers && test.inputModifiers[providerName]) {
       utils.merge(input, test.inputModifiers[providerName]);

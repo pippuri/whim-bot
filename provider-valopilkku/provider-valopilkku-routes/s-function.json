@@ -1,0 +1,30 @@
+{
+  "name": "provider-valopilkku-routes",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 10,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {
+    "excludePatterns": [],
+    "cors": {
+      "allowOrigin": "*",
+      "allowHeaders": [
+        "Content-Type",
+        "X-Amz-Date",
+        "Authorization",
+        "X-Api-Key"
+      ]
+    }
+  },
+  "endpoints": [],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

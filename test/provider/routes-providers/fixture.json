@@ -11,6 +11,10 @@
     {
       "name": "HERE",
       "lambda": "MaaS-provider-here-routes"
+    },
+    {
+      "name": "Valopilkku",
+      "lambda": "MaaS-provider-valopilkku-routes"
     }
   ],
   "cases": [
@@ -26,6 +30,11 @@
         "pass": true,
         "modes": "WALK",
         "count": [0, 100]
+      },
+      "resultsModifiers": {
+        "Valopilkku": {
+          "pass": false
+        }
       }
     },
     {
@@ -39,6 +48,11 @@
       "results": {
         "pass": true,
         "modes": "WALK,WAIT,TRANSFER,BUS,TRAM,TRAIN"
+      },
+      "resultsModifiers": {
+        "Valopilkku": {
+          "pass": false
+        }
       }
     },
     {
@@ -78,6 +92,9 @@
       "resultsModifiers": {
         "HERE": {
           "pass": false
+        },
+        "Valopilkku": {
+          "pass": false
         }
       }
     },
@@ -85,7 +102,8 @@
       "name": "Middle of ocean (0,0) to Kamppi",
       "input": {
         "from": "0.0,0.0",
-        "to": "60.170779,24.7721584"
+        "to": "60.170779,24.7721584",
+        "leaveAt": 1475406000000
       },
       "results": {
         "pass": true,
