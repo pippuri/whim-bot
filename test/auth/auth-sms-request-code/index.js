@@ -77,6 +77,7 @@ module.exports = function () {
 
     it('should not return empty', () => {
       expect(error).to.have.property('message');
+      expect(error.message).to.not.contain('500');
       expect(error.message).to.contain('Invalid phone number');
     });
   });

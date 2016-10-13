@@ -168,7 +168,7 @@ function smsLogin(phone, code) {
   // Sanitize phone number, remove NaN
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new Error('Invalid phone number'));
+    return Promise.reject(new MaaSError('Invalid phone number', 401));
   }
 
   // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
@@ -189,7 +189,7 @@ function smsLogin(phone, code) {
 
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
   if (correctCode !== code) {
-    return Promise.reject(new Error('401 Unauthorized'));
+    return Promise.reject(new MaaSError('401 Unauthorized', 401));
   }
 
   return getCognitoDeveloperIdentity(plainPhone)
