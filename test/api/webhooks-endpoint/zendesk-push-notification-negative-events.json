@@ -1,0 +1,55 @@
+[
+  {
+    "devices": [
+      {
+        "identifier": "11223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "windows phone"
+      }
+    ],
+    "notification": {
+      "body": "bad, unknown type of device",
+      "title": "Agent replied",
+      "ticket_id": "1"
+    }
+  },
+  {
+    "devices": [
+      {
+        "identifier": "bad",
+        "type": "ios"
+      }
+    ],
+    "notification": {
+      "body": "This should fail as bad identifier",
+      "title": "Agent replied",
+      "ticket_id": "5"
+    }
+  },
+  {
+    "devices": [
+      {
+        "identifier": "11223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "ios"
+      },
+      {
+        "identifier": "FFFF2233445566778899AABBCCDDEEFF",
+        "type": "android"
+      }
+    ],
+    "notification": {
+      "body": "This should fail as extra field",
+      "title": "Agent replied",
+      "ticket_id": "5"
+    },
+    "this-does-not-belong-here": "bar"
+  },
+  {
+    "devices": [
+    ],
+    "notification": {
+      "body": "No devices",
+      "title": "Agent replied",
+      "ticket_id": "5"
+    }
+  }
+]

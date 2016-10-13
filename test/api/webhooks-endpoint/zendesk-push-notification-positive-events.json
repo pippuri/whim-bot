@@ -1,0 +1,49 @@
+[
+  {
+    "devices": [
+      {
+        "identifier": "11223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "ios"
+      },
+      {
+        "identifier": "FFFF2233445566778899AABBCCDDEEFF",
+        "type": "android"
+      }
+    ],
+    "notification": {
+      "body": "Android and iOS",
+      "title": "Agent replied",
+      "ticket_id": "1"
+    }
+  },
+  {
+    "devices": [
+      {
+        "identifier": "00223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "ios"
+      },
+      {
+        "identifier": "22223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "ios"
+      }
+    ],
+    "notification": {
+      "body": "Multiple iOS",
+      "title": "Agent replied",
+      "ticket_id": "22"
+    }
+  },
+  {
+    "devices": [
+      {
+        "identifier": "11223344556677889900414fd935482e677aa3ce4022c92c0a0dd85cf10ce6d7",
+        "type": "android"
+      }
+    ],
+    "notification": {
+      "body": "Android only",
+      "title": "Agent replied",
+      "ticket_id": "1"
+    }
+  }
+]

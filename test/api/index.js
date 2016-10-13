@@ -10,5 +10,6 @@ describe('API', () => {
   require('./store-endpoint');
   require('./tracking-endpoint');
   require('./trip-endpoint');
+  require('./webhooks-endpoint');
   require('./api-docs');
 });
