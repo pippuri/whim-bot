@@ -296,7 +296,7 @@ describe('Post a charge on the user', function () {
   this.timeout(5000);
 
   before(() => {
-    return mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-points-purchase-payg', 10)
+    return mgr.makePurchase('eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb', 'fi-whim-points-purchase-payg', 100)
     .then(
       res => (response = res),
       err => (error = err)
