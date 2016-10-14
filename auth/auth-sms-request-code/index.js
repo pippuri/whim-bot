@@ -19,7 +19,7 @@ function smsRequestCode(phone, provider) {
   // Clean up phone number to only contain digits
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new Error('Invalid phone number'));
+    return Promise.reject(new MaaSError('Invalid phone number', 400));
   }
 
   const shasum = crypto.createHash('sha1');

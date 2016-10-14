@@ -8,6 +8,12 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
+let greenlist;
+try {
+  greenlist = require(process.env.AUTH_GREENLIST_JSON);
+}
+catch(err) { /* swallow */ }
+
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const iot = new AWS.Iot({ region: process.env.AWS_REGION });
@@ -185,6 +191,16 @@ function smsLogin(phone, code) {
     shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
     const hash = shasum.digest('hex');
     correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
+  }
+
+  if (typeof greenlist === typeof undefined) {
+    console.log('Not checking against greenlist');
+  }
+  else {
+    console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
+    if (greenlist.indexOf(plainPhone) === -1) {
+      return Promise.reject(new MaaSError('401 Unauthorized', 401));
+    }
   }
 
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
