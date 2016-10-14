@@ -84,7 +84,7 @@ module.exports = function () {
 
   describe('auth-sms-request-code non-greenlisted number fails', function () { //eslint-disable-line
     this.timeout(10000);
-    const PHONE = '+358465727140';
+    const PHONE = '+358465727141';
 
     const event = {
       phone: PHONE,
