@@ -12,7 +12,7 @@ let greenlist;
 try {
   greenlist = require(process.env.AUTH_GREENLIST_JSON);
 }
-catch(err) { /* swallow */ }
+catch (err) { /* swallow */ }  // eslint-disable-line brace-style
 
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
@@ -195,8 +195,7 @@ function smsLogin(phone, code) {
 
   if (typeof greenlist === typeof undefined) {
     console.log('Not checking against greenlist');
-  }
-  else {
+  } else {
     console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
     if (greenlist.indexOf(plainPhone) === -1) {
       return Promise.reject(new MaaSError('401 Unauthorized', 401));
