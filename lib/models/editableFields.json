@@ -2,5 +2,6 @@
   "Booking": ["state", "terms", "meta", "token"],
   "Itinerary": ["state", "fare"],
   "Leg": ["state"],
-  "Provider": ["state", "priority"]
+  "Provider": ["state", "priority"],
+  "Profile": ["balance","email","firstName","lastName", "city", "country", "zipCode", "profileImageUrl"]
 }

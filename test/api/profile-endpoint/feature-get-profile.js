@@ -25,17 +25,24 @@ module.exports = function (lambda) {
       });
     });
 
-    it('should not raise an error', () => {
+    it('should return response and not raise an error', () => {
+      expect(response).to.not.be.null;
       expect(error).to.be.null;
     });
 
     xit('should return a valid response', () => {
-
       return validator.validate(schema, response)
         .then(validationError => {
           expect(validationError).to.be.null;
         });
 
+    });
+
+    it(`should return a profile with identityId ${identityId}`, () => {
+      expect(response.profile).to.be.an('object');
+      expect(response.profile).to.have.property('identityId');
+      expect(response.profile.identityId).to.be.a('string');
+      expect(response.profile.identityId).to.equal(identityId);
     });
 
   });

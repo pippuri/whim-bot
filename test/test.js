@@ -1,6 +1,7 @@
 'use strict';
 
 const Templates = (new (require('serverless'))()).classes.Templates;
+const dbUtils = require('./db');
 
 function loadEnvironment() {
   // The stages we can run tests against in priority order - always fallback to dev
@@ -50,11 +51,16 @@ console.warn = () => {};
 
 // Force local lambda & dynamo usage
 process.env.USE_MOCK_LAMBDA = 'TRUE';
-process.env.USE_MOCK_DYNAMO = 'TRUE';
 
 describe('MaaS.fi backend', () => {
-  // DB performance pre-setup (clear statistics)
-  require('./db/clear-statistics.js');
+
+  // DB performance pre-setup (clear statistics) & seed data
+  before(() => {
+    console.log('Preparing Database for tests');
+    return dbUtils.removeSeedData()
+      .then(() => dbUtils.insertSeedData())
+      .then(() => dbUtils.clearDBStatistics());
+  });
 
   // The actual suite
   require('./business-rule-engine');
@@ -62,7 +68,12 @@ describe('MaaS.fi backend', () => {
   require('./profile');
   require('./provider');
   require('./lib');
+  require('./db/test-statistics');
 
-  // DB performance post-analysis
-  require('./db');
+  // DB performance pre-setup (clear statistics) & seed data
+  after(() => {
+    console.log('Cleaning up database');
+    return dbUtils.removeSeedData()
+      .then(() => dbUtils.shutdown());
+  });
 });

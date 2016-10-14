@@ -25,13 +25,12 @@ module.exports = function (lambda) {
     });
 
     it('should raise an error', () => {
-      const errorMessage = '' + error;
-      expect(errorMessage).to.contain('No item found with identityId');
+      expect(error).to.be.instanceof(Error);
+      expect(error.code).to.equal(404);
     });
 
     it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
-
   });
 };

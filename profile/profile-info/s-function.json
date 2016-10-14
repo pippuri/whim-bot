@@ -19,7 +19,10 @@
       "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\", \"attributes\":\"$input.params('attributes')\"}"
+        "application/json": {
+          "identityId":"$context.authorizer.principalId",
+          "attributes":"$input.params('attributes')"
+        }
       },
       "responses": {
         "^400.*": {

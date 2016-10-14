@@ -1,82 +1,69 @@
 'use strict';
 
 const Promise = require('bluebird');
-const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
+const editableFields = require('../../lib/models/editableFields.json').Profile;
+const Database = require('../../lib/models/Database');
+const Profile = require('../../lib/business-objects/Profile');
 
-function updateUserData(event) {
-  const table = process.env.DYNAMO_USER_PROFILE;
-  const identityId = event.identityId;
-
-  if (Object.keys(event).length === 0) {
-    return Promise.reject(new Error('Input missing'));
+function validateInput(event) {
+  if (!event) {
+    return Promise.reject(new MaaSError('Input missing', 400));
   }
 
-  if (typeof identityId !== 'string') {
-    return Promise.reject(new Error('Invalid or missing identityId'));
+  if (!event.identityId || typeof event.identityId !== 'string') {
+    return Promise.reject(new MaaSError('Invalid or missing identityId', 403));
   }
 
-  // FIXME Skip the identity check, this fails in Travis
-  //return lib.documentExist(table, 'identityId', identityId, null, null)
-  return Promise.resolve(true)
-    .then(response => {
-      if (response !== true) {
-        return Promise.reject(new Error('User does not exist'));
-      }
+  if (!event.payload || Object.keys(event.payload).length === 0) {
+    return Promise.reject(new MaaSError('Payload empty, update request refused', 400));
+  }
 
-      const keys = Object.keys(event.payload);
-      const expressions = keys.map(key => `${key}=:${key}`);
-      const values = {};
+  for (let key of Object.keys(event.payload)) { // eslint-disable-line
+    if (!editableFields.some(field => field === key)) {
+      return Promise.reject(new MaaSError(`Cannot update field "${key}", request forbidden`, 403));
+    }
+  }
 
-      keys.forEach(key => {
-        values[':' + key] = event.payload[key];
-      });
-      console.info('update user data:', keys, expressions);
-
-      const params = {
-        TableName: table,
-        Key: {
-          identityId: event.identityId,
-        },
-        UpdateExpression: 'SET ' + expressions.join(', '),
-        ExpressionAttributeValues: values,
-        ReturnValues: 'ALL_NEW',
-        ReturnConsumedCapacity: 'INDEXES',
-      };
-
-      return bus.call('Dynamo-update', params);
-    });
+  return Promise.resolve();
 }
 
-function wrapToEnvelope(profile, event) {
-  // Delete identity id from the error
-  delete profile.identityId;
-
-  return {
-    profile: profile,
-    maas: {
-      query: event,
-    },
-  };
+function updateUserData(event) {
+  return Profile.update(event.identityId, event.payload)
+    .then(profile => {
+      return {
+        profile: profile,
+        maas: {
+          query: event,
+        },
+      };
+    });
 }
 
 /**
  * Export respond to Handler
  */
 module.exports.respond = (event, callback) => {
-  return updateUserData(event)
-    .then(response => wrapToEnvelope(response.Attributes, event))
-    .then(envelope => callback(null, envelope))
+  return Database.init()
+    .then(() => validateInput(event))
+    .then(() => updateUserData(event))
+    .then(profile => {
+      Database.cleanup()
+        .then(() => callback(null, profile));
+    })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

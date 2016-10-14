@@ -14,7 +14,7 @@ module.exports = function () {
         webhook_status: 'not_configured',
         content: {
           customer: {
-            id: 'eu-west-1:6d6ba277-783e-40e1-a05f-bf6794e76d0a',
+            id: 'eu-west-1:00000000-cafe-cafe-cafe-000000000001',
             first_name: 'Benjamin',
             last_name: 'Ross',
           },

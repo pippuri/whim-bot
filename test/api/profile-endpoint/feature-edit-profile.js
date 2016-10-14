@@ -22,11 +22,11 @@ module.exports = function (lambda) {
 
     it('should not raise an error', () => {
       if (error) {
-        console.warn(error.message);
+        console.warn('Caught an error:', error.message);
         console.warn(error.stack);
       }
 
-      expect(error).to.be.null;
+      expect(error).to.not.exist;
     });
 
     xit('should return a valid response', () => {

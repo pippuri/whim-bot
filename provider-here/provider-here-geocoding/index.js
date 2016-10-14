@@ -78,7 +78,6 @@ function adapt(input) {
     json: true,
     headers: {},
     qs: query,
-    verbose: true,
   })
   .then(parseResults)
   .then(response => {

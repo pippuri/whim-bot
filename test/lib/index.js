@@ -1,6 +1,7 @@
 'use strict';
 
 describe('Library', () => {
+  require('./business-objects');
   require('./geolocation');
   require('./models');
   require('./subscription-manager');
