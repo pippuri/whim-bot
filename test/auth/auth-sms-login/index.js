@@ -9,7 +9,7 @@ const LAMBDA = 'MaaS-auth-sms-login';
 
 module.exports = function () {
 
-  describe('auth-sms-login', function () { //eslint-disable-line
+  describe.skip('auth-sms-login', function () { //eslint-disable-line
     this.timeout(10000);
     const PHONE = '+358417556933';
     const PLAIN_PHONE = '358417556933';
