@@ -18,13 +18,27 @@ function validate(event) {
     return Promise.reject(new MaaSError('Missing planId', 400));
   }
 
+  if (event.promoCode === '' || typeof event.promoCode === 'undefined') {
+    event.promoCode = undefined;
+  }
+
+  if (event.skipUpdate !== '' && typeof event.skipUpdate !== 'undefined') {
+    event.skipUpdate = true;
+  } else {
+    event.skipUpdate = false;
+  }
+
   return Promise.resolve(event);
 }
 
 module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => validate(event))
-    .then(validated => Profile.updateSubscription(validated.identityId, validated.planId, validated.promoCode))
+    .then(validated => {
+      const skipUpdate = !!event.validated;
+
+      Profile.updateSubscription(validated.identityId, validated.planId, validated.promoCode, skipUpdate);
+    })
     .then(profile => {
       Database.cleanup()
         .then(() => callback(null, profile));

@@ -8,7 +8,6 @@ const VALID_KEYS = {
   XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
 };
 
-
 function handleWebhook(event) {
   const key = event.id;
 
