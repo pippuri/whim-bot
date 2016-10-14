@@ -9,13 +9,6 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
-// Try to load the greenlist
-let greenlist;
-try {
-  greenlist = require(process.env.AUTH_GREENLIST_JSON);
-}
-catch(err) { /* swallow */ }
-
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const iot = new AWS.Iot({ region: process.env.AWS_REGION });
