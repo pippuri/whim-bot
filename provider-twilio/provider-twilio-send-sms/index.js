@@ -11,7 +11,7 @@ function sendSmsMessage(phone, message) {
   //console.info('Sending SMS message:', phone, message);
   return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages', {
     form: {
-      From: process.env.TWILIO_FROM_FIELD,
+      From: 'Whim',
       To: phone,
       Body: message,
     },
