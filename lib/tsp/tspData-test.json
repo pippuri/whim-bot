@@ -7,7 +7,9 @@
     },
     "endpoints": {
       "reserve": "bookings/",
-      "cancel": "bookings/"
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
+      "query": "bookings/options/"
     }
   },
   "Valopilkku": {
