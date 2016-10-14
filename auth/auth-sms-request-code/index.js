@@ -1,7 +1,6 @@
 'use strict';
 
 const Promise = require('bluebird');
-const crypto = require('crypto');
 const AWS = require('aws-sdk');
 const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
