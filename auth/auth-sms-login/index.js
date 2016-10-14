@@ -1,13 +1,15 @@
 'use strict';
 
 const Promise = require('bluebird');
-const crypto = require('crypto');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
+const lib = require('../lib/index');
+
 const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
+// Try to load the greenlist
 let greenlist;
 try {
   greenlist = require(process.env.AUTH_GREENLIST_JSON);
@@ -177,22 +179,11 @@ function smsLogin(phone, code) {
     return Promise.reject(new MaaSError('Invalid phone number', 401));
   }
 
-  // Support simulated users in dev environment using phone prefix +292 (which is an unused international code)
+  // Support simulated users in dev environment using phone prefix +292
+  // (which is an unused international code)
   const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
 
-  if (isSimulationUser) {
-    // Simulation users accept login with code 292
-    console.info('User is a simulation user');
-    correctCode = '292';
-  } else {
-    // Real users must have a real code from Twilio
-    const shasum = crypto.createHash('sha1');
-    const salt = code.slice(0, 3);
-    shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-    const hash = shasum.digest('hex');
-    correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
-  }
-
+  // Check against the greenlist if a greenlist has been loaded
   if (typeof greenlist === typeof undefined) {
     console.log('Not checking against greenlist');
   } else {
@@ -202,11 +193,13 @@ function smsLogin(phone, code) {
     }
   }
 
+  // Bale out if we can't verify the provided code
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
-  if (correctCode !== code) {
+  if (!lib.verify_login_code(isSimulationUser, plainPhone, code)) {
     return Promise.reject(new MaaSError('401 Unauthorized', 401));
   }
 
+  // Everything OK, proceed
   return getCognitoDeveloperIdentity(plainPhone)
   .then(response => {
     identityId = response.identityId;

@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
+const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
@@ -22,12 +23,9 @@ function smsRequestCode(phone, provider) {
     return Promise.reject(new MaaSError('Invalid phone number', 400));
   }
 
-  const shasum = crypto.createHash('sha1');
-  const salt = '' + (100 + Math.floor(Math.random() * 900));
-  shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-  const hash = shasum.digest('hex');
-  const verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
-  const verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
+  const verificationCode = lib.generate_login_code(plainPhone);
+  const verificationLink = lib.generate_login_link(phone, verificationCode);
+
   const functionName = 'MaaS-provider-' + provider + '-send-sms';
   console.info('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
   return lambda.invokePromise({
@@ -36,7 +34,7 @@ function smsRequestCode(phone, provider) {
     ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
     Payload: JSON.stringify({
       phone: phone,
-      message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink,
+      message: lib.generate_sms_message(verificationCode, verificationLink),
     }),
   })
   .then(response => {
