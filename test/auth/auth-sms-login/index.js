@@ -1,6 +1,7 @@
 'use strict';
 
 const bus = require('../../../lib/service-bus/index');
+const lib = require('../../../auth/lib/index');
 const expect = require('chai').expect;
 
 const LAMBDA = 'MaaS-auth-sms-login';
@@ -11,7 +12,7 @@ module.exports = function () {
   describe('auth-sms-login', function () { //eslint-disable-line
     this.timeout(10000);
     const PHONE = '+358417556933';
-    const CODE = '1512229';
+    const CODE = lib.generate_topt_login_code('358417556933');
 
     const event = {
       phone: PHONE,

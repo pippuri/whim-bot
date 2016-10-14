@@ -40,7 +40,7 @@ function smsRequestCode(phone, provider) {
     }
   }
 
-  const verificationCode = lib.generate_login_code(plainPhone);
+  const verificationCode = lib.generate_topt_login_code(plainPhone);
   const verificationLink = lib.generate_login_link(phone, verificationCode);
 
   const functionName = 'MaaS-provider-' + provider + '-send-sms';

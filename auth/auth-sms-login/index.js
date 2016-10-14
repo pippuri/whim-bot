@@ -178,7 +178,7 @@ function smsLogin(phone, code) {
 
   // Bale out if we can't verify the provided code
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
-  if (!lib.verify_login_code(isSimulationUser, plainPhone, code)) {
+  if (!lib.verify_topt_login_code(isSimulationUser, plainPhone, code)) {
     return Promise.reject(new MaaSError('401 Unauthorized', 401));
   }
 
