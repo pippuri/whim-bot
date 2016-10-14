@@ -24,29 +24,16 @@ function generate_sms_message(verificationCode, verificationLink) {
          verificationLink;
 }
 
-/** Generate a TOPT authentication code based on the given phone string.
-    An adjustment is provided to generate e.g. the previous code, or the next code
-    Which can be used to make verification a bit more robust.
-    Time override is an optional param used for testing.
-    https://en.wikipedia.org/wiki/Google_Authenticator
+/**
+ * Generate a TOPT authentication code based on the given secret Buffer or string
+ * @param {Buffer} secret - The secret to use, can also be a string
+ * @param {number} adjustment - An increment on the time window used, e.g. -1 means the previous code
+ * @param {number} timeOverride - Use the given timestamp as the basis for the code
+ * @param {number} ttl - How long the code should last, in seconds, this is more like an approximate time window
+ *
+ * See: https://en.wikipedia.org/wiki/Google_Authenticator
 */
 /* eslint-disable no-bitwise */
-function generate_topt_login_code(plainPhone, adjustment, timeOverride) {
-  // Defaults for optional params
-  if (typeof adjustment === typeof undefined) {
-    adjustment = 0;
-  }
-  if (typeof adjustment === typeof undefined) {
-    timeOverride = Date.now();
-  }
-
-  return __generate_topt_login_code_exec(
-                  process.env.SMS_CODE_SECRET + plainPhone,
-                  adjustment,
-                  timeOverride,
-                  AUTH_TOPT_TOKEN_TTL_SECS);
-}
-
 function __generate_topt_login_code_exec(secret, adjustment, timeOverride, ttl) {
   // The key is specific to the given phone number
   const key = secret;
@@ -85,7 +72,37 @@ function __generate_topt_login_code_exec(secret, adjustment, timeOverride, ttl) 
 }
 /* eslint-enable no-bitwise */
 
-function verify_topt_login_code(plainPhone, code) {
+/**
+ * Generate a TOPT authentication code based on the given phone string.
+ * @param {string} plainPhone - The phone number without any spaces or punctuation
+ * @param {number} adjustment - An increment on the time window used, e.g. -1 means the previous code
+ * @param {number} timeOverride - Optionally use the given timestamp as the basis for the code, used for testing
+*/
+function generate_topt_login_code(plainPhone, adjustment, timeOverride) {
+  // Defaults for optional params
+  if (typeof adjustment === typeof undefined) {
+    adjustment = 0;
+  }
+  if (typeof timeOverride === typeof undefined) {
+    timeOverride = Date.now();
+  }
+
+  return __generate_topt_login_code_exec(
+                  process.env.SMS_CODE_SECRET + plainPhone,
+                  adjustment,
+                  timeOverride,
+                  AUTH_TOPT_TOKEN_TTL_SECS);
+}
+
+
+function verify_topt_login_code(isSimulationUser, plainPhone, code) {
+  if (isSimulationUser) {
+    // Simulation users accept login with code 292
+    console.info('User is a simulation user');
+    return (code === AUTH_DEFAULT_LOGIN_CODE);
+
+  }
+
   // Generate the current code, and also the one before and after
   const codes = [
     generate_topt_login_code(plainPhone, -1),
