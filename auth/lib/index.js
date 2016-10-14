@@ -17,10 +17,10 @@ function generate_login_link(phone, code) {
 }
 
 function generate_sms_message(verificationCode, verificationLink) {
-  return 'Your MaaS login verification code is ' +
-          verificationCode +
-          '. Direct link: ' +
-          verificationLink;
+  return 'Your Whim code is ' +
+         verificationCode +
+         '. You can also tap the link below. Start Whimming! ' +
+         verificationLink;
 }
 
 function generate_login_code(plainPhone) {
