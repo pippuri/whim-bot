@@ -165,7 +165,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
 function smsLogin(phone, code) {
   let identityId;
   let cognitoToken;
-  let correctCode;
+
   // Sanitize phone number, remove NaN
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
@@ -177,7 +177,7 @@ function smsLogin(phone, code) {
   const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
 
   // Bale out if we can't verify the provided code
-  console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);
+  console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone);
   if (!lib.verify_topt_login_code(isSimulationUser, plainPhone, code)) {
     return Promise.reject(new MaaSError('401 Unauthorized', 401));
   }
@@ -196,13 +196,6 @@ function smsLogin(phone, code) {
     return createUserThing(identityId, plainPhone, isSimulationUser);
   })
   .then(() => {
-    const profilePayload = {
-      identityId: identityId,
-      payload: {
-        phone: phone,
-      },
-    };
-
     // First try to fetch an existing identity
     return Profile.retrieve(identityId)
       .catch(error => {
