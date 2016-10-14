@@ -1,6 +1,7 @@
 'use strict';
 
 const request = require('request-promise-lite');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
 
@@ -9,7 +10,7 @@ const TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
  */
 function sendSmsMessage(phone, message) {
   //console.info('Sending SMS message:', phone, message);
-  return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages', {
+  return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages.json', {
     form: {
       From: 'Whim',
       To: phone,
@@ -32,7 +33,13 @@ module.exports.respond = (event, callback) => {
   sendSmsMessage(event.phone, event.message)
   .then(response => callback(null, response.toString()))
   .catch(err => {
-    console.info(err.response.toString());
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
+    const response = JSON.parse(err.response.toString());
+    if (err.statusCode === 400) {
+      callback(new MaaSError(response.message, 400));
+    }
+
+    console.warn(err);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    callback(new MaaSError(`Internal server error: ${response.message}`, 500));
   });
 };

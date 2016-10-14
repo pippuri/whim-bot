@@ -47,7 +47,7 @@ module.exports = function () {
     });
   });
 
-  describe('auth-sms-request-code failure', function () { //eslint-disable-line
+  describe('auth-sms-request-code short number failure', function () { //eslint-disable-line
     this.timeout(10000);
     const BAD_PHONE = '+292';
 
@@ -79,6 +79,41 @@ module.exports = function () {
       expect(error).to.have.property('message');
       expect(error.message).to.not.contain('500');
       expect(error.message).to.contain('Invalid phone number');
+    });
+  });
+
+  describe('auth-sms-request-code bad failure', function () { //eslint-disable-line
+    this.timeout(10000);
+    const BAD_PHONE = '+292123456789';
+
+    let error;
+    let response;
+
+    before(done => {
+      const event = {
+        phone: BAD_PHONE,
+      };
+
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should raise an error', () => {
+      expect(error).to.not.be.undefined;
+      expect(response).to.be.undefined;
+    });
+
+    it('should not return empty', () => {
+      expect(error).to.have.property('message');
+      expect(error.message).to.contain('400');
+      expect(error.message).to.not.contain('500');
     });
   });
 
