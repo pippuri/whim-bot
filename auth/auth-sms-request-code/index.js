@@ -63,21 +63,20 @@ function smsRequestCode(phone, provider) {
 }
 
 module.exports.respond = function (event, callback) {
-  return Promise.resolve()
-    .then(() => smsRequestCode(`${event.phone}`, `${event.provider}`))
+  return Promise.resolve(smsRequestCode(`${event.phone}`, `${event.provider}`))
     .then(response => {
       callback(null, response);
     })
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
-    if (_error instanceof MaaSError) {
-      callback(_error);
-      return;
-    }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
 };
