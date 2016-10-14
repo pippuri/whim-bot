@@ -1,7 +1,7 @@
 'use strict';
 
 const Promise = require('bluebird');
-const Subscription = require('../../lib/subscription-manager/index.js');
+const Subscription = require('../../lib/subscription-manager');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 function getUserData(event) {

@@ -1,69 +1,101 @@
 'use strict';
 
-// Dependency
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
+const Profile = require('../../lib/business-objects/Profile');
+const Promise = require('bluebird');
 const SubscriptionMgr = require('../../lib/subscription-manager');
-const lib = require('../../lib/maas-operation/index');
+
+/**
+ * Validate the input
+ */
+function parseAndValidateInput(event) {
+  const identityId = event.identityId;
+
+  if (typeof identityId !== 'string') {
+    return Promise.reject(new MaaSError('Missing identity', 500));
+  }
+
+  if (typeof event.payload !== 'object') {
+    return Promise.reject(new MaaSError('Missing payload', 500));
+  }
+
+  const params = event.payload;
+  const productId = params.productId;
+  const points = parseInt(params.amount, 10);
+  const limit = parseFloat(params.chargeOK, 10);
+
+  if (!(points > 0)) {
+    return Promise.reject(new MaaSError(`Invalid or missing amount '${points}'`, 400));
+  }
+
+  if (!(limit > 0)) {
+    return Promise.reject(new MaaSError(`Invalid or missing chargeOK '${limit}'`, 400));
+  }
+
+  if (typeof productId !== 'string') {
+    return Promise.reject(new MaaSError('Missing productId', 400));
+  }
+
+  return Promise.resolve({
+    identityId,
+    productId,
+    points,
+    limit,
+  });
+}
+
+function confirmCharge(identityId, productId, points, limit) {
+  return SubscriptionMgr.getAddonById(productId)
+  .then(response => {
+    const cost = response.addon.price * response.addon.meta_data.pointGrant * points;
+
+    // Validate the user has OKd the change
+    if (!(cost <= limit)) {
+      const message = `Requested to charge '${cost}' cents, but the limit was '${limit}'`;
+      return Promise.reject(new MaaSError(message, 403));
+    }
+
+    console.info(`Charge '${cost}' cents confirmed for ${identityId}`);
+    return {
+      identityId,
+      productId,
+      points,
+      cost,
+      limit,
+    };
+  });
+}
 
 /**
  * make the addon product purchase and update profile with new points tally
  */
-
-function buyPoints(identityId, productId, amount, pointGrant) {
+function makePurchase(identityId, productId, cost, points) {
   let currentBalance = 0;
-  return lib.fetchCustomerProfile(identityId)
-  .then( profile => {
+  return Profile.retrieve(identityId)
+  .then(profile => {
     if (!profile) throw new MaaSError('User not found', 404);
-    currentBalance = (profile.balance ? profile.balance : 0); // eslint-disable-line no-unneeded-ternary
+    currentBalance = (profile.balance ? profile.balance : 0);
 
     // delegate the purchase to subscription manager / charge manager
-    return SubscriptionMgr.makePurchase(identityId, productId, amount);
+    return SubscriptionMgr.makePurchase(identityId, productId, cost);
   })
-  .then( purchase => {
+  .then(purchase => {
     if (purchase.status === 'paid') {
       // update profile with the points the successful purchase grants
-      return lib.updateBalance(identityId, currentBalance + pointGrant);
+      const newBalance = currentBalance + points;
+      return Profile.update(identityId, { balance: newBalance })
+        .then(profile => Object.assign({}, purchase, { profile: profile }));
     }
-    return Promise.reject( { error: 'Purchase status:' + purchase.status } );
-  });
-}
-
-/**
- * verify the points versus the amount user is OK'ing to pay
- */
-function verifyPurchase(event) {
-  if (!event.hasOwnProperty('identityId')) throw new MaaSError('Missing identity', 500);
-  if (!event.hasOwnProperty('payload')) throw new MaaSError('Missing payload', 500);
-
-  const params = event.payload;
-  if (!params.hasOwnProperty('amount')) throw new MaaSError('Missing amount', 403);
-  if (!params.hasOwnProperty('productId')) throw new MaaSError('Missing productId', 403);
-  const amount = parseInt(params.amount, 10);
-
-  // get the addon along with its metadata (point grant)
-  return SubscriptionMgr.getAddonById(params.productId)
-  .then( res => {
-
-    //calculate the price according to the amount the user OK's to spend
-    const price = res.addon.price * res.addon.meta_data.pointGrant * amount;
-
-    // check that the user has OK'd the payment sum
-    if (!params.hasOwnProperty('chargeOK') || (parseInt(params.chargeOK, 10) !== price)) {
-      console.info(price, params.chargeOK);
-      return Promise.resolve({ amount: amount, price: price, confirm: false, message: `Please confirm charge of ${price} cents for ${params.amount} points by supplying chargeOK parameter with the correct amount` });
-    }
-
-    // make the purchase and update profile
-    return buyPoints(event.identityId, params.productId, amount, res.addon.meta_data.pointGrant * amount);
+    return Promise.reject(new MaaSError(`Purchase failed on ChargeBee: ${purchase}`, 500));
   });
 }
 
 module.exports.respond = function (event, callback) {
-  verifyPurchase(event)
-    .then(response => {
-      callback(null, response);
-    })
+
+  parseAndValidateInput(event)
+    .then(parsed => confirmCharge(parsed.identityId, parsed.productId, parsed.points, parsed.limit))
+    .then(confirmed => makePurchase(confirmed.identityId, confirmed.productId, confirmed.cost, confirmed.points))
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));

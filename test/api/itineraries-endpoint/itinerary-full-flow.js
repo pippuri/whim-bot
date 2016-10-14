@@ -6,6 +6,7 @@ const wrap = require('lambda-wrapper').wrap;
 const moment = require('moment');
 const models = require('../../../lib/models');
 const utils = require('../../../lib/utils');
+const Profile = require('../../../lib/business-objects/Profile');
 const Database = models.Database;
 
 const routesQueryLambda = require('../../../routes/routes-query/handler');
@@ -13,7 +14,6 @@ const itineraryCreateLambda = require('../../../itineraries/itinerary-create/han
 const itineraryRetrieveLambda = require('../../../itineraries/itinerary-retrieve/handler');
 const itineraryListLambda = require('../../../itineraries/itinerary-list/handler');
 const itineraryCancelLambda = require('../../../itineraries/itinerary-cancel/handler');
-const getProfileLambda = require('../../../profile/profile-info/handler.js');
 
 function runLambda(lambda, event) {
   return new Promise((resolve, reject) => {
@@ -53,7 +53,7 @@ module.exports = function (input, results) {
     // Move leaveAt week to match a date in the future (this or next week)
     const original = moment(parseFloat(event.payload.leaveAt));
     const leaveAt = moment(original);
-    const now = moment().utcOffset(120);
+    const now = moment().utcOffset(180);
     leaveAt.year(now.year());
     leaveAt.week(now.week());
     if (now.day() >= leaveAt.day()) {
@@ -121,20 +121,15 @@ module.exports = function (input, results) {
 
   describe('Creates an itinerary', () => {
     // Skip this part of the suite if skip flag has been raised
-    before(done => {
+    before(() => {
       if (skip) {
         this.skip();
       }
       skip = true;
 
       // fetch user data to get account starting balance
-      const event = {
-        identityId: input.event.identityId,
-      };
-      wrap(getProfileLambda).run(event, (err, data) => {
-        startingBalance = data.Item.balance;
-        done();
-      });
+      return Profile.retrieve(input.event.identityId)
+        .then(profile => (startingBalance = profile.balance));
     });
 
     it(`Creates an itinerary for user '${input.event.identityId}'`, () => {
@@ -157,14 +152,10 @@ module.exports = function (input, results) {
           }
         )
         .then(createdItinerary => {
-          // fetch user data to get account current balance
-          const event = {
-            identityId: input.event.identityId,
-          };
-          wrap(getProfileLambda).run(event, (err, data) => {
-            midBalance = data.Item.balance;
-            return Promise.resolve(createdItinerary);
-          });
+          // Fetch user data to get account current balance
+          return Profile.retrieve(input.event.identityId)
+            .then(profile => (midBalance = profile.balance))
+            .then(() => createdItinerary);
         });
     });
 
@@ -313,14 +304,10 @@ module.exports = function (input, results) {
           }
         )
         .then(cancelledItinerary => {
-          // fetch user data to get account current balance
-          const event = {
-            identityId: input.event.identityId,
-          };
-          wrap(getProfileLambda).run(event, (err, data) => {
-            endBalance = data.Item.balance;
-            return Promise.resolve(cancelledItinerary);
-          });
+          // fetch user data to get account starting balance
+          return Profile.retrieve(input.event.identityId)
+            .then(profile => (endBalance = profile.balance))
+            .then(() => Promise.resolve(cancelledItinerary));
         });
 
     });

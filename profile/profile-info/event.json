@@ -1,4 +1,4 @@
 {
-  "identityId": "eu-west-1:00000000-0000-0000-0000-000000000000",
-  "attributes": "balance,planLevel"
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "attributes": "balance,subscription"
 }

@@ -3,7 +3,7 @@
 const bus = require('../../lib/service-bus/');
 const moment = require('moment');
 const expect = require('chai').expect;
-const mockProfiles = require('../../lib/service-bus/mockProfiles.json');
+const profiles = require('../db/profiles-seed.json');
 
 module.exports = function () {
 
@@ -16,21 +16,12 @@ module.exports = function () {
     leaveAt.week(now.week() + 1);
   }
 
-  describe(`Pricing for different planLevels from Ludviginkatu to Kilonrinne at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'}`, () => {
-
-    // Last digit coresponds to the userlevel
-    const usersIdentityIds = [
-      'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
-      'eu-west-1:00000000-cafe-cafe-cafe-000000000001',
-      'eu-west-1:00000000-cafe-cafe-cafe-000000000002',
-      'eu-west-1:00000000-cafe-cafe-cafe-000000000003',
-    ];
-
-    const response = [];
-    const error = [];
+  describe(`Pricing for different subscriptions from Ludviginkatu to Kilonrinne at '${leaveAt.format('DD.MM.YYYY, HH:mm:ss Z')}'}`, () => {
+    const responses = {};
+    const errors = {};
 
     before(() => {
-      return Promise.all(usersIdentityIds.map((identityId, index) => {
+      return Promise.all(profiles.map((profile, index) => {
         const params = {
           from: '60.1657520782836,24.9449517015989', // Ludviginkatu
           to: '60.220307,24.7752453', // Kilonrinne
@@ -38,44 +29,42 @@ module.exports = function () {
         };
 
         return bus.call('MaaS-business-rule-engine', {
-          identityId: identityId,
+          identityId: profile.identityId,
           rule: 'get-routes',
           parameters: params,
         })
-        .then(res => {
-          response[index] = res;
-        })
-        .catch(err => {
-          error[index] = err;
-        });
+        .then(
+          res => (responses[index] = res),
+          err => (errors[index] = err)
+        );
       }));
     });
 
-    usersIdentityIds.forEach((identityId, index) => {
+    profiles.forEach((profile, index) => {
       // Get plan level by the last character
-      const planLevel = Number(identityId.charAt(identityId.length - 1));
+      const planId = profile.subscription.planId;
       const publicTransits = ['TRAIN', 'BUS', 'TRAM', 'SUBWAY'];
       const privateTransits = ['CAR', 'TAXI'];
       const freeModes = ['WAIT', 'TRANSFER', 'WALK'];
       const transitModes = publicTransits.concat(privateTransits);
 
-      it('planLevel should be a positive number', () => {
-        expect(planLevel).to.be.least(0);
+      it('planId should be a string', () => {
+        expect(planId).to.be.a.string;
       });
 
-      it(`should return a response without error for user with planLevel ${planLevel}`, () => {
-        if (error[index]) {
-          console.log('Caught an error:', error[index].message);
-          console.log(error[index].stack);
+      it(`should return a response without error for user with planId ${planId}`, () => {
+        if (errors[index]) {
+          console.log('Caught an error:', errors[index].message);
+          console.log(errors[index].stack);
         }
 
-        expect(response[index]).to.not.be.undefined;
-        expect(error[index]).to.be.undefined;
+        expect(responses[index]).to.not.be.undefined;
+        expect(errors[index]).to.be.undefined;
       });
 
-      if (planLevel === 0) {
-        it(`planLevel ${planLevel} user should not have any free transits`, () => {
-          const itineraries = response[index].plan.itineraries;
+      if (planId === 'fi-whim-payg') {
+        it(`planId ${planId} user should not have any free transits`, () => {
+          const itineraries = responses[index].plan.itineraries;
 
           const itinerariesWithTransits = itineraries.filter(iti => {
             return iti.legs.some(leg => transitModes.some(mode => leg.mode === mode));
@@ -89,19 +78,14 @@ module.exports = function () {
         return;
       }
 
-      it(`planLevel ${planLevel} user should have one or more free HSL itinerary`, () => {
-        const matchedProfile = mockProfiles.find(profile => profile.planLevel === planLevel);
-        const itineraries = response[index].plan.itineraries;
-        const freeFeatures = matchedProfile.plans
-          .map(plan => plan.feature)                     // Pick features of each
-          .reduce((arr1, arr2) => arr1.concat(arr2), []) // Combine the arrays
-          .map(feature => feature.name.toUpperCase());   // Pick 'name' property
-
+      it(`planId ${planId} user should have one or more free HSL itinerary`, () => {
+        const itineraries = responses[index].plan.itineraries;
+        const freeAgencies = profile.subscription.agencies;
         const freeItineraries = itineraries.filter(iti => {
           const featuredLegs = iti.legs.filter(leg => {
-            return freeFeatures.some(feature => {
+            return freeAgencies.some(agency => {
               // Cast to string for comparison
-              return feature === `${leg.agencyId}`.toUpperCase();
+              return agency === `${leg.agencyId}`.toUpperCase();
             });
           });
 
@@ -122,12 +106,6 @@ module.exports = function () {
 
           return true;
         });
-        /*console.log(freeItineraries.map(i => {
-          return {
-            agencies: i.legs.map(l => l.agencyId),
-            fare: i.fare.points,
-          };
-        }));*/
 
         expect(freeItineraries.length).to.be.above(0);
         freeItineraries.forEach(itinerary => {

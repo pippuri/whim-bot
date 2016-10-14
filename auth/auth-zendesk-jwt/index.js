@@ -1,9 +1,9 @@
 'use strict';
 
 const jwt = require('jsonwebtoken');
-const maasOperation = require('../../lib/maas-operation');
-const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
+const Profile = require('../../lib/business-objects/Profile');
+const utils = require('../../lib/utils');
 
 module.exports.respond = function (event, callback) {
   const userToken = event.body.split('=').splice(1).join('=');
@@ -12,7 +12,8 @@ module.exports.respond = function (event, callback) {
     if ( ! userData.zendeskJwt ) {
       throw new Error('Token did not contain required zendeskJwt key.');
     }
-    maasOperation.fetchCustomerProfile(userData.userId)
+
+    Profile.retrieve(userData.userId)
       .then( profile => {
         let phoneNumbers = '' + ( profile.phone || '');
         phoneNumbers = phoneNumbers.replace( /[^\d]/, '', 'g');

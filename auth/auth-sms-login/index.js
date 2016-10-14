@@ -4,8 +4,9 @@ const Promise = require('bluebird');
 const crypto = require('crypto');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
-const bus = require('../../lib/service-bus/index');
 const MaaSError = require('../../lib/errors/MaaSError');
+const Database = require('../../lib/models/Database');
+const Profile = require('../../lib/business-objects/Profile');
 
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
@@ -207,18 +208,11 @@ function smsLogin(phone, code) {
 
   })
   .then(() => {
-    const profilePayload = {
-      identityId: identityId,
-      payload: {
-        phone: phone,
-      },
-    };
-
     // First try to fetch an existing identity
-    return bus.call('MaaS-profile-info', { identityId: identityId })
+    return Profile.retrieve(identityId)
       .catch(error => {
         // No profile found
-        return bus.call('MaaS-profile-create', profilePayload);
+        return Profile.create(identityId, phone);
       });
   })
   .then(_empty => {
@@ -238,20 +232,26 @@ function smsLogin(phone, code) {
 }
 
 module.exports.respond = function (event, callback) {
-  smsLogin('' + event.phone, '' + event.code)
+  return Database.init()
+  .then(() => smsLogin(`${event.phone}`, `${event.code}`))
   .then(response => {
-    callback(null, response);
+
+    return Database.cleanup()
+      .then(() => callback(null, response));
   })
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
 
-    if (_error instanceof MaaSError) {
-      callback(_error);
-      return;
-    }
+    return Database.cleanup()
+    .then(() => {
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
   });
 };

@@ -12,7 +12,7 @@
  */
 
 const Promise = require('bluebird');
-const bus = require('../../../lib/service-bus');
+const subscriptionManager = require('../../../lib/subscription-manager');
 const BusinessRuleError = require('../../BusinessRuleError');
 
 const pricingCache = {};
@@ -43,25 +43,24 @@ function getPointPricing(identityId, params) {
     return Promise.resolve(pricingCache[params.currency]);
   }
 
-  return bus.call('MaaS-store-single-package', {
-    type: 'addon',
-    id: CHARGEBEE_ADDONS[params.currency],
-  })
-  .then(addon => {
-    if (!addon.price) {
+  return subscriptionManager.getAddonById(CHARGEBEE_ADDONS[params.currency])
+  .then(response => {
+    const addon = response.addon;
+    if (!addon) {
       return Promise.reject(new Error(`Failed to retrieve Chargebee point pricing for ${params.currency}`));
     }
 
-    if (isNaN(addon.price)) {
+    const price = addon.price;
+    if (isNaN(price)) {
       return Promise.reject(new Error(`Chargebee response pricing for ${params.currency} is NaN`, 500));
     }
 
-    if (addon.price <= 0) {
+    if (price <= 0) {
       return Promise.reject(new Error(`Got a zero/negative unit pricing from Chargebee while getting point price for ${params.currency}`, 500));
     }
 
-    pricingCache[params.currency] = addon.price;
-    return Promise.resolve(addon.price)
+    pricingCache[params.currency] = price;
+    return Promise.resolve(price)
       .catch(error => Promise.reject(new Error(`Cannot run get-point rule, error: ${error.message}`)));
   });
 }

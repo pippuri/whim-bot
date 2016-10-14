@@ -1,7 +1,7 @@
 'use strict';
 
 // Dependency
-const lib = require('../../lib/utils/index');
+const lib = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
 const SubscriptionMgr = require('../../lib/subscription-manager');
 
@@ -19,14 +19,14 @@ module.exports.respond = function (event, callback) {
   getSingleProduct(event)
     .then(response => {
       if (event.type === 'plan') {
-        callback(null, lib.parseSingleChargebeePlan(response));
+        callback(null, { plan: lib.parseSingleChargebeePlan(response) });
       } else if (event.type === 'addon') {
-        callback(null, lib.parseSingleChargebeeAddon(response));
+        callback(null, { addon: lib.parseSingleChargebeeAddon(response) });
       }
     })
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error:', JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
       // Uncaught, unexpected error

@@ -1,11 +1,12 @@
 'use strict';
 
-const Promise = require('bluebird');
 const _ = require('lodash');
-const Subscription = require('../../lib/subscription-manager/index.js');
-const utils = require('../../lib/utils/index.js');
-const MaaS = require('../../lib/maas-operation/index.js');
-const lib = require('../../lib/service-bus/index.js');
+const Profile = require('../../lib/business-objects/Profile');
+const Promise = require('bluebird');
+const Subscription = require('../../lib/subscription-manager');
+const utils = require('../../lib/utils');
+const lib = require('../../lib/service-bus');
+
 const UPDATE_PLAN = 'MaaS-profile-active-plan-put';
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
@@ -47,17 +48,20 @@ function handleSubscriptionUpdate(event, payload) {
  */
 function handleDetailsUpdate(event, payload) {
   const profile = Subscription.formatUser(payload.content);
-  const identity = profile.identityId;
-  //make sure we have at least something
-  if (!profile.hasOwnProperty('address')) profile.address = {};
-  return MaaS.updateCustomerProfile(identity, {
+  const identityId = profile.identityId;
+
+  // Make sure we have at least something
+  if (!profile.hasOwnProperty('address')) {
+    profile.address = {};
+  }
+  return Profile.update(identityId, {
     firstName: profile.firstName,
     lastName: profile.lastName,
     email: profile.email,
     country: profile.address.country,
     city: profile.address.city,
     zipCode: profile.address.zip,
-  } );
+  });
 }
 
 /**
@@ -66,15 +70,15 @@ function handleDetailsUpdate(event, payload) {
  */
 function handleCancellation(event, payload) {
   const profile = Subscription.formatUser(payload.content);
-  const identity = profile.identityId;
+  const identityId = profile.identityId;
   const evt = {
-    identityId: identity,
+    identityId: identityId,
     planId: WHIM_DEFAULT,
     skipUpdate: true,
   };
-  return Promise.all( [
+  return Promise.all([
     lib.call(UPDATE_PLAN, evt),
-    MaaS.updateBalance(identity, 0 ),
+    Profile.update(identityId, { balance: 0 }),
   ]);
 }
 

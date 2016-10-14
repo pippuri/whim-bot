@@ -2,10 +2,8 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const models = require('../../lib/models');
-
-const Database = models.Database;
-const Profile = models.Profile;
+const Database = require('../../lib/models/Database');
+const Profile = require('../../lib/business-objects/Profile');
 
 function validateInput(event) {
 
@@ -20,14 +18,10 @@ function validateInput(event) {
   return Promise.resolve();
 }
 
-function addFavoriteLocations(event) {
-  return Profile.addFavoriteLocation(event.identityId, event.payload);
-}
-
 module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => validateInput(event))
-    .then(() => addFavoriteLocations(event))
+    .then(() => Profile.addFavoriteLocation(event.identityId, event.payload))
     .then(profile => {
       Database.cleanup()
         .then(() => callback(null, profile));

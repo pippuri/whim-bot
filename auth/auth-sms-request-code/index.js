@@ -48,10 +48,11 @@ function smsRequestCode(phone, provider) {
 }
 
 module.exports.respond = function (event, callback) {
-  smsRequestCode('' + event.phone, '' + event.provider)
-  .then(response => {
-    callback(null, response);
-  })
+  return Promise.resolve()
+    .then(() => smsRequestCode(`${event.phone}`, `${event.provider}`))
+    .then(response => {
+      callback(null, response);
+    })
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));

@@ -25,12 +25,12 @@ module.exports = function (lambda) {
     });
 
     it('should raise an error', () => {
-      expect(error.message).to.equal('403: Profile not available');
+      expect(error).to.be.instanceof(Error);
+      expect(error.code).to.equal(404);
     });
 
     it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
-
   });
 };

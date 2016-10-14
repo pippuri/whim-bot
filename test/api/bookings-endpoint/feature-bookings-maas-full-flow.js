@@ -10,7 +10,7 @@ const createLambda = require('../../../bookings/bookings-create/handler.js');
 const retrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
 const cancelLambda = require('../../../bookings/bookings-cancel/handler.js');
 const listLambda = require('../../../bookings/bookings-list/handler.js');
-const getProfileLambda = require('../../../profile/profile-info/handler.js');
+const Profile = require('../../../lib/business-objects/Profile');
 
 const models = require('../../../lib/models');
 const Database = models.Database;
@@ -51,19 +51,14 @@ module.exports = function (optionsLambda) {
       }
     });
 
-    before(done => {
+    before(() => {
       if (error) {
         this.skip();
       }
 
       // fetch user data to get account starting balance
-      const event = {
-        identityId: testUserIdentity,
-      };
-      wrap(getProfileLambda).run(event, (err, data) => {
-        startingBalance = data.Item.balance;
-        done();
-      });
+      return Profile.retrieve(testUserIdentity)
+        .then(profile => (startingBalance = profile.balance));
     });
 
 
@@ -102,16 +97,9 @@ module.exports = function (optionsLambda) {
           err => Promise.reject(error = err)
         )
         .then(() => {
-          // fetch user data to get account current balance
-          const event = {
-            identityId: testUserIdentity,
-          };
-          wrap(getProfileLambda).run(event, (err, data) => {
-            midBalance = data.Item.balance;
-            return Promise.resolve();
-          });
+          return Profile.retrieve(testUserIdentity)
+            .then(profile => (midBalance = profile.balance));
         });
-
     });
 
     it('User balance is reduced by fare', () => {
@@ -151,16 +139,9 @@ module.exports = function (optionsLambda) {
           expect(cancelError).to.be.instanceof(Error);
         })
         .then(() => {
-          // fetch user data to get account current balance
-          const event = {
-            identityId: testUserIdentity,
-          };
-          wrap(getProfileLambda).run(event, (err, data) => {
-            endBalance = data.Item.balance;
-            return Promise.resolve();
-          });
+          return Profile.retrieve(testUserIdentity)
+            .then(profile => (endBalance = profile.balance));
         });
-
     });
 
     it('Fare is refunded if clean cancel', () => {

@@ -29,8 +29,8 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
     let retrieveResponse;
     let error;
 
-    const tueMoment = moment().utcOffset(120).day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
-    const wedMoment = moment().utcOffset(120).day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
+    const tueMoment = moment().utcOffset(180).day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
+    const wedMoment = moment().utcOffset(180).day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
 
     before(() => {
       const agencyOptionsEvent = {

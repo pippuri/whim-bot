@@ -3,10 +3,8 @@
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const editableFields = require('../../lib/models/editableFields.json').Profile;
-const models = require('../../lib/models');
-
-const Database = models.Database;
-const Profile = models.Profile;
+const Database = require('../../lib/models/Database');
+const Profile = require('../../lib/business-objects/Profile');
 
 function validateInput(event) {
   if (!event) {

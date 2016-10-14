@@ -13,50 +13,22 @@
  */
 
 const getProviderRules = require('../get-provider');
+const utils = require('../../../lib/utils');
 
 /**
- * Check if user's plan includes provider as a feature
- * @param plans {Object}
- * @param provider {Object}
- *
- * @return {Boolean} return truthy value if is, and vice versa
+ * Combine pricing based on provider and profile information
  */
-function _userPlanIncludesProvider(plans, provider) {
-  if (provider && provider.agencyId) {
-    return plans.some(plan => {
-      if (!plan.feature || plan.feature.length === 0) return false;
-      return plan.feature.some(feature => {
-        return feature.name.toUpperCase() === provider.agencyId.toUpperCase();
-      });
-    });
+function getProfileSpecificPricing(provider, profile) {
+  const clone = utils.cloneDeep(provider);
+  const agencyId = provider.providerMeta.agencyId;
+
+  // If agency is included in the plan, skip costs
+  if (profile.subscription.agencies.some(a => a === agencyId)) {
+    clone.providerMeta.value = 0;
+    clone.providerMeta.baseValue = 0;
   }
 
-  return false;
-}
-
-/**
- * Populate pricing information based on context
- */
-function _setPricing(provider, userProfile) {
-  if (!provider) {
-    throw new Error('No provider found, cannot set price');
-  }
-
-  const planLevel = userProfile.planLevel;
-  if (planLevel === 0) {
-    // TODO for PAYG, add a small margin for everything
-    provider.providerMeta.value = provider.providerMeta.value + 0;
-  } else if (planLevel > 0) {
-    if (_userPlanIncludesProvider(userProfile.plans, provider)) {
-      provider.providerMeta.value = 0;
-      provider.providerMeta.baseValue = 0;
-    }
-  } else {
-    // TODO Should be solved in validation code
-    throw new Error(`Invalid planlevel from Chargebee: '${planLevel}'`);
-  }
-
-  return provider;
+  return clone;
 }
 
 /**
@@ -84,7 +56,7 @@ function getOptions(params, profile) {
       }
 
       // use only the pricing provider in the order of priority
-      return _setPricing(providers[0], profile);
+      return getProfileSpecificPricing(providers[0], profile);
     });
 }
 
@@ -117,7 +89,7 @@ function getOptionsBatch(params, profile) {
           return null;
         }
 
-        return _setPricing(providers[0], profile);
+        return getProfileSpecificPricing(providers[0], profile);
       })
       .filter(provider => typeof provider !== typeof undefined);
     });

@@ -39,9 +39,10 @@ module.exports = function (lambda) {
     });
 
     it(`should return a profile with identityId ${identityId}`, () => {
-      expect(response).to.have.property('identityId');
-      expect(response.identityId).to.be.a('string');
-      expect(response.identityId).to.equal(identityId);
+      expect(response.profile).to.be.an('object');
+      expect(response.profile).to.have.property('identityId');
+      expect(response.profile.identityId).to.be.a('string');
+      expect(response.profile.identityId).to.equal(identityId);
     });
 
   });

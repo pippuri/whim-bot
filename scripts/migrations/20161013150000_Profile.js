@@ -3,17 +3,15 @@
 exports.up = function (knex, Promise) {
   return knex.schema
     .createTable('Profile', table => {
-
       // Identifiers
       table.increments('id').primary();
       table.string('identityId').index().notNullable().unique();
 
       // User data
-      table.float('balance').notNullable();
+      table.integer('balance').notNullable();
 
       // Subscriptions
-      table.integer('planLevel').notNullable();
-      table.specificType('plans', 'jsonb[]');
+      table.json('subscription');
 
       // Rich data
       table.specificType('favoriteLocations', 'jsonb[]');
@@ -25,7 +23,7 @@ exports.up = function (knex, Promise) {
       table.string('lastName');
       table.string('city');
       table.string('country');
-      table.integer('zipCode');
+      table.string('zipCode');
       table.string('profileImageUrl');
 
       // Extra

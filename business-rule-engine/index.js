@@ -1,10 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
 const Database = require('../lib/models/index').Database;
-const validator = require('../lib/validator');
+const Profile = require('../lib/business-objects/Profile');
+const Promise = require('bluebird');
 const schema = require('maas-schemas/prebuilt/maas-backend/business-rule-engine/request.json');
-const maasOperation = require('../lib/maas-operation');
+const validator = require('../lib/validator');
 
 // Rules
 const getProviderRules = require('./rules/get-provider');
@@ -30,10 +30,10 @@ function runRule(event) {
             case 'get-routes':
               return getRoutesRules.getRoutes(event.identityId, event.parameters);
             case 'get-tsp-pricing': // used to get contract rates from TSP
-              return maasOperation.fetchCustomerProfile(event.identityId)
+              return Profile.retrieve(event.identityId)
                 .then(profile => getTspPricingRule.getOptions(event.parameters, profile));
             case 'get-tsp-pricing-batch': // used to get contract rates from TSP
-              return maasOperation.fetchCustomerProfile(event.identityId)
+              return Profile.retrieve(event.identityId)
                 .then(profile => getTspPricingRule.getOptionsBatch(event.parameters, profile));
             default:
               return Promise.reject(new Error('Unsupported rule'));

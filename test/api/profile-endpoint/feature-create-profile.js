@@ -5,7 +5,7 @@ const bus = require('../../../lib/service-bus');
 
 module.exports = function (lambda) {
 
-  describe('for a nonexistent user', () => {
+  describe('for a nonexisting user', () => {
 
     // Generate 8 random hex characters
     const randomHex = Math.random().toString(16).replace('.', '').slice(-8);
@@ -23,12 +23,10 @@ module.exports = function (lambda) {
 
     before(() => {
       return bus.call('MaaS-profile-create', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should not raise an error', () => {
@@ -44,6 +42,5 @@ module.exports = function (lambda) {
       expect(response.phone).to.equal(event.payload.phone);
       expect(response.balance).to.equal(0);
     });
-
   });
 };
