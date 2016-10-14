@@ -87,4 +87,41 @@ module.exports = function () {
     });
   });
 
+  describe('auth-sms-login non-greenlisted number fails', function () { //eslint-disable-line
+    this.timeout(10000);
+    const PHONE = '+358465727140';
+    const CODE = '2421055';
+
+    const event = {
+      phone: PHONE,
+      code: CODE,
+    };
+
+    let error;
+    let response;
+
+    before(done => {
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should raise an error', () => {
+      expect(error).to.not.be.undefined;
+      expect(response).to.be.undefined;
+    });
+
+    it('should not return empty', () => {
+      expect(error).to.have.property('message');
+      expect(error.message).to.not.contain('500');
+      expect(error.message).to.contain('401');
+    });
+  });
+
 };
