@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager');
@@ -31,6 +32,7 @@ function handleSubscriptionUpdate(event, payload) {
         planUpdate = userPlan;
       }
     });
+
     if (planUpdate) {
       const evt = {
         identityId: identity,
@@ -54,6 +56,7 @@ function handleDetailsUpdate(event, payload) {
   if (!profile.hasOwnProperty('address')) {
     profile.address = {};
   }
+
   return Profile.update(identityId, {
     firstName: profile.firstName,
     lastName: profile.lastName,
@@ -76,10 +79,8 @@ function handleCancellation(event, payload) {
     planId: WHIM_DEFAULT,
     skipUpdate: true,
   };
-  return Promise.all([
-    lib.call(UPDATE_PLAN, evt),
-    Profile.update(identityId, { balance: 0 }),
-  ]);
+  return lib.call(UPDATE_PLAN, evt)
+    .then(() => Profile.update(identityId, { balance: 0 }));
 }
 
 function handleWebhook(event) {
@@ -120,8 +121,8 @@ function handleWebhook(event) {
     case 'subscription_deleted':
       return handleCancellation(event, payload);
     default:
-      console.info('Unhandled callback', payload.event_type);
-      return Promise.resolve({});
+      console.warn('Unhandled callback', payload.event_type);
+      return Promise.resolve();
   }
 }
 
@@ -129,5 +130,9 @@ function handleWebhook(event) {
  * Export respond to Handler
  */
 module.exports.call = event => {
-  return handleWebhook(event);
+  return Database.init()
+  .then(() => handleWebhook(event))
+  .finally(() => {
+    Database.cleanup();
+  });
 };
