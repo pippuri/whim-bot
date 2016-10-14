@@ -9,6 +9,7 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
+// Try to load the greenlist
 let greenlist;
 try {
   greenlist = require(process.env.AUTH_GREENLIST_JSON);
