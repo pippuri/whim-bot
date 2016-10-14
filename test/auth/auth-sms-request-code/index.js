@@ -10,7 +10,7 @@ module.exports = function () {
 
   describe('auth-sms-request-code', function () { //eslint-disable-line
     this.timeout(10000);
-    const PHONE = '+292123456789';
+    const PHONE = '+358465727140';
 
     let error;
     let response;
