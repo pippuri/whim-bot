@@ -23,7 +23,8 @@
       "requestTemplates": {
         "application/json": {
           "identityId":"$context.authorizer.principalId",
-          "planId": "$input.params('planId')"
+          "planId": "$input.params('planId')",
+          "promoCode": "$input.json('$.promoCode')"
         }
       },
       "responses": {

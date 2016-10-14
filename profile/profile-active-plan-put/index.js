@@ -24,7 +24,7 @@ function validate(event) {
 module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => validate(event))
-    .then(validated => Profile.updateSubscription(validated.identityId, validated.planId))
+    .then(validated => Profile.updateSubscription(validated.identityId, validated.planId, validated.promoCode))
     .then(profile => {
       Database.cleanup()
         .then(() => callback(null, profile));
