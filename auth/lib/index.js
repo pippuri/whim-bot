@@ -55,7 +55,8 @@ function __generate_topt_login_code_exec(secret, adjustment, timeOverride, ttl) 
   const unix_time = timeOverride / 1000;
 
   // message := floor(current Unix time / 30)
-  const message = Buffer.alloc(8);
+  const message = new Buffer(8);
+  message.fill(0);
   message.writeInt32BE(Math.floor(unix_time / ttl) + adjustment, 4);
 
   // hash := HMAC-SHA1(key, message)
