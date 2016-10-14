@@ -215,7 +215,7 @@ describe('subscription-full-flow', () => {
     this.timeout(5000);
 
     before(() => {
-      return mgr.updatePlan(chargebeeId, updatedSubscription)
+      return mgr.updatePlan(chargebeeId, updatedSubscription, { prorate: true } )
       .then(
         res => (changePlanResponse = res),
         err => (error = err)
@@ -243,7 +243,7 @@ describe('subscription-full-flow', () => {
     this.timeout(5000);
 
     before(() => {
-      return mgr.updatePlan(chargebeeId, 'fi-whim-medium', 'FI-WHIM-NONEXISTING' )
+      return mgr.updatePlan(chargebeeId, 'fi-whim-medium', { promoCode: 'FI-WHIM-NONEXISTING' } )
       .then(
         res => (response = res),
         err => (error = err)
