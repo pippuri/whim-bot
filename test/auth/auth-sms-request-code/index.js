@@ -12,14 +12,14 @@ module.exports = function () {
     this.timeout(10000);
     const PHONE = '+292123456789';
 
-    const event = {
-      phone: PHONE,
-    };
-
     let error;
     let response;
 
     before(done => {
+      const event = {
+        phone: PHONE,
+      };
+
       bus.call(LAMBDA, event)
         .then(data => {
           response = data;
@@ -51,14 +51,14 @@ module.exports = function () {
     this.timeout(10000);
     const BAD_PHONE = '+292';
 
-    const event = {
-      phone: BAD_PHONE,
-    };
-
     let error;
     let response;
 
     before(done => {
+      const event = {
+        phone: BAD_PHONE,
+      };
+
       bus.call(LAMBDA, event)
         .then(data => {
           response = data;
@@ -86,14 +86,14 @@ module.exports = function () {
     this.timeout(10000);
     const PHONE = '+358465727141';
 
-    const event = {
-      phone: PHONE,
-    };
-
     let error;
     let response;
 
     before(done => {
+      const event = {
+        phone: PHONE,
+      };
+
       bus.call(LAMBDA, event)
         .then(data => {
           response = data;

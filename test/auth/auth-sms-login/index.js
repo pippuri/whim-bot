@@ -12,17 +12,18 @@ module.exports = function () {
   describe('auth-sms-login', function () { //eslint-disable-line
     this.timeout(10000);
     const PHONE = '+358417556933';
-    const CODE = lib.generate_topt_login_code('358417556933');
-
-    const event = {
-      phone: PHONE,
-      code: CODE,
-    };
+    const PLAIN_PHONE = '358417556933';
 
     let error;
     let response;
 
     before(done => {
+
+      const event = {
+        phone: PHONE,
+        code: lib.generate_topt_login_code(PLAIN_PHONE),
+      };
+
       bus.call(LAMBDA, event)
         .then(data => {
           response = data;
@@ -56,15 +57,15 @@ module.exports = function () {
     const PHONE = '+358417556933';
     const BAD_CODE = '666';
 
-    const event = {
-      phone: PHONE,
-      code: BAD_CODE,
-    };
-
     let error;
     let response;
 
     before(done => {
+      const event = {
+        phone: PHONE,
+        code: BAD_CODE,
+      };
+
       bus.call(LAMBDA, event)
         .then(data => {
           response = data;
