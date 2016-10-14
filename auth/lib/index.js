@@ -41,14 +41,7 @@ function verify_login_code(isSimulationUser, plainPhone, code) {
 
   }
 
-  // Real users must have a real code received via SMS
-  const shasum = crypto.createHash('sha1');
-  const salt = code.slice(0, 3);
-  shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-  const hash = shasum.digest('hex');
-  const correctCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
-
-  return (code === correctCode);
+  return (code === generate_login_code(plainPhone));
 }
 
 
