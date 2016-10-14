@@ -13,10 +13,10 @@ module.exports = function () {
     const PHONE3 = '292123456789';
     const TIME_OVERRIDE = 1476444134822;
     const SECRET_OVERRIDE = new Buffer('RB6BmHp8NsAC87JpsxSaB512jXlC9rlncrA+wwi4u/Of7d1b8Rq9/w==', 'base64');
-    const KNOWN_CODE1 = '971530';
-    const KNOWN_CODE2 = '349066';
+    const KNOWN_CODE1 = '0971530';
+    const KNOWN_CODE2 = '0349066';
     const KNOWN_CODE3 = '292';
-    const BAD_CODE = '111111';
+    const BAD_CODE = '0111111';
 
     it('should function correctly at the low level', () => {
       let code = lib.__generate_topt_login_code_exec(SECRET_OVERRIDE, 0, TIME_OVERRIDE, 30);

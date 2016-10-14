@@ -6,6 +6,7 @@
 const crypto = require('crypto');
 
 const AUTH_TOPT_TOKEN_TTL_SECS = 30;
+const AUTH_TOPT_TOKEN_LENGTH = 7;
 const AUTH_DEFAULT_LOGIN_CODE = '292';
 
 
@@ -63,9 +64,9 @@ function __generate_topt_login_code_exec(secret, adjustment, timeOverride, ttl) 
   // code := truncatedHash mod 1000000
   let code = (truncatedHash.readInt32BE() % 1000000) + '';
 
-  // pad code with 0 until length of code is 6
-  if (code.length < 6) {
-    code = '000000'.slice(0, 6 - code.length) + code;
+  // pad code with 0 until length of code is AUTH_TOPT_TOKEN_LENGTH
+  if (code.length < AUTH_TOPT_TOKEN_LENGTH) {
+    code = '0'.repeat(AUTH_TOPT_TOKEN_LENGTH).slice(0, AUTH_TOPT_TOKEN_LENGTH - code.length) + code;
   }
 
   return code;
