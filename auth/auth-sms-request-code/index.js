@@ -1,12 +1,16 @@
 'use strict';
 
 const Promise = require('bluebird');
-const crypto = require('crypto');
-const AWS = require('aws-sdk');
+const bus = require('../../lib/service-bus/index');
+const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 
-const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
-Promise.promisifyAll(lambda, { suffix: 'Promise' });
+// Try to load the greenlist
+let greenlist;
+try {
+  greenlist = require(process.env.AUTH_GREENLIST_JSON);
+}
+catch (err) { /* swallow */ }  // eslint-disable-line brace-style
 
 /**
  * Request a login verification code by SMS.
@@ -19,50 +23,51 @@ function smsRequestCode(phone, provider) {
   // Clean up phone number to only contain digits
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new Error('Invalid phone number'));
+    return Promise.reject(new MaaSError('Invalid phone number', 400));
   }
 
-  const shasum = crypto.createHash('sha1');
-  const salt = '' + (100 + Math.floor(Math.random() * 900));
-  shasum.update(salt + process.env.SMS_CODE_SECRET + plainPhone);
-  const hash = shasum.digest('hex');
-  const verificationCode = salt + '' + (100 + parseInt(hash.slice(0, 3), 16));
-  const verificationLink = process.env.WWW_BASE_URL + '/login?phone=' + encodeURIComponent(phone) + '&code=' + encodeURIComponent(verificationCode);
-  const functionName = 'MaaS-provider-' + provider + '-send-sms';
+  // Check against the greenlist if a greenlist has been loaded
+  if (typeof greenlist === typeof undefined) {
+    console.log('Not checking against greenlist');
+  } else {
+    console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
+    if (greenlist.indexOf(plainPhone) === -1) {
+      return Promise.reject(new MaaSError('401 Unauthorized', 401));
+    }
+  }
+
+  const verificationCode = lib.generate_topt_login_code(plainPhone);
+  const verificationLink = lib.generate_login_link(phone, verificationCode);
+
   console.info('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
-  return lambda.invokePromise({
-    FunctionName: functionName,
-    Qualifier: process.env.SERVERLESS_STAGE.replace(/^local$/, 'dev'),
-    ClientContext: new Buffer(JSON.stringify({})).toString('base64'),
-    Payload: JSON.stringify({
-      phone: phone,
-      message: 'Your MaaS login verification code is ' + verificationCode + '. Direct link: ' + verificationLink,
-    }),
+  const functionName = 'MaaS-provider-' + provider + '-send-sms';
+  return bus.call(functionName, {
+    phone: phone,
+    message: lib.generate_sms_message(verificationCode, verificationLink),
   })
   .then(response => {
     return Promise.resolve({
       message: 'Verification code sent to ' + phone,
-      response: JSON.parse(response.Payload),
+      response: response.Payload,
     });
   });
 }
 
 module.exports.respond = function (event, callback) {
-  return Promise.resolve()
-    .then(() => smsRequestCode(`${event.phone}`, `${event.provider}`))
+  return Promise.resolve(smsRequestCode(`${event.phone}`, `${event.provider}`))
     .then(response => {
       callback(null, response);
     })
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
-    if (_error instanceof MaaSError) {
-      callback(_error);
-      return;
-    }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
 };
