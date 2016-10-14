@@ -9,13 +9,6 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
-// Try to load the greenlist
-let greenlist;
-try {
-  greenlist = require(process.env.AUTH_GREENLIST_JSON);
-}
-catch (err) { /* swallow */ }  // eslint-disable-line brace-style
-
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const iot = new AWS.Iot({ region: process.env.AWS_REGION });
@@ -182,16 +175,6 @@ function smsLogin(phone, code) {
   // Support simulated users in dev environment using phone prefix +292
   // (which is an unused international code)
   const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
-
-  // Check against the greenlist if a greenlist has been loaded
-  if (typeof greenlist === typeof undefined) {
-    console.log('Not checking against greenlist');
-  } else {
-    console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
-    if (greenlist.indexOf(plainPhone) === -1) {
-      return Promise.reject(new MaaSError('401 Unauthorized', 401));
-    }
-  }
 
   // Bale out if we can't verify the provided code
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone, 'correct', correctCode);

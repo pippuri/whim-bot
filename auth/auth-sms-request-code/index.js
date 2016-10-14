@@ -6,6 +6,13 @@ const AWS = require('aws-sdk');
 const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 
+// Try to load the greenlist
+let greenlist;
+try {
+  greenlist = require(process.env.AUTH_GREENLIST_JSON);
+}
+catch (err) { /* swallow */ }  // eslint-disable-line brace-style
+
 const lambda = new AWS.Lambda({ region: process.env.AWS_REGION });
 Promise.promisifyAll(lambda, { suffix: 'Promise' });
 
@@ -21,6 +28,16 @@ function smsRequestCode(phone, provider) {
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new MaaSError('Invalid phone number', 400));
+  }
+
+  // Check against the greenlist if a greenlist has been loaded
+  if (typeof greenlist === typeof undefined) {
+    console.log('Not checking against greenlist');
+  } else {
+    console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
+    if (greenlist.indexOf(plainPhone) === -1) {
+      return Promise.reject(new MaaSError('401 Unauthorized', 401));
+    }
   }
 
   const verificationCode = lib.generate_login_code(plainPhone);
