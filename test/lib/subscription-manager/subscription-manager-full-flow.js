@@ -18,6 +18,7 @@ describe('subscription-manager-full-flow', () => {
   let purchaseResponse;
   let changePlanResponse;
   let getLoginURLResponse;
+  let deleteUserResponse;
 
   // Before each test we check if a previous test has errored.
   // If so, skip the test.
@@ -73,7 +74,7 @@ describe('subscription-manager-full-flow', () => {
     let response;
 
     before(() => {
-      return mgr.getUser('eagegeagehehaehae')
+      return mgr.getUserSubscription('eagegeagehehaehae')
       .then(
         res => (response = res),
         err => (error = err)
@@ -212,10 +213,10 @@ describe('subscription-manager-full-flow', () => {
   });
 
   describe('Change user plan', function () {
-    this.timeout(5000);
+    this.timeout(10000);
 
     before(() => {
-      return mgr.updatePlan(chargebeeId, updatedSubscription, { prorate: true } )
+      return mgr.updatePlan(chargebeeId, updatedSubscription, { prorate: true, updateTerm: true } )
       .then(
         res => (changePlanResponse = res),
         err => (error = err)
@@ -280,6 +281,25 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
+  describe('Delete Test User', function () {
+    this.timeout(5000);
+
+    before(() => {
+      return mgr.deleteUserSubscription(chargebeeId).then(
+        res => (deleteUserResponse = res),
+        err => (error = err)
+      );
+    });
+
+    it('should have a response', () => {
+      expect(deleteUserResponse).to.be.not.empty;
+    });
+
+    it('should not have an error', () => {
+      expect(error).to.be.empty;
+    });
+  });
+
 /*
   after(() => {
     console.log('Create user subscription', JSON.stringify(createUserSubscriptionResponse, null, 2));
@@ -287,6 +307,7 @@ describe('subscription-manager-full-flow', () => {
     console.log('Update user', JSON.stringify(updateUserResponse, null, 2));
     console.log('Retrieve plan', JSON.stringify(listPlanResponse, null, 2));
     console.log('Login URL', JSON.stringify(getLoginURLResponse, null, 2));
+    console.log('Delete user;', deleteUserResponse);
   });
 */
 });
