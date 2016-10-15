@@ -104,6 +104,11 @@ function verify_topt_login_code(isSimulationUser, plainPhone, code) {
 
   }
 
+  // FIXME test account code (given to Apple)
+  if (plainPhone === '358417556933' && code === '2503870') {
+    return true;
+  }
+
   // Generate the current code, and also the one before and after
   const codes = [
     generate_topt_login_code(plainPhone, -1),
