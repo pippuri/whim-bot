@@ -37,7 +37,7 @@ module.exports.respond = (event, callback) => {
     .then(validated => {
       const skipUpdate = !!event.validated;
 
-      Profile.updateSubscription(validated.identityId, validated.planId, validated.promoCode, skipUpdate);
+      return Profile.updateSubscription(validated.identityId, validated.planId, validated.promoCode, skipUpdate);
     })
     .then(profile => {
       Database.cleanup()
