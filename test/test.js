@@ -5,7 +5,7 @@ const dbUtils = require('./db');
 
 function loadEnvironment() {
   // The stages we can run tests against in priority order - always fallback to dev
-  const stages = ['dev', 'test'];
+  const stages = ['test'];
   const dataCenter = 'euwest1';
 
   // Check the stage from the existence of meta sync file
@@ -63,13 +63,13 @@ describe('MaaS.fi backend', () => {
   });
 
   // The actual suite
+  require('./auth');
   require('./business-rule-engine');
   require('./api');
   require('./profile');
   require('./provider');
   require('./lib');
   require('./db/test-statistics');
-  require('./auth');
 
   // DB performance pre-setup (clear statistics) & seed data
   after(() => {
