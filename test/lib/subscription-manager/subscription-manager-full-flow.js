@@ -3,15 +3,15 @@
 const mgr = require('../../../lib/subscription-manager');
 const expect = require('chai').expect;
 
-describe('subscription-full-flow', () => {
+describe('subscription-manager-full-flow', () => {
 
   const chargebeeId = 'MaaS-Test-' + Math.round(Math.random() * 1000000, 10);
   const newSubscription = 'fi-whim-payg';
   const updatedSubscription = 'fi-whim-light';
 
   let error;
-  let createUserResponse;
-  let retrieveUserResponse;
+  let createUserSubscriptionResponse;
+  let retrieveUserSubscriptionResponse;
   let updateUserResponse;
   let updateUserCardResponse;
   let listPlanResponse;
@@ -27,17 +27,17 @@ describe('subscription-full-flow', () => {
     }
   });
 
-  describe('create user', () => {
+  describe('create user subscription', () => {
     before(() => {
-      return mgr.createUser(chargebeeId, newSubscription, { phone: '+358555666' })
+      return mgr.createUserSubscription(chargebeeId, newSubscription, { phone: '+358555666' })
         .then(
-          res => (createUserResponse = res),
+          res => (createUserSubscriptionResponse = res),
           err => (error = err)
         );
     });
 
     it('should find products', () => {
-      expect(createUserResponse).to.not.be.empty;
+      expect(createUserSubscriptionResponse).to.not.be.empty;
     });
 
     it('should not have errored', () => {
@@ -45,17 +45,17 @@ describe('subscription-full-flow', () => {
     });
   });
 
-  describe('retrieve user by id', () => {
+  describe('retrieve user subscription by id', () => {
     before(() => {
-      return mgr.getUser(chargebeeId)
+      return mgr.getUserSubscription(chargebeeId)
       .then(
-        res => (retrieveUserResponse = res),
+        res => (retrieveUserSubscriptionResponse = res),
         err => (error = err)
       );
     });
 
-    it('should find the user', () => {
-      expect(retrieveUserResponse).to.be.not.empty;
+    it('should find the user subscription', () => {
+      expect(retrieveUserSubscriptionResponse).to.be.not.empty;
     });
 
     it('should not have errored', () => {
@@ -147,7 +147,7 @@ describe('subscription-full-flow', () => {
       );
     });
 
-    it('Should  work since Stripe is configured in test', () => {
+    it('Should work since Stripe is configured in test', () => {
       expect(updateUserCardResponse).to.not.be.empty;
     });
 
@@ -237,7 +237,7 @@ describe('subscription-full-flow', () => {
 
   });
 
-  describe('Change User Plan with nonexisting promo code', function () {
+  describe('Change user plan with nonexisting promo code', function () {
     let error;
     let response;
     this.timeout(5000);
@@ -279,4 +279,14 @@ describe('subscription-full-flow', () => {
       expect(error).to.be.empty;
     });
   });
+
+/*
+  after(() => {
+    console.log('Create user subscription', JSON.stringify(createUserSubscriptionResponse, null, 2));
+    console.log('Retrieve user subscription', JSON.stringify(retrieveUserSubscriptionResponse, null, 2));
+    console.log('Update user', JSON.stringify(updateUserResponse, null, 2));
+    console.log('Retrieve plan', JSON.stringify(listPlanResponse, null, 2));
+    console.log('Login URL', JSON.stringify(getLoginURLResponse, null, 2));
+  });
+*/
 });

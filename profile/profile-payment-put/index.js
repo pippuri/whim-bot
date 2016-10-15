@@ -4,19 +4,6 @@ const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager');
 const MaaSError = require('../../lib/errors/MaaSError');
 
-function createChargebeeUser(event) {
-  console.info('Creating Chargebee user who did not exist', event);
-  return Subscription.createUser(event.identityId, process.env.DEFAULT_WHIM_PLAN, event.payload)
-    .then( user => {
-      console.info(`Created user ${user}`);
-      return Promise.resolve(user);
-    })
-    .catch( _err => {
-      console.info('Error creating user:', _err.response.toString());
-      return Promise.reject(new MaaSError(`Error creating Subscription: ${_err}`, 500));
-    });
-}
-
 function updateUserData(event) {
   const identityId = event.identityId;
   const payload = event.payload;
@@ -34,16 +21,15 @@ function updateUserData(event) {
   }
   return Subscription.updateUser(identityId, payload)
     .then( _ => Subscription.updateUserCreditCard(identityId, payload) )
-    .catch( _error => {
-      if (_error.statusCode === 404) {
-        // chargebee did not have this user, let's add
-        return createChargebeeUser(event);
-      }
-      let message = _error.message;
-      if (_error.response) {
-        message = _error.response.toString();
-      }
-      return Promise.reject(new MaaSError(`Error with payment ${_error}, ${message}`, 500));
+    .catch(error => {
+      console.warn('Caught an error:', JSON.stringify(error));
+      console.warn(`Input: identityId='${identityId}', payload='${JSON.stringify(payload)}'`);
+      console.warn(error.stack);
+
+      const statusCode = error.statusCode ? error.statusCode : 500;
+      const message = (error.response) ? error.response.toString() : error.message;
+
+      return Promise.reject(new MaaSError(`Error with payment: ${message}`, statusCode));
     });
 }
 
