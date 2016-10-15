@@ -28,9 +28,9 @@ function smsRequestCode(phone, provider) {
 
   // Check against the greenlist if a greenlist has been loaded
   if (typeof greenlist === typeof undefined) {
-    console.log('Not checking against greenlist');
+    console.info('Not checking against greenlist');
   } else {
-    console.log('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
+    console.info('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
     if (greenlist.indexOf(plainPhone) === -1) {
       return Promise.reject(new MaaSError('401 Unauthorized', 401));
     }
