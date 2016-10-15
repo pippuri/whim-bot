@@ -53,7 +53,7 @@ function getPointPricing(identityId, params) {
     // Chargebee returns the prices in cents
     // FIXME The 159 conversion is for SIXT cars - this breaks point pricing symmetry!!
     // FIXME Rename this. This is not a price per point, but inverse of it
-    const price = addon.price / 159;
+    const price = addon.price / 100;
     if (isNaN(price)) {
       return Promise.reject(new Error(`Chargebee response pricing for ${params.currency} is NaN`, 500));
     }
@@ -100,7 +100,8 @@ function getPointBatch(identityId, params) {
     }
 
     return getPointPricing(identityId, { currency: price.currency })
-      .then(unitPrice => Math.round((price.amount / unitPrice) * 100) / 100);
+      // Points should always be integers; round up to the nearest point
+      .then(unitPrice => Math.ceil(price.amount / unitPrice));
   });
 
   return Promise.all(conversionQueue);
