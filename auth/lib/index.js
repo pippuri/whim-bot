@@ -5,7 +5,7 @@
  */
 const crypto = require('crypto');
 
-const AUTH_TOPT_TOKEN_TTL_SECS = 30;
+const AUTH_TOPT_TOKEN_TTL_SECS = 300;
 const AUTH_TOPT_TOKEN_LENGTH = 7;
 const AUTH_DEFAULT_LOGIN_CODE = '292';
 
