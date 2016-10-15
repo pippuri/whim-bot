@@ -1,12 +1,12 @@
 'use strict';
 
 const _ = require('lodash');
-const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager');
 const utils = require('../../lib/utils');
 const lib = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const UPDATE_PLAN = 'MaaS-profile-active-plan-put';
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
@@ -22,7 +22,7 @@ function handleSubscriptionUpdate(event, payload) {
 
   return Subscription.getPlans().then( plans => {
     if (!plans || Object.keys(plans).length < 1 || !plans.hasOwnProperty('list')) {
-      return Promise.reject(new Error('Communication Error with Chargebee plans'));
+      return Promise.reject(new MaaSError('Communication Error with Chargebee plans', 500));
     }
     let planUpdate = null;
     _.each(plans.list, plan => {
@@ -41,7 +41,7 @@ function handleSubscriptionUpdate(event, payload) {
       };
       return lib.call(UPDATE_PLAN, evt);
     }
-    return Promise.reject(new Error('Did not find the active plan'));
+    return Promise.reject(new MaaSError('Did not find the active plan', 404));
   });
 }
 
@@ -88,15 +88,15 @@ function handleWebhook(event) {
   const payload = event.payload;
 
   if (Object.keys(event).length === 0) {
-    return Promise.reject(new Error('Input missing'));
+    return Promise.reject(new MaaSError('Input missing', 400));
   }
 
   if (!event.hasOwnProperty('payload') || !payload) {
-    return Promise.reject(new Error('Payload missing'));
+    return Promise.reject(new MaaSError('Payload missing', 400));
   }
 
   if (!payload.hasOwnProperty('event_type')) {
-    return Promise.reject(new Error('event type missing'));
+    return Promise.reject(new MaaSError('event type missing', 400));
   }
 
   switch (payload.event_type) {
@@ -130,9 +130,5 @@ function handleWebhook(event) {
  * Export respond to Handler
  */
 module.exports.call = event => {
-  return Database.init()
-  .then(() => handleWebhook(event))
-  .finally(() => {
-    Database.cleanup();
-  });
+  return handleWebhook(event);
 };
