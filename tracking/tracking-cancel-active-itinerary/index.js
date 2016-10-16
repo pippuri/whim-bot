@@ -29,7 +29,8 @@ function destroyActiveItinerary(identityId) {
 }
 
 module.exports.respond = function (event, callback) {
-  return destroyActiveItinerary(event.identityId)
+  return Promise.resolve()
+    .then(() => destroyActiveItinerary(event.identityId))
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

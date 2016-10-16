@@ -30,7 +30,8 @@ function getActiveLegId(identityId) {
 }
 
 module.exports.respond = function (event, callback) {
-  return getActiveLegId(event.identityId)
+  return Promise.resolve()
+    .then(() => getActiveLegId(event.identityId))
     .then(response => {
       callback(null, response);
     })
