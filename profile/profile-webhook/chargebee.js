@@ -13,7 +13,7 @@ const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 function handleSubscriptionUpdate(event, payload) {
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
-  const activePlan = profile.plan;
+  const activePlan = profile.plan.id;
 
   return Profile.updateSubscription(identityId, activePlan, undefined, true);
 }
