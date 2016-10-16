@@ -1,14 +1,9 @@
 'use strict';
 
-const _ = require('lodash');
 const Profile = require('../../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const Subscription = require('../../lib/subscription-manager');
-const utils = require('../../lib/utils');
-const lib = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
-
-const UPDATE_PLAN = 'MaaS-profile-active-plan-put';
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 /*
@@ -17,32 +12,10 @@ const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 */
 function handleSubscriptionUpdate(event, payload) {
   const profile = Subscription.formatUser(payload.content);
-  const identity = profile.identityId;
+  const identityId = profile.identityId;
   const activePlan = profile.plan;
 
-  return Subscription.getPlans().then( plans => {
-    if (!plans || Object.keys(plans).length < 1 || !plans.hasOwnProperty('list')) {
-      return Promise.reject(new MaaSError('Communication Error with Chargebee plans', 500));
-    }
-    let planUpdate = null;
-    _.each(plans.list, plan => {
-      // reformat to standard from chargebee
-      const userPlan = utils.parseSingleChargebeePlan(plan);
-      if (userPlan && (userPlan.id === activePlan.id)) {
-        planUpdate = userPlan;
-      }
-    });
-
-    if (planUpdate) {
-      const evt = {
-        identityId: identity,
-        planId: planUpdate.id,
-        skipUpdate: true,
-      };
-      return lib.call(UPDATE_PLAN, evt);
-    }
-    return Promise.reject(new MaaSError('Did not find the active plan', 404));
-  });
+  return Profile.updateSubscription(identityId, activePlan, undefined, true);
 }
 
 /**
@@ -69,17 +42,12 @@ function handleDetailsUpdate(event, payload) {
 
 /**
  * Called when subscription comes to an end.
- * TODO: update subscription to revert to PAYG
  */
 function handleCancellation(event, payload) {
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
-  const evt = {
-    identityId: identityId,
-    planId: WHIM_DEFAULT,
-    skipUpdate: true,
-  };
-  return lib.call(UPDATE_PLAN, evt)
+
+  return Profile.updateSubscription(identityId, WHIM_DEFAULT, undefined, true)
     .then(() => Profile.update(identityId, { balance: 0 }));
 }
 
