@@ -8,6 +8,7 @@
       "monthlyBalance": 0,
       "agencies": []
     },
+    "favoriteLocations": {},
     "phone": "+35850123456789",
     "email": "john.doe@maas.fi",
     "firstName": "John",
@@ -28,6 +29,7 @@
       "monthlyBalance": 1000,
       "agencies": ["HSL"]
     },
+    "favoriteLocations": {},
     "phone": "+35850123456789",
     "email": "john.doe@maas.fi",
     "firstName": "John",
@@ -48,6 +50,7 @@
       "monthlyBalance": 5500,
       "agencies": ["HSL"]
     },
+    "favoriteLocations": {},
     "phone": "+35850123456789",
     "email": "john.doe@maas.fi",
     "firstName": "John",
@@ -68,6 +71,7 @@
       "monthlyBalance": 1000,
       "agencies": ["HSL"]
     },
+    "favoriteLocations": {},
     "phone": "+35850123456789",
     "email": "john.doe@maas.fi",
     "firstName": "John",
@@ -88,6 +92,7 @@
       "monthlyBalance": 1000,
       "agencies": ["HSL"]
     },
+    "favoriteLocations": {},
     "phone": "+35850123456789",
     "email": "john.doe@maas.fi",
     "firstName": "John",
