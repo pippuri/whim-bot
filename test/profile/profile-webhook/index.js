@@ -4,7 +4,7 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-webhook/handler.js');
 
-module.exports = function () {
+module.exports = function (identityId) {
 
   describe('profile-webhook', () => {
     const event = {
@@ -14,7 +14,7 @@ module.exports = function () {
         webhook_status: 'not_configured',
         content: {
           customer: {
-            id: 'eu-west-1:00000000-cafe-cafe-cafe-000000000001',
+            id: identityId,
             first_name: 'Benjamin',
             last_name: 'Ross',
           },

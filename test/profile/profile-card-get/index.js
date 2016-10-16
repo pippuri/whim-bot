@@ -4,11 +4,9 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-payment-get/handler.js');
 
-module.exports = function () {
+module.exports = function (identityId) {
 
-  describe.skip('profile-card-get', () => {
-    const identityId = 'eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb';
-
+  describe('profile-card-get', () => {
     const event = {
       identityId: identityId,
     };
