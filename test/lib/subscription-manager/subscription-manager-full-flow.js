@@ -5,7 +5,7 @@ const expect = require('chai').expect;
 
 describe('subscription-manager-full-flow', () => {
 
-  const chargebeeId = 'MaaS-Test-' + Math.round(Math.random() * 1000000, 10);
+  const chargebeeId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000004';
   const newSubscription = 'fi-whim-payg';
   const updatedSubscription = 'fi-whim-light';
 
