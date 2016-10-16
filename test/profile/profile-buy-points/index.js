@@ -5,10 +5,10 @@ const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-top-up/handler.js');
 const Profile = require('../../../lib/business-objects/Profile');
 
-module.exports = function () {
+module.exports = function (identityId) {
   describe('profile-top-up-invalid-limit', () => {
     const event = {
-      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      identityId: identityId,
       payload: {
         productId: 'fi-whim-points-purchase-payg',
         amount: '500',
@@ -35,7 +35,7 @@ module.exports = function () {
     this.timeout(10000);
     const topUpAmount = 500;
     const event = {
-      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      identityId: identityId,
       payload: {
         productId: 'fi-whim-points-purchase-payg',
         amount: `${topUpAmount}`,

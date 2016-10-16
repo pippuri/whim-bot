@@ -4,11 +4,10 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-manage/handler.js');
 
-module.exports = function () {
+module.exports = function (identityId) {
 
   describe('profile-manage', function () { //eslint-disable-line
     this.timeout(10000);
-    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     const event = {
       identityId: identityId,
@@ -40,10 +39,9 @@ module.exports = function () {
   });
   describe('profile-manage-failure', function () { //eslint-disable-line
     this.timeout(10000);
-    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-00000000-NOT';
 
     const event = {
-      identityId: identityId,
+      identityId: identityId.replace('cafe', 'dead'),
     };
 
     let error;

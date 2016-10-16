@@ -63,12 +63,14 @@ describe('MaaS.fi backend', () => {
   });
 
   // The actual suite
+  require('./lib');
   require('./auth');
-  require('./business-rule-engine');
-  require('./api');
   require('./profile');
   require('./provider');
-  require('./lib');
+  require('./business-rule-engine');
+  require('./api');
+
+  // Tests for DB performance of the past operations
   require('./db/test-statistics');
 
   // DB performance pre-setup (clear statistics) & seed data

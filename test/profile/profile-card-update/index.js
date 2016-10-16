@@ -4,11 +4,10 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-payment-put/handler.js');
 
-module.exports = function () {
+module.exports = function (identityId) {
 
   describe('profile-card-update', function () { //eslint-disable-line
     this.timeout(10000);
-    const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     const event = {
       identityId: identityId,
@@ -44,6 +43,7 @@ module.exports = function () {
     it('should not raise an error', () => {
       if (error) {
         console.log(`Caught an error: ${error.message}`);
+        console.log(`Event: '${JSON.stringify(event, null, 2)}'`);
         console.log(error.stack);
       }
 
