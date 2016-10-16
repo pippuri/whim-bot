@@ -1,5 +1,6 @@
 'use strict';
 
+const Database = require('../../lib/models/Database');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
 const Promise = require('bluebird');
@@ -70,10 +71,12 @@ function confirmCharge(identityId, productId, points, limit) {
  * make the addon product purchase and update profile with new points tally
  */
 function makePurchase(identityId, productId, cost, points) {
-  let currentBalance = 0;
+  let currentBalance;
   return Profile.retrieve(identityId)
   .then(profile => {
-    if (!profile) throw new MaaSError('User not found', 404);
+    if (!profile) {
+      throw new MaaSError('User not found', 404);
+    }
     currentBalance = (profile.balance ? profile.balance : 0);
 
     // delegate the purchase to subscription manager / charge manager
@@ -92,7 +95,8 @@ function makePurchase(identityId, productId, cost, points) {
 
 module.exports.respond = function (event, callback) {
 
-  parseAndValidateInput(event)
+  Database.init()
+    .then(() => parseAndValidateInput(event))
     .then(parsed => confirmCharge(parsed.identityId, parsed.productId, parsed.points, parsed.limit))
     .then(confirmed => makePurchase(confirmed.identityId, confirmed.productId, confirmed.cost, confirmed.points))
     .then(response => callback(null, response))
@@ -101,11 +105,14 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };
