@@ -32,6 +32,7 @@ module.exports = function (optionsLambda) {
 
     let optionsResponse;
     let createResponse;
+    let createError;
     let event;
     let error;
 
@@ -81,8 +82,37 @@ module.exports = function (optionsLambda) {
         );
     });
 
+    it('Try to create too expensice MaaS ticket', () => {
+
+      const tooExpensiveBooking = utils.cloneDeep(optionsResponse.options[0]);
+      tooExpensiveBooking.fare.amount = 99999;
+      delete tooExpensiveBooking.signature;
+      tooExpensiveBooking.signature = utils.sign(tooExpensiveBooking, process.env.MAAS_SIGNING_SECRET);
+
+      event = {
+        identityId: testUserIdentity,
+        payload: tooExpensiveBooking,
+      };
+
+      return runLambda(createLambda, event)
+        .then(
+          res => Promise.resolve(createResponse = res),
+          err => Promise.resolve(createError = err)
+        )
+        .then(() => {
+          expect(cancelResponse).to.not.exist;
+          expect(createError).to.be.instanceof(Error);
+        })
+        .then(() => {
+          return Profile.retrieve(testUserIdentity)
+            .then(profile => {
+              expect(startingBalance).to.equal(profile.balance);
+            });
+        });
+    });
+
     it('Can create the MaaS ticket', () => {
-      // put fare is there was none
+      // ensure always >0 fare for the test
       if (!optionsResponse.options[0].fare.amount || optionsResponse.options[0].fare.amount === 0) {
         optionsResponse.options[0].fare.amount = 123;
         delete optionsResponse.options[0].signature;
