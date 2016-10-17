@@ -63,7 +63,7 @@ function getHereRoutes(event) {
   const qs = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
-    walkSpeed: 1.25, // TODO get this as parameter
+    walkSpeed: 1.0, // TODO get this as parameter
     waypoint0: 'geo!' + event.from,
     waypoint1: 'geo!' + event.to,
     combineChange: false,

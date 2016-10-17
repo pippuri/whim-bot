@@ -90,7 +90,7 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
       from: {lat: ${qs.coords.from.lat}, lon: ${qs.coords.from.lon}},
       to: {lat: ${qs.coords.to.lat}, lon: ${qs.coords.to.lon}},
       modes: "${convertDigitransitModes(modes)}",
-      walkSpeed: 1.2,
+      walkSpeed: 1.0,
       date: "${qs.date}"
       time: "${qs.time}"
     ) {
