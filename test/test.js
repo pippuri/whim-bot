@@ -75,8 +75,9 @@ describe('MaaS.fi backend', () => {
 
   // DB performance pre-setup (clear statistics) & seed data
   after(() => {
-    console.log('Cleaning up database');
-    return dbUtils.removeSeedData()
-      .then(() => dbUtils.shutdown());
+    // Note: DB is not cleaned up on shutdown, so that Chargebee test hooks
+    // etc. can work normally, and so that our developers can run the tests in parallel
+    console.log('Shutdown DB');
+    return dbUtils.shutdown();
   });
 });
