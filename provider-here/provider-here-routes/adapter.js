@@ -27,28 +27,13 @@ function convertResponseFrom(original) {
 /**
  * Parse leg 'from' field from original
  */
-function convertLegFrom(position, roadName) {
+function toPlace(position, roadName) {
   return {
-    name: roadName ? roadName : '', // eslint-disable-line
+    name: typeof roadName === 'string' && roadName.length > 0 ? roadName : undefined,
     // stopId: undefined,
     // stopCode: undefined,
     lat: position.latitude,
     lon: position.longitude,
-
-    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
-  };
-}
-
-/**
- * Parse leg 'to' field from original
- */
-function convertLegTo(position, nextRoadName) {
-  return {
-    name: nextRoadName,
-    // stopId: undefined,
-    // stopCode: undefined,
-    lon: position.longitude,
-    lat: position.latitude,
 
     // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
   };
@@ -110,8 +95,8 @@ function convertLeg(original) {
     startTime: original.startTime,
     endTime: original.endTime,
     mode: legMode,
-    from: convertLegFrom(original.position, original.roadName),
-    to: convertLegTo(original.position, original.nextRoadName),
+    from: toPlace(original.position, original.roadName),
+    to: toPlace(original.position, original.nextRoadName),
     legGeometry: {
       points: lib.convertToLegGeometry(original.shape),
     },
