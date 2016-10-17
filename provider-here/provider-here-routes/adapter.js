@@ -11,21 +11,17 @@ let nextLegStartTime;
 function convertResponseFrom(original) {
 
   if (!original.response || !original.response.route[0] || !original.response.route[0].waypoint[0]) {
-    return new Error('Invalid HERE response.');
+    throw new MaaSError(`Invalid response from HERE: '${JSON.stringify(original.response)}'`, 500);
   }
 
-  const lon = (original.response.route[0].waypoint[0].originalPosition.longitude);
-  const lat = (original.response.route[0].waypoint[0].originalPosition.latitude);
-
   return {
-    lon: lon,
-    lat: lat,
+    lon: original.response.route[0].waypoint[0].originalPosition.longitude,
+    lat: original.response.route[0].waypoint[0].originalPosition.latitude,
   };
-
 }
 
 /**
- * Parse leg 'from' field from original
+ * Parse 'place' compatible object from location & road name
  */
 function toPlace(position, roadName) {
   return {
@@ -47,6 +43,9 @@ function convertLeg(original) {
   nextLegStartTime = original.endTime;
   switch (original.transportLine.type) {
     case '':
+      console.error('Empty leg type received from here, converting to walking leg');
+      legMode = 'WALK';
+      break;
     case 'WALK':
       legMode = 'WALK';
       break;

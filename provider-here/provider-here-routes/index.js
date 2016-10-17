@@ -1,15 +1,19 @@
 'use strict';
+/**
+ * HERE Routes provider.
+ *
+ * @see https://developer.here.com/rest-apis/documentation/routing/topics/resource-calculate-route.html
+ */
 
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 const MaaSError = require('../../lib/errors/MaaSError');
 const validator = require('../../lib/validator');
-
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
 
-// Docs: https://developer.here.com/rest-apis/documentation/routing/topics/resource-calculate-route.html
 const HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
+const HERE_WALKING_SPEED = 1.39; // 1,39m/s ~ 5km/h
 
 /**
  * Parsing MaaS mode into HERE modes
@@ -63,7 +67,7 @@ function getHereRoutes(event) {
   const qs = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
-    walkSpeed: 1.0, // TODO get this as parameter
+    walkSpeed: HERE_WALKING_SPEED,
     waypoint0: 'geo!' + event.from,
     waypoint1: 'geo!' + event.to,
     combineChange: false,
