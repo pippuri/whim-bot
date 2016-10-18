@@ -5,7 +5,7 @@ const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 const lib = require('../lib/index');
 
-const MaaSError = require('../../lib/errors/MaaSError');
+const errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
 
@@ -169,7 +169,7 @@ function smsLogin(phone, code) {
   // Sanitize phone number, remove NaN
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new MaaSError('Invalid phone number', 401));
+    return Promise.reject(new errors.MaaSError('Invalid phone number', 401));
   }
 
   // Support simulated users in dev environment using phone prefix +292
@@ -179,7 +179,7 @@ function smsLogin(phone, code) {
   // Bale out if we can't verify the provided code
   console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone);
   if (!lib.verify_topt_login_code(isSimulationUser, plainPhone, code)) {
-    return Promise.reject(new MaaSError('401 Unauthorized', 401));
+    return Promise.reject(new errors.MaaSError('Unauthorized', 401));
   }
 
   // Everything OK, proceed
@@ -223,23 +223,8 @@ module.exports.respond = function (event, callback) {
   return Database.init()
   .then(() => smsLogin(`${event.phone}`, `${event.code}`))
   .then(response => {
-
     return Database.cleanup()
       .then(() => callback(null, response));
   })
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
-
-    return Database.cleanup()
-    .then(() => {
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    });
-  });
+  .catch(errors.stdErrorHandler(callback, event, Database));
 };

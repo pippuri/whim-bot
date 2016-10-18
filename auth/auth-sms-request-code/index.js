@@ -2,8 +2,8 @@
 
 const Promise = require('bluebird');
 const bus = require('../../lib/service-bus/index');
+const errors = require('../../lib/errors/index');
 const lib = require('../lib/index');
-const MaaSError = require('../../lib/errors/MaaSError');
 
 // Try to load the greenlist
 let greenlist;
@@ -23,7 +23,7 @@ function smsRequestCode(phone, provider) {
   // Clean up phone number to only contain digits
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new MaaSError('Invalid phone number', 400));
+    return Promise.reject(new errors.MaaSError('Invalid phone number', 400));
   }
 
   // Check against the greenlist if a greenlist has been loaded
@@ -32,7 +32,7 @@ function smsRequestCode(phone, provider) {
   } else {
     console.info('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
     if (greenlist.indexOf(plainPhone) === -1) {
-      return Promise.reject(new MaaSError('401 Unauthorized', 401));
+      return Promise.reject(new errors.MaaSError('Unauthorized', 401));
     }
   }
 
@@ -58,16 +58,5 @@ module.exports.respond = function (event, callback) {
     .then(response => {
       callback(null, response);
     })
-    .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
-
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    });
+    .catch(errors.stdErrorHandler(callback, event));
 };
