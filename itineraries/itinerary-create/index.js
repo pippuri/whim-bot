@@ -23,8 +23,11 @@ module.exports.respond = function (event, callback) {
     .then(() => utils.validateSignatures(event.itinerary))
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
     .then(unsignedItinerary => Itinerary.startTransaction()
-      .then(transaction => Promise.resolve(trx = transaction))
-      .then(transaction => Itinerary.create(unsignedItinerary, event.identityId, transaction)))
+      .then(transaction => {
+        trx = transaction;
+        return Promise.resolve();
+      })
+      .then(() => Itinerary.create(unsignedItinerary, event.identityId, trx)))
     .then(itinerary => itinerary.pay(trx))
 /*
     // Testing bold version where all bookings are handled in TripEngine side. If finding
