@@ -3,9 +3,11 @@
 const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-top-up/handler.js');
+const Database = require('../../../lib/models/Database');
 const Profile = require('../../../lib/business-objects/Profile');
 
 module.exports = function (identityId) {
+
   describe('profile-top-up-invalid-limit', () => {
     const event = {
       identityId: identityId,
@@ -48,15 +50,22 @@ module.exports = function (identityId) {
     let oldBalance;
 
     before(done => {
-      Profile.retrieve(event.identityId)
+      // Initialize a profile that can be topped up
+      Database.init()
+        .then(() => Profile.retrieve(event.identityId))
         .then(profile => {
           oldBalance = profile.balance;
           wrap(lambda).run(event, (err, data) => {
             error = err;
             response = data;
+
             done();
           });
         });
+    });
+
+    after(() => {
+      return Database.cleanup();
     });
 
     it('should not raise an error', () => {
