@@ -17,11 +17,16 @@ const insertSeedDataQuery =
 
 function runQuery(query) {
   return Database.init()
-    .then(() => Database.knex.raw(query));
+    .then(() => Database.knex.raw(query))
+    .then(() => Database.cleanup());
 }
 
 function shutdown() {
-  return Database.cleanup(true);
+  if (Database.handleCount > 0) {
+    console.warn(`One or more tests left '${Database.handleCount}' handles open.`);
+    return Database.cleanup(true);
+  }
+  return Promise.resolve();
 }
 
 module.exports = {
