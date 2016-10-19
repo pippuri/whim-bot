@@ -52,32 +52,21 @@ console.warn = () => {};
 // Force local lambda & dynamo usage
 process.env.USE_MOCK_LAMBDA = 'TRUE';
 
-describe('MaaS.fi backend', () => {
-
   // DB performance pre-setup (clear statistics) & seed data
-  before(() => {
-    console.log('Preparing Database for tests');
-    return dbUtils.removeSeedData()
-      .then(() => dbUtils.insertSeedData())
-      .then(() => dbUtils.clearDBStatistics());
-  });
-
-  // The actual suite
-  require('./lib');
-  require('./auth');
-  require('./profile');
-  require('./provider');
-  require('./business-rule-engine');
-  require('./api');
-
-  // Tests for DB performance of the past operations
-  require('./db/test-statistics');
-
-  // DB performance pre-setup (clear statistics) & seed data
-  after(() => {
-    // Note: DB is not cleaned up on shutdown, so that Chargebee test hooks
-    // etc. can work normally, and so that our developers can run the tests in parallel
-    console.log('Shutdown DB');
-    return dbUtils.shutdown();
-  });
+before(() => {
+  console.log('Preparing Database for tests');
+  return dbUtils.removeSeedData()
+    .then(() => dbUtils.insertSeedData())
+    .then(() => dbUtils.clearDBStatistics());
 });
+
+// The actual suite
+require('./lib');
+require('./auth');
+require('./profile');
+require('./provider');
+require('./business-rule-engine');
+require('./api');
+
+// Tests for DB performance of the past operations
+require('./db/test-statistics');
