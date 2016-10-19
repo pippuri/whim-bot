@@ -71,7 +71,7 @@ module.exports = options => {
     it('response should have direct Valopilkku taxi route', () => {
 
       const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
-      // Filter out everythign else than taxi only route
+      // Filter out everything else than taxi only route
       const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
         const modes = itinerary.legs.map(leg => leg.mode);
         // Try to find modes that are unallowed
@@ -288,6 +288,130 @@ module.exports = options => {
     it('should return an error', () => {
       expect(error.message).to.equal('500: get-routes: Could not retrieve any routes provider');
       expect(response).to.be.undefined;
+    });
+  });
+
+  describe('routes query TAXI response `to` and `from` should have a name', () => {
+
+    const event = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      payload: {
+        from: '60.165781,24.845139',
+        to: '60.18176,24.95494',
+
+        leaveAt: '' + moment().utcOffset(180).isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+        // leaveAt: 1476532800000,
+      },
+      headers: {},
+    };
+
+    let error;
+    let response;
+
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
+        .then(res => {
+          response = res;
+        })
+        .catch(err => {
+          error = err;
+        });
+    });
+
+    it('should succeed without errors', () => {
+      expect(error).to.be.undefined;
+    });
+
+    it('response should have route', () => {
+      expect(response.plan.itineraries).to.not.be.empty;
+    });
+
+    it('response should have direct Valopilkku taxi route', () => {
+
+      const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
+      // Filter out everything else than taxi only route
+      const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        // Try to find modes that are unallowed
+        const unallowed = modes.find(mode => allowed.indexOf(mode) === -1);
+        return (typeof unallowed === typeof undefined);
+      });
+
+      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        return modes.indexOf('TAXI') !== -1;
+      });
+
+      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
+        const agencyIds = itinerary.legs.map(leg => leg.agencyId);
+        return _.includes(agencyIds, 'Valopilkku');
+      });
+
+      expect(valopilkkuTaxiRoutes).to.not.be.empty;
+    });
+
+    it('`from` should have a name', () => {
+
+      const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
+      // Filter out everything else than taxi only route
+      const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        // Try to find modes that are unallowed
+        const unallowed = modes.find(mode => allowed.indexOf(mode) === -1);
+        return (typeof unallowed === typeof undefined);
+      });
+
+      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        return modes.indexOf('TAXI') !== -1;
+      });
+
+      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
+        const agencyIds = itinerary.legs.map(leg => leg.agencyId);
+        return _.includes(agencyIds, 'Valopilkku');
+      });
+
+      const firstValopilkkuTaxiRoute = valopilkkuTaxiRoutes[0];
+      const valopilkkuTaxiRouteTaxiLegs = firstValopilkkuTaxiRoute.legs.filter(leg => {
+        return leg.mode !== 'TAXI';
+      });
+
+      expect(firstValopilkkuTaxiRoute).to.not.be.undefined;
+      expect(valopilkkuTaxiRouteTaxiLegs).to.not.be.empty;
+      expect(valopilkkuTaxiRouteTaxiLegs[0].from).to.not.be.empty;
+      expect(valopilkkuTaxiRouteTaxiLegs[0].from.name).to.not.be.empty;
+    });
+
+    it('`to` should have a name', () => {
+
+      const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
+      // Filter out everything else than taxi only route
+      const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        // Try to find modes that are unallowed
+        const unallowed = modes.find(mode => allowed.indexOf(mode) === -1);
+        return (typeof unallowed === typeof undefined);
+      });
+
+      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
+        const modes = itinerary.legs.map(leg => leg.mode);
+        return modes.indexOf('TAXI') !== -1;
+      });
+
+      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
+        const agencyIds = itinerary.legs.map(leg => leg.agencyId);
+        return _.includes(agencyIds, 'Valopilkku');
+      });
+
+      const firstValopilkkuTaxiRoute = valopilkkuTaxiRoutes[0];
+      const valopilkkuTaxiRouteTaxiLegs = firstValopilkkuTaxiRoute.legs.filter(leg => {
+        return leg.mode !== 'TAXI';
+      });
+
+      expect(firstValopilkkuTaxiRoute).to.not.be.undefined;
+      expect(valopilkkuTaxiRouteTaxiLegs).to.not.be.empty;
+      expect(valopilkkuTaxiRouteTaxiLegs[0].to).to.not.be.empty;
+      expect(valopilkkuTaxiRouteTaxiLegs[0].to.name).to.not.be.empty;
     });
   });
 };
