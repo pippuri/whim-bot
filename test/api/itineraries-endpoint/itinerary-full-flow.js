@@ -38,6 +38,8 @@ module.exports = function (input, results) {
   // put back to false if the previous phase ran ok.
   let skip = false;
 
+  before(() => Database.init());
+
   describe('Queries for routes', () => {
     // Skip this part of the suite if skip flag has been raised
     before(function () {
@@ -343,31 +345,28 @@ module.exports = function (input, results) {
   });
 
   after(() => {
-    return Database.init()
-      .then(() => {
-        if (!createdItinerary) {
-          //console.log('No itinerary created within flow, nothing to cleanup.');
-          return Promise.resolve();
-        }
+    if (!createdItinerary) {
+      //console.log('No itinerary created within flow, nothing to cleanup.');
+      return Promise.resolve();
+    }
 
-        // Cleanup legs with their bookings; then remove the itinerary, too
-        const itineraryId = createdItinerary.id;
-        //console.log(`Deleting itinerary '${itineraryId}' with ${createdItinerary.legs.length} legs`);
-        return Promise.map(createdItinerary.legs, leg => {
-          const legId = leg.id;
-          const bookingId = (leg.booking) ? leg.booking.id : null;
+    // Cleanup legs with their bookings; then remove the itinerary, too
+    const itineraryId = createdItinerary.id;
+    //console.log(`Deleting itinerary '${itineraryId}' with ${createdItinerary.legs.length} legs`);
+    return Promise.map(createdItinerary.legs, leg => {
+      const legId = leg.id;
+      const bookingId = (leg.booking) ? leg.booking.id : null;
 
-          return models.Leg.query().delete().where('id', legId)
-            .then(() => {
-              return ((leg.booking) ? models.Booking.query().delete().where('id', bookingId) : null);
-            });
-        })
+      return models.Leg.query().delete().where('id', legId)
         .then(() => {
-          return models.Itinerary.query().delete().where('id', itineraryId);
-        })
-        .finally(() => {
-          return Database.cleanup();
+          return ((leg.booking) ? models.Booking.query().delete().where('id', bookingId) : null);
         });
-      });
+    })
+    .then(() => {
+      return models.Itinerary.query().delete().where('id', itineraryId);
+    })
+    .finally(() => {
+      return Database.cleanup();
+    });
   });
 };

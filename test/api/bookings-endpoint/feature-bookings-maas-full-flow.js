@@ -17,6 +17,8 @@ const Database = models.Database;
 
 module.exports = function (optionsLambda) {
 
+  before(() => Database.init());
+
   function runLambda(lambda, event) {
     return new Promise((resolve, reject) => {
       wrap(lambda).run(event, (error, response) => {
@@ -186,7 +188,7 @@ module.exports = function (optionsLambda) {
     });
 
     after(() => {
-      return Database.init()
+      return Promise.resolve()
         .then(() => {
           if (createResponse && createResponse.booking.id) {
             return models.Booking.query().delete().where('id', createResponse.booking.id);
