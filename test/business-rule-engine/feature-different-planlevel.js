@@ -9,10 +9,10 @@ module.exports = function () {
 
   const profiles = allProfiles.filter(profile => {
     return [
-      'eu-west-1:00000000-cafe-cafe-cafe-000000000000', // fi-whim-payg
       'eu-west-1:00000000-cafe-cafe-cafe-000000000001', // fi-whim-light
       'eu-west-1:00000000-cafe-cafe-cafe-000000000002', // fi-whim-medium
       'eu-west-1:00000000-cafe-cafe-cafe-000000000003', // fi-whim-premium
+      'eu-west-1:00000000-cafe-cafe-cafe-000000000004', // fi-whim-payg
     ].some(identityId => identityId === profile.identityId);
   });
 

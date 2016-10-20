@@ -27,7 +27,7 @@ module.exports = function () {
   }
 
   describe('create a HSL Ticket booking for a day', () => {
-    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000004';
+    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
     let optionsResponse;
     let createResponse;
