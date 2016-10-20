@@ -3,9 +3,18 @@
 const bus = require('../../lib/service-bus/');
 const moment = require('moment');
 const expect = require('chai').expect;
-const profiles = require('../db/profiles-seed.json');
+const allProfiles = require('../db/profiles-seed.json');
 
 module.exports = function () {
+
+  const profiles = allProfiles.filter(profile => {
+    return [
+      'eu-west-1:00000000-cafe-cafe-cafe-000000000001', // fi-whim-light
+      'eu-west-1:00000000-cafe-cafe-cafe-000000000002', // fi-whim-medium
+      'eu-west-1:00000000-cafe-cafe-cafe-000000000003', // fi-whim-premium
+      'eu-west-1:00000000-cafe-cafe-cafe-000000000004', // fi-whim-payg
+    ].some(identityId => identityId === profile.identityId);
+  });
 
   // Monday 10.10 17:00 to be moved to monday next week
   const leaveAt = moment(1476108000000);
@@ -63,7 +72,7 @@ module.exports = function () {
       });
 
       if (planId === 'fi-whim-payg') {
-        it(`planId ${planId} user should not have any free transits`, () => {
+        it(`user ${profile.identityId}, planId ${planId} user should not have any free transits`, () => {
           const itineraries = responses[index].plan.itineraries;
 
           const itinerariesWithTransits = itineraries.filter(iti => {
@@ -78,7 +87,7 @@ module.exports = function () {
         return;
       }
 
-      it(`planId ${planId} user should have one or more free HSL itinerary`, () => {
+      it(`user ${profile.identityId}, planId ${planId} user should have one or more free HSL itinerary`, () => {
         const itineraries = responses[index].plan.itineraries;
         const freeAgencies = profile.subscription.agencies;
         const freeItineraries = itineraries.filter(iti => {
