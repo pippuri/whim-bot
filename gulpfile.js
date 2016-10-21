@@ -62,7 +62,9 @@ gulp.task('mocha', () => {
   .pipe(istanbul.hookRequire())
   .on('finish', () => {
     return gulp.src('test/test.js', { read: false })
-      .pipe(gmocha())
+      .pipe(gmocha({
+        timeout: 20000,
+      }))
       .pipe(istanbul.writeReports())
       // Skip thresholds until we have more coverage
       //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
