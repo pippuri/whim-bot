@@ -10,9 +10,7 @@ const swaggerSchema = require('swagger-schema-official/schema.json');
 const docPath = path.resolve('www/apidocs.maas.global/api');
 const swaggerFile = path.resolve(docPath, 'maas-api.json');
 
-describe('API documentation', function () {
-  this.timeout(20000);
-
+describe('API documentation', () => {
   let dereferencingError;
   let validationError;
 

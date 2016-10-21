@@ -10,9 +10,7 @@ const fixture = require('./fixture.json');
 
 describe('routes provider', () => {
 
-  describe('routes-query-fixture', function () {
-    this.timeout(30000);
-
+  describe('routes-query-fixture', () => {
     fixture.providers.forEach(provider => {
       fixture.cases.forEach(test => {
         testFixtureTests(test, provider);
@@ -20,8 +18,7 @@ describe('routes provider', () => {
     });
   });
 
-  describe('TripGo', function () {
-    this.timeout(20000);
+  describe('TripGo', () => {
     const lambda = require('../../../provider-tripgo/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: false });
     testArriveBy(lambda);
@@ -30,8 +27,7 @@ describe('routes provider', () => {
     test985kAfrica(lambda);
   });
 
-  describe('Digitransit', function () {
-    this.timeout(20000);
+  describe('Digitransit', () => {
     const lambda = require('../../../provider-digitransit/provider-digitransit-routes/handler.js');
     testLeaveAt(lambda);
     testArriveBy(lambda);
@@ -40,8 +36,7 @@ describe('routes provider', () => {
     test985kAfrica(lambda);
   });
 
-  describe('HERE', function () {
-    this.timeout(20000);
+  describe('HERE', () => {
     const lambda = require('../../../provider-here/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     testFromUnsupported(lambda, { skip: true });

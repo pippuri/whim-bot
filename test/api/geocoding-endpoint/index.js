@@ -3,9 +3,7 @@
 const testGeocoding = require('./feature-geocoding.js');
 const testReverseGeocoding = require('./feature-reverse-geocoding.js');
 
-describe('geocoding', function () {
-  this.timeout(20000);
-
+describe('geocoding', () => {
   describe('geocoding endpoint', () => {
     const lambda = require('../../../geocoding/geocoding-query/handler.js');
     testGeocoding(lambda);

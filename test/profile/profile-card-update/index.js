@@ -6,9 +6,7 @@ const lambda = require('../../../profile/profile-payment-put/handler.js');
 
 module.exports = function (identityId) {
 
-  describe('profile-card-update', function () { //eslint-disable-line
-    this.timeout(10000);
-
+  describe('profile-card-update', () => {
     const event = {
       identityId: identityId,
       payload: {
