@@ -38,9 +38,7 @@ module.exports = function (input, results) {
   // put back to false if the previous phase ran ok.
   let skip = false;
 
-  before(() => Database.init());
-
-  describe('Queries for routes', () => {
+  describe('Queries for routes', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
@@ -121,7 +119,7 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Creates an itinerary', () => {
+  describe('Creates an itinerary', function () {
     // Skip this part of the suite if skip flag has been raised
     before(() => {
       if (skip) {
@@ -130,8 +128,10 @@ module.exports = function (input, results) {
       skip = true;
 
       // fetch user data to get account starting balance
-      return Profile.retrieve(input.event.identityId)
-        .then(profile => (startingBalance = profile.balance));
+      return Database.init()
+        .then(() => Profile.retrieve(input.event.identityId))
+        .then(profile => (startingBalance = profile.balance))
+        .then(() => Database.cleanup());
     });
 
     it(`Creates an itinerary for user '${input.event.identityId}'`, () => {

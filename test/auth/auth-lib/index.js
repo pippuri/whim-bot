@@ -6,8 +6,7 @@ const lib = require('../../../auth/lib');
 
 module.exports = function () {
 
-  describe('auth-lib', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-lib', () => {
     const PHONE1 = '358417556933';
     const PHONE2 = '358417556933';
     const PHONE3 = '292123456789';

@@ -3,7 +3,7 @@
 const mgr = require('../../../lib/subscription-manager');
 const expect = require('chai').expect;
 
-describe('subscription-manager-full-flow', () => {
+describe('subscription-manager-full-flow', function () { //eslint-disable-line
 
   const chargebeeId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
   const newSubscription = 'fi-whim-payg';
@@ -90,9 +90,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Update user', function () {
-    this.timeout(10000);
-
+  describe('Update user', () => {
     before(() => {
       return mgr.updateUser(chargebeeId, {
         firstName: 'Tester_' + Math.floor((Math.random() * 1000)),
@@ -124,9 +122,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Update user card', function () {
-    this.timeout(5000);
-
+  describe('Update user card', () => {
     before(() => {
       return mgr.updateUserCreditCard(chargebeeId, {
         firstName: 'Test',
@@ -162,9 +158,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('List the user plan', function () {
-    this.timeout(5000);
-
+  describe('List the user plan', () => {
     before(() => {
       return mgr.getUserSubscription(chargebeeId)
       .then(
@@ -187,9 +181,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Post a charge on the user', function () {
-    this.timeout(5000);
-
+  describe('Post a charge on the user', () => {
     before(() => {
       return mgr.makePurchase(chargebeeId, 'fi-whim-points-purchase-payg', 100)
       .then(
@@ -212,9 +204,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Change user plan', function () {
-    this.timeout(10000);
-
+  describe('Change user plan', () => {
     before(() => {
       return mgr.updatePlan(chargebeeId, updatedSubscription, { prorate: true, updateTerm: true } )
       .then(
@@ -238,10 +228,9 @@ describe('subscription-manager-full-flow', () => {
 
   });
 
-  describe('Change user plan with nonexisting promo code', function () {
+  describe('Change user plan with nonexisting promo code', () => {
     let error;
     let response;
-    this.timeout(5000);
 
     before(() => {
       return mgr.updatePlan(chargebeeId, 'fi-whim-medium', { promoCode: 'FI-WHIM-NONEXISTING' } )
@@ -260,9 +249,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Create Portal Session', function () {
-    this.timeout(5000);
-
+  describe('Create Portal Session', () => {
     before(() => {
       return mgr.getLoginURL(chargebeeId).then(
         res => (getLoginURLResponse = res),
@@ -281,9 +268,7 @@ describe('subscription-manager-full-flow', () => {
     });
   });
 
-  describe('Delete Test User', function () {
-    this.timeout(5000);
-
+  describe('Delete Test User', () => {
     before(() => {
       return mgr.deleteUserSubscription(chargebeeId).then(
         res => (deleteUserResponse = res),

@@ -9,8 +9,7 @@ const LAMBDA = 'MaaS-auth-sms-login';
 
 module.exports = function () {
 
-  describe.skip('auth-sms-login', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe.skip('auth-sms-login', () => {
     const PHONE = '+358417556933';
     const PLAIN_PHONE = '358417556933';
 
@@ -52,8 +51,7 @@ module.exports = function () {
     });
   });
 
-  describe('auth-sms-login failure', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-sms-login failure', () => {
     const PHONE = '+358417556933';
     const BAD_CODE = '666';
 

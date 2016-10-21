@@ -4,9 +4,7 @@ const testFeature = require('./feature-test');
 const testError = require('./error-test');
 
 
-describe('routes endpoint', function () {
-  this.timeout(20000);
-
+describe('routes endpoint', () => {
   describe('features tests', () => {
     testFeature();
   });

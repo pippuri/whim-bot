@@ -8,8 +8,7 @@ const LAMBDA = 'MaaS-auth-sms-request-code';
 
 module.exports = function () {
 
-  describe('auth-sms-request-code', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-sms-request-code', () => {
     const PHONE = '+358465727140';
 
     let error;
@@ -47,8 +46,7 @@ module.exports = function () {
     });
   });
 
-  describe('auth-sms-request-code short number failure', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-sms-request-code short number failure', () => {
     const BAD_PHONE = '+292';
 
     let error;
@@ -82,8 +80,7 @@ module.exports = function () {
     });
   });
 
-  describe('auth-sms-request-code bad failure', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-sms-request-code bad failure', () => {
     const BAD_PHONE = '+292123456789';
 
     let error;
@@ -117,8 +114,7 @@ module.exports = function () {
     });
   });
 
-  describe('auth-sms-request-code non-greenlisted number fails', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('auth-sms-request-code non-greenlisted number fails', () => {
     const PHONE = '+358465727141';
 
     let error;

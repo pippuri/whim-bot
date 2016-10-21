@@ -24,8 +24,7 @@ if (MOCK_SWF === true) {
   Trip = require('../../../lib/trip');
 }
 
-describe('utility Trip', function () {
-  this.timeout(20000);
+describe('utility Trip', () => {
   let response;
   let error;
 

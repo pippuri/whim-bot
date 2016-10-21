@@ -27,8 +27,8 @@ module.exports = function (optionsLambda) {
     });
   }
 
-  describe('create a MaaS Ticket booking for a day', () => {
-    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+  describe('create a MaaS Ticket booking for a day', function () {
+    const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000004';
 
     let optionsResponse;
     let createResponse;

@@ -33,8 +33,7 @@ module.exports = function (identityId) {
     });
   });
 
-  describe('profile-top-up-ok', function () { //eslint-disable-line
-    this.timeout(10000);
+  describe('profile-top-up-ok', () => {
     const topUpAmount = 500;
     const event = {
       identityId: identityId,

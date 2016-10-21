@@ -2,9 +2,7 @@
 
 const mgr = require('../../lib/subscription-manager');
 
-describe('profile tools', function () {
-  this.timeout(20000);
-
+describe('profile tools', () => {
   const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
   const creditCardData = {
     firstName: 'Test',

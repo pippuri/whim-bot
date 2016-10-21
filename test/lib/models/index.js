@@ -3,9 +3,7 @@
 const expect = require('chai').expect;
 const models = require('../../../lib/models');
 
-describe('models', function () {
-  this.timeout(10000);
-
+describe('models', () => {
   describe('Database', () => {
     const Database = models.Database;
 

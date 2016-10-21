@@ -4,11 +4,9 @@ const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const lambda = require('../../../profile/profile-manage/handler.js');
 
-module.exports = function (identityId) {
+module.exports = identityId => {
 
-  describe('profile-manage', function () { //eslint-disable-line
-    this.timeout(10000);
-
+  describe('profile-manage', () => {
     const event = {
       identityId: identityId,
     };
@@ -37,9 +35,7 @@ module.exports = function (identityId) {
       expect(response).to.have.deep.property('profile.loginURL');
     });
   });
-  describe('profile-manage-failure', function () { //eslint-disable-line
-    this.timeout(10000);
-
+  describe('profile-manage-failure', () => {
     const event = {
       identityId: identityId.replace('cafe', 'dead'),
     };

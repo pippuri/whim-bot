@@ -32,9 +32,7 @@ if (MOCK_SWF === true) {
   tripInvokeDeciderLambda = require('../../../trip/trip-invoke-decider/handler.js');
 }
 
-describe('trip endpoint', function () {
-  this.timeout(20000);
-
+describe('trip endpoint', () => {
   tripPollDecisionTest(tripPollDecisionLambda, swfStub);
   tripInvokeDeciderTest(tripInvokeDeciderLambda, swfStub);
 });
