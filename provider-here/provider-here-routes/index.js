@@ -5,12 +5,11 @@
  * @see https://developer.here.com/rest-apis/documentation/routing/topics/resource-calculate-route.html
  */
 
-const Promise = require('bluebird');
-const request = require('request-promise-lite');
-const adapter = require('./adapter');
+const lib = require('./lib');
 const MaaSError = require('../../lib/errors/MaaSError');
-const validator = require('../../lib/validator');
+const request = require('request-promise-lite');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
+const validator = require('../../lib/validator');
 
 const HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
 const HERE_WALKING_SPEED = 1.39; // 1,39m/s ~ 5km/h
@@ -64,6 +63,7 @@ function validateInput(event) {
 
 function getHereRoutes(event) {
 
+  const departure = new Date(event.leaveAt ? parseInt(event.leaveAt, 10) : Date.now());
   const qs = {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
@@ -72,10 +72,12 @@ function getHereRoutes(event) {
     waypoint1: 'geo!' + event.to,
     combineChange: false,
     mode: convertToHereMode(event.modes),
-    maneuverAttributes: 'shape,roadName,nextRoadName,publicTransportLine,length',
+    routeAttributes: 'legs,groups,lines',
+    legAttributes: 'length,travelTime',
+    maneuverAttributes: 'shape,roadName,roadNumber,nextRoadName,nextRoadNumber,publicTransportLine,length,time,waitTime,travelTime',
     alternatives: 9,
     instructionFormat: 'text',
-    departure: event.leaveAt ? (new Date(parseInt(event.leaveAt, 10))).toISOString() : 'now',
+    departure: departure.toISOString(),
   };
 
   // Do not get alternatives for 'TAXI'
@@ -83,15 +85,30 @@ function getHereRoutes(event) {
     delete qs.alternatives;
   }
 
+  const coords = event.from.split(',').map(parseFloat);
   return request.get(HERE_ROUTE_URL, { json: true, headers: {}, qs: qs })
-    .then(result => adapter(result, event.modes, event.leaveAt, event.arriveBy))
+    .then(response => {
+      return {
+        plan: {
+          from: {
+            lat: coords[0],
+            lon: coords[1],
+          },
+          itineraries: response.response.route.map(lib.toItinerary),
+        },
+        debug: {},
+      };
+    })
     .catch(_error => {
       // Handle no route found error code 400
       if (_error.statusCode && _error.statusCode === 400 && _error.response.subtype === 'NoRouteFound') {
         const coords = event.from.split(',').map(parseFloat);
         return {
           plan: {
-            from: { lat: coords[0], lon: coords[1] },
+            from: {
+              lat: coords[0],
+              lon: coords[1],
+            },
             itineraries: [],
           },
           debug: {
@@ -100,6 +117,9 @@ function getHereRoutes(event) {
         };
       }
 
+      console.warn('Caught en error:', _error.message);
+      //console.warn(`Event: ${JSON.stringify(event, null, 2)}`);
+      console.warn(_error.stack);
       return Promise.reject(new MaaSError(_error));
     });
 
@@ -112,9 +132,9 @@ module.exports.respond = function (event, callback) {
     .then(response => validator.validate(responseSchema, response))
     .then(response => callback(null, response))
     .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
+      //console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      //console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      //console.warn(_error.stack);
 
       callback(_error);
     });
