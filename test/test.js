@@ -55,9 +55,11 @@ process.env.USE_MOCK_LAMBDA = 'TRUE';
   // DB performance pre-setup (clear statistics) & seed data
 before(() => {
   console.log('Preparing Database for tests');
-  return dbUtils.removeSeedData()
+  return dbUtils.init()
+    .then(() => dbUtils.removeSeedData())
     .then(() => dbUtils.insertSeedData())
-    .then(() => dbUtils.clearDBStatistics());
+    .then(() => dbUtils.clearDBStatistics())
+    .then(() => dbUtils.shutdown());
 });
 
 // The actual suite
