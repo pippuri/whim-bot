@@ -1,0 +1,67 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "event_type": "customer_created",
+    "webhook_status": "not_configured",
+    "content": {
+      "subscription": {
+        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "plan_id": "fi-whim-payg",
+        "plan_quantity": 1,
+        "status": "active",
+        "current_term_start": 1477041873,
+        "current_term_end": 1479720273,
+        "created_at": 1477041873,
+        "started_at": 1477041873,
+        "activated_at": 1477041873,
+        "has_scheduled_changes": false,
+        "object": "subscription",
+        "due_invoices_count": 0,
+        "shipping_address": {
+          "first_name": "Konker",
+          "last_name": "Markup",
+          "email": "konker@gmail.com",
+          "company": "Markup Enterprises",
+          "phone": "0465727140",
+          "line1": "Eerikinkatu 41 A 28",
+          "city": "Helsinki",
+          "state": "Uusimaa",
+          "country": "FI",
+          "zip": "00180",
+          "object": "shipping_address"
+        }
+      },
+      "customer": {
+        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "first_name": "Konker",
+        "last_name": "Markup",
+        "email": "konker@gmail.com",
+        "phone": "0465727140",
+        "company": "Markup Enterprises",
+        "auto_collection": "off",
+        "allow_direct_debit": false,
+        "created_at": 1477041873,
+        "taxability": "taxable",
+        "object": "customer",
+        "billing_address": {
+          "first_name": "Konker",
+          "last_name": "Markup",
+          "email": "konker@gmail.com",
+          "company": "Markup Enterprises",
+          "phone": "0465727140",
+          "line1": "Eerikinkatu 41 A 28",
+          "city": "Helsinki",
+          "state": "Uusimaa",
+          "country": "FI",
+          "zip": "00180",
+          "object": "billing_address"
+        },
+        "card_status": "no_card",
+        "account_credits": 0,
+        "refundable_credits": 0,
+        "excess_payments": 0
+      }
+    }
+  }
+}
+

@@ -1,0 +1,40 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "event_type": "customer_created",
+    "webhook_status": "not_configured",
+    "content": {
+      "customer": {
+        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "first_name": "konker",
+        "last_name": "markup",
+        "email": "konker@gmail.com",
+        "phone": "0465727140",
+        "company": "markup enterprises",
+        "auto_collection": "off",
+        "allow_direct_debit": false,
+        "created_at": 1477041873,
+        "taxability": "taxable",
+        "object": "customer",
+        "billing_address": {
+          "first_name": "konker",
+          "last_name": "markup",
+          "email": "konker@gmail.com",
+          "company": "markup enterprises",
+          "phone": "0465727140",
+          "line1": "eerikinkatu 41 a 28",
+          "city": "helsinki",
+          "state": "uusimaa",
+          "country": "fi",
+          "zip": "00180",
+          "object": "billing_address"
+        },
+        "card_status": "no_card",
+        "account_credits": 0,
+        "refundable_credits": 0,
+        "excess_payments": 0
+      }
+    }
+  }
+}
+

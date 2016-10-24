@@ -2,8 +2,11 @@
 
 const Promise = require('bluebird');
 const Database = require('../../lib/models/Database');
-const MaaSError = require('../../lib/errors/MaaSError');
+const errors = require('../../lib/errors/index');
 const Chargebee = require('./chargebee.js');
+
+const DEFAULT_RESPONSE = { response: 'OK' };
+
 const VALID_KEYS = {
   KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
   XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
@@ -13,19 +16,19 @@ function handleWebhook(event) {
   const key = event.id;
 
   if (Object.keys(event).length === 0) {
-    return Promise.reject(new MaaSError('Input missing', 400));
+    return Promise.reject(new errors.MaaSError('Input missing', 400));
   }
 
   if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new MaaSError('Payload missing', 400));
+    return Promise.reject(new errors.MaaSError('Payload missing', 400));
   }
 
   if (typeof key !== 'string') {
-    return Promise.reject(new MaaSError('Invalid or missing key', 400));
+    return Promise.reject(new errors.MaaSError('Invalid or missing key', 400));
   }
 
   if (!VALID_KEYS.hasOwnProperty(key)) {
-    return Promise.reject(new MaaSError('Unauthorized key', 400));
+    return Promise.reject(new errors.MaaSError('Unauthorized key', 400));
   }
 
   switch (VALID_KEYS[key]) {
@@ -52,19 +55,5 @@ module.exports.respond = (event, callback) => {
     .then(() => handleWebhook(event))
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
-
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    })
-    .finally(() => {
-      Database.cleanup();
-    });
+    .catch(errors.alwaysSucceedErrorHandler(callback, event, Database, DEFAULT_RESPONSE));
 };

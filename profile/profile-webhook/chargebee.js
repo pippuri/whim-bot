@@ -54,7 +54,6 @@ function handleCancellation(event, payload) {
 function handleWebhook(event) {
   //const key = event.id;
   const payload = event.payload;
-
   if (Object.keys(event).length === 0) {
     return Promise.reject(new MaaSError('Input missing', 400));
   }
