@@ -19,9 +19,31 @@ describe('profile tools', () => {
     },
   };
 
-  // Create a Chargebee profile for the test user, so that the endpoints can work
   before(() => {
-    return mgr.createUserSubscription(testUserIdentity, 'fi-whim-payg', { phone: '+358555666' })
+    // Try to cleanup Chargebee identity - fetch, delete if exists (!404),
+    // and then create a new one. Deletion may fail with 400 if the Profile
+    // is already scheduled for deletion.
+    return mgr.getUserSubscription(testUserIdentity)
+      .then(subscription => {
+        return mgr.deleteUserSubscription(testUserIdentity)
+            .catch(error => {
+              if (error.statusCode === 400) {
+                return Promise.resolve();
+              }
+
+              return Promise.reject(error);
+            });
+      })
+      .catch(error => {
+        if (error.statusCode === 404) {
+          return Promise.resolve();
+        }
+
+        return Promise.reject(error);
+      })
+      .then(() => mgr.createUserSubscription(
+        testUserIdentity, 'fi-whim-payg', { phone: '+358555666' })
+      )
       .then(mgr.updateUserCreditCard(testUserIdentity, creditCardData))
       .catch(error => {
         console.log('Caught an exception:', error.message);
@@ -31,7 +53,9 @@ describe('profile tools', () => {
       });
   });
 
-  after(() => {
+  // Do not cleanup in the end, because parallel Travis runs might get
+  // messed up of this. Better have the cleanup in the beginning.
+  /*after(() => {
     return mgr.deleteUserSubscription(testUserIdentity)
     .catch(error => {
       console.log('Caught an exception:', error.message);
@@ -39,7 +63,7 @@ describe('profile tools', () => {
       console.log(error.toString());
       throw error;
     });
-  });
+  });*/
 
   require('./profile-card-update/index.js')(testUserIdentity);
   require('./profile-manage/index.js')(testUserIdentity);
