@@ -15,10 +15,8 @@ const insertSeedDataQuery =
     SELECT * FROM json_populate_recordset(NULL::"Profile", '${JSON.stringify(profilesData)}')
   `;
 
-function runQuery(query) {
-  return Database.init()
-    .then(() => Database.knex.raw(query))
-    .then(() => Database.cleanup());
+function init() {
+  return Database.init();
 }
 
 function shutdown() {
@@ -30,8 +28,9 @@ function shutdown() {
 }
 
 module.exports = {
-  clearDBStatistics: () => runQuery(resetStatsQuery),
-  removeSeedData: () => runQuery(removeSeedDataQuery),
-  insertSeedData: () => runQuery(insertSeedDataQuery),
+  clearDBStatistics: () => Database.knex.raw(resetStatsQuery),
+  removeSeedData: () => Database.knex.raw(removeSeedDataQuery),
+  insertSeedData: () => Database.knex.raw(insertSeedDataQuery),
+  init,
   shutdown,
 };
