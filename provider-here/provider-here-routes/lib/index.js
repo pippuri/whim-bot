@@ -65,7 +65,7 @@ function toMode(mode, type) {
         case 'trainHighSpeed':
           return 'TRAIN';
         case 'aerial':
-          return 'TRAIN';
+          return 'AEROPLANE';
         case 'inclined':
           return 'FUNICULAR';
         case 'water':
