@@ -38,6 +38,10 @@ module.exports = function (input, results) {
   // put back to false if the previous phase ran ok.
   let skip = false;
 
+  before(() => {
+    return Database.init();
+  });
+
   describe('Queries for routes', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
@@ -128,10 +132,8 @@ module.exports = function (input, results) {
       skip = true;
 
       // fetch user data to get account starting balance
-      return Database.init()
-        .then(() => Profile.retrieve(input.event.identityId))
-        .then(profile => (startingBalance = profile.balance))
-        .then(() => Database.cleanup());
+      return Profile.retrieve(input.event.identityId)
+        .then(profile => (startingBalance = profile.balance));
     });
 
     it(`Creates an itinerary for user '${input.event.identityId}'`, () => {
@@ -341,7 +343,6 @@ module.exports = function (input, results) {
         expect(startingBalance - (cancelledItinerary.fare.points || 0)).to.equal(endBalance);
       }
     });
-
   });
 
   after(() => {
