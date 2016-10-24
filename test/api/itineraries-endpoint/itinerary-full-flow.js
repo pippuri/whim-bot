@@ -123,9 +123,9 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Creates an itinerary', function () {
+  describe('Creates an itinerary', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
-    before(() => {
+    before(function () {
       if (skip) {
         this.skip();
       }
