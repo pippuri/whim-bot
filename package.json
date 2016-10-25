@@ -124,7 +124,7 @@
     "deploy:docs": "aws s3 sync --acl public-read www/apidocs.maas.global/ s3://apidocs.maas.global/",
     "deploy:static-files": "aws s3 sync --acl public-read static-files/dist s3://staticfiles.maas.global/",
     "deploy-dev:all": "sls function deploy -a -s dev && sls event deploy -s dev && sls endpoint deploy -a -s dev",
-    "deploy-test:all": "npm run deploy:static-files && sls function deploy -a -s test && sls event deploy -s dev && sls endpoint deploy -a -s test",
+    "deploy-test:all": "npm run deploy:static-files && sls function deploy -a -s test && sls event deploy -s test && sls endpoint deploy -a -s test",
     "deploy-alpha:all": "sls function deploy -a -s alpha && sls event deploy -s alpha && sls endpoint deploy -a -s alpha",
     "deploy-prod:all": "sls function deploy -a -s prod && sls event deploy -s prod && sls endpoint deploy -a -s prod",
     "release-alpha": "git checkout master && git pull --rebase upstream master && git checkout -B alpha && git rebase master && git push --force upstream alpha:alpha",
