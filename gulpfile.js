@@ -56,20 +56,19 @@ gulp.task('copy:json-schemas', () => {
     .pipe(gulp.dest('www/apidocs.maas.global/api/maas-backend/'));
 });
 
-gulp.task('mocha', () => {
+gulp.task('pre-mocha', () => {
   return gulp.src(jsFiles)
-  .pipe(istanbul())
-  .pipe(istanbul.hookRequire())
-  .on('finish', () => {
-    return gulp.src('test/test.js', { read: false })
-      .pipe(gmocha({
-        timeout: 20000,
-      }))
-      .pipe(istanbul.writeReports())
-      // Skip thresholds until we have more coverage
-      //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
-      .on('error', gutil.log);
-  });
+    .pipe(istanbul())
+    .pipe(istanbul.hookRequire());
+});
+
+gulp.task('mocha', ['pre-mocha'], () => {
+  return gulp.src('test/test.js', { read: false })
+    .pipe(gmocha({ timeout: 20000 }))
+    .pipe(istanbul.writeReports())
+    .on('error', gutil.log);
+    // Skip thresholds until we have more coverage
+    //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
 });
 
 gulp.task('validate', ['jsonclint', 'jsonlint', 'eslint']);
