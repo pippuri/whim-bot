@@ -54,7 +54,7 @@ module.exports = function () {
       const planId = profile.subscription.planId;
       const publicTransits = ['TRAIN', 'BUS', 'TRAM', 'SUBWAY'];
       const privateTransits = ['CAR', 'TAXI'];
-      const freeModes = ['WAIT', 'TRANSFER', 'WALK'];
+      const freeModes = ['WAIT', 'TRANSFER', 'WALK', 'BICYCLE'];
       const transitModes = publicTransits.concat(privateTransits);
 
       it('planId should be a string', () => {
@@ -89,9 +89,10 @@ module.exports = function () {
         return;
       }
 
-      it(`user ${profile.identityId}, planId ${planId} user should have one or more free HSL itinerary`, () => {
+      it(`user ${profile.identityId}, planId ${planId} user should not have any free  HSL itinerary`, () => {
         const itineraries = responses[index].plan.itineraries;
         const freeAgencies = profile.subscription.agencies;
+
         const freeItineraries = itineraries.filter(iti => {
           const featuredLegs = iti.legs.filter(leg => {
             return freeAgencies.some(agency => {
@@ -118,9 +119,9 @@ module.exports = function () {
           return true;
         });
 
-        expect(freeItineraries.length).to.be.above(0);
+        expect(freeItineraries.length).to.equal(0);
         freeItineraries.forEach(itinerary => {
-          expect(itinerary.fare.points).to.equal(0);
+          expect(itinerary.fare.points).to.satisfy(points => points === null || (Number(points) === points && points === 100));
         });
       });
     });
