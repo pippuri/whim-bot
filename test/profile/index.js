@@ -3,10 +3,10 @@
 const mgr = require('../../lib/subscription-manager');
 
 describe('profile tools', () => {
-  const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+  const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000005';
   const creditCardData = {
-    firstName: 'Test',
-    lastName: 'User',
+    firstName: 'Chargebee-Test',
+    lastName: 'Do not change in tests',
     email: 'tech@maas.fi',
     zip: '02270',
     city: 'Espoo',
@@ -24,26 +24,14 @@ describe('profile tools', () => {
     // and then create a new one. Deletion may fail with 400 if the Profile
     // is already scheduled for deletion.
     return mgr.getUserSubscription(testUserIdentity)
-      .then(subscription => {
-        return mgr.deleteUserSubscription(testUserIdentity)
-            .catch(error => {
-              if (error.statusCode === 400) {
-                return Promise.resolve();
-              }
-
-              return Promise.reject(error);
-            });
-      })
       .catch(error => {
         if (error.statusCode === 404) {
-          return Promise.resolve();
+          return mgr.createUserSubscription(
+            testUserIdentity, 'fi-whim-payg', { phone: '+358555666' });
         }
 
         return Promise.reject(error);
       })
-      .then(() => mgr.createUserSubscription(
-        testUserIdentity, 'fi-whim-payg', { phone: '+358555666' })
-      )
       .then(mgr.updateUserCreditCard(testUserIdentity, creditCardData))
       .catch(error => {
         console.log('Caught an exception:', error.message);

@@ -103,5 +103,26 @@
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
+  },
+  {
+    "id": 13375,
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000005",
+    "balance": 13374,
+    "subscription": {
+      "planId": "fi-whim-payg",
+      "monthlyBalance": 1000,
+      "agencies": []
+    },
+    "favoriteLocations": {},
+    "phone": "+35850123456789",
+    "email": "tech@maas.fi",
+    "firstName": "Chargebee-Test",
+    "lastName": "Do not change in tests",
+    "city": "Helsinki",
+    "country": "Finland",
+    "zipCode": 100,
+    "profileImageUrl": null,
+    "created": "2016-10-13T14:01:10.611552+00:00",
+    "modified": null
   }
 ]
