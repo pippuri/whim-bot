@@ -36,4 +36,27 @@ module.exports = function (lambda) {
         });
     });
   });
+
+  describe('fail on editing illegal properties', () => {
+    let error;
+
+    const event = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      payload: {
+        balance: 1000000,
+      },
+    };
+
+    before(done => {
+      wrap(lambda).run(event, (err, data) => {
+        error = err;
+        done();
+      });
+    });
+
+    it('should fail with error 403', () => {
+      expect(error).to.be.an.instanceof(Error);
+      expect(error.code).to.equal(403);
+    });
+  });
 };
