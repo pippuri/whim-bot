@@ -1,5 +1,8 @@
 'use strict';
 
+const bookingProvidersDump = require('./BookingProviderDumpOct25.json');
+const routesProvidersDump = require('./RoutesProviderDumpOct25.json');
+
 exports.up = function (knex, Promise) {
   return knex.schema
     .table('BookingProvider', table => {
@@ -16,8 +19,16 @@ exports.up = function (knex, Promise) {
       DROP CONSTRAINT IF EXISTS enforce_geotype_geom;
     `)
     .raw(`
+      INSERT INTO "BookingProvider"
+      SELECT * FROM json_populate_recordset(NULL::"Provider", '${JSON.stringify(bookingProvidersDump)}')
+    `)
+    .raw(`
       ALTER TABLE "RoutesProvider"
       DROP CONSTRAINT IF EXISTS enforce_geotype_geom;
+    `)
+    .raw(`
+      INSERT INTO "RoutesProvider"
+      SELECT * FROM json_populate_recordset(NULL::"Provider", '${JSON.stringify(routesProvidersDump)}')
     `);
 };
 
