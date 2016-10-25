@@ -2,9 +2,11 @@
 
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
-const editableFields = require('../../lib/models/editableFields.json').Profile;
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
+
+const EDITABLE_FIELDS = ['email', 'firstName', 'lastName', 'city', 'country',
+'zipCode', 'profileImageUrl'];
 
 function validateInput(event) {
   if (!event) {
@@ -20,7 +22,7 @@ function validateInput(event) {
   }
 
   for (let key of Object.keys(event.payload)) { // eslint-disable-line
-    if (!editableFields.some(field => field === key)) {
+    if (!EDITABLE_FIELDS.some(field => field === key)) {
       return Promise.reject(new MaaSError(`Cannot update field "${key}", request forbidden`, 403));
     }
   }
@@ -33,7 +35,7 @@ function updateUserData(event) {
     .then(profile => {
       return {
         profile: profile,
-        maas: {
+        debug: {
           query: event,
         },
       };

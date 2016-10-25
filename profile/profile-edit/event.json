@@ -2,6 +2,7 @@
   "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "payload" : {
     "firstName": "test",
-    "lastName": "user"
+    "lastName": "user",
+    "profileImageUrl": "https://avatars3.githubusercontent.com/u/1669965"
   }
 }
