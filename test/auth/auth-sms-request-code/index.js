@@ -8,8 +8,9 @@ const LAMBDA = 'MaaS-auth-sms-request-code';
 
 module.exports = function () {
 
-  describe('auth-sms-request-code', () => {
-    const PHONE = '+358465727140';
+  describe('auth-sms-request-code', function () { //eslint-disable-line
+    this.timeout(10000);
+    const PHONE = '358469389773';
 
     let error;
     let response;
