@@ -5,6 +5,7 @@
  */
 const Promise = require('bluebird');
 const utils = require('../../lib/utils');
+const WAITING_THRESHOLD = 60; // If there's this number of seconds between 2 legs, inject a waiting leg
 
 function convertMode(mode) {
   switch (mode) {
@@ -20,15 +21,13 @@ function convertMode(mode) {
   return mode;
 }
 
-function convertFromTo(from) {
+function convertFromTo(place) {
   return {
-    name: from.name,
-    stopId: from.stopId,
-    stopCode: from.stopCode,
-    lon: from.lon,
-    lat: from.lat,
-
-    // excluded: zoneId, stopIndex, stopSequence, vertexType, arrival, departure
+    name: place.name,
+    stopId: place.stopId,
+    stopCode: place.stopCode,
+    lon: place.lon,
+    lat: place.lat,
   };
 }
 
@@ -57,9 +56,31 @@ function convertLeg(leg) {
     routeLongName: leg.route ? leg.route.longName : undefined,
     agencyId: leg.agency ? convertAgencyId(leg.agency.name) : undefined,
     distance: Math.floor(leg.distance), // used to calculate prices for km-based fares
-    // excluded: departureDelay, arrivalDelay, realTime, pathway, agencyUrl, agencyName, agencyTimeZoneOffset,
-    // routeType, routeId, interlineWithPreviousLeg, headsign, tripId, serviceDate, rentedBike, transitLeg, steps
   };
+}
+
+function injectWaitingLegs(itinerary) {
+  // Run waiting injection onl when there're more than 1 leg
+  if (itinerary.legs && itinerary.legs.length === 1) {
+    return itinerary;
+  }
+
+  const injectedLegs = [];
+
+  for (let i = 0; i < itinerary.legs.length - 1; i++) {
+    injectedLegs.push(itinerary.legs[i]);
+    if (itinerary.legs[i + 1].startTime - itinerary.legs[i].endTime >= WAITING_THRESHOLD * 1000) {
+      injectedLegs.push({
+        startTime: itinerary.legs[i].endTime,
+        endTime: itinerary.legs[i + 1].startTime,
+        mode: 'WAIT',
+      });
+    }
+  }
+
+  injectedLegs.push(itinerary.legs[itinerary.legs.length - 1]);
+  itinerary.legs = injectedLegs;
+  return itinerary;
 }
 
 function convertItinerary(itinerary) {
@@ -67,7 +88,6 @@ function convertItinerary(itinerary) {
     startTime: itinerary.startTime,
     endTime: itinerary.endTime,
     legs: itinerary.legs.map(convertLeg),
-    // excluded: walkTime, transitTime, waitingTime, walkDistance, walkLimitExceeded, elevationLost, elevationGained, transfers, tooSloped
   };
 }
 
@@ -75,7 +95,8 @@ module.exports = function (from, original) {
   return Promise.resolve({
     plan: {
       from: from,
-      itineraries: original.data.plan.itineraries.map(convertItinerary).sort((a, b) => a.startTime - b.startTime),
+      itineraries: original.data.plan.itineraries.map(convertItinerary)
+        .sort((a, b) => a.startTime - b.startTime).map(injectWaitingLegs),
     },
   });
 };
