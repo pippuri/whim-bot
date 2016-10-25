@@ -5,6 +5,7 @@ const request = require('request-promise-lite');
 const adapter = require('./adapter');
 const MaaSError = require('../../lib/errors/MaaSError');
 const validator = require('../../lib/validator');
+const moment = require('moment-timezone');
 
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
 
@@ -12,22 +13,13 @@ const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/rout
 const DIGITRANSIT_FINLAND_API_URL = 'https://api.digitransit.fi/routing/v1/routers/finland/index/graphql';
 
 function getOTPDate(timestamp) {
-  const time = new Date(timestamp);
-  const zeros = '0000';
-  // SPi note: making this timezone naive, assuming timestamp is already in local time
-  const yyyy = ( zeros + time.getFullYear()    ).slice(0 - 'YYYY'.length);
-  const mm =   ( zeros + (time.getMonth() + 1) ).slice(0 - 'MM'.length);
-  const dd =   ( zeros + time.getDate()        ).slice(0 - 'DD'.length);
-  return [yyyy, mm, dd].join('-');
+  const time = moment.tz(timestamp, 'Europe/Helsinki'); // format: 2016-10-16T18:57:06+03:00
+  return time.format().split(/T|\+/)[0];
 }
 
 function getOTPTime(timestamp) {
-  const time = new Date(timestamp);
-  const zeros = '00';
-  const hh =   ( zeros + time.getHours()       ).slice(0 - 'HH'.length);
-  const mm =   ( zeros + time.getMinutes()     ).slice(0 - 'mm'.length);
-  const ss =   ( zeros + time.getSeconds()     ).slice(0 - 'ss'.length);
-  return [hh, mm, ss].join(':');
+  const time = moment.tz(timestamp, 'Europe/Helsinki'); // format: 2016-10-16T18:57:06+03:00
+  return time.format().split(/T|\+/)[1];
 }
 
 function convertDigitransitModes(eventModes) {
@@ -90,9 +82,11 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
       from: {lat: ${qs.coords.from.lat}, lon: ${qs.coords.from.lon}},
       to: {lat: ${qs.coords.to.lat}, lon: ${qs.coords.to.lon}},
       modes: "${convertDigitransitModes(modes)}",
-      walkSpeed: 1.0,
+      walkSpeed: 1.39,
       date: "${qs.date}"
       time: "${qs.time}"
+      optimize: SAFE
+      numItineraries: 20
     ) {
       itineraries{
         startTime
