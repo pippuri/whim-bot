@@ -99,7 +99,10 @@ module.exports.respond = function (event, callback) {
     .then(() => parseAndValidateInput(event))
     .then(parsed => confirmCharge(parsed.identityId, parsed.productId, parsed.points, parsed.limit))
     .then(confirmed => makePurchase(confirmed.identityId, confirmed.productId, confirmed.cost, confirmed.points))
-    .then(response => callback(null, response))
+    .then(response => {
+      Database.cleanup()
+        .then(() => callback(null, response));
+    })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
