@@ -1,9 +1,9 @@
 'use strict';
 
-const bus = require('../../lib/service-bus/');
-const moment = require('moment-timezone');
+const bus = require('../../../lib/service-bus/');
+const moment = require('moment');
 const expect = require('chai').expect;
-const allProfiles = require('../db/profiles-seed.json');
+const allProfiles = require('../../db/profiles-seed.json');
 
 module.exports = function () {
 

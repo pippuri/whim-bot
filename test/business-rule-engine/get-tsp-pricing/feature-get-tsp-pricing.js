@@ -1,19 +1,19 @@
 'use strict';
 
 const expect = require('chai').expect;
-const bus = require('../../lib/service-bus');
+const bus = require('../../../lib/service-bus');
 
 module.exports = function () {
 
   const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
-  describe('[POSITIVE] query for tsp pricing', () => {
+  describe('[POSITIVE] query for tsp pricing of agencyId "HSL"', () => {
 
     let response;
     let error;
 
     const params = {
-      type: 'maas',
+      agencyId: 'HSL',
       from: {
         lat: 60.1657541,
         lon: 24.9417641,
@@ -34,10 +34,13 @@ module.exports = function () {
       });
     });
 
-    it('should succeed and return a provider', () => {
-      expect(response).to.not.be.undefined;
-      expect(response.providerName).to.not.be.undefined;
-      expect(response.providerMeta).to.not.be.undefined;
+    it(`should succeed and return all provider with agencyId ${params.agencyId}`, () => {
+      response.forEach(item => {
+        expect(item).to.not.be.undefined;
+        expect(item.providerName).to.not.be.undefined;
+        expect(item.providerPrio).to.not.be.undefined;
+        expect(item.agencyId).to.equal(params.agencyId);
+      });
     });
 
     it('should not return an error', () => {
@@ -53,14 +56,14 @@ module.exports = function () {
 
     const params = [
       {
-        type: 'maas',
+        agencyId: 'HSL',
         from: {
           lat: 60.1657541,
           lon: 24.9417641,
         },
       },
       {
-        type: 'taxi',
+        agencyId: 'Valopilkku',
         from: {
           lat: 60.1657541,
           lon: 24.9417641,
@@ -96,7 +99,7 @@ module.exports = function () {
 
   });
 
-  describe('[NEGATIVE] query for tsp pricing with invalid type', () => {
+  describe('[NEGATIVE] query for tsp pricing with no agencyId', () => {
 
     let response;
     let error;
@@ -123,13 +126,13 @@ module.exports = function () {
       });
     });
 
-    it('Should not return an error', () => {
-      expect(error).to.be.undefined;
+    it('Should return an error', () => {
+      expect(error).to.not.be.undefined;
+      expect(error.message).to.equal('No agencyId supplied to the engine');
     });
 
-    it('Should return a null as the response', () => {
-      expect(response).to.not.be.undefined;
-      expect(response).to.be.null;
+    it('Should not return any response', () => {
+      expect(response).to.be.undefined;
     });
   });
 
@@ -139,7 +142,7 @@ module.exports = function () {
     let error;
 
     const params = {
-      type: 'lorem-ipsum',
+      agencyId: 'HSL',
       from: {},
     };
 
@@ -168,7 +171,7 @@ module.exports = function () {
 
   });
 
-  describe('[NEGATIVE] batch query for tsp pricing with invalid types', () => {
+  describe('[NEGATIVE] batch query for tsp pricing with missing agencyId', () => {
 
     let response;
     let error;
@@ -204,16 +207,14 @@ module.exports = function () {
       });
     });
 
-    it('Should not return an error', () => {
-      expect(error).to.be.undefined;
+    it('Should return an error', () => {
+      expect(error).to.not.be.undefined;
+      expect(error.message).to.equal('The request does not supply \'agencyId\' to the TSP engine: {"type":"tsp-hasta-lavista","from":{"lat":60.1657541,"lon":24.9417641}}');
     });
 
     it('Should return a response', () => {
-      expect(response).to.not.be.undefined;
-      expect(response).to.be.an('array');
-      response.forEach(value => {
-        expect(value).to.be.a.null;
-      });
+      expect(response).to.be.undefined;
+
     });
   });
 

@@ -1,10 +1,9 @@
 {
-  "identityId": "eu-west-1:6d6ba277-783e-40e1-a05f-bf6794e76d0a",
+  "identityId": "eu-west-1:0cdee00d-8725-4b68-b205-a7f502154c11",
   "rule": "get-routes",
   "parameters": {
-    "to": "60.159294,24.9419313",
-    "leaveAt": "1476532800000",
-    "from": "60.218362,24.7732003",
-    "modes": "TAXI"
+    "to": "60.2787725,24.4982775",
+    "from": "60.2204151,24.7763345",
+    "leaveAt": 1476964800000
   }
 }

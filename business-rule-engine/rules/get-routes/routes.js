@@ -1,37 +1,16 @@
 'use strict';
 
-const bus = require('../../../lib/service-bus');
 const getProviderRules = require('../get-provider');
-const geoUtils = require('../../../lib/geolocation');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
-const validator = require('../../../lib/validator');
 
-const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
+const lambdaWrapper = require('../../lambdaWrapper');
 
 const BusinessRuleError = require('../../BusinessRuleError.js');
 
-const MAX_PARALLEL = 1; // how many common provider to use
 // @NOTE support partially train route (go to Leppavaraa on train E)
 const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
-
-/**
- * Calculate haversine length base on leg information
- * @param {object} leg
- * @return {float} haversine length
- */
-function _haversineLength(leg) {
-  if (!leg.hasOwnProperty('from')) {
-    return 0;
-  }
-
-  if (!leg.hasOwnProperty('to')) {
-    return 0;
-  }
-
-  return Math.ceil(geoUtils.distance(leg.from, leg.to));
-}
 
 /**
  * Return only common providers for a leg that provide both From and To location
@@ -50,69 +29,56 @@ function _filterCommonLegProvider(arriveBy, leaveAt, providersFrom, providersTo)
     })
     // filter out those that don't support search options
     .filter(provider => {
-      if (arriveBy && !provider.hasOwnProperty('providerMeta') && !provider.providerMeta.hasOwnProperty('capabilities') &&
-      provider.providerMeta.capabilities.arriveBy === false) {
+      if (arriveBy && !provider.hasOwnProperty('capabilities') && provider.capabilities.arriveBy === false) {
         return false;
-      } else if (leaveAt && !provider.hasOwnProperty('providerMeta') && !provider.providerMeta.hasOwnProperty('capabilities') &&
-      provider.providerMeta.capabilities.leaveAt === false) {
+      } else if (leaveAt && !provider.hasOwnProperty('capabilities') && provider.capabilities.leaveAt === false) {
         return false;
       }
       return true;
     });
-  if (commonProvider.length > MAX_PARALLEL) {
-    commonProvider.splice(MAX_PARALLEL, commonProvider.length - MAX_PARALLEL);
-  }
 
   return commonProvider;
 }
 
 /**
- * Check whether this request includes only car or taxi modes
- * @param modes {Array of String} mode to check
- * @return {Boolean}
- */
-function _noPtWanted(modes) {
-  if (modes) {
-    return modes.split(',').every(mode => ['TAXI', 'CAR'].indexOf(mode) !== -1);
-  }
-  return false;
-}
-
-/**
  * Build provider query for public transit
- * @param modes {Array of String} modes to check
  * @param from {Object} contain lat and lon of 'from' provider
+ * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
  */
-function _buildPtRoutesProvidersQuery(modes, from, to) {
-  if (_noPtWanted(modes)) return [];
+function _buildPtRoutesProvidersQuery(from, to) {
 
-    // Get provider for both from and to location
+  // Get provider for both from and to location
   return [
     {
-      type: 'maas-routes-pt',
+      mode: 'PUBLIC_TRANSIT',
+      type: 'routes-pt',
       location: { lat: from.lat, lon: from.lon },
     },
     {
-      type: 'maas-routes-pt',
+      mode: 'PUBLIC_TRANSIT',
+      type: 'routes-pt',
       location: { lat: to.lat, lon: to.lon },
     },
   ];
 }
 
 /**
- * Build provider query for Cars
+ * Build provider query for taxi
  * @param from {Object} contain lat and lon of 'from' provider
+ * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
  */
-function _buildCarRoutesProvidersQuery(from, to) {
+function _buildTaxiRoutesProvidersQuery(from, to) {
   return [
     {
-      type: 'maas-routes-private',
+      mode: 'TAXI',
+      type: 'routes-taxi',
       location: { lat: from.lat, lon: from.lon },
     },
     {
-      type: 'maas-routes-private',
+      mode: 'TAXI',
+      type: 'routes-taxi',
       location: { lat: to.lat, lon: to.lon },
     },
   ];
@@ -120,20 +86,42 @@ function _buildCarRoutesProvidersQuery(from, to) {
 
 
 /**
- * Build provider query for public transit
- * @param modes {Array of String} modes to check
+ * Build provider query for walking legs
  * @param from {Object} contain lat and lon of 'from' provider
+ * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
  */
-function _buildMixedRoutesProvidersQuery(modes, from, to) {
-  if (_noPtWanted(modes)) return [];
+function _buildWalkingRoutesProvidersQuery(from, to) {
   return [
     {
-      type: 'maas-routes-mixed',
+      mode: 'WALK',
+      type: 'routes-private',
       location: { lat: from.lat, lon: from.lon },
     },
     {
-      type: 'maas-routes-mixed',
+      mode: 'WALK',
+      type: 'routes-private',
+      location: { lat: to.lat, lon: to.lon },
+    },
+  ];
+}
+
+/**
+ * Build provider query for public transit
+ * @param from {Object} contain lat and lon of 'from' provider
+ * @param to {Object} contain lat and lon of 'to' provider
+ * @return {Object} Object queries, with the attribute is the mode to be called
+ */
+function _buildCyclingRoutesProvidersQuery(from, to) {
+  return [
+    {
+      mode: 'BICYCLE',
+      type: 'routes-private',
+      location: { lat: from.lat, lon: from.lon },
+    },
+    {
+      mode: 'BICYCLE',
+      type: 'routes-private',
       location: { lat: to.lat, lon: to.lon },
     },
   ];
@@ -142,13 +130,13 @@ function _buildMixedRoutesProvidersQuery(modes, from, to) {
 /**
  * Combine all routes provider query and run them though getProviderBatch
  * @param params {Object} contains modes, from, to, leaveAt and arriveBy
- * @return common {Common provider}
+ * @return {Object} each property present the list of providers to invoke and the mode to query for
  */
 function _resolveRoutesProviders(params) {
   if (!params.from) throw new BusinessRuleError('Missing from input: ' + JSON.stringify(params, null, 2), 500, 'get-routes');
   if (!params.to) throw new BusinessRuleError('Missing to input: ' + JSON.stringify(params, null, 2), 500, 'get-routes');
 
-  const location = {
+  const coords = {
     from: {
       lat: params.from.split(',')[0],
       lon: params.from.split(',')[1],
@@ -159,35 +147,169 @@ function _resolveRoutesProviders(params) {
     },
   };
 
-  return getProviderRules.getProviderBatch(
-    {
-      ptRoutes: _buildPtRoutesProvidersQuery(params.modes, location.from, location.to),
-      carRoutes: _buildCarRoutesProvidersQuery(location.from, location.to),
-      mixedRoutes: _buildMixedRoutesProvidersQuery(params.modes, location.from, location.to),
-    }
-  )
+  let query = {};
+
+  // Decide what to retrieve by reading modes to construct provider queries
+  if (params.modes) {
+    params.modes.split(',').forEach(mode => {
+      switch (mode) {
+        case 'PUBLIC_TRANSIT':
+          query.ptRoutes = _buildPtRoutesProvidersQuery(coords.from, coords.to);
+          break;
+        case 'TAXI':
+          query.taxiRoutes = _buildTaxiRoutesProvidersQuery(coords.from, coords.to);
+          break;
+        case 'WALK':
+          query.walkingRoutes = _buildWalkingRoutesProvidersQuery(coords.from, coords.to);
+          break;
+        case 'BICYCLE':
+          query.bicycleRoutes = _buildCyclingRoutesProvidersQuery(coords.from, coords.to);
+          break;
+        default:
+          break;
+      }
+    });
+  } else {
+    // Don't retrieve Car by default, Taxi will be in presense instead
+    query = {
+      ptRoutes: _buildPtRoutesProvidersQuery(coords.from, coords.to),
+      taxiRoutes: _buildTaxiRoutesProvidersQuery(coords.from, coords.to),
+      walkingRoutes: _buildWalkingRoutesProvidersQuery(coords.from, coords.to),
+      // bicycleRoutes: _buildCyclingRoutesProvidersQuery(coords.from, coords.to),
+    };
+  }
+
+  return getProviderRules.getRoutesProvidersBatch(query)
   .then(response => {
-    let result = [];
-    let common;
-    let mixes;
-    let cars;
+    const result = {};
+    let ptProviders;
+    let taxiProviders;
+    let walkingProviders;
+    let cyclingProviders;
+
     if (response.ptRoutes && response.ptRoutes.length > 0) {
-      common = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.ptRoutes[0], response.ptRoutes[1]);
-      if (common.length > 0) result = result.concat(common);
+      ptProviders = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.ptRoutes[0], response.ptRoutes[1]);
+      if (ptProviders.length > 0) {
+        result.PUBLIC_TRANSIT = [];
+        result.PUBLIC_TRANSIT = result.PUBLIC_TRANSIT.concat(ptProviders.map(provider => {
+          return { provider: provider, modes: 'PUBLIC_TRANSIT' };
+        }));
+      }
     }
-    if (response.mixedRoutes && response.mixedRoutes.length > 0) {
-      mixes = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.mixedRoutes[0], response.mixedRoutes[1]);
-      if (mixes.length > 0) result = result.concat(mixes);
+    if (response.taxiRoutes && response.taxiRoutes.length > 0) {
+      taxiProviders = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.taxiRoutes[0], response.taxiRoutes[1]);
+      if (taxiProviders.length > 0) {
+        result.TAXI = [];
+        result.TAXI = result.TAXI.concat(taxiProviders.map(provider => {
+          return { provider: provider, modes: 'TAXI' };
+        }));
+      }
     }
-    if (response.carRoutes.length > 0 && response.carRoutes.length >  0) {
-      cars = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.carRoutes[0], response.carRoutes[1]);
-      if (cars.length > 0) result = result.concat(cars);
+    if (response.walkingRoutes && response.walkingRoutes.length >  0) {
+      walkingProviders = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.walkingRoutes[0], response.walkingRoutes[1]);
+      if (walkingProviders.length > 0) {
+        result.WALK = [];
+        result.WALK = result.WALK.concat(walkingProviders.map(provider => {
+          return { provider: provider, modes: 'WALK' };
+        }));
+      }
     }
-    if (result.length === 0) {
+    if (response.bicycleRoutes && response.bicycleRoutes.length >  0) {
+      cyclingProviders = _filterCommonLegProvider(params.arriveBy, params.leaveAt, response.bicycleRoutes[0], response.bicycleRoutes[1]);
+      if (cyclingProviders.length > 0) {
+        result.BICYCLE = [];
+        result.BICYCLE = result.BICYCLE.concat(cyclingProviders.map(provider => {
+          return { provider: provider, modes: 'BICYCLE' };
+        }));
+      }
+    }
+    if (Object.keys(result).length === 0 && Object.keys(result).every(key => result[key].length === 0)) {
       return Promise.reject(new BusinessRuleError('Could not retrieve any routes provider', 500, 'get-routes'));
     }
+
     return Promise.resolve(result);
   });
+}
+
+/**
+ * Run the lambda call for a batch of providers with the same priority
+ */
+function _resolvePromises(input, params, priorityList) {
+  // If none of our routes providers return anything, that means the routes just cannot be retrieved
+  // THEN we return empty
+  if (priorityList.length === 0) {
+    return Promise.resolve([]);
+  }
+  return Promise.all(input.filter(item => item.provider.providerPrio === priorityList[0]).map(item => {
+    const event = utils.cloneDeep(params);
+    event.modes = item.modes;
+    return lambdaWrapper.wrap(item.provider.providerName, event).reflect();
+  }))
+  .then(inspections => {
+    // Inspection that succeeded
+    const fulfilledInspections = inspections.filter(inspection => inspection.isFulfilled());
+
+    // If no inspection passed, remove first priority and use the second one.
+    // If inspection return empty route, treat it as a failed request
+    if (fulfilledInspections.length === 0) {
+      return _resolvePromises(input, params, priorityList.filter(priority => priority !== priorityList[0]));
+    }
+    // If even one of them success, we're happy, return that. NOTE Should we be happy?
+    return Promise.resolve(fulfilledInspections.map(inspection => inspection.value()));
+  });
+}
+
+/**
+ * Logic for invoking providers by priority and fallback for higher priority providers invocation failure
+ * @param input {Object} contains providers data filtered by request mode and the mode to query for
+ * @param params {Object} event input for the lambda
+ * @return response {Promise - Array} response from provider invocation
+ */
+function _invokeProviders(input, params) {
+  if (input && Object.keys(input).length === 0) return [];
+  // Call (multiple) provider with highest priority of each type to get the routes. NOTE: If the highest priority provider for that mode failed
+  // fallback to the 1 step lower priority provider
+  //
+  // E.g: {
+  //  taxi: provider1(failed), provider2(failed), provider3(success) -> response from provider3
+  //  walk: provider1(success) -> response from provider1
+  //  pt: provider1(failed), provider2(success) -> response from provider2
+  //  bicycle: provider1(success) -> response from provider1
+  // }
+
+  // Sort grouped providers and cache providerPrio number into a list if it doensn't exist
+  // Priority list will be used to determine which is the next provider to be called when its higher priority friend failed
+  const priorityList = [];
+  // eslint-disable-next-line
+  for (let key in input) {
+    input[key].sort((a, b) => {
+      if (priorityList.indexOf(a.provider.providerPrio) === -1) {
+        priorityList.push(a.provider.providerPrio);
+      } else if (priorityList.indexOf(b.provider.providerPrio) === -1) {
+        priorityList.push(b.provider.providerPrio);
+      }
+      return a.provider.providerPrio - b.provider.providerPrio;
+    });
+  }
+
+  const queries = {};
+  // eslint-disable-next-line
+  for (let key in input) {
+    queries[key] = new Promise((resolve, reject) => {
+      return _resolvePromises(input[key], params, priorityList)
+        .then(response => resolve(response))
+        .catch(error => reject(error));
+    });
+  }
+  return Promise.props(queries)
+    .then(response => {
+      let result = [];
+      // eslint-disable-next-line
+      for (let key in response) {
+        result = result.concat(response[key]);
+      }
+      return result;
+    });
 }
 
 /**
@@ -213,41 +335,6 @@ function _mergeProviderResponses(responses, params) {
   // Remove null responses before return
   output.plan.itineraries = output.plan.itineraries.filter(item => item !== null);
   return output;
-}
-
-/**
- * Call the lambda that adapter the provider response
- * @param providers {Array} contains many provider info, including its lambda adapter
- * @param params {Object} event input for the lambda
- * @return response {Promise - Array} response from provider invocation
- */
-function _invokeProviders(providers, params) {
-
-  if (!Array.isArray(providers)) {
-    return Promise.reject(new TypeError('providers should be an Array'));
-  }
-
-  if (providers.length === 0) {
-    return [];
-  }
-
-  // Call multiple providers; If we got at least one succesful response,
-  // then return all the succesful responses. If none found, reject with error.
-  // (as long as one succeeds, we consider this a success).
-  return Promise.all(providers.map(provider => {
-    return bus.call(provider.providerName, params)
-        .then(response => validator.validate(schema, utils.sanitize(response)))
-        .catch(error => {
-          // Log the warning here, so that we known which provider failed
-          console.warn(`Provider '${provider.providerName}' call failed: ${error.message}`);
-          console.warn(`Event: ${JSON.stringify(params)}`);
-
-          return Promise.reject(error);
-        })
-        .reflect();
-  }))
-  .filter(inspection => inspection.isFulfilled())
-  .map(inspection => inspection.value());
 }
 
 /**
@@ -291,9 +378,13 @@ function _setLegAgency(leg) {
  * @param route {Object}
  * @return route {Object}
  */
-function _setAgency(route) {
+function _setRouteAgency(route) {
   if (!route.plan.itineraries) {
     throw new BusinessRuleError('Response from route adapter is malformed', 500, 'get-routes');
+  }
+
+  if (!route.plan.itineraries.every(itinerary => !itinerary.legs.some(leg => !leg.mode))) {
+    throw new Error(`This route contains a leg that does not have mode: ${route}`);
   }
 
   route.plan.itineraries.map(itinerary => itinerary.legs.map(_setLegAgency));
@@ -303,16 +394,8 @@ function _setAgency(route) {
 function _calculateLegsDistance(route) {
   route.plan.itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
-      if (leg.legGeometry && leg.legGeometry.points) { // Default leg distance is so bad?
-        const decodedPolyline = polylineEncoder.decode(leg.legGeometry.points);
-        leg.distance = 0;
-        for (let i = 0; i < decodedPolyline.length - 1; i++) {
-          const line = {
-            from: { lat: decodedPolyline[i][0], lon: decodedPolyline[i][1] },
-            to: { lat: decodedPolyline[i + 1][0], lon: decodedPolyline[i + 1][1] },
-          };
-          leg.distance += _haversineLength(line);
-        }
+      if (leg.legGeometry && leg.legGeometry.points) {
+        leg.distance = Math.ceil(polylineEncoder.length(leg.legGeometry.points, 'meter'));
       }
     });
   });
@@ -336,8 +419,14 @@ function _sortRoute(route, sortBy) {
     });
   } else if (sortBy === 'duration') {
     route.plan.itineraries = route.plan.itineraries.sort((a, b) => {
-      if (a.duration < b.duration) return -1;
-      if (a.duration > b.duration) return 1;
+      if ((a.endTime - a.startTime) < (b.endTime - b.startTime)) return -1;
+      if ((a.endTime - a.startTime) > (b.endTime - b.startTime)) return 1;
+      return 0;
+    });
+  } else if (sortBy === 'endTime') {
+    route.plan.itineraries = route.plan.itineraries.sort((a, b) => {
+      if (a.endTime < b.endTime) return -1;
+      if (a.endTime > b.endTime) return 1;
       return 0;
     });
   }
@@ -351,11 +440,11 @@ function _sortRoute(route, sortBy) {
  */
 function getRoutes(params) {
   return _resolveRoutesProviders(params)
-    .then(providers => _invokeProviders(providers, params))
+    .then(response => _invokeProviders(response, params))
     .then(responses => _mergeProviderResponses(responses, params))
-    .then(route => _setAgency(route))
+    .then(route => _setRouteAgency(route))
     .then(route => _calculateLegsDistance(route))
-    .then(route => _sortRoute(route, params.sortBy || 'distance')); // Sort by distance by default is no sortBy is input
+    .then(route => _sortRoute(route, params.sortBy || 'endTime')); // Sort by endTime by default if no sortBy is input
 }
 
 module.exports = {

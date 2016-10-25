@@ -1,133 +1,155 @@
 'use strict';
 
 /**
- * This rule is used to decide which provider is used for the routing system.
- * Based on the location of the customer will it be decided upon
+ * This rule is used to retrieve routing/booking provider based on the location of the customer
  * get-provider rule provides method in
  *      - Single mode
  *      - Batch mode
- * Input parameters
- *      - type {String} - type of the requested tsp
- *      - agencyId {String}
  */
+
 const Promise = require('bluebird');
-const geoUtils = require('geojson-utils');
-const models = require('../../../lib/models/index');
 const utils = require('../../../lib/utils');
-const Provider = models.Provider;
 const BusinessRuleError = require('../../BusinessRuleError.js');
+const bookingProviders = require('./booking-providers');
+const routesProviders = require('./routes-providers');
 
 // Static provider cache to speed up queries, refreshes every 5min.
-let cachedProviders;
-let cacheLastUpdated = 0;
-const cacheTTL = 5 * 60 * 1000;
+let cachedBookingProviders = {};
+let cachedRoutesProviders = {};
+let bookingCacheLastUpdated = 0;
+let routesCacheLastUpdated = 0;
+// const cacheTTL = 2 * 60 * 1000; NOTE not yet neccesary since the engine call only 2 times to DB, once to retrieve all routes-providers, once to retrieve all booking-providers
+const cacheTTL = 0 * 60 * 1000;
 
 /**
- * Fetches all the providers from database and caches the result.
+ * Fetches all the booking providers from database and caches the result.
  *
  * @return {Array} of providers
  */
-function queryProviders() {
-  if (Date.now() < (cacheLastUpdated + cacheTTL)) {
-    return Promise.resolve(utils.cloneDeep(cachedProviders));
+function _queryBookingProviders(requests) {
+
+  if (Date.now() < (bookingCacheLastUpdated + cacheTTL)) {
+    return Promise.resolve(utils.cloneDeep(cachedBookingProviders));
   }
 
-  // Fetch all providers - it is a small batch, and much quicker than
+  // Fetch all booking and routes providers - both of the providers is a small batch, and much quicker than
   // running several SQL queries
-  return Provider.query()
-    .select('Provider.*', Provider.raw('ST_AsGeoJSON("Provider"."the_geom") as geometry'))
-    .where('active', true)
-    .orderBy('providerPrio')
+  return bookingProviders.getActive()
     .then(providers => {
-      cacheLastUpdated = Date.now();
-      cachedProviders = providers;
-      return utils.cloneDeep(cachedProviders);
+
+      bookingCacheLastUpdated = Date.now();
+      cachedBookingProviders = providers;
+      return utils.cloneDeep(cachedBookingProviders);
+    })
+    .then(providers => {
+
+      return requests.map(request => {
+        return bookingProviders.filter(providers, request);
+      });
     });
 }
 
 /**
- * Checks whether a given point is inside the polygon
+ * Fetches all the routes providers from database and caches the result.
  *
- * @param {object} location - a {lat,lon} pair
- * @param {object} polygon - a GeoJSON polygon
- * @return true if it is inside polygon, false otherwise
+ * @return {Array} of providers
  */
-function isInside(location, polygon) {
-  const point = {
-    type: 'Point',
-    coordinates: [location.lon, location.lat],
-  };
-
-  return geoUtils.pointInPolygon(point, polygon);
-}
-
-/**
- * Filters a a list of providers by a given rule
- *
- * @param {array} providers - A list of providers, returned by a query
- * @param {object} rule - A filtering rule w/ type, name, agencyId & location
- */
-function filterProviders(providers, rule) {
-  // Validate the rule
-  if (typeof rule.type !== 'string' && typeof rule.agencyId !== 'string'
-  && typeof rule.providerName !== 'string') {
-    throw new BusinessRuleError('Missing rule parameters: type, agencyId or providerName expected', 500, 'get-provider');
+function _queryRoutesProviders(requests) {
+  if (Date.now() < (routesCacheLastUpdated + cacheTTL)) {
+    return Promise.resolve(utils.cloneDeep(cachedRoutesProviders));
   }
 
-  // Filter
-  return providers.filter(provider => {
-    if (rule.type && rule.type === provider.providerType) {
-      // OK
-    } else if (rule.agencyId && rule.agencyId === provider.agencyId) {
-       // OK
-    } else if (rule.providerName && rule.providerName === provider.providerName) {
-      // OK
-    } else {
-       // Not OK
-      return false;
-    }
+  // Fetch all booking and routes providers - both of the providers is a small batch, and much quicker than
+  // running several SQL queries
+  return routesProviders.getActive()
+      .then(providers => {
+        routesCacheLastUpdated = Date.now();
+        cachedRoutesProviders = providers;
+        return utils.cloneDeep(cachedRoutesProviders);
+      })
+    .then(providers => {
 
-    // Geographic match
-    if (rule.location) {
-      const geometry = JSON.parse(provider.geometry);
-      return isInside(rule.location, geometry);
-    }
-    return true;
-  });
+      const result = requests.map(request => {
+        return routesProviders.filter(providers, request);
+      });
+      return result;
+    });
 }
 
 /**
- * Get single provider using either providerName or agencyId
+ * Get single booking provider using either providerName or agencyId
  * @param params {Object} contains providerName {String}, agencyId{String}, type{String}, location{Object}
  * @return {Object} provider
  */
-function getProvider(params) {
-  return queryProviders()
-    .then(providers => filterProviders(providers, params));
+function getBookingProvider(param) {
+  return _queryBookingProviders([param]);
 }
 
 /**
- * Get provider in batch mode
+ * Get single routes provider using either providerName or agencyId
+ * @param params {Object} contains providerName {String}, agencyId{String}, location{Object}
+ * @return {Object} provider
+ */
+function getRoutesProvider(param) {
+  return _queryRoutesProviders([param]);
+}
+
+/**
+ * Get booking provider in batch mode
  * @param requests {Object / Array}
  * @return providers {Object / Array} typeof response depends on type of requests
  *
  * NOTE If input is object, it should have keys which have value is an array of requests
  * check get-routes/routes.js/_resolveRoutesProviders() for reference
  */
-function getProviderBatch(requests) {
+function getBookingProvidersBatch(requests) {
   // Handling of types [{<request data>}, {<request data>}]
   if (requests instanceof Array) {
     // Fetch all providers - it is a small batch, and much quicker than
     // running several SQL queries
-    return queryProviders()
-      .then(providers => {
-        return requests.map(request => {
-          return filterProviders(providers, request);
-        });
-      });
+    return _queryBookingProviders(requests);
   }
 
-  // Handling of types { key: [<request data>], [key2: <request data>] }
+  // Handling of types { key: [<request data>], key2: [: <request data>] }
+  if (typeof requests === 'object') {
+    const queries = {};
+    const keys = Object.keys(requests);
+
+    if (keys.length === 0) {
+      return Promise.reject(new Error('Request with no keys given'));
+    }
+
+    keys.forEach(key => {
+      queries[key] = new Promise((resolve, reject) => {
+        return getBookingProvidersBatch(requests[key])
+          .then(response => resolve(response))
+          .catch(error => reject(error));
+      });
+    });
+
+    return Promise.props(queries);
+  }
+
+
+  return Promise.reject(new Error('Invalid request, expecting array or object'));
+}
+
+/**
+ * Get routes provider in batch mode
+ * @param requests {Object / Array}
+ * @return providers {Object / Array} typeof response depends on type of requests
+ *
+ * NOTE If input is object, it should have keys which have value is an array of requests
+ * check get-routes/routes.js/_resolveRoutesProviders() for reference
+ */
+function getRoutesProvidersBatch(requests) {
+  // Handling of types [{<request data>}, {<request data>}]
+  if (requests instanceof Array) {
+    // Fetch all providers - it is a small batch, and much quicker than
+    // running several SQL queries
+    return _queryRoutesProviders(requests);
+  }
+  // Handling of types { key: [<request data>], key2: [: <request data>] }
   if (typeof requests === 'object') {
     const queries = {};
     const keys = Object.keys(requests);
@@ -137,7 +159,11 @@ function getProviderBatch(requests) {
     }
 
     keys.forEach(key => {
-      queries[key] = getProviderBatch(requests[key]);
+      queries[key] = new Promise((resolve, reject) => {
+        return getRoutesProvidersBatch(requests[key])
+          .then(response => resolve(response))
+          .catch(error => reject(error));
+      });
     });
 
     return Promise.props(queries);
@@ -147,6 +173,8 @@ function getProviderBatch(requests) {
 }
 
 module.exports = {
-  getProvider,
-  getProviderBatch,
+  getBookingProvider,
+  getRoutesProvider,
+  getBookingProvidersBatch,
+  getRoutesProvidersBatch,
 };

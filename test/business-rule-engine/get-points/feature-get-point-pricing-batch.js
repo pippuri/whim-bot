@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const bus = require('../../lib/service-bus');
+const bus = require('../../../lib/service-bus');
 
 module.exports = function () {
   const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
