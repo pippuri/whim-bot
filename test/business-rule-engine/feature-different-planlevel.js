@@ -81,7 +81,9 @@ module.exports = function () {
 
           expect(itinerariesWithTransits.length).to.be.above(0);
           itinerariesWithTransits.forEach(itinerary => {
-            expect(itinerary.fare.points).to.be.above(0);
+            expect(itinerary.fare.points).to.satisfy(num => {
+              return ((Number(num) === num && num > 0) || num === null);
+            });
           });
         });
         return;
