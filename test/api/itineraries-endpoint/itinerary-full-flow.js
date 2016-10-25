@@ -123,7 +123,55 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Creates an itinerary', function () { //eslint-disable-line
+  describe('Try to create an itinerary user cannot afford', () => {
+    // Skip this part of the suite if skip flag has been raised
+    before(() => {
+      if (skip) {
+        this.skip();
+      }
+      skip = true;
+
+      // fetch user data to get account starting balance
+      return Profile.retrieve(input.event.identityId)
+        .then(profile => (startingBalance = profile.balance));
+    });
+
+    it(`Fails to create itinerary and balance remains original for user '${input.event.identityId}'`, () => {
+
+      let cancelError;
+      let cancelResponse;
+
+      // ensure high fare for the test
+      const tooExpensiveItinerary = utils.cloneDeep(queriedItinerary);
+      tooExpensiveItinerary.fare.points = 99999;
+      delete tooExpensiveItinerary.signature;
+      tooExpensiveItinerary.signature = utils.sign(tooExpensiveItinerary, process.env.MAAS_SIGNING_SECRET);
+
+      const event = {
+        identityId: input.event.identityId,
+        itinerary: tooExpensiveItinerary,
+      };
+
+      return runLambda(itineraryCreateLambda, event)
+        .then(
+          res => Promise.resolve(cancelResponse = res),
+          err => Promise.resolve(cancelError = err)
+        )
+        .then(() => {
+          expect(cancelResponse).to.not.exist;
+          expect(cancelError).to.be.instanceof(Error);
+        })
+        .then(() => {
+          return Profile.retrieve(input.event.identityId)
+            .then(profile => {
+              expect(startingBalance).to.equal(profile.balance);
+              return Promise.resolve(skip = false);
+            });
+        });
+    });
+  });
+
+  describe('Creates an itinerary', () => {
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
@@ -199,7 +247,7 @@ module.exports = function (input, results) {
       skip = false;
     });
 
-    it('User balance is reduced by fare', () => {
+    it('and user balance is reduced by fare', () => {
       expect(startingBalance - (createdItinerary.fare.points || 0)).to.equal(midBalance);
     });
 

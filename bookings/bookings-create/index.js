@@ -56,14 +56,22 @@ function formatResponse(booking) {
  * @return {Promise -> [undefined,undefined]}
  */
 module.exports.respond = (event, callback) => {
+  let trx;
 
   return Database.init()
     .then(() => validateInput(event))
     .then(() => utils.validateSignatures(event.payload))
     .then(signedBooking => utils.without(signedBooking, ['signature']))
-    .then(unsignedBooking => Booking.create(unsignedBooking, event.identityId))
-    .then(booking => booking.pay())
-    .then(booking => booking.reserve())
+    .then(unsignedBooking => Booking.startTransaction()
+      .then(transaction => Promise.resolve(trx = transaction))
+      .then(transaction => Booking.create(unsignedBooking, event.identityId, false, transaction)))
+    .then(booking => booking.pay(trx))
+    .then(booking => trx.commit()
+      .then(() => {
+        trx = undefined; // prevent rollback from now on
+        return Promise.resolve(booking);
+      }))
+    .then(booking => booking.reserve()) // Not bind to transaction by purpose
     .then(booking => formatResponse(booking.toObject()))
     .then(bookingData => {
       Database.cleanup()
@@ -74,7 +82,9 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
+      const rollback = trx ? trx.rollback() : Promise.resolve();
+      return rollback
+        .then(() => Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

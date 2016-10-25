@@ -16,13 +16,19 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
+  let trx;
 //  const legErrors = [];
 
   return Database.init()
     .then(() => utils.validateSignatures(event.itinerary))
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
-    .then(unsignedItinerary => Itinerary.create(unsignedItinerary, event.identityId))
-    .then(itinerary => itinerary.pay())
+    .then(unsignedItinerary => Itinerary.startTransaction()
+      .then(transaction => {
+        trx = transaction;
+        return Promise.resolve();
+      })
+      .then(() => Itinerary.create(unsignedItinerary, event.identityId, trx)))
+    .then(itinerary => itinerary.pay(trx))
 /*
     // Testing bold version where all bookings are handled in TripEngine side. If finding
     // problems, reverting back that legs are activated (booking happens) already here.
@@ -42,7 +48,7 @@ module.exports.respond = function (event, callback) {
         .then(() => {
           if (legErrors.length > 0) {
             console.warn('Errors while activating legs; cancelling itinerary...', legErrors);
-            return itinerary.cancel();
+            return itinerary.cancel(trx);
           }
           return itinerary.activate();
         });
@@ -55,6 +61,8 @@ module.exports.respond = function (event, callback) {
     })
 */
     .then(itinerary => TripEngine.startWithItinerary(itinerary)) // Start workflow execution
+    .then(itinerary => trx.commit()
+      .then(() => Promise.resolve(itinerary)))
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
       Database.cleanup()
@@ -65,7 +73,9 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
+      const rollback = trx ? trx.rollback() : Promise.resolve();
+      return rollback
+        .then(() => Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
