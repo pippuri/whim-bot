@@ -164,7 +164,7 @@ function _createTicket(leg, priceSpec) {
     case 'U_NA':
       return _createNotApplicableTicket(priceSpec);
     default:
-      throw new Error('Unknown ticket specification type');
+      throw new Error(`Unknown ticket specification type: ${JSON.stringify(priceSpec)}`);
   }
 }
 
