@@ -133,7 +133,6 @@ class Decider {
           });
 
       case TripWorkFlow.TASK_CHECK_ITINERARY:
-        legId = this.flow.task && this.flow.task.params && this.flow.task.params.legId;
         // fetch itinerary & check legs from that leg
         return Itinerary.retrieve(this.flow.trip.referenceId)
           .then(itinerary => {
@@ -226,6 +225,7 @@ class Decider {
    */
   _processLegs(itinerary) {
     const promiseQueue = [];
+    let nextCheckWakeUpTime;
 
     // check legs
     for (let i = 0; i < itinerary.legs.length; i++) {
@@ -235,6 +235,7 @@ class Decider {
         console.info(`[Decider] Skipping checking FINISHED leg id '${leg.id}'`);
         continue;
       } else if (leg.state === 'ACTIVATED') {
+        // finish legs that were active but now gone
         if (leg.endTime < this.now) { // eslint-disable-line max-depth
           console.info(`[Decider] Finishing leg id '${leg.id}'...`);
           promiseQueue.push(leg.finish().reflect());
@@ -249,15 +250,16 @@ class Decider {
       if (activationTime < this.now) {
         // need to activate this leg rightaway
         promiseQueue.push(this._activateLeg(leg).reflect());
-      } else {
-        // No near time upcoming legs anymore; stop checking them but schedule next checking point.
-        // Strong assumption legs are in time ordered!
-        const checkWakeUpTime = activationTime + (5 * 1000);
-        this.decision.scheduleTimedTask(checkWakeUpTime, TripWorkFlow.TASK_CHECK_ITINERARY, { legId: leg.id });
-        console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' leg id '${leg.id}' ` +
-                    `into ${new Date(checkWakeUpTime)}.`);
-        break;
+      } else if (!nextCheckWakeUpTime || nextCheckWakeUpTime > activationTime) {
+        nextCheckWakeUpTime = activationTime;
       }
+    }
+
+    // schedule next leg checking point if needed
+    if (nextCheckWakeUpTime) {
+      this.decision.scheduleTimedTask(nextCheckWakeUpTime + (5 * 1000), TripWorkFlow.TASK_CHECK_ITINERARY);
+      console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' ` +
+                   `into ${new Date(nextCheckWakeUpTime + (5 * 1000))}.`);
     }
 
     // process those legs that need immediate attention (capture failures so returns always success)
