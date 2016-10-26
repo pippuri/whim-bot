@@ -104,4 +104,51 @@ describe('utils', () => {
       });
     });
   });
+
+  describe('toFixed', () => {
+    it('should return plain string as-is', () => {
+      const value = 'foobar';
+      expect(utils.toFixed(value, 2)).to.equal('foobar');
+    });
+
+    it('should convert a plain decimal number to fixed decimals', () => {
+      const value = 1.23456;
+      expect(utils.toFixed(value, 2)).to.equal(1.23);
+    });
+
+    it('should leave an integer untouched', () => {
+      const value = 123456;
+      expect(Number.isInteger(utils.toFixed(value, 2))).to.equal(true);
+    });
+
+    it('should convert to fixed numbers recursively', () => {
+      const value = {
+        simpleValue: 'simple',
+        floatValue: 12345.6,
+        nestedObject: {
+          floatValue: 123.456,
+          nestedObject: {
+            integer: 234,
+            //nullValue: null, // FIXME There's something wrong with nulls
+            simpleString: 'string',
+          },
+        },
+        nestedArray: [1.23456, 123.456],
+      };
+
+      expect(utils.toFixed(value, 1)).to.deep.equal({
+        simpleValue: 'simple',
+        floatValue: 12345.6,
+        nestedObject: {
+          floatValue: 123.5,
+          nestedObject: {
+            integer: 234,
+            //nullValue: null, // FIXME There's something wrong with nulls
+            simpleString: 'string',
+          },
+        },
+        nestedArray: [1.2, 123.5],
+      });
+    });
+  });
 });
