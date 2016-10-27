@@ -12,12 +12,15 @@ module.exports = (lambda, options) => {
     options = {};
   }
 
-  describe('leaveAt request', () => {
+  // Monday one week forward around five
+  const leaveAt = moment().tz('Europe/Helsinki').day(8).hour(17).minute(0).second(0);
+
+  describe(`leaveAt request at ${leaveAt.format()}`, () => {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
-      leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: `${leaveAt.valueOf()}`,
     };
 
     let error;

@@ -5,21 +5,42 @@ const request = require('request-promise-lite');
 const adapter = require('./adapter');
 const MaaSError = require('../../lib/errors/MaaSError');
 const validator = require('../../lib/validator');
-const moment = require('moment-timezone');
 
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
 
 // const DIGITRANSIT_FINLAND_API_URL = 'http://api.digitransit.fi/routing/v1/routers/finland/plan';
 const DIGITRANSIT_FINLAND_API_URL = 'https://api.digitransit.fi/routing/v1/routers/finland/index/graphql';
+const UTC_SUMMER_OFFSET = 2 * 60 * 60 * 1000;
+const UTC_WINTER_OFFSET = 3 * 60 * 60 * 1000;
 
-function getOTPDate(timestamp) {
-  const time = moment.tz(timestamp, 'Europe/Helsinki'); // format: 2016-10-16T18:57:06+03:00
-  return time.format().split(/T|\+/)[0];
+function getUTCOffset(date) {
+  // Determine the UTC offset from daylight saving time 31st March, 31st Oct
+  // clocks are turned at 3AM (UTC 0AM) to winter time and 4AM (UTC 2AM) to
+  // summer time. Note that month indexes are 0-based, days are 1-based
+  if (date.getUTCMonth() > 2 && date.getUTCMonth() < 10) {
+    // Exception case: April 1st: Clocks turned to summer time at 2AM UTC
+    if (date.getUTCMonth() === 3 && date.getUTCDate() === 1 && date.getUTCHours() < 2) {
+      return UTC_WINTER_OFFSET;
+    }
+
+    // Summer time
+    return UTC_SUMMER_OFFSET;
+  }
+
+  // Winter time
+  return UTC_WINTER_OFFSET;
 }
 
-function getOTPTime(timestamp) {
-  const time = moment.tz(timestamp, 'Europe/Helsinki'); // format: 2016-10-16T18:57:06+03:00
-  return time.format().split(/T|\+/)[1];
+function getOTPDate(date) {
+  // Compute a date that is localised to Finland
+  const d = new Date(date.valueOf() + getUTCOffset(date));
+  return `${d.getUTCFullYear()}-${d.getUTCMonth() + 1}-${d.getUTCDate()}`;
+}
+
+function getOTPTime(date) {
+  // Compute a date that is localised to Finland
+  const d = new Date(date.valueOf() + getUTCOffset(date));
+  return `${d.getUTCHours()}:${d.getUTCMinutes()}:${d.getUTCSeconds()}`;
 }
 
 function convertDigitransitModes(eventModes) {
@@ -43,7 +64,6 @@ function convertDigitransitModes(eventModes) {
 // @see https://digitransit.fi/en/developers/services-and-apis/1-routing-api/itinerary-planning/
 
 function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
-
   const qs = {
     coords: {
       from: {
@@ -61,16 +81,18 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
     return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
   } else if (leaveAt) {
     qs.arriveBy = false;
-    qs.date = getOTPDate(parseInt(leaveAt, 10));
-    qs.time = getOTPTime(parseInt(leaveAt, 10));
+    const date = new Date(parseInt(leaveAt, 10));
+    qs.date = getOTPDate(date);
+    qs.time = getOTPTime(date);
   } else if (arriveBy) {
+    const date = new Date(parseInt(arriveBy, 10));
     qs.arriveBy = true;
-    qs.date = getOTPDate(parseInt(arriveBy, 10));
-    qs.time = getOTPTime(parseInt(arriveBy, 10));
+    qs.date = getOTPDate(date);
+    qs.time = getOTPTime(date);
   } else {
     qs.arriveBy = false;
-    qs.date = getOTPDate(Date.now(), 10);
-    qs.time = getOTPDate(Date.now(), 10);
+    qs.date = getOTPDate(new Date());
+    qs.time = getOTPTime(new Date());
   }
 
   if (modes) {
@@ -141,7 +163,6 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
 }
 
 module.exports.respond = function (event, callback) {
-
   if (event.modes && event.modes.split(',').length > 1) {
     return Promise.reject(new MaaSError('Currently support either no input mode or a single one', 400));
   }

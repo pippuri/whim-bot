@@ -1,7 +1,6 @@
 'use strict';
 
 const Promise = require('bluebird');
-const moment = require('moment');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
@@ -42,8 +41,10 @@ function pollForDecisionTasks(params) {
    */
   function nextPoll() {
     // current execution time (ms) > maxRunTime timeout (sec) - pollForDecisionTaskAsync timeout (sec)
-    console.info(`pollForDecisionTasks() polling was started ${moment().diff(pollingStartTime, 'seconds')} seconds ago`);
-    if (Date.now() - pollingStartTime > (params.maxBlockingTimeInSec - 70) * 1000) {
+    const now = Date.now();
+    const seconds = Math.round((now - pollingStartTime) / 1000);
+    console.info(`pollForDecisionTasks() polling was started ${seconds} seconds ago`);
+    if (now - pollingStartTime > (params.maxBlockingTimeInSec - 70) * 1000) {
       console.info('pollForDecisionTasks() reaching maxBlockingTimeInSec, exiting');
       return Promise.resolve();
     }

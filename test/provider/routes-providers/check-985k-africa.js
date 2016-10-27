@@ -11,12 +11,15 @@ const validator = require('../../../lib/validator');
 module.exports = function (lambda) {
 
   // Afrikantie bus stop schedule http://aikataulut.reittiopas.fi/pysakit/fi/9219204.html
+  // Tuesday one week forward around 15:15
+  const leaveAt = moment().tz('Europe/Helsinki').day(9).hour(14).minute(45).second(0);
 
-  describe('request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at 15:15', () => {
+  // Tuesday one week forward around 15:45
+  describe(`request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at ${leaveAt.format()}`, () => {
     const event = {
       from: '60.375224,25.2181888', // Afrikantie bus stop
       to: '60.3990481,25.1093918', // Keravan Muovi ja Lelu Oy
-      leaveAt: '' + moment().tz('Europe/Helsinki').day(9).hour(14).minute(45).valueOf(), // Tuesday one week forward around 15:15
+      leaveAt: `${leaveAt.valueOf()}`,
     };
 
     let error;
