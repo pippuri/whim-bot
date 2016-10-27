@@ -186,7 +186,7 @@
       "event_type": "card_expiry_reminder",
       "webhook_status": "not_configured"
     },
-    "_card_updated": {
+    "card_updated": {
       "id": "ev_HtZEwNtPs47kdlZnS",
       "occurred_at": 1469538015,
       "source": "api",
@@ -461,7 +461,7 @@
           "object": "webhook"
       }]
     },
-    "_customer_changed": {
+    "customer_changed": {
       "id": "ev_1sjs9i7Ps47kMFU6j",
       "occurred_at": 1469538014,
       "source": "api",
@@ -470,7 +470,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "Tester89.23887712880969",
               "last_name": "User",
               "email": "me@maas.fi",
@@ -499,7 +499,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "first_name": "Test",

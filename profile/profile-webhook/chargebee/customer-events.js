@@ -3,7 +3,14 @@
 
 function handle(payload, key, defaultResponse) {
     console.log('handleCustomerEvents');
-    return defaultResponse;
+    switch (payload.event_type) {
+      case 'customer_changed':
+        console.log('\tcustomer_changed');
+        console.log(payload);
+        return defaultResponse;
+      default:
+        return defaultResponse;
+    }
 }
 
 module.exports = {
