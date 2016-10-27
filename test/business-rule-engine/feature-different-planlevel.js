@@ -1,7 +1,7 @@
 'use strict';
 
 const bus = require('../../lib/service-bus/');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const expect = require('chai').expect;
 const allProfiles = require('../db/profiles-seed.json');
 
@@ -18,7 +18,7 @@ module.exports = function () {
 
   // Monday 10.10 17:00 to be moved to monday next week
   const leaveAt = moment(1476108000000);
-  const now = moment().utcOffset(120);
+  const now = moment().tz('Europe/Helsinki');
   leaveAt.year(now.year());
   leaveAt.week(now.week());
   if (now.day() >= leaveAt.day()) {

@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const bus = require('../../lib/service-bus');
 
 module.exports = function () {
@@ -13,7 +13,7 @@ module.exports = function () {
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office
       to: '60.170779,24.7721584', // Gallows Bird Pub
-      leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(), // Monday one week forward around five
     };
 
     const calls = [];

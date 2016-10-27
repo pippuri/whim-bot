@@ -3,7 +3,7 @@
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const Promise = require('bluebird');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const utils = require('../../../lib/utils');
 
 const optionsLambda = require('../../../bookings/bookings-agency-options/handler.js');
