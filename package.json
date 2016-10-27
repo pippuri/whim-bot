@@ -68,8 +68,7 @@
     "pg": "4.4.0",
     "polyline-extended": "^1.0.1",
     "powerset": "0.0.1",
-    "request-promise-lite": "^0.7.0",
-    "xml2js": "^0.4.16"
+    "request-promise-lite": "^0.7.0"
   },
   "devDependencies": {
     "aws-sdk": "^2.6.7",
