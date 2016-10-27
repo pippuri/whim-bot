@@ -50,7 +50,7 @@ module.exports = function () {
   describe('[POSITIVE] query for provider by name', () => {
 
     const params = {
-      providerName: 'MaaS-provider-valopilkku',
+      providerName: 'MaaS-provider-valopilkku-routes',
     };
 
     let error;
@@ -75,6 +75,7 @@ module.exports = function () {
 
     it('should return an array with at least 1 provider with providerMeta', () => {
       expect(response).to.be.an('array');
+      expect(response.length).to.be.least(1);
       expect(response[0]).to.be.an('object');
       expect(response[0]).to.have.property('providerMeta');
     });

@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const bus = require('../../lib/service-bus');
 
 // NOTE test library for this rule is not nessesary need to be extensive as many tests for routes-query has been written for routes-query API
@@ -9,13 +9,11 @@ const bus = require('../../lib/service-bus');
 module.exports = function () {
 
   describe('[POSITIVE] query for routes from Ludviginkatu to Aapelinkatu', () => {
-
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
-
     const event = {
       from: '60.1657520782836,24.9449517015989', // Ludviginkatu
       to: '60.15539,24.75017', // Aapelinkatu
-      leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(), // Monday one week forward around five
     };
 
     let error;
@@ -52,8 +50,8 @@ module.exports = function () {
       });
     });
 
-    it('have at least 1 itinerary with SUBWAY', () => {
-      const subwayItinerary = response.plan.itineraries.filter(itinerary => itinerary.legs.some(leg => leg.mode === 'SUBWAY'));
+    it('have at least 1 itinerary with BUS', () => {
+      const subwayItinerary = response.plan.itineraries.filter(itinerary => itinerary.legs.some(leg => leg.mode === 'BUS'));
       expect(subwayItinerary).to.have.length.least(1);
     });
 
@@ -109,7 +107,7 @@ module.exports = function () {
     const event = {
       from: '60.1657520782836,24.9449517015989', // Ludviginkatu
       to: '61.4508838,23.8400544', // Hervanta
-      leaveAt: '' + moment().isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
+      leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(), // Monday one week forward around five
     };
 
     let error;
