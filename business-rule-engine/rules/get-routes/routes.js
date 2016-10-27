@@ -5,7 +5,7 @@ const getProviderRules = require('../get-provider');
 const bus = require('../../../lib/service-bus');
 const _ = require('lodash');
 const polylineEncoder = require('polyline-extended');
-const haversine = require('haversine');
+const geoUtils = require('../../../lib/geolocation');
 
 const MAX_PARALLEL = 1; // how many common provider to use
 // @NOTE support partially train route (go to Leppavaraa on train E)
@@ -17,20 +17,15 @@ const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
  * @return {float} haversine length
  */
 function _haversineLength(leg) {
-  if (!leg.hasOwnProperty('from')) return 0;
+  if (!leg.hasOwnProperty('from')) {
+    return 0;
+  }
 
-  if (!leg.hasOwnProperty('to')) return 0;
+  if (!leg.hasOwnProperty('to')) {
+    return 0;
+  }
 
-  const start = {
-    latitude: leg.from.lat,
-    longitude: leg.from.lon,
-  };
-  const end = {
-    latitude: leg.to.lat,
-    longitude: leg.to.lon,
-  };
-  const distance = haversine(start, end) * 1000;
-  return Math.ceil(distance);
+  return Math.ceil(geoUtils.distance(leg.from, leg.to));
 }
 
 /**
