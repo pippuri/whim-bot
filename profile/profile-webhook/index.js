@@ -1,7 +1,6 @@
 'use strict';
 
 const Promise = require('bluebird');
-const Database = require('../../lib/models/Database');
 const errors = require('../../lib/errors/index');
 const utils = require('../lib/utils');
 
@@ -28,7 +27,7 @@ function validateEventAndExtractKey(event) {
     return Promise.reject(new errors.MaaSError('Invalid or missing key', 400));
   }
 
-  return key;
+  return Promise.resolve(key);
 }
 
 function handleWebhook(event, key) {
@@ -48,16 +47,11 @@ function handleWebhook(event, key) {
  * Export respond to Handler
  */
 module.exports.respond = (event, callback) => {
-  return Database.init()
-    .then(_        => validateEventAndExtractKey(event))
+  return validateEventAndExtractKey(event)
     .then(key      => handleWebhook(event, key))
     .then(response => utils.wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(errors.alwaysSucceedErrorHandler(
-          callback, event, utils.wrapToEnvelope(DEFAULT_RESPONSE), 200))
-    .finally(() => {
-      console.log('FINALLY');
-      Database.cleanup();
-    });
+          callback, event, utils.wrapToEnvelope(DEFAULT_RESPONSE), 200));
 };
 

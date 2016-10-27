@@ -1,5 +1,7 @@
 'use strict';
 
+const Database = require('../../../lib/models/Database');
+
 const errors = require('../../../lib/errors/index');
 const cardEvents = require('./card-events.js');
 const creditNoteEvents = require('./credit-note-events.js');
@@ -20,15 +22,7 @@ function handleUnknownEvent(payload, key, defaultResponse) {
   return defaultResponse;
 }
 
-function matches(key) {
-  return VALID_KEYS.hasOwnProperty(key);
-}
-
-function handlePayload(payload, key, defaultResponse) {
-  if (!payload.hasOwnProperty('event_type')) {
-    return Promise.reject(new errors.MaaSError('event type missing', 400));
-  }
-
+function handleEvent(payload, key, defaultResponse, db) {
   switch (payload.event_type) {
     case 'card_added':
     case 'card_deleted':
@@ -81,6 +75,23 @@ function handlePayload(payload, key, defaultResponse) {
     default:
       return handleUnknownEvent(payload, key, defaultResponse);
   }
+}
+
+function matches(key) {
+  return VALID_KEYS.hasOwnProperty(key);
+}
+
+function handlePayload(payload, key, defaultResponse) {
+  if (!payload.hasOwnProperty('event_type')) {
+    return Promise.reject(new errors.MaaSError('event type missing', 400));
+  }
+
+  return Database.init()
+    .then(db => handleEvent(payload, key, defaultResponse, db))
+    .finally(() => {
+      console.log('FINALLY');
+      Database.cleanup();
+    });
 }
 
 module.exports = {
