@@ -226,5 +226,5 @@ module.exports.respond = function (event, callback) {
     return Database.cleanup()
       .then(() => callback(null, response));
   })
-  .catch(errors.stdErrorHandler(callback, event, Database));
+  .catch(errors.stdDatabaseErrorHandler(callback, event, Database));
 };
