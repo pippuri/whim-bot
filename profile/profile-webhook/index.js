@@ -3,16 +3,17 @@
 const Promise = require('bluebird');
 const Database = require('../../lib/models/Database');
 const errors = require('../../lib/errors/index');
-const Chargebee = require('./chargebee.js');
+const utils = require('../lib/utils');
 
-const DEFAULT_RESPONSE = { response: 'OK' };
+const HANDLERS = [
+  require('./dummy/index'),
+  require('./chargebee/index'),
+];
 
-const VALID_KEYS = {
-  KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
-  XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
-};
+const DEFAULT_RESPONSE = 'OK';
 
-function handleWebhook(event) {
+
+function validateEventAndExtractKey(event) {
   const key = event.id;
 
   if (Object.keys(event).length === 0) {
@@ -27,24 +28,20 @@ function handleWebhook(event) {
     return Promise.reject(new errors.MaaSError('Invalid or missing key', 400));
   }
 
-  if (!VALID_KEYS.hasOwnProperty(key)) {
-    return Promise.reject(new errors.MaaSError('Unauthorized key', 400));
-  }
-
-  switch (VALID_KEYS[key]) {
-    case 'chargebee':
-    case 'chargebee-live':
-      return Chargebee.call(event);
-    default:
-      console.info('Unhandled callback');
-      return Promise.reject(new MaaSError('Use of unauthorized key should not get this far', 500));
-  }
+  return key;
 }
 
-function wrapToEnvelope(profile, event) {
-  return {
-    response: profile,
-  };
+function handleWebhook(event, key) {
+  for (const i in HANDLERS) {
+    // Find the first handler to match the key
+    if (HANDLERS[i].matches(key)) {
+      // Handle the event and break out of the search loop
+      return HANDLERS[i].handlePayload(event.payload, key, DEFAULT_RESPONSE);
+    }
+  }
+
+  // No handler matched the key => error
+  return Promise.reject(new errors.MaaSError('Unauthorized key', 400));
 }
 
 /**
@@ -52,8 +49,15 @@ function wrapToEnvelope(profile, event) {
  */
 module.exports.respond = (event, callback) => {
   return Database.init()
-    .then(() => handleWebhook(event))
-    .then(response => wrapToEnvelope(response, event))
+    .then(_        => validateEventAndExtractKey(event))
+    .then(key      => handleWebhook(event, key))
+    .then(response => utils.wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(errors.alwaysSucceedErrorHandler(callback, event, Database, DEFAULT_RESPONSE));
+    .catch(errors.alwaysSucceedErrorHandler(
+          callback, event, utils.wrapToEnvelope(DEFAULT_RESPONSE), 200))
+    .finally(() => {
+      console.log('FINALLY');
+      Database.cleanup();
+    });
 };
+
