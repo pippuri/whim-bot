@@ -249,7 +249,7 @@
           "object": "webhook"
       }]
     },
-    "_credit_note_created": {
+    "credit_note_created": {
       "id": "ev_2rprAVcpPsLePX3bZ1",
       "occurred_at": 1469796996,
       "source": "api",
@@ -321,7 +321,7 @@
           "object": "webhook"
       }]
     },
-    "_credit_note_deleted": {
+    "credit_note_deleted": {
       "id": "ev_KyVqlqPh8DmOr5m",
       "occurred_at": 1367591495,
       "source": "admin_console",
@@ -382,7 +382,7 @@
       "event_type": "credit_note_deleted",
       "webhook_status": "not_configured"
     },
-    "_credit_note_updated": {
+    "credit_note_updated": {
       "id": "ev_2rprAVY4PusEgbuxsl",
       "occurred_at": 1472110750,
       "source": "scheduled_job",
@@ -612,7 +612,7 @@
           "object": "webhook"
       }]
     },
-    "_pending_invoice_created": {
+    "pending_invoice_created": {
       "id": "ev_KyVqlqPh8Da6t17",
       "occurred_at": 1347114639,
       "source": "scheduled_job",
@@ -678,7 +678,7 @@
       "event_type": "pending_invoice_created",
       "webhook_status": "not_configured"
     },
-    "_invoice_deleted": {
+    "invoice_deleted": {
       "id": "ev_KyVqlqPh8Dg2a5b",
       "occurred_at": 1367591470,
       "source": "admin_console",
@@ -730,7 +730,7 @@
       "event_type": "invoice_deleted",
       "webhook_status": "not_configured"
     },
-    "_invoice_generated": {
+    "invoice_generated": {
       "id": "ev_1sjs9i7Ps47ktVU6t",
       "occurred_at": 1469538016,
       "source": "api",
@@ -814,7 +814,7 @@
           "object": "webhook"
       }]
     },
-    "_invoice_updated": {
+    "invoice_updated": {
       "id": "ev_KyVqlqPh8Dd7Z3V",
       "occurred_at": 1362321060,
       "source": "admin_console",
@@ -874,7 +874,7 @@
       "event_type": "invoice_updated",
       "webhook_status": "not_configured"
     },
-    "_payment_failed": {
+    "payment_failed": {
       "id": "ev_KyVqlqPh8DeEG4K",
       "occurred_at": 1364913050,
       "source": "scheduled_job",
@@ -1047,7 +1047,7 @@
       "event_type": "payment_failed",
       "webhook_status": "not_configured"
     },
-    "_payment_initiated": {
+    "payment_initiated": {
       "id": "ev_KyVqlqPh8Dd653T",
       "occurred_at": 1362321060,
       "source": "admin_console",
@@ -1167,7 +1167,7 @@
       "event_type": "payment_initiated",
       "webhook_status": "not_configured"
     },
-    "_payment_refunded": {
+    "payment_refunded": {
       "id": "ev_KyVqlqPh8Dalu3K",
       "occurred_at": 1362321051,
       "source": "admin_console",
@@ -1395,7 +1395,7 @@
       "event_type": "payment_refunded",
       "webhook_status": "not_configured"
     },
-    "_payment_succeeded": {
+    "payment_succeeded": {
       "id": "ev_1sjs9i7Ps47kt5U6q",
       "occurred_at": 1469538016,
       "source": "api",
@@ -2755,7 +2755,7 @@
       "event_type": "subscription_trial_end_reminder",
       "webhook_status": "not_configured"
     },
-    "_transaction_created": {
+    "transaction_created": {
       "id": "ev_KyVqlnPh8DgrOa",
       "occurred_at": 1367591473,
       "source": "admin_console",
@@ -2780,7 +2780,7 @@
       "event_type": "transaction_created",
       "webhook_status": "not_configured"
     },
-    "_transaction_deleted": {
+    "transaction_deleted": {
       "id": "ev_KyVqlnPh8Dk2Ei",
       "occurred_at": 1367591485,
       "source": "admin_console",
@@ -2804,7 +2804,7 @@
       "event_type": "transaction_deleted",
       "webhook_status": "not_configured"
     },
-    "_transaction_updated": {
+    "transaction_updated": {
       "id": "ev_KyVqlnPh8Dj0pg",
       "occurred_at": 1367591482,
       "source": "admin_console",

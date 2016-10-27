@@ -139,63 +139,6 @@ module.exports = function (identityId) {
   //}}}
 
   //------------------------------------------------------------------------
-  // Positive test events {{{
-  for (const event_type in testEvents.positive) {
-    if (!testEvents.positive.hasOwnProperty(event_type)) {
-      continue;
-    }
-
-    const testName = `profile-webhook-chargebee-test-events-positive [${event_type}]`;
-
-    if (event_type.startsWith('_')) {
-      describe.skip(testName, () => {});
-      continue;
-    }
-
-    describe(testName, () => {
-      const event = {
-        id: CHARGEBEE_ID,
-        payload: {
-          webhook_status: 'not_configured',
-          event_type: event_type,
-          content: testEvents.negative[event_type],
-        },
-      };
-
-      let response = null;
-      let error = null;
-
-      before(done => {
-        bus.call(LAMBDA, event)
-          .then(data => {
-            response = data;
-            done();
-          })
-          .catch(err => {
-            error = err;
-            done();
-          });
-      });
-
-      it('should not raise an error', () => {
-        if (error) {
-          console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
-          console.log(error.stack);
-        }
-
-        expect(error).to.be.null;
-      });
-
-      it('should not return empty', () => {
-        expect(response).to.not.be.null;
-        expect(response.response).to.be.defined;
-        expect(response.response).to.equal('OK');
-      });
-    });
-  }
-  //}}}
-
-  //------------------------------------------------------------------------
   // Negative test events {{{
   for (const event_type in testEvents.negative) {
     if (!testEvents.negative.hasOwnProperty(event_type)) {
@@ -309,4 +252,61 @@ module.exports = function (identityId) {
     });
   }
   //}}}//
+
+  //------------------------------------------------------------------------
+  // Positive test events {{{
+  for (const event_type in testEvents.positive) {
+    if (!testEvents.positive.hasOwnProperty(event_type)) {
+      continue;
+    }
+
+    const testName = `profile-webhook-chargebee-test-events-positive [${event_type}]`;
+
+    if (event_type.startsWith('_')) {
+      describe.skip(testName, () => {});
+      continue;
+    }
+
+    describe(testName, () => {
+      const event = {
+        id: CHARGEBEE_ID,
+        payload: {
+          webhook_status: 'not_configured',
+          event_type: event_type,
+          content: testEvents.negative[event_type],
+        },
+      };
+
+      let response = null;
+      let error = null;
+
+      before(done => {
+        bus.call(LAMBDA, event)
+          .then(data => {
+            response = data;
+            done();
+          })
+          .catch(err => {
+            error = err;
+            done();
+          });
+      });
+
+      it('should not raise an error', () => {
+        if (error) {
+          console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+          console.log(error.stack);
+        }
+
+        expect(error).to.be.null;
+      });
+
+      it('should not return empty', () => {
+        expect(response).to.not.be.null;
+        expect(response.response).to.be.defined;
+        expect(response.response).to.equal('OK');
+      });
+    });
+  }
+  //}}}
 };
