@@ -4,10 +4,9 @@ const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-options/response.json');
 const validator = require('../../../lib/validator');
-const moment = require('moment');
+const moment = require('moment-timezone');
 
 module.exports = function (lambda) {
-
   const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 
   describe('request agency options for next Tuesday', () => {
@@ -17,8 +16,8 @@ module.exports = function (lambda) {
     const now = new Date();
     const dowTuesday = now.getDay() < 2 ? 2 : 2 + 7;
     const dowWednesday = now.getDay() < 2 ? 3 : 3 + 7;
-    const nextTuesday = moment().day(dowTuesday).valueOf();
-    const nextWednesday = moment().day(dowWednesday).valueOf();
+    const nextTuesday = moment().tz('Europe/Helsinki').day(dowTuesday).valueOf();
+    const nextWednesday = moment().tz('Europe/Helsinki').day(dowWednesday).valueOf();
 
     const validEvent = {
       identityId: testIdentityId,

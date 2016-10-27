@@ -3,7 +3,7 @@
 const Promise = require('bluebird');
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const models = require('../../../lib/models');
 const utils = require('../../../lib/utils');
 const Profile = require('../../../lib/business-objects/Profile');
@@ -57,7 +57,7 @@ module.exports = function (input, results) {
     // Move leaveAt week to match a date in the future (this or next week)
     const original = moment(parseFloat(event.payload.leaveAt));
     const leaveAt = moment(original);
-    const now = moment().utcOffset(180);
+    const now = moment().tz('Europe/Helsinki');
     leaveAt.year(now.year());
     leaveAt.week(now.week());
     if (now.day() >= leaveAt.day()) {

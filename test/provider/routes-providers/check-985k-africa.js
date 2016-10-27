@@ -3,7 +3,7 @@
 const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');
 const expect = chai.expect;
-const moment = require('moment');
+const moment = require('moment-timezone');
 const schema = require('maas-schemas/');
 const validator = require('../../../lib/validator');
 
@@ -13,12 +13,10 @@ module.exports = function (lambda) {
   // Afrikantie bus stop schedule http://aikataulut.reittiopas.fi/pysakit/fi/9219204.html
 
   describe('request for a bus from Afrikantie bus stop to Keravan Muovi ja Lelu Oy at 15:15', () => {
-    const timeZone = +3;
-
     const event = {
       from: '60.375224,25.2181888', // Afrikantie bus stop
       to: '60.3990481,25.1093918', // Keravan Muovi ja Lelu Oy
-      leaveAt: '' + moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(14).minute(45).valueOf(), // Tuesday one week forward around 15:15
+      leaveAt: '' + moment().tz('Europe/Helsinki').day(9).hour(14).minute(45).valueOf(), // Tuesday one week forward around 15:15
     };
 
     let error;
@@ -60,7 +58,7 @@ module.exports = function (lambda) {
 
       expect(leg985KTimes).to.not.be.empty;
 
-      const expectedTime =  moment().utcOffset(timeZone * 60).isoWeekday(7).add(2, 'days').hour(15).minute(35).second(0).millisecond(0).valueOf();
+      const expectedTime =  moment().tz('Europe/Helsinki').day(9).hour(15).minute(35).second(0).millisecond(0).valueOf();
       const timeDifferences = leg985KTimes.map(startTime => {
         return Math.abs(startTime - expectedTime);
       });

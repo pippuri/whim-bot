@@ -6,7 +6,7 @@ const expect = require('chai').expect;
 const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-list/response.json');
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
-const moment = require('moment');
+const moment = require('moment-timezone');
 const models = require('../../../lib/models');
 const Database = models.Database;
 
@@ -25,8 +25,8 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
       const now = new Date();
       const dowTuesday = now.getDay() < 2 ? 2 : 2 + 7;
       const dowWednesday = now.getDay() < 2 ? 3 : 3 + 7;
-      const nextTuesday = moment().day(dowTuesday).valueOf();
-      const nextWednesday = moment().day(dowWednesday).valueOf();
+      const nextTuesday = moment().tz('Europe/Helsinki').day(dowTuesday).valueOf();
+      const nextWednesday = moment().tz('Europe/Helsinki').day(dowWednesday).valueOf();
 
       const validEvent = {
         identityId: testIdentityId,
