@@ -11,6 +11,92 @@ const DUMMY_ID = 'dummy';
 
 module.exports = function (identityId) {
   //------------------------------------------------------------------------
+  // Unknown event {{{
+  describe('profile-webhook-unknown-event', () => {
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: {
+        webhook_status: 'not_configured',
+        event_type: 'not_a_known_event',
+        content: 'Where is everybody?',
+      },
+    };
+
+    let response = null;
+    let error = null;
+
+    before(done => {
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Unauthorized event {{{
+  describe('profile-webhook-unauthorized-event', () => {
+    const event = {
+      id: 'NOT_VALID',
+      payload: {
+        content: 'Where is everybody?',
+      },
+    };
+
+    let response = null;
+    let error = null;
+
+    before(done => {
+      bus.call(LAMBDA, event)
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
   // Dummy event {{{
   describe('profile-webhook-dummy-event', () => {
     const event = {
