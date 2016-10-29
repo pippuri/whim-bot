@@ -29,6 +29,10 @@ describe('routes provider', () => {
 
   describe('Digitransit', () => {
     const lambda = require('../../../provider-digitransit/provider-digitransit-routes/handler.js');
+    const lib = require('../../../provider-digitransit/provider-digitransit-routes/lib.js');
+    const testLib = require('./digitransit-lib');
+
+    testLib(lib);
     testLeaveAt(lambda);
     testArriveBy(lambda);
     testFromUnsupported(lambda, { skip: true });

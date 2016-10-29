@@ -59,6 +59,7 @@
     "bluebird": "^3.3.3",
     "deep-sort-object": "^1.0.1",
     "geojson-utils": "^1.1.0",
+    "gregorian": "^2.0.2",
     "jsonwebtoken": "^5.7.0",
     "knex": "0.11.5",
     "lodash": "^4.13.1",
