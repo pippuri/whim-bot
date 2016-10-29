@@ -105,6 +105,40 @@ describe('utils', () => {
     });
   });
 
+  describe('transform', () => {
+    const order = [];
+    const replacements = [11, 22, 33, 44, 55];
+
+    it('should walk the object in-order', () => {
+      const value = {
+        one: 1,
+        x: {
+          two: 2,
+          x: {
+            three: 3,
+          },
+          fourAndFive: [4, 5],
+        },
+      };
+      const transformed = utils.transform(value, val => {
+        order.push(value);
+        return replacements.shift();
+      });
+
+      expect(transformed).to.deep.equal({
+        one: 11,
+        x: {
+          two: 22,
+          x: {
+            three: 33,
+          },
+          fourAndFive: [44, 55],
+        },
+      });
+    });
+  });
+
+
   describe('toFixed', () => {
     it('should return plain string as-is', () => {
       const value = 'foobar';
