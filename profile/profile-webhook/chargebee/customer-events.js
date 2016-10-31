@@ -9,7 +9,8 @@ function handle(payload, key, defaultResponse) {
     console.log('handleCustomerEvents');
     switch (payload.event_type) {
       case 'customer_changed':
-        console.log('\tcustomer_changed');
+      case 'customer_created':
+        console.log(`\t${payload.event_type}`);
         console.log(payload.content.content);
 
         const profile = Subscription.formatUser(payload.content.content);

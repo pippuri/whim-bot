@@ -524,7 +524,7 @@
           "object": "webhook"
       }]
     },
-    "_customer_created": {
+    "customer_created": {
       "id": "ev_2rprAVboPs47buBUrA",
       "occurred_at": 1469537981,
       "source": "api",
@@ -532,7 +532,7 @@
       "object": "event",
       "api_version": "v2",
       "content": {"customer": {
-          "id": "eu-west-1:00000000-dead-dbf1-dead-000000000000",
+          "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000021",
           "auto_collection": "on",
           "allow_direct_debit": false,
           "created_at": 1469537981,
