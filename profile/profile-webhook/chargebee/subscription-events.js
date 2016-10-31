@@ -32,7 +32,6 @@ function handle(payload, key, defaultResponse) {
         .then(() => defaultResponse);
 
     case 'subscription_changed':
-    case 'subscription_shipping_address_updated':
       console.log(`\t${payload.event_type}`);
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;
@@ -43,6 +42,10 @@ function handle(payload, key, defaultResponse) {
                                         NO_PROMO_CODE,
                                         SKIP_CHARGEBEE_UPDATE)
         .then(() => defaultResponse);
+
+    case 'subscription_shipping_address_updated':
+      console.log(`\t${payload.event_type}`);
+      return defaultResponse;
 
     case 'subscription_cancelled':
     case 'subscription_deleted':

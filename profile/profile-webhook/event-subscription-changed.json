@@ -13,7 +13,7 @@
       "content": {
           "subscription": {
               "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
-              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
               "plan_id": "fi-whim-light",
               "plan_quantity": 1,
               "status": "active",

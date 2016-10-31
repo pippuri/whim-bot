@@ -271,5 +271,47 @@
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
+  },
+  {
+    "id": 13382,
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000025",
+    "balance": 1000,
+    "subscription": {
+      "planId": "fi-whim-medium",
+      "monthlyBalance": 1000,
+      "agencies": []
+    },
+    "favoriteLocations": {},
+    "phone": "+35850123456789",
+    "email": "john3.doe@maas.fi",
+    "firstName": "Webhook-User-4",
+    "lastName": "Used for webhook tests",
+    "city": "Helsinki",
+    "country": "Finland",
+    "zipCode": 100,
+    "profileImageUrl": null,
+    "created": "2016-10-13T14:01:10.611552+00:00",
+    "modified": null
+  },
+  {
+    "id": 13383,
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
+    "balance": 1000,
+    "subscription": {
+      "planId": "fi-whim-medium",
+      "monthlyBalance": 1000,
+      "agencies": []
+    },
+    "favoriteLocations": {},
+    "phone": "+35850123456789",
+    "email": "john3.doe@maas.fi",
+    "firstName": "Webhook-User-4",
+    "lastName": "Used for webhook tests",
+    "city": "Helsinki",
+    "country": "Finland",
+    "zipCode": 100,
+    "profileImageUrl": null,
+    "created": "2016-10-13T14:01:10.611552+00:00",
+    "modified": null
   }
 ]
