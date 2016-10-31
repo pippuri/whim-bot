@@ -505,6 +505,89 @@ module.exports = function (identityId) {
   //}}}
 
   //------------------------------------------------------------------------
+  // Subscription Changed {{{
+  describe('profile-webhook-subscription-changed', () => {
+    const webhookContent = testEvents.positive.subscription_changed;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: {
+        webhook_status: 'not_configured',
+        event_type: 'subscription_changed',
+        content: webhookContent,
+      },
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(done => {
+      Database.init()
+        .then(_ => {
+          // 1. Fetch the profile from the database
+          return ProfileDAO.query().findById(testIdentityId)
+        })
+        .then(profile => {
+          pre = profile;
+          // 2. Apply the webhook
+          return bus.call(LAMBDA, event);
+        })
+        .then(data => {
+          response = data;
+
+          // 3. Re-fetch the profile from the database for comparison
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          post = profile;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        })
+        .finally(() => {
+          Database.cleanup();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the first name', () => {
+      expect(pre.firstName).to.be.defined;
+      expect(post.firstName).to.be.defined;
+      expect(pre.firstName).to.equal(post.firstName);
+    });
+
+    it('should have updated the plan', () => {
+      expect(pre.subscription.planId).to.be.defined;
+      expect(post.subscription.planId).to.be.defined;
+      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
   // Unknown event {{{
   describe('profile-webhook-unknown-event', () => {
     const event = {
