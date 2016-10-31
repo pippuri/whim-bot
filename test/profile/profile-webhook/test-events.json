@@ -9,7 +9,7 @@
         "api_version": "v2",
         "content": {
             "customer": {
-                "id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
+                "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
                 "auto_collection": "on",
                 "allow_direct_debit": false,
                 "created_at": 1469432349,
@@ -32,7 +32,7 @@
                 "excess_payments": 0
             },
             "card": {
-                "customer_id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
+                "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
                 "status": "valid",
                 "gateway": "stripe",
                 "first_name": "Test",
@@ -65,7 +65,7 @@
       "object": "event",
       "api_version": "v2",
       "content": {"customer": {
-          "id": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
+          "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
           "first_name": "Sami",
           "last_name": "Pippuriz",
           "email": "sami.pippuri@maas.global",
@@ -195,7 +195,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "Tester89.23887712880969",
               "last_name": "User",
               "email": "me@maas.fi",
@@ -224,7 +224,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "first_name": "Test",
@@ -258,8 +258,8 @@
       "api_version": "v2",
       "content": {"credit_note": {
           "id": "TEST-CN-7",
-          "customer_id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
-          "subscription_id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
+          "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+          "subscription_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
           "reference_invoice_id": "164",
           "type": "refundable",
           "reason_code": "subscription_change",
@@ -390,8 +390,8 @@
       "api_version": "v2",
       "content": {"credit_note": {
           "id": "TEST-CN-8",
-          "customer_id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
-          "subscription_id": "eu-west-1:3afe1947-48b7-4980-8187-f338bf610340",
+          "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+          "subscription_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
           "reference_invoice_id": "168",
           "type": "refundable",
           "reason_code": "subscription_change",
@@ -739,7 +739,7 @@
       "api_version": "v2",
       "content": {"invoice": {
           "id": "90",
-          "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+          "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
           "recurring": false,
           "status": "paid",
           "price_type": "tax_inclusive",
@@ -1404,7 +1404,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "Tester89.23887712880969",
               "last_name": "User",
               "email": "me@maas.fi",
@@ -1433,7 +1433,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "first_name": "Test",
@@ -1451,7 +1451,7 @@
           },
           "transaction": {
               "id": "txn_1sjs9i7Ps47kfnU6n",
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "payment_method": "card",
               "gateway": "stripe",
               "type": "payment",
@@ -1475,7 +1475,7 @@
           },
           "invoice": {
               "id": "90",
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "recurring": false,
               "status": "paid",
               "price_type": "tax_inclusive",
@@ -1874,8 +1874,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
-              "customer_id": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "non_renewing",
@@ -1900,7 +1900,7 @@
               }
           },
           "customer": {
-              "id": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "MaaS",
               "last_name": "Test",
               "email": "tech@maas.global",
@@ -1931,7 +1931,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "iin": "******",
@@ -1963,8 +1963,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
-              "customer_id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "cancelled",
@@ -1992,7 +1992,7 @@
               }
           },
           "customer": {
-              "id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "wef wef",
               "last_name": "efefewf",
               "email": "where@gmail.com",
@@ -2027,7 +2027,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "iin": "******",
@@ -2060,8 +2060,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "plan_id": "fi-whim-payg",
               "plan_quantity": 1,
               "status": "active",
@@ -2081,7 +2081,7 @@
               }
           },
           "customer": {
-              "id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "Tester89.23887712880969",
               "last_name": "User",
               "email": "me@maas.fi",
@@ -2110,7 +2110,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:6b999e73-1d43-42b5-a90c-36b62e732ddb",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "first_name": "Test",
@@ -2188,8 +2188,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
-              "customer_id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "cancelled",
@@ -2217,7 +2217,7 @@
               }
           },
           "customer": {
-              "id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "wef wef",
               "last_name": "efefewf",
               "email": "where@gmail.com",
@@ -2252,7 +2252,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:84df3f16-fbe9-4d99-be61-07c668162d1e",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "iin": "******",
@@ -2285,8 +2285,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
-              "customer_id": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "plan_id": "fi-whim-payg",
               "plan_quantity": 1,
               "status": "active",
@@ -2309,7 +2309,7 @@
               }
           },
           "customer": {
-              "id": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "first_name": "Sami",
               "last_name": "Pippuri",
               "email": "sami.pippuri@maas.global",
@@ -2340,7 +2340,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
               "status": "valid",
               "gateway": "stripe",
               "iin": "******",
