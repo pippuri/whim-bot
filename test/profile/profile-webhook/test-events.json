@@ -551,7 +551,7 @@
           "object": "webhook"
       }]
     },
-    "_customer_deleted": {
+    "customer_deleted": {
       "id": "ev_IG5rymLPylVvcwc2J",
       "occurred_at": 1475675957,
       "source": "scheduled_job",
@@ -559,7 +559,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "eu-west-1:00000000-0000-0000-0000-000000000000",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
               "auto_collection": "on",
               "allow_direct_debit": false,
               "created_at": 1475669953,
@@ -579,9 +579,9 @@
               "excess_payments": 0
           },
           "subscriptions": [{
-              "id": "eu-west-1:00000000-0000-0000-0000-000000000000",
-              "customer_id": "eu-west-1:00000000-0000-0000-0000-0000_4303500",
-              "plan_id": "fi-whim-payg",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022_4303500",
+              "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "cancelled",
               "current_term_start": 1475669953,

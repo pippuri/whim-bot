@@ -3,6 +3,7 @@
 const Database = require('../../../lib/models/Database');
 const ProfileDAO = require('../../../lib/models/Profile');
 const Profile = require('../../../lib/business-objects/Profile');
+const Subscription = require('../../../lib/subscription-manager/index');
 const errors = require('../../../lib/errors/index');
 const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
@@ -168,6 +169,88 @@ module.exports = function (identityId) {
       expect(pre.firstName).to.be.defined;
       expect(post.firstName).to.be.defined;
       expect(pre.firstName).to.equal(post.firstName);
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Customer Deleted {{{
+  describe('profile-webhook-customer-deleted', () => {
+    const webhookContent = testEvents.positive.customer_deleted;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: {
+        webhook_status: 'not_configured',
+        event_type: 'customer_deleted',
+        content: webhookContent,
+      },
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(done => {
+      Database.init()
+        .then(_ => {
+          // 1. Fetch the profile from the database
+          return ProfileDAO.query().findById(testIdentityId)
+        })
+        .then(profile => {
+          pre = profile;
+          // 2. Apply the webhook
+          return bus.call(LAMBDA, event);
+        })
+        .then(data => {
+          response = data;
+
+          // 3. Re-fetch the profile from the database for comparison
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          post = profile;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        })
+        .finally(() => {
+          Database.cleanup();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should have updated the balance', () => {
+      expect(post.balance).to.be.defined;
+      expect(post.balance).to.equal(0);
+    });
+
+    it('should have updated the subscription type', () => {
+      expect(pre.subscription.planId).to.be.defined;
+      expect(post.subscription.planId).to.be.defined;
+      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
     });
   });
   //}}}
