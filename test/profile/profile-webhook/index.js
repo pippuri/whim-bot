@@ -1119,19 +1119,13 @@ module.exports = function (identityId) {
   //}}}//
 
   //------------------------------------------------------------------------
-  // Positive test events {{{
-  /*[XXX: remove these?]
-  for (const event_type in testEvents.positive) {
-    if (!testEvents.positive.hasOwnProperty(event_type)) {
+  // Default test events {{{
+  for (let event_type in testEvents.default) {
+    if (!testEvents.default.hasOwnProperty(event_type)) {
       continue;
     }
 
-    const testName = `profile-webhook-chargebee-test-events-positive [${event_type}]`;
-
-    if (event_type.startsWith('_')) {
-      describe.skip(testName, () => {});
-      continue;
-    }
+    const testName = `profile-webhook-chargebee-test-events-default [${event_type}]`;
 
     describe(testName, () => {
       const event = {
@@ -1139,7 +1133,7 @@ module.exports = function (identityId) {
         payload: {
           webhook_status: 'not_configured',
           event_type: event_type,
-          content: testEvents.positive[event_type],
+          content: testEvents.default[event_type],
         },
       };
 
@@ -1178,6 +1172,5 @@ module.exports = function (identityId) {
       });
     });
   }
-  */
-  //}}}
+  //}}}//
 };

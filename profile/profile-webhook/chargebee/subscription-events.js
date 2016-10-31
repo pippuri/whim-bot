@@ -11,9 +11,7 @@ const FORCE_SUBSCRIPTION_UPDATE = true;
 
 function handle(payload, key, defaultResponse) {
   console.log('handleSubscriptionEvents');
-  /*
-  return defaultResponse;
-  */
+  console.info(JSON.stringify(payload));
 
   let profile = null;
   let identityId = null;

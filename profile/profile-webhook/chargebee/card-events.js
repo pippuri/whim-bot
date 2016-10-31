@@ -2,7 +2,8 @@
 
 
 function handle(payload, key, defaultResponse) {
-    console.log('handleCardEvents');
+    console.info('handleCardEvents [IGNORED]');
+    console.info(JSON.stringify(payload));
     return defaultResponse;
 }
 

@@ -2,7 +2,8 @@
 
 
 function handle(payload, key, defaultResponse) {
-    console.log('handlePaymentEvents [IGNORED]');
+    console.info('handlePaymentEvents [IGNORED]');
+    console.info(JSON.stringify(payload));
     return defaultResponse;
 }
 

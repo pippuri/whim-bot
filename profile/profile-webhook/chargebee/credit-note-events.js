@@ -2,7 +2,8 @@
 
 
 function handle(payload, key, defaultResponse) {
-    console.log('handleCreditNoteEvent [IGNORED]');
+    console.info('handleCreditNoteEvent [IGNORED]');
+    console.info(JSON.stringify(payload));
     return defaultResponse;
 }
 
