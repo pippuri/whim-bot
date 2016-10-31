@@ -1,66 +1,52 @@
 {
   "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
   "payload": {
-    "event_type": "customer_created",
+    "event_type": "subscription_created",
     "webhook_status": "not_configured",
     "content": {
-      "subscription": {
-        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-        "plan_id": "fi-whim-payg",
-        "plan_quantity": 1,
-        "status": "active",
-        "current_term_start": 1477041873,
-        "current_term_end": 1479720273,
-        "created_at": 1477041873,
-        "started_at": 1477041873,
-        "activated_at": 1477041873,
-        "has_scheduled_changes": false,
-        "object": "subscription",
-        "due_invoices_count": 0,
-        "shipping_address": {
-          "first_name": "Konker",
-          "last_name": "Markup",
-          "email": "konker@gmail.com",
-          "company": "Markup Enterprises",
-          "phone": "0465727140",
-          "line1": "Eerikinkatu 41 A 28",
-          "city": "Helsinki",
-          "state": "Uusimaa",
-          "country": "FI",
-          "zip": "00180",
-          "object": "shipping_address"
-        }
+      "id": "ev_2rprAVboPs47buFUrB",
+      "occurred_at": 1469537981,
+      "source": "api",
+      "user": "full_access_key_v1",
+      "object": "event",
+      "api_version": "v2",
+      "content": {
+          "subscription": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022_4303500",
+              "plan_id": "fi-whim-medium",
+              "plan_quantity": 1,
+              "status": "active",
+              "current_term_start": 1469537981,
+              "current_term_end": 1472216381,
+              "created_at": 1469537981,
+              "started_at": 1469537981,
+              "activated_at": 1469537981,
+              "has_scheduled_changes": false,
+              "object": "subscription",
+              "currency_code": "EUR",
+              "due_invoices_count": 0
+          },
+          "customer": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "auto_collection": "on",
+              "allow_direct_debit": false,
+              "created_at": 1469537981,
+              "taxability": "taxable",
+              "object": "customer",
+              "card_status": "no_card",
+              "promotional_credits": 0,
+              "refundable_credits": 0,
+              "excess_payments": 0
+          }
       },
-      "customer": {
-        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-        "first_name": "Konker",
-        "last_name": "Markup",
-        "email": "konker@gmail.com",
-        "phone": "0465727140",
-        "company": "Markup Enterprises",
-        "auto_collection": "off",
-        "allow_direct_debit": false,
-        "created_at": 1477041873,
-        "taxability": "taxable",
-        "object": "customer",
-        "billing_address": {
-          "first_name": "Konker",
-          "last_name": "Markup",
-          "email": "konker@gmail.com",
-          "company": "Markup Enterprises",
-          "phone": "0465727140",
-          "line1": "Eerikinkatu 41 A 28",
-          "city": "Helsinki",
-          "state": "Uusimaa",
-          "country": "FI",
-          "zip": "00180",
-          "object": "billing_address"
-        },
-        "card_status": "no_card",
-        "account_credits": 0,
-        "refundable_credits": 0,
-        "excess_payments": 0
-      }
+      "event_type": "subscription_created",
+      "webhook_status": "not_configured",
+      "webhooks": [{
+          "id": "whv2_IG5ryqKPrfNiNBpbu",
+          "webhook_status": "succeeded",
+          "object": "webhook"
+      }]
     }
   }
 }

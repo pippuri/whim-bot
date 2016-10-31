@@ -22,7 +22,7 @@ function handleUnknownEvent(payload, key, defaultResponse) {
   throw new errors.MaaSError('Unhandled webhook event', 400);
 }
 
-function handleEvent(payload, key, defaultResponse, db) {
+function handleEvent(payload, key, defaultResponse) {
   switch (payload.event_type) {
     case 'card_added':
     case 'card_deleted':
@@ -88,9 +88,9 @@ function handlePayload(payload, key, defaultResponse) {
   }
 
   return Database.init()
-    .then(db => handleEvent(payload, key, defaultResponse, db))
-    .finally(() => {
-      console.log('finally ------------------------>');
+    .then(db => handleEvent(payload, key, defaultResponse))
+    .lastly(() => {
+      console.log('------------------------> finally');
       Database.cleanup();
     });
 }

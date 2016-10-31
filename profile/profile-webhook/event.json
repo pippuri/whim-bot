@@ -1,62 +1,46 @@
 {
   "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
   "payload": {
-    "event_type": "customer_deleted",
+    "event_type": "subscription_created",
     "webhook_status": "not_configured",
     "content": {
-      "id": "ev_IG5rymLPylVvcwc2J",
-      "occurred_at": 1475675957,
-      "source": "scheduled_job",
+      "id": "ev_2rprAVboPs47buFUrB",
+      "occurred_at": 1469537981,
+      "source": "api",
+      "user": "full_access_key_v1",
       "object": "event",
       "api_version": "v2",
       "content": {
+          "subscription": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022_4303500",
+              "plan_id": "fi-whim-medium",
+              "plan_quantity": 1,
+              "status": "active",
+              "current_term_start": 1469537981,
+              "current_term_end": 1472216381,
+              "created_at": 1469537981,
+              "started_at": 1469537981,
+              "activated_at": 1469537981,
+              "has_scheduled_changes": false,
+              "object": "subscription",
+              "currency_code": "EUR",
+              "due_invoices_count": 0
+          },
           "customer": {
-              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
               "auto_collection": "on",
               "allow_direct_debit": false,
-              "created_at": 1475669953,
+              "created_at": 1469537981,
               "taxability": "taxable",
-              "updated_at": 1475675956,
-              "resource_version": 1475675956999,
-              "deleted": true,
               "object": "customer",
-              "billing_address": {
-                  "phone": "+358405103121",
-                  "validation_status": "not_validated",
-                  "object": "billing_address"
-              },
               "card_status": "no_card",
               "promotional_credits": 0,
               "refundable_credits": 0,
               "excess_payments": 0
-          },
-          "subscriptions": [{
-              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
-              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022_4303500",
-              "plan_id": "fi-whim-medium",
-              "plan_quantity": 1,
-              "status": "cancelled",
-              "current_term_start": 1475669953,
-              "current_term_end": 1475675883,
-              "created_at": 1475669953,
-              "started_at": 1475669953,
-              "activated_at": 1475669953,
-              "cancelled_at": 1475675883,
-              "updated_at": 1475675883,
-              "has_scheduled_changes": false,
-              "resource_version": 1475675883618,
-              "deleted": true,
-              "object": "subscription",
-              "currency_code": "EUR",
-              "due_invoices_count": 0,
-              "shipping_address": {
-                  "phone": "+358405103121",
-                  "validation_status": "not_validated",
-                  "object": "shipping_address"
-              }
-          }]
+          }
       },
-      "event_type": "customer_deleted",
+      "event_type": "subscription_created",
       "webhook_status": "not_configured",
       "webhooks": [{
           "id": "whv2_IG5ryqKPrfNiNBpbu",
