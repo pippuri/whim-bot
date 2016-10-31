@@ -3,6 +3,7 @@
 const Database = require('../../../lib/models/Database');
 const ProfileDAO = require('../../../lib/models/Profile');
 const Profile = require('../../../lib/business-objects/Profile');
+const errors = require('../../../lib/errors/index');
 const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
 const testEvents = require('./test-events.json');
@@ -38,20 +39,20 @@ module.exports = function (identityId) {
     let error = null;
 
     before(done => {
-      // Fetch the profile from the database
       Database.init()
         .then(_ => {
+          // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId)
         })
         .then(profile => {
           pre = profile;
-          // Apply the webhook
+          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
         .then(data => {
           response = data;
 
-          // Re-fetch the profile from the database
+          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
@@ -80,6 +81,10 @@ module.exports = function (identityId) {
       expect(response).to.not.be.null;
       expect(response.response).to.be.defined;
       expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
     it('should have updated the first name', () => {
@@ -131,6 +136,10 @@ module.exports = function (identityId) {
       expect(response.response).to.be.defined;
       expect(response.response).to.equal('OK');
     });
+
+    it('the response should contain an error', () => {
+      expect(response).to.include.key(errors.errorMessageFieldName);
+    });
   });
   //}}}
 
@@ -173,6 +182,10 @@ module.exports = function (identityId) {
       expect(response.response).to.be.defined;
       expect(response.response).to.equal('OK');
     });
+
+    it('the response should contain an error', () => {
+      expect(response).to.include.key(errors.errorMessageFieldName);
+    });
   });
   //}}}
 
@@ -214,6 +227,10 @@ module.exports = function (identityId) {
       expect(response).to.not.be.null;
       expect(response.response).to.be.defined;
       expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
   });
   //}}}
@@ -272,6 +289,10 @@ module.exports = function (identityId) {
         expect(response.response).to.be.defined;
         expect(response.response).to.equal('OK');
       });
+
+      it('the response should contain an error', () => {
+        expect(response).to.include.key(errors.errorMessageFieldName);
+      });
     });
   }
   //}}}//
@@ -329,6 +350,10 @@ module.exports = function (identityId) {
         expect(response.response).to.be.defined;
         expect(response.response).to.equal('OK');
       });
+
+      it('the response should contain an error', () => {
+        expect(response).to.include.key(errors.errorMessageFieldName);
+      });
     });
   }
   //}}}//
@@ -353,7 +378,7 @@ module.exports = function (identityId) {
         payload: {
           webhook_status: 'not_configured',
           event_type: event_type,
-          content: testEvents.negative[event_type],
+          content: testEvents.positive[event_type],
         },
       };
 
@@ -385,6 +410,10 @@ module.exports = function (identityId) {
         expect(response).to.not.be.null;
         expect(response.response).to.be.defined;
         expect(response.response).to.equal('OK');
+      });
+
+      it('the response should NOT contain an error', () => {
+        expect(response).to.not.include.key(errors.errorMessageFieldName);
       });
     });
   }

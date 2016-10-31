@@ -19,7 +19,7 @@ const VALID_KEYS = {
 
 function handleUnknownEvent(payload, key, defaultResponse) {
   console.warn('Unhandled webhook event', payload.event_type);
-  return defaultResponse;
+  throw new errors.MaaSError('Unhandled webhook event', 400);
 }
 
 function handleEvent(payload, key, defaultResponse, db) {
@@ -90,7 +90,7 @@ function handlePayload(payload, key, defaultResponse) {
   return Database.init()
     .then(db => handleEvent(payload, key, defaultResponse, db))
     .finally(() => {
-      console.log('FINALLY');
+      console.log('finally ------------------------>');
       Database.cleanup();
     });
 }

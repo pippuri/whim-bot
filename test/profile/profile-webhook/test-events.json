@@ -2836,7 +2836,7 @@
     }
   },
   "negative": {
-    "customer_created": {
+    "_customer_created": {
       "customer": {
         "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
         "auto_collection": "on",

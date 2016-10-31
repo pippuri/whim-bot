@@ -27,6 +27,11 @@ function validateEventAndExtractKey(event) {
     return Promise.reject(new errors.MaaSError('Invalid or missing key', 400));
   }
 
+  // Remove card information altogether to avoid the possibility of using it
+  if (event.payload.content && event.payload.content && event.payload.content.content) {
+    event.payload.content.content.card = {};
+  }
+
   return Promise.resolve(key);
 }
 
@@ -51,7 +56,7 @@ module.exports.respond = (event, callback) => {
     .then(key      => handleWebhook(event, key))
     .then(response => utils.wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(errors.alwaysSucceedErrorHandler(
+    .catch(errors.alwaysSucceedIncludeErrorMessageErrorHandler(
           callback, event, utils.wrapToEnvelope(DEFAULT_RESPONSE), 200));
 };
 
