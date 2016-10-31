@@ -2180,7 +2180,7 @@
           "object": "webhook"
       }]
     },
-    "_subscription_deleted": {
+    "subscription_deleted": {
       "id": "ev_1sjs9d0PxRymvv55n",
       "occurred_at": 1474471175,
       "source": "scheduled_job",
@@ -2188,8 +2188,8 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
-              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000020",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000025",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000025",
               "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "cancelled",
@@ -2429,7 +2429,7 @@
       "event_type": "subscription_renewal_reminder",
       "webhook_status": "not_configured"
     },
-    "_subscription_renewed": {
+    "subscription_renewed": {
       "id": "ev_1sjs9n8PuFYQW32z9g",
       "occurred_at": 1471539178,
       "source": "scheduled_job",
@@ -2437,9 +2437,9 @@
       "api_version": "v2",
       "content": {
           "subscription": {
-              "id": "IG5rynMPlZaTwQ1nSg",
-              "customer_id": "IG5rynMPlZaTwQ1nSg",
-              "plan_id": "fi-whim-enterprise-consolidated",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
+              "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "active",
               "current_term_start": 1471539177,
@@ -2453,7 +2453,7 @@
               "due_invoices_count": 0
           },
           "customer": {
-              "id": "IG5rynMPlZaTwQ1nSg",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
               "first_name": "Test",
               "last_name": "User",
               "email": "me@maas.fi",
@@ -2477,7 +2477,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "IG5rynMPlZaTwQ1nSg",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
               "status": "valid",
               "gateway": "stripe",
               "first_name": "Test User",

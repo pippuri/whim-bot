@@ -43,9 +43,14 @@ function handle(payload, key, defaultResponse) {
                                         SKIP_CHARGEBEE_UPDATE)
         .then(() => defaultResponse);
 
-    case 'subscription_shipping_address_updated':
+    case 'subscription_renewed':
       console.log(`\t${payload.event_type}`);
-      return defaultResponse;
+      profile = Subscription.formatUser(payload.content.content);
+      identityId = profile.identityId;
+      activePlan = profile.plan.id;
+
+      return Profile.renewSubscription(identityId, activePlan, NO_PROMO_CODE)
+        .then(() => defaultResponse);
 
     case 'subscription_cancelled':
     case 'subscription_deleted':
@@ -61,7 +66,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => Profile.update(identityId, { balance: 0 }))
         .then(() => defaultResponse);
 
-    case 'subscription_renewed':
+    case 'subscription_shipping_address_updated':
       console.log(`\t${payload.event_type}`);
       return defaultResponse;
 

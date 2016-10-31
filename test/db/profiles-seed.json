@@ -173,7 +173,7 @@
     "balance": 13376,
     "subscription": {
       "planId": "fi-whim-light",
-      "monthlyBalance": 0,
+      "monthlyBalance": 1000,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -194,7 +194,7 @@
     "balance": 13386,
     "subscription": {
       "planId": "fi-whim-light",
-      "monthlyBalance": 0,
+      "monthlyBalance": 1000,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -215,7 +215,7 @@
     "balance": 13396,
     "subscription": {
       "planId": "fi-whim-medium",
-      "monthlyBalance": 1000,
+      "monthlyBalance": 5500,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -236,7 +236,7 @@
     "balance": 1000,
     "subscription": {
       "planId": "fi-whim-medium",
-      "monthlyBalance": 1000,
+      "monthlyBalance": 5500,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -257,7 +257,7 @@
     "balance": 1000,
     "subscription": {
       "planId": "fi-whim-medium",
-      "monthlyBalance": 1000,
+      "monthlyBalance": 5500,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -278,7 +278,7 @@
     "balance": 1000,
     "subscription": {
       "planId": "fi-whim-medium",
-      "monthlyBalance": 1000,
+      "monthlyBalance": 5500,
       "agencies": []
     },
     "favoriteLocations": {},
@@ -296,10 +296,10 @@
   {
     "id": 13383,
     "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000026",
-    "balance": 1000,
+    "balance": 20,
     "subscription": {
       "planId": "fi-whim-medium",
-      "monthlyBalance": 1000,
+      "monthlyBalance": 5500,
       "agencies": []
     },
     "favoriteLocations": {},
