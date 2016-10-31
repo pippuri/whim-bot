@@ -5,6 +5,7 @@ const Profile = require('../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const schema = require('maas-schemas/prebuilt/maas-backend/business-rule-engine/request.json');
 const validator = require('../lib/validator');
+const MaaSError = require('../lib/errors/MaaSError');
 
 // Rules
 const getProviderRules = require('./rules/get-provider');
@@ -64,10 +65,15 @@ module.exports.respond = (event, callback) => {
     .then(() => runRule(event))
     .then(response => callback(null, response))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      callback(_error);
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

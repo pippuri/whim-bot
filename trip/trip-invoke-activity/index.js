@@ -3,6 +3,7 @@
 const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 
 /**
  * Runs activity task. This is typically invoked by SWF by a result of activity task appearing
@@ -50,6 +51,12 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      callback(_error);
+      // Uncaught, unexpected error
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

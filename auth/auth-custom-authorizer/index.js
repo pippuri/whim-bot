@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const jwt = require('jsonwebtoken');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 // This is the main custom authorizer that can be attached to any API
 // that's limited to logged in users.
@@ -11,7 +12,7 @@ function customAuthorize(event) {
   const m = ('' + event.authorizationToken).match(/^Bearer +([^ ]+)$/);
   if (!m) {
     // Invalid authorization
-    return Promise.reject('Unauthorized');
+    return Promise.reject(new MaaSError('Unauthorized', 403));
   }
 
   const token = m[1];
@@ -22,7 +23,7 @@ function customAuthorize(event) {
   } catch (err) {
     // Invalid authorization
     console.info('Error verifying JWT token:', err);
-    return Promise.reject('Unauthorized');
+    return Promise.reject(new MaaSError('Unauthorized', 403));
   }
 
   console.info('Token contents:', user);
@@ -50,8 +51,16 @@ module.exports.respond = function (event, callback) {
   .then(response => {
     callback(null, response);
   })
-  .catch(err => {
-    console.info('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(err);
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

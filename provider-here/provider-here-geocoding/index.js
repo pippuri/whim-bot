@@ -23,6 +23,7 @@
 const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 
 const ENDPOINT_URL = 'https://places.cit.api.here.com/places/v1/discover/search';
 const SEARCH_COUNT = 10;   // Find a maximum of 10 results by default
@@ -98,10 +99,17 @@ module.exports.respond = function (event, callback) {
     adapt(event)
     .then(response => (callback(null, response)))
     .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
-      callback(_error);
+
+      // Uncaught, unexpected error
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
   }
 };
