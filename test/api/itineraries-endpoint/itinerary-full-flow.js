@@ -123,9 +123,9 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Try to create an itinerary user cannot afford', () => {
+  describe('Try to create an itinerary user cannot afford', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
-    before(() => {
+    before(function () {
       if (skip) {
         this.skip();
       }
@@ -171,7 +171,7 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Creates an itinerary', () => {
+  describe('Creates an itinerary', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
@@ -253,7 +253,7 @@ module.exports = function (input, results) {
 
   });
 
-  describe('Retrieves the itinerary', () => {
+  describe('Retrieves the itinerary', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
@@ -293,7 +293,7 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Lists itineraries', () => {
+  describe('Lists itineraries', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
@@ -330,7 +330,7 @@ module.exports = function (input, results) {
     });
   });
 
-  describe('Cancels the itinerary', () => {
+  describe('Cancels the itinerary', function () { //eslint-disable-line
     // Skip this part of the suite if skip flag has been raised
     before(function () {
       if (skip) {
