@@ -31,7 +31,7 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
   };
 
   if (leaveAt && arriveBy) {
-    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return Promise.reject(new MaaSError('Both leaveAt and arriveBy provided.', 400));
   } else if (leaveAt) {
     qs.arriveBy = false;
     const date = new Date(parseInt(leaveAt, 10));

@@ -36,7 +36,7 @@ function parseResults(response) {
   const items = response.results.items;
 
   if (!util.isArray(items)) {
-    const error = new Error('Invalid response from HERE - invalid format.');
+    const error = new MaaSError('Invalid response from HERE - invalid format.', 500);
     return Promise.reject(error);
   }
 
@@ -92,9 +92,9 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   if (typeof process.env.HERE_APP_ID === typeof undefined) {
-    callback(new Error('Missing HERE_APP_ID'));
+    callback(new MaaSError('Missing HERE_APP_ID', 500));
   } else if (typeof process.env.HERE_APP_CODE === typeof undefined) {
-    callback(new Error('Missing HERE_APP_CODE'));
+    callback(new MaaSError('Missing HERE_APP_CODE', 500));
   } else {
     adapt(event)
     .then(response => (callback(null, response)))

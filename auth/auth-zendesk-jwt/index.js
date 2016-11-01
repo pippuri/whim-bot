@@ -10,7 +10,7 @@ module.exports.respond = function (event, callback) {
   try {
     const userData = jwt.verify(userToken, process.env.JWT_SECRET);
     if ( ! userData.zendeskJwt ) {
-      throw new Error('Token did not contain required zendeskJwt key.');
+      throw new MaaSError('Token did not contain required zendeskJwt key.', 400);
     }
 
     Profile.retrieve(userData.userId)

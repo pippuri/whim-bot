@@ -1,6 +1,7 @@
 'use strict';
 
 const polylineEncoder = require('polyline-extended');
+const MaaSError = require('../../../lib/errors/MaaSError.js');
 
 /**
  * Validates a string for not being undefined, null or zero-length
@@ -80,7 +81,7 @@ function toMode(mode, type) {
   }
 
   // We should never get this far, unless one of the defaults failed
-  throw new Error(`Unknown HERE mode ${mode} (transport type ${type})`);
+  throw new MaaSError(`Unknown HERE mode ${mode} (transport type ${type})`, 500);
 }
 
 /**
@@ -151,7 +152,7 @@ function toLegs(maneuvers, maneuverGroups, publicTransportLines) {
     let legStartTime = (new Date(first.time)).valueOf();
 
     if (!startIndex || !endIndex) {
-      throw new Error(`Invalid maneuver group ${JSON.stringify(group)}`);
+      throw new MaaSError(`Invalid maneuver group ${JSON.stringify(group)}`, 500);
     }
 
     // Iterate the maneuvers using the 1-based start and end indexes.
@@ -257,7 +258,7 @@ function toItinerary(route) {
   // Convert waypoints to legs, then merge the duplicate legs
   // Invalid itinerary - no legs
   if (route.leg.length === 0) {
-    throw new Error('Invalid itinerary, no valid legs received from HERE');
+    throw new MaaSError('Invalid itinerary, no valid legs received from HERE', 500);
   }
 
   // HERE route is a linked data structure, having transport names in

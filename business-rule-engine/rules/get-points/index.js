@@ -47,7 +47,7 @@ function getPointPricing(identityId, params) {
   .then(response => {
     const addon = response.addon;
     if (!addon) {
-      return Promise.reject(new Error(`Failed to retrieve Chargebee point pricing for ${params.currency}`));
+      return Promise.reject(new BusinessRuleError(`Failed to retrieve Chargebee point pricing for ${params.currency}`, 500, 'get-point-pricing'));
     }
 
     // Chargebee returns the prices in cents
@@ -55,16 +55,16 @@ function getPointPricing(identityId, params) {
     // FIXME Rename this. This is not a price per point, but inverse of it
     const price = addon.price / 100;
     if (isNaN(price)) {
-      return Promise.reject(new Error(`Chargebee response pricing for ${params.currency} is NaN`, 500));
+      return Promise.reject(new BusinessRuleError(`Chargebee response pricing for ${params.currency} is NaN`, 500, 'get-point-pricing'));
     }
 
     if (price <= 0) {
-      return Promise.reject(new Error(`Got a zero/negative unit pricing from Chargebee while getting point price for ${params.currency}`, 500));
+      return Promise.reject(new BusinessRuleError(`Got a zero/negative unit pricing from Chargebee while getting point price for ${params.currency}`, 500, 'get-point-pricing'));
     }
 
     pricingCache[params.currency] = price;
     return Promise.resolve(price)
-      .catch(error => Promise.reject(new Error(`Cannot run get-point rule, error: ${error.message}`)));
+      .catch(error => Promise.reject(new BusinessRuleError(`Cannot run get-point rule, error: ${error.message}`, 500, 'get-point-pricing')));
   });
 }
 
@@ -89,14 +89,14 @@ function getPointPricing(identityId, params) {
 function getPointBatch(identityId, params) {
   if (!params.hasOwnProperty('prices') || !(params.prices instanceof Array) || !(params.prices.length > 0)) {
     // TODO Move into validation code
-    return Promise.reject(new Error('Expected params.prices to be an array of prices, got ' + JSON.stringify(params.prices, null, 2)));
+    return Promise.reject(new BusinessRuleError('Expected params.prices to be an array of prices, got ' + JSON.stringify(params.prices, null, 2), 500, 'get-point-pricing-batch'));
   }
 
   const conversionQueue = params.prices.map((price, index) => {
     // Fallback if currency !== currency of the first item
     if (price.currency !== params.prices[index].currency) {
       // TODO Move into validation code
-      throw new Error('Business engine doesnt suppport mixed currency requests at the moment');
+      throw new BusinessRuleError('Business engine doesnt suppport mixed currency requests at the moment', 500, 'get-point-pricing-batch');
     }
 
     return getPointPricing(identityId, { currency: price.currency })

@@ -10,7 +10,7 @@ const ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/place/autocomplete/js
 function parseResults(response) {
 
   if (!util.isArray(response.predictions)) {
-    const error = new Error('Invalid response from Google - invalid format.');
+    const error = new MaaSError('Invalid response from Google - invalid format.', 500);
     return Promise.reject(error);
   }
 
@@ -48,7 +48,7 @@ function adapt(input) {
     case 'none':
       break;
     default:
-      throw new Error('Location hint not given');
+      throw new MaaSError('Location hint not given', 400);
   }
 
   return request.get(ENDPOINT_URL, {

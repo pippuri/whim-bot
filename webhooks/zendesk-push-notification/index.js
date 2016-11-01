@@ -60,7 +60,7 @@ function forwardPushNotification(event) {
         return Promise.resolve(`Zendesk push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       })
       .catch(error => {
-        return Promise.reject(new Error(`Zendesk push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`));
+        return Promise.reject(new MaaSError(`Zendesk push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`, 500));
       });
   }
 
@@ -106,7 +106,7 @@ function forwardPushNotification(event) {
         },
       });
     }
-    return Promise.reject(new Error(`No successful push sends out of ${failureCount} tries.`));
+    return Promise.reject(new MaaSError(`No successful push sends out of ${failureCount} tries.`, 500));
   });
 
 }

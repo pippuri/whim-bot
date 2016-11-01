@@ -11,7 +11,7 @@ function parseResults(response) {
   const suggestions = response.suggestions;
 
   if (!util.isArray(suggestions)) {
-    const error = new Error('Invalid response from HERE - invalid format.');
+    const error = new MaaSError('Invalid response from HERE - invalid format.', 400);
     return Promise.reject(error);
   }
 
@@ -42,7 +42,7 @@ function adapt(input) {
     case 'none':
       break;
     default:
-      throw new Error('Location hint not given');
+      throw new MaaSError('Location hint not given', 400);
   }
 
   return request.get(ENDPOINT_URL, {
@@ -61,9 +61,9 @@ function adapt(input) {
 
 module.exports.respond = function (event, callback) {
   if (typeof process.env.HERE_APP_ID === typeof undefined) {
-    callback(new Error('Missing HERE_APP_ID'));
+    callback(new MaaSError('Missing HERE_APP_ID'), 400);
   } else if (typeof process.env.HERE_APP_CODE === typeof undefined) {
-    callback(new Error('Missing HERE_APP_CODE'));
+    callback(new MaaSError('Missing HERE_APP_CODE'), 400);
   } else {
     adapt(event)
     .then(response => {

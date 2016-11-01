@@ -9,15 +9,15 @@ function updateUserData(event) {
   const payload = event.payload;
 
   if (Object.keys(event).length === 0) {
-    return Promise.reject(new Error('Input missing'));
+    return Promise.reject(new MaaSError('Input missing', 400));
   }
 
   if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new Error('Payload missing'));
+    return Promise.reject(new MaaSError('Payload missing', 400));
   }
 
   if (typeof identityId !== 'string') {
-    return Promise.reject(new Error('Invalid or missing identityId'));
+    return Promise.reject(new MaaSError('Invalid or missing identityId', 400));
   }
   return Subscription.updateUser(identityId, payload)
     .then( _ => Subscription.updateUserCreditCard(identityId, payload) )

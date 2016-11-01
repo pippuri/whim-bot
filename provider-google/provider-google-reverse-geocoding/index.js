@@ -4,13 +4,13 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 const lib = require('../lib');
-const MaaSError = require('../../lib/erros/MaaSError');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const ENDPOINT_URL = 'https://maps.googleapis.com/maps/api/geocode/json';
 
 function parseResults(response) {
   if (!util.isArray(response.results)) {
-    const error = new Error('Invalid response from Google - invalid format.');
+    const error = new MaaSError('Invalid response from Google - invalid format.', 500);
     return Promise.reject(error);
   }
 

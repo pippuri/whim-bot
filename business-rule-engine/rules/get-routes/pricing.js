@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const powerset = require('powerset');
 const _ = require('lodash');
 const getTspPricingRules = require('../get-tsp-pricing');
+const BusinessRuleError = require('../../BusinessRuleError.js');
 
 const tspData = {
   dev: require('../../../lib/tsp/tspData-dev.json'),
@@ -164,7 +165,7 @@ function _createTicket(leg, priceSpec) {
     case 'U_NA':
       return _createNotApplicableTicket(priceSpec);
     default:
-      throw new Error(`Unknown ticket specification type: ${JSON.stringify(priceSpec)}`);
+      throw new BusinessRuleError(`Unknown ticket specification type: ${JSON.stringify(priceSpec)}`, 500, 'get-routes');
   }
 }
 

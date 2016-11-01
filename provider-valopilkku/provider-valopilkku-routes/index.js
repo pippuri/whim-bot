@@ -49,7 +49,7 @@ function getValopilkkuRoutes(event) {
   })
   .then(response => {
     if (response.errorMessage) {
-      return Promise.reject(new Error(response.errorMessage));
+      return Promise.reject(new MaaSError(response.errorMessage), 500);
     }
 
     return adapter(response, event);

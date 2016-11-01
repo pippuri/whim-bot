@@ -8,7 +8,7 @@ function getUserData(event) {
   const identityId = event.identityId;
 
   if (typeof identityId !== 'string') {
-    return Promise.reject(new Error('Invalid or missing identityId'));
+    return Promise.reject(new MaaSError('Invalid or missing identityId', 400));
   }
 
   return Subscription.getLoginURL(identityId);
