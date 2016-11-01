@@ -8,8 +8,6 @@
 const lib = require('./lib');
 const MaaSError = require('../../lib/errors/MaaSError');
 const request = require('request-promise-lite');
-const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
-const validator = require('../../lib/validator');
 
 const HERE_ROUTE_URL = 'https://route.cit.api.here.com/routing/7.2/calculateroute.json';
 const HERE_WALKING_SPEED = 1.39; // 1,39m/s ~ 5km/h
@@ -129,7 +127,6 @@ module.exports.respond = function (event, callback) {
 
   return validateInput(event)
     .then(() => getHereRoutes(event))
-    .then(response => validator.validate(responseSchema, response))
     .then(response => callback(null, response))
     .catch(_error => {
       //console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

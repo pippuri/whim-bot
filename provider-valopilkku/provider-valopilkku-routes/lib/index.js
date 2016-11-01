@@ -76,6 +76,15 @@ function extractGeometryFromHereLeg(leg) {
   throw new Error('Could not extract Geometry from HERE leg');
 }
 
+function extractDistanceFromHereLeg(leg) {
+  if (leg && leg.distance) {
+    return leg.distance;
+  }
+
+  // Throw this so that the error handler can sort it out
+  throw new Error('Could not extract distance from HERE leg');
+}
+
 function getLegGeometryPoints(option) {
   // Call the HERE route provider for a likely driving route
   return serviceBus.call('MaaS-provider-here-routes', {
@@ -86,16 +95,14 @@ function getLegGeometryPoints(option) {
   });
 }
 
-function buildLeg(option, polyline) {
-  const distance = polylineEncoder.length(polyline, 'meter');
-
+function buildLeg(option, distance, polyline) {
   return {
     startTime: option.leg.startTime,
     endTime: option.leg.endTime,
     mode: option.leg.mode,
     from: option.leg.from,
     to: option.leg.to,
-    agencyId: option.leg.agencyId,
+    agencyId: 'Valopilkku',
     legGeometry: {
       points: polyline,
     },
@@ -114,11 +121,13 @@ function extractWalkingLegs(option) {
 function extractTaxiLeg(option) {
   return getLegGeometryPoints(option)
     .then(response => extractTaxiLegFromHereResponse(response))
-    .then(hereLeg  => {
+    .then(hereLeg => {
       extractEndTimeFromHereLegIntoOption(hereLeg, option);
-      return extractGeometryFromHereLeg(hereLeg);
-    })
-    .then(polyline => buildLeg(option, polyline));
+      const polyline = extractGeometryFromHereLeg(hereLeg);
+      const distance = extractDistanceFromHereLeg(hereLeg);
+
+      return buildLeg(option, distance, polyline);
+    });
 }
 
 function extractAllTaxiLegs(option) {

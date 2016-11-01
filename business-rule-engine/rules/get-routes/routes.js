@@ -1,11 +1,15 @@
 'use strict';
 
-const Promise = require('bluebird');
-const getProviderRules = require('../get-provider');
 const bus = require('../../../lib/service-bus');
-const _ = require('lodash');
-const polylineEncoder = require('polyline-extended');
+const getProviderRules = require('../get-provider');
 const geoUtils = require('../../../lib/geolocation');
+const Promise = require('bluebird');
+const polylineEncoder = require('polyline-extended');
+const utils = require('../../../lib/utils');
+const validator = require('../../../lib/validator');
+
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
+
 
 const MAX_PARALLEL = 1; // how many common provider to use
 // @NOTE support partially train route (go to Leppavaraa on train E)
@@ -217,20 +221,32 @@ function _mergeProviderResponses(responses, params) {
  * @return response {Promise - Array} response from provider invocation
  */
 function _invokeProviders(providers, params) {
-  if (providers && providers instanceof Array && providers.length === 0) return [];
-  // Call multiple providers; If we got at least one succesful response, then return
-  // all the succesful responses. If none found, reject with error.
+
+  if (!Array.isArray(providers)) {
+    return Promise.reject(new TypeError('providers should be an Array'));
+  }
+
+  if (providers.length === 0) {
+    return [];
+  }
+
+  // Call multiple providers; If we got at least one succesful response,
+  // then return all the succesful responses. If none found, reject with error.
   // (as long as one succeeds, we consider this a success).
-  return Promise.all(providers.map(provider => bus.call(provider.providerName, params).reflect()))
-    .filter(inspection => {
-      if (!inspection.isFulfilled()) {
-        const error = inspection.reason();
-        console.warn(`Provider call failed: ${error.message}`);
-        return false;
-      }
-      return true;
-    })
-    .map(inspection => inspection.value());
+  return Promise.all(providers.map(provider => {
+    return bus.call(provider.providerName, params)
+        .then(response => validator.validate(schema, utils.sanitize(response)))
+        .catch(error => {
+          // Log the warning here, so that we known which provider failed
+          console.warn(`Provider '${provider.providerName}' call failed: ${error.message}`);
+          console.warn(`Event: ${JSON.stringify(params)}`);
+
+          return Promise.reject(error);
+        })
+        .reflect();
+  }))
+  .filter(inspection => inspection.isFulfilled())
+  .map(inspection => inspection.value());
 }
 
 /**
@@ -254,7 +270,7 @@ function _setLegAgency(leg) {
       break;
     case 'TRAIN':
       // hook to see about VR and others
-      if (!leg.agencyId && _.includes(HSL_TRAINS, leg.route)) {
+      if (!leg.agencyId && HSL_TRAINS.some(route => route === leg.route)) {
         leg.agencyId = 'HSL';
       }
       break;

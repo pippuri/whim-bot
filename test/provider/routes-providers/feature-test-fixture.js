@@ -3,7 +3,7 @@
 const moment = require('moment-timezone');
 const bus = require('../../../lib/service-bus');
 const expect = require('chai').expect;
-const schema = require('maas-schemas/');
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
 const clone = require('lodash/clone');
@@ -79,8 +79,8 @@ module.exports = (test, provider) => {
       });
 
 
-      it('should trigger a valid response', () => {
-        return validator.validate(schema, response);
+      it('should trigger a valid response after sanitizing', () => {
+        return validator.validate(schema, utils.sanitize(response));
       });
 
       if (results.modes) {
