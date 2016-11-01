@@ -2,8 +2,6 @@
 
 const Database = require('../../../lib/models/Database');
 const ProfileDAO = require('../../../lib/models/Profile');
-const Profile = require('../../../lib/business-objects/Profile');
-const Subscription = require('../../../lib/subscription-manager/index');
 const errors = require('../../../lib/errors/index');
 const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
@@ -43,7 +41,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -120,7 +118,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -197,7 +195,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -279,7 +277,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -362,7 +360,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -445,7 +443,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -528,7 +526,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -611,7 +609,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -699,7 +697,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -787,7 +785,7 @@ module.exports = function (identityId) {
       Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId)
+          return ProfileDAO.query().findById(testIdentityId);
         })
         .then(profile => {
           pre = profile;
@@ -1120,7 +1118,7 @@ module.exports = function (identityId) {
 
   //------------------------------------------------------------------------
   // Default test events {{{
-  for (let event_type in testEvents.default) {
+  for (const event_type in testEvents.default) {
     if (!testEvents.default.hasOwnProperty(event_type)) {
       continue;
     }
