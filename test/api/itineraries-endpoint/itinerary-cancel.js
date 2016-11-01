@@ -5,10 +5,8 @@ const creationEvent = require('../../../itineraries/itinerary-create/event.json'
 const expect = require('chai').expect;
 const schema = require('maas-schemas/prebuilt/maas-backend/itineraries/itinerary-cancel/response.json');
 const signatures = require('../../../lib/signatures');
-const utils = require('../../../lib/utils');
 const validator = require('../../../lib/validator');
 const wrap = require('lambda-wrapper').wrap;
-
 
 module.exports = function (createLambda, cancelLambda) {
 
