@@ -42,7 +42,6 @@ function parseAndValidateInput(event) {
   return Promise.resolve(ret);
 }
 
-
 function getValopilkkuRoutes(event) {
   return TSPFactory.createFromAgencyId('Valopilkku')
   .then(tsp => {
@@ -56,7 +55,6 @@ function getValopilkkuRoutes(event) {
     return adapter(response, event);
   });
 }
-
 
 module.exports.respond = function (event, callback) {
   return parseAndValidateInput(event)
@@ -72,4 +70,3 @@ module.exports.respond = function (event, callback) {
       callback(_error);
     });
 };
-

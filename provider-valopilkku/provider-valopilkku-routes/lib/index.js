@@ -1,7 +1,6 @@
 'use strict';
 
 const Promise = require('bluebird');
-const polylineEncoder = require('polyline-extended');
 const serviceBus = require('../../../lib/service-bus');
 
 const GEOMETRY_QUERY_MODE = 'TAXI';
