@@ -71,7 +71,7 @@ module.exports = function () {
 
     it('should return correct error', () => {
       expect(error).to.not.be.undefined;
-      expect(error.message).to.equal('get-points: Currency \'unknown\' is unsupported');
+      expect(error.message).to.equal('400: get-points: Currency \'unknown\' is unsupported');
     });
   });
 };

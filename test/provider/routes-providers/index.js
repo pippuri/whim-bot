@@ -22,7 +22,7 @@ describe('routes provider', () => {
     const lambda = require('../../../provider-tripgo/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: false });
     testArriveBy(lambda);
-    testFromUnsupported(lambda);
+    testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda);
     test985kAfrica(lambda);
   });

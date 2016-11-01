@@ -41,7 +41,7 @@ module.exports = () => {
 
     it('should provide the expected error', () => {
       expect(error).to.be.an.instanceof(MaaSError);
-      expect(error.code).to.equal(400);
+      expect(error.code).to.equal(500);
     });
 
     it('should not return a response', () => {

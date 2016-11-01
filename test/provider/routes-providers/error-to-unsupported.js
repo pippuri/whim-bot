@@ -31,16 +31,18 @@ module.exports = (lambda, options) => {
       wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
+        console.log(err, data);
         done();
       });
     });
 
     it('should succeed without errors', () => {
-      expect(error).to.be.null;
+      expect(error).to.not.be.null;
+      expect(error.message).to.equal('500: Destination lies outside covered area.');
     });
 
     it('should trigger a null response', () => {
-      expect(response.plan.itineraries.length).to.equal(0);
+      expect(response).to.be.null;
     });
 
   });
