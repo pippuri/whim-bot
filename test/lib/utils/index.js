@@ -105,6 +105,76 @@ describe('utils', () => {
     });
   });
 
+  describe('mapDeep', () => {
+    const order = [];
+    const replacements = [11, 22, 33, 44, 55];
+
+    it('should walk the object in-order', () => {
+      const value = {
+        one: 1,
+        x: {
+          two: 2,
+          x: {
+            three: 3,
+          },
+          fourAndFive: [4, 5],
+        },
+      };
+      const mapped = utils.mapDeep(value, val => {
+        order.push(value);
+        return replacements.shift();
+      });
+
+      expect(mapped).to.deep.equal({
+        one: 11,
+        x: {
+          two: 22,
+          x: {
+            three: 33,
+          },
+          fourAndFive: [44, 55],
+        },
+      });
+    });
+  });
+
+  describe('cloneDeep', () => {
+    const original = {
+      number: 1,
+      string: 'string',
+      null: null,
+      object: {
+        number: 2,
+        object: {
+          number: 3,
+          array: [1, { object: { number: 1 } }],
+        },
+      },
+    };
+    let cloned;
+
+    before(() => {
+      cloned = utils.cloneDeep(original);
+    });
+
+    it('should be able to clone complex objects', () => {
+      expect(cloned).to.deep.equal(original);
+    });
+
+    it('should create copies of the values, not references', () => {
+      const original = {
+        object: { number: 1 },
+      };
+      const expected = {
+        object: { number: 1 },
+      };
+      const cloned = utils.cloneDeep(original);
+      original.object = null;
+
+      expect(cloned).to.deep.equal(expected);
+    });
+  });
+
   describe('toFixed', () => {
     it('should return plain string as-is', () => {
       const value = 'foobar';
