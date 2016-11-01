@@ -11,7 +11,7 @@ module.exports = {
   },
 
   handlePayload(payload, key, defaultResponse) {
-    console.log(payload, key);
+    console.info(payload, key);
     return defaultResponse;
   },
 };
