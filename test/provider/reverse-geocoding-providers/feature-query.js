@@ -1,9 +1,11 @@
 'use strict';
 
-const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
-const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/response.json');
+const utils = require('../../../lib/utils');
 const validator = require('../../../lib/validator');
+const wrap = require('lambda-wrapper').wrap;
+
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/response.json');
 
 module.exports = (lambda, fixture) => {
   describe('basic tests of a simple query', () => {
@@ -29,8 +31,8 @@ module.exports = (lambda, fixture) => {
       expect(error).to.be.null;
     });
 
-    it('should trigger a valid response', () => {
-      return validator.validate(schema, response);
+    it('should trigger a valid response after sanitization', () => {
+      return validator.validate(schema, utils.sanitize(response));
     });
   });
 
@@ -47,14 +49,14 @@ module.exports = (lambda, fixture) => {
         });
       });
 
-      it('should have a valid answer', () => {
+      it('should have a valid answer after sanitization', () => {
         if (!item.pass) {
           expect(error).to.not.be.null;
           return Promise.resolve();
         }
 
         expect(response.features).to.not.be.empty;
-        return validator.validate(schema, response);
+        return validator.validate(schema, utils.sanitize(response));
       });
     });
   });
