@@ -10,7 +10,7 @@ const FORCE_SUBSCRIPTION_UPDATE = true;
 
 
 function handle(payload, key, defaultResponse) {
-  console.log('handleCustomerEvents');
+  console.info('handleCustomerEvents');
   console.info(JSON.stringify(payload));
 
   let profile = null;
