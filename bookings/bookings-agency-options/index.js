@@ -1,10 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
-const MaaSError = require('../../lib/errors/MaaSError');
-const utils = require('../../lib/utils');
 const bus = require('../../lib/service-bus');
+const MaaSError = require('../../lib/errors/MaaSError');
+const Promise = require('bluebird');
+const signatures = require('../../lib/signatures');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
+const utils = require('../../lib/utils');
 
 /**
  * Parses and validates the event input
@@ -137,7 +138,7 @@ function getAgencyProductOptions(event) {
             amount: price,
             currency: 'POINT',
           };
-          option.signature = utils.sign(option, process.env.MAAS_SIGNING_SECRET);
+          option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
           return option;
         });
 

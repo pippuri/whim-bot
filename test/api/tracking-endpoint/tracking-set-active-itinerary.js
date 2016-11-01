@@ -1,9 +1,10 @@
 'use strict';
 
 const _ = require('lodash');
-const wrap = require('lambda-wrapper').wrap;
-const utils = require('../../../lib/utils');
 const expect = require('chai').expect;
+const signatures = require('../../../lib/signatures');
+const wrap = require('lambda-wrapper').wrap;
+
 const creationEvent = require('../../../itineraries/itinerary-create/event.json');
 
 module.exports = function (createLambda, setActiveLambda) {
@@ -18,7 +19,7 @@ module.exports = function (createLambda, setActiveLambda) {
       // Sign the event data (Travis seems to have problems repeating the signatures)
       const newEvent = _.cloneDeep(creationEvent);
       delete newEvent.itinerary.signature;
-      newEvent.itinerary.signature = utils.sign(newEvent.itinerary, process.env.MAAS_SIGNING_SECRET);
+      newEvent.itinerary.signature = signatures.sign(newEvent.itinerary, process.env.MAAS_SIGNING_SECRET);
 
       // Create an itinerary, then cancel it
       wrap(createLambda).run(newEvent, (_error, _response) => {

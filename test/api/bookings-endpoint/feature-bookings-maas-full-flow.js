@@ -1,10 +1,12 @@
 'use strict';
 
 const expect = require('chai').expect;
-const wrap = require('lambda-wrapper').wrap;
-const Promise = require('bluebird');
+const models = require('../../../lib/models');
 const moment = require('moment-timezone');
+const Promise = require('bluebird');
+const signatures = require('../../../lib/signatures');
 const utils = require('../../../lib/utils');
+const wrap = require('lambda-wrapper').wrap;
 
 const createLambda = require('../../../bookings/bookings-create/handler.js');
 const retrieveLambda = require('../../../bookings/bookings-retrieve/handler.js');
@@ -12,7 +14,6 @@ const cancelLambda = require('../../../bookings/bookings-cancel/handler.js');
 const listLambda = require('../../../bookings/bookings-list/handler.js');
 const Profile = require('../../../lib/business-objects/Profile');
 
-const models = require('../../../lib/models');
 const Database = models.Database;
 
 module.exports = function (optionsLambda) {
@@ -87,7 +88,7 @@ module.exports = function (optionsLambda) {
       const tooExpensiveBooking = utils.cloneDeep(optionsResponse.options[0]);
       tooExpensiveBooking.fare.amount = 99999;
       delete tooExpensiveBooking.signature;
-      tooExpensiveBooking.signature = utils.sign(tooExpensiveBooking, process.env.MAAS_SIGNING_SECRET);
+      tooExpensiveBooking.signature = signatures.sign(tooExpensiveBooking, process.env.MAAS_SIGNING_SECRET);
 
       event = {
         identityId: testUserIdentity,
@@ -116,7 +117,7 @@ module.exports = function (optionsLambda) {
       if (!optionsResponse.options[0].fare.amount || optionsResponse.options[0].fare.amount === 0) {
         optionsResponse.options[0].fare.amount = 123;
         delete optionsResponse.options[0].signature;
-        optionsResponse.options[0].signature = utils.sign(optionsResponse.options[0], process.env.MAAS_SIGNING_SECRET);
+        optionsResponse.options[0].signature = signatures.sign(optionsResponse.options[0], process.env.MAAS_SIGNING_SECRET);
       }
       event = {
         identityId: testUserIdentity,

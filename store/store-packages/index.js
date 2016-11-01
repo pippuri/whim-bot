@@ -1,9 +1,8 @@
 'use strict';
 
 // Library
-const SubscriptionMgr = require('../../lib/subscription-manager');
-const lib = require('../../lib/utils/index');
 const MaaSError = require('../../lib/errors/MaaSError');
+const SubscriptionMgr = require('../../lib/subscription-manager');
 
 function formatResponse(input) {
 
@@ -20,13 +19,13 @@ function formatResponse(input) {
       continue;
     }
 
-    output.plans.push(lib.parseSingleChargebeePlan(planContext));
+    output.plans.push(SubscriptionMgr.parseSingleChargebeePlan(planContext));
   }
 
   // Parse addons
   for (let j = 0; j < input[1].list.length; j++) {
     const addonContext = input[1].list[j];
-    output.addons.push(lib.parseSingleChargebeeAddon(addonContext));
+    output.addons.push(SubscriptionMgr.parseSingleChargebeeAddon(addonContext));
   }
 
   return output;

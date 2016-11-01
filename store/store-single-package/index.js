@@ -1,7 +1,6 @@
 'use strict';
 
 // Dependency
-const lib = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
 const SubscriptionMgr = require('../../lib/subscription-manager');
 
@@ -19,9 +18,9 @@ module.exports.respond = function (event, callback) {
   getSingleProduct(event)
     .then(response => {
       if (event.type === 'plan') {
-        callback(null, { plan: lib.parseSingleChargebeePlan(response) });
+        callback(null, { plan: SubscriptionMgr.parseSingleChargebeePlan(response) });
       } else if (event.type === 'addon') {
-        callback(null, { addon: lib.parseSingleChargebeeAddon(response) });
+        callback(null, { addon: SubscriptionMgr.parseSingleChargebeeAddon(response) });
       }
     })
     .catch(_error => {

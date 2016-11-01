@@ -3,7 +3,6 @@
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const serviceBus = require('../../../lib/service-bus');
-const utils = require('../../../lib/utils');
 
 const GEOMETRY_QUERY_MODE = 'TAXI';
 
@@ -104,11 +103,6 @@ function buildLeg(option, polyline) {
   };
 }
 
-function signLeg(leg) {
-  leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
-  return leg;
-}
-
 function extractWalkingLegs(option) {
   /*TODO: nothing for now,
           but this can return a promise that resolves to an array in the form:
@@ -124,8 +118,7 @@ function extractTaxiLeg(option) {
       extractEndTimeFromHereLegIntoOption(hereLeg, option);
       return extractGeometryFromHereLeg(hereLeg);
     })
-    .then(polyline => buildLeg(option, polyline))
-    .then(leg      => signLeg(leg));
+    .then(polyline => buildLeg(option, polyline));
 }
 
 function extractAllTaxiLegs(option) {
@@ -171,4 +164,3 @@ module.exports = {
   extractFromElement: extractFromElement,
   extractItinerary: extractItinerary,
 };
-

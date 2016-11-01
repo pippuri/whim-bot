@@ -1,8 +1,9 @@
 'use strict';
 
 const bus = require('../../lib/service-bus');
-const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
+const signatures = require('../../lib/signatures');
+const utils = require('../../lib/utils');
 const ValidationError = require('../../lib/validator/ValidationError');
 const validator = require('../../lib/validator');
 
@@ -43,11 +44,11 @@ function signResponse(response) {
   itineraries.map(itinerary => {
     (itinerary.legs || []).map(leg => {
       if (!leg.signature) {
-        leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
+        leg.signature = signatures.sign(leg, process.env.MAAS_SIGNING_SECRET);
       }
     });
 
-    itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
+    itinerary.signature = signatures.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
   });
 
   return response;
