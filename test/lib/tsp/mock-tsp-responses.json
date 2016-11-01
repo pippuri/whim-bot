@@ -12,8 +12,7 @@
           "lat":60.18948,
           "lon":24.97213
         },
-        "mode":"WALK",
-        "agencyId":"Mock"
+        "mode":"WALK"
       },
       "meta":{
         "MODE_WALK": {
@@ -47,8 +46,7 @@
           "lat":60.18948,
           "lon":24.97213
         },
-        "mode":"CAR",
-        "agencyId":"Mock"
+        "mode":"CAR"
       },
       "meta":{
         "MODE_WALK": {
