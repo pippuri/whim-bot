@@ -84,7 +84,6 @@ function parseAndValidateInput(event) {
 }
 
 function getAgencyProductOptions(event) {
-
   return TSPFactory.createFromAgencyId(event.agencyId)
   .then(tsp => {
     return tsp.query({
@@ -116,12 +115,12 @@ function getAgencyProductOptions(event) {
     }
 
     const prices = [];
-    const options = response.options
-      .map(utils.sanitize)
-      .map(option => {
-        prices.push( { amount: option.cost.amount, currency: option.cost.currency } );
-        return option;
-      });
+    const options = response.options;
+
+    // Collect the prices for batch pricing call
+    options.forEach(option => {
+      prices.push( { amount: option.cost.amount, currency: option.cost.currency } );
+    });
 
     if (prices.length > 0  && prices[0].currency) {
       return bus.call('MaaS-business-rule-engine', {
@@ -133,12 +132,17 @@ function getAgencyProductOptions(event) {
       })
       .then(points => {
         options.forEach((option, index) => {
+          // Inject price
           const price = points[index];
           option.fare = {
             amount: price,
             currency: 'POINT',
           };
           option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
+
+          // Inject agencyId
+          option.leg.agencyId = event.agencyId;
+
           return option;
         });
 
