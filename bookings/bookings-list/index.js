@@ -57,7 +57,7 @@ function parseAndValidateInput(event) {
 }
 
 function formatResponse(bookings) {
-  const trimmed = bookings.map(booking => utils.removeNulls(booking.toObject()));
+  const trimmed = bookings.map(booking => utils.sanitize(booking.toObject()));
 
   return Promise.resolve({
     bookings: trimmed,

@@ -12,7 +12,7 @@ const Database = models.Database;
 
 function formatResponse(itinerary) {
   return Promise.resolve({
-    itinerary: utils.removeNulls(itinerary),
+    itinerary: utils.sanitize(itinerary),
     maas: {},
   });
 }

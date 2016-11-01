@@ -39,7 +39,7 @@ function convertAgencyId(input) {
 }
 
 function convertLeg(leg) {
-  leg = utils.removeNulls(leg);
+  leg = utils.sanitize(leg);
 
   return {
     startTime: leg.startTime,

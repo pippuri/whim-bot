@@ -57,7 +57,7 @@ function parseAndValidateInput(event) {
 }
 
 function formatResponse(itineraries) {
-  const filtered = itineraries.map(itinerary => utils.removeNulls(itinerary.toObject()));
+  const filtered = itineraries.map(itinerary => utils.sanitize(itinerary.toObject()));
 
   return Promise.resolve({
     itineraries: filtered,

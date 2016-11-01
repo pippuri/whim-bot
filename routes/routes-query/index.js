@@ -107,7 +107,7 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
   })
   .then(response => filterPastRoutes(leaveAt, response))
   .then(response => validator.validate(responseSchema, response))
-  .then(response => utils.toFixed(response, 6))
+  .then(response => utils.sanitize(response))
   .then(response => signResponse(response));
 }
 

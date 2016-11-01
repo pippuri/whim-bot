@@ -23,7 +23,7 @@ function validateInput(event) {
 
 function formatResponse(itinerary) {
   return Promise.resolve({
-    itinerary: utils.removeNulls(itinerary),
+    itinerary: utils.sanitize(itinerary),
     maas: {},
   });
 }

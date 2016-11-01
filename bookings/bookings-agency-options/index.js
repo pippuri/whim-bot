@@ -117,7 +117,7 @@ function getAgencyProductOptions(event) {
 
     const prices = [];
     const options = response.options
-      .map(utils.removeNulls)
+      .map(utils.sanitize)
       .map(option => {
         prices.push( { amount: option.cost.amount, currency: option.cost.currency } );
         return option;
@@ -157,7 +157,7 @@ function getAgencyProductOptions(event) {
  * @return {object} A valid MaaS Response nesting the object & meta
  */
 function formatResponse(options) {
-  const trimmed = options.map(utils.removeNulls);
+  const trimmed = options.map(utils.sanitize);
 
   return Promise.resolve({
     options: trimmed,
