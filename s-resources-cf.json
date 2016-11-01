@@ -156,9 +156,10 @@
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents"
+                "logs:PutLogEvents",
+                "logs:putSubscriptionFilter"
               ],
-              "Resource": "arn:aws:logs:${region}:*:*"
+              "Resource": "*"
             },
             {
               "Effect": "Allow",

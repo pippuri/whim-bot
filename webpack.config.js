@@ -3,8 +3,8 @@
 const webpack = require('webpack');
 
 module.exports = {
-  // entry: provided by serverless
   // output: provided by serverless
+  // entry
   target: 'node',
   externals: [
     'aws-sdk',
