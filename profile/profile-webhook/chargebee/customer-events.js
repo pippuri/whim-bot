@@ -18,8 +18,8 @@ function handle(payload, key, defaultResponse) {
   switch (payload.event_type) {
     case 'customer_changed':
     case 'customer_created':
-      console.log(`\t${payload.event_type}`);
-      console.log(payload.content.content);
+      console.info(`\t${payload.event_type}`);
+      console.info(payload.content.content);
 
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;
@@ -43,8 +43,8 @@ function handle(payload, key, defaultResponse) {
 
     case 'customer_deleted':
       //[XXX: the customer is reset to payg, but not marked as 'deleted']
-      console.log(`\t${payload.event_type}`);
-      console.log(payload.content.content);
+      console.info(`\t${payload.event_type}`);
+      console.info(payload.content.content);
 
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;

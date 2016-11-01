@@ -30,7 +30,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => defaultResponse);
 
     case 'subscription_changed':
-      console.log(`\t${payload.event_type}`);
+      console.info(`\t${payload.event_type}`);
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;
       activePlan = profile.plan.id;
@@ -42,7 +42,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => defaultResponse);
 
     case 'subscription_renewed':
-      console.log(`\t${payload.event_type}`);
+      console.info(`\t${payload.event_type}`);
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;
       activePlan = profile.plan.id;
@@ -52,7 +52,7 @@ function handle(payload, key, defaultResponse) {
 
     case 'subscription_cancelled':
     case 'subscription_deleted':
-      console.log(`\t${payload.event_type}`);
+      console.info(`\t${payload.event_type}`);
 
       profile = Subscription.formatUser(payload.content.content);
       identityId = profile.identityId;
@@ -65,7 +65,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => defaultResponse);
 
     case 'subscription_shipping_address_updated':
-      console.log(`\t${payload.event_type}`);
+      console.info(`\t${payload.event_type}`);
       return defaultResponse;
 
     default:

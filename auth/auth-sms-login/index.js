@@ -225,7 +225,7 @@ module.exports.respond = function (event, callback) {
     .then(response => callback(null, response))
     .catch(errors.stdErrorHandler(callback, event))
     .lastly(() => {
-      console.log('------------------------');
+      console.info('------------------------');
       Database.cleanup();
     });
 };
