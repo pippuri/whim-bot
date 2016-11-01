@@ -31,7 +31,7 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 

@@ -92,7 +92,7 @@ module.exports.respond = function (event, callback) {
   return pollForDecisionTasks(event)
     .then(() => callback(null, null))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 

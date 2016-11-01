@@ -33,7 +33,7 @@ module.exports.respond = (event, callback) => {
   sendSmsMessage(event.phone, event.message)
   .then(response => callback(null, response.toString()))
   .catch(_error => {
-    console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
 
