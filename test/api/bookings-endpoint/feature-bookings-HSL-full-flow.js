@@ -84,7 +84,19 @@ module.exports = function () {
         );
     });
 
-    it('Can create the HSL ticket', () => {
+    // FIXME For some reason we do not get the same start time as requested,
+    // but 10 minutes earlier
+    xit('The options have the same data as requested', () => {
+      optionsResponse.options.forEach(option => {
+        expect(option.leg.agencyId).to.equal(event.agencyId);
+        expect(option.leg.startTime).to.equal(event.startTime);
+        expect(option.leg.mode).to.equal(event.mode);
+        expect(option.leg.from.lat).to.equal(parseFloat(event.from.split(',')[0]));
+        expect(option.leg.from.lon).to.equal(parseFloat(event.from.split(',')[1]));
+      });
+    });
+
+    it('Can create the HSL booking', () => {
       // put fare if there is none
       const booking = utils.cloneDeep(optionsResponse.options[0]);
       event = {
@@ -105,6 +117,18 @@ module.exports = function () {
 
     it('User balance is reduced by fare', () => {
       expect(startingBalance - (createResponse.booking.fare.amount || 0)).to.equal(midBalance);
+    });
+
+    // FIXME For some reason we do not get the same start time as requested,
+    // but 10 minutes earlier
+    xit('The HSL booking data corresponds the chosen option', () => {
+      const option = optionsResponse.options[0];
+      const booking = createResponse.booking;
+
+      expect(booking.leg.startTime).to.equal(option.leg.startTime);
+      expect(booking.leg.mode).to.equal(option.leg.mode);
+      expect(booking.leg.endTime).to.equal(option.leg.endTime);
+      expect(booking.cost).to.deep.equal(option.cost);
     });
 
     it('Can retrieve the HSL ticket', () => {
