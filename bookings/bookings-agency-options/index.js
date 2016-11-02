@@ -138,10 +138,11 @@ function getAgencyProductOptions(event) {
             amount: price,
             currency: 'POINT',
           };
-          option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
 
           // Inject agencyId
           option.leg.agencyId = event.agencyId;
+
+          option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
 
           return option;
         });

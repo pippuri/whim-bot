@@ -20,20 +20,29 @@ function runLambda(lambda, event) {
 }
 
 module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retrieveLambda) {
-  describe('cancel a booking, created by bookings-create with the first option retrieved from Sixt agency-option for the next weeks Tuesday starting from 12:00 UTC+2', () => {
+  describe('full Sixt booking cycle on Tuesday starting from 12:00 UTC+2', () => {
 
-    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    let event;
     let optionsResponse;
     let createResponse;
     let cancelResponse;
     let retrieveResponse;
     let error;
 
+    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
     const tueMoment = moment().tz('Europe/Helsinki').day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
     const wedMoment = moment().tz('Europe/Helsinki').day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
 
-    before(() => {
-      const agencyOptionsEvent = {
+    // Before each test we check if a previous test has errored. If so, skip
+    // the test.
+    beforeEach(function () {
+      if (error) {
+        this.skip();
+      }
+    });
+
+    it('fetches the agency options', () => {
+      event = {
         identityId: testIdentityId,
         agencyId: 'Sixt',
         mode: 'CAR',
@@ -43,62 +52,85 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
         endTime: wedMoment,
       };
 
-      return runLambda(agencyOptionsLambda, agencyOptionsEvent)
-        .then(response => {
-          optionsResponse = response;
+      return runLambda(agencyOptionsLambda, event)
+        .then(
+          res => Promise.resolve(optionsResponse = res),
+          err => Promise.reject(error = err)
+        );
+    });
 
-          if (optionsResponse.options.length === 0) {
-            throw new Error('No Sixt booking options were found');
-          }
+    it('returns a valid response with at least one valid option', () => {
+      expect(optionsResponse).to.not.be.undefined;
+      expect(optionsResponse.options.length).to.be.above(0);
+    });
 
-          // Choose the first option in the list to book
-          const bookingOption =  optionsResponse.options[0];
-          const bookingEvent = {
-            identityId: testIdentityId,
-            payload: bookingOption,
-          };
+    it('creates a booking from the first valid option', () => {
+      // Choose the first option in the list to book
+      const bookingOption = optionsResponse.options[0];
+      event = {
+        identityId: testIdentityId,
+        payload: bookingOption,
+      };
 
-          return runLambda(createLambda, bookingEvent);
-        })
-        .then(response => {
+      return runLambda(createLambda, event)
+        .then(
+          res => Promise.resolve(createResponse = res),
+          err => Promise.reject(error = err)
+        );
+    });
 
-          createResponse = response;
+    it('creates the booking in state RESERVED', () => {
+      expect(createResponse.booking.state).to.equal('RESERVED');
+    });
 
-          if (response.booking.state !== 'RESERVED') {
-            throw new Error(`Sixt booking not reserved - state ${response.booking.state}`);
-          }
+    it('cancels the reserved booking', () => {
+      event = {
+        identityId: testIdentityId,
+        bookingId: createResponse.booking.id,
+      };
 
-          return response;
-        })
-        .then(response => {
-          const cancelEvent = {
-            identityId: testIdentityId,
-            bookingId: createResponse.booking.id,
-          };
+      return runLambda(cancelLambda, event)
+      .then(
+        res => Promise.resolve(cancelResponse = res),
+        err => Promise.reject(error = err)
+      );
+    });
 
-          return runLambda(cancelLambda, cancelEvent);
-        })
-        .then(response => {
-          cancelResponse = response;
+    it('cancels the booking with state CANCELLED', () => {
+      expect(cancelResponse.booking.state).to.equal('CANCELLED');
+    });
 
-          const retrieveEvent = {
-            identityId: testIdentityId,
-            bookingId: createResponse.booking.id,
-          };
+    it('retrieves the cancelled booking', () => {
+      event = {
+        identityId: testIdentityId,
+        bookingId: createResponse.booking.id,
+      };
 
-          return runLambda(retrieveLambda, retrieveEvent);
-        })
-        .then(response => {
-          retrieveResponse = response;
-          return Promise.resolve(retrieveResponse);
-        })
-        .catch(_error => {
-          error = _error;
-          return Promise.reject(error);
-        });
+      return runLambda(retrieveLambda, event)
+      .then(
+        res => Promise.resolve(retrieveResponse = res),
+        err => Promise.reject(error = err)
+      );
+    });
+
+    it('the cancelled booking, when retrieved has state CANCELLED', () => {
+      expect(retrieveResponse.booking.state).to.equal('CANCELLED');
+    });
+
+    afterEach(() => {
+      if (error) {
+        console.log('Caught an error:', error.message);
+        console.log('Event:', JSON.stringify(event, null, 2));
+        console.log(error.stack);
+      }
     });
 
     after(() => {
+      /*console.log('List options', JSON.stringify(optionsResponse, null, 2));
+      console.log('Create booking', JSON.stringify(createResponse, null, 2));
+      console.log('Retrieve booking', JSON.stringify(retrieveResponse, null, 2));
+      console.log('Cancel booking', JSON.stringify(cancelResponse, null, 2));*/
+
       return Database.init()
         .then(() => {
           if (!createResponse) {
@@ -113,30 +145,6 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
           error = err;
           return Promise.reject(err);
         });
-    });
-
-    it('The whole cycle should succeed without error', () => {
-      expect(error).to.be.undefined;
-    });
-
-    it('bookings-agency-options should return a valid response', () => {
-      expect(optionsResponse).to.not.be.undefined;
-    });
-
-    it('at least one option should exist', () => {
-      expect(optionsResponse.options.length).to.be.above(0);
-    });
-
-    it('bookings-create should return a valid response', () => {
-      expect(createResponse).to.not.be.undefined;
-    });
-
-    it('bookings-cancel should return a booking with state CANCELLED', () => {
-      expect(cancelResponse.booking.state).to.equal('CANCELLED');
-    });
-
-    it('bookings-retrieve booking should have state CANCELLED', () => {
-      expect(retrieveResponse.booking.state).to.equal('CANCELLED');
     });
   });
 };
