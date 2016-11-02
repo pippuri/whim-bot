@@ -299,8 +299,12 @@ module.exports = options => {
         from: '60.165781,24.845139',
         to: '60.18176,24.95494',
 
-        leaveAt: '' + moment().utcOffset(180).isoWeekday(7).add(1, 'days').hour(17).valueOf(), // Monday one week forward around five
-        // leaveAt: 1476532800000,
+        // Monday one week forward around five
+        leaveAt: '' + moment().tz('Europe/Helsinki')
+                              .day(8)
+                              .hour(17).minute(0)
+                              .second(0).millisecond(0)
+                              .valueOf(),
       },
       headers: {},
     };
@@ -361,19 +365,19 @@ module.exports = options => {
         return (typeof unallowed === typeof undefined);
       });
 
-      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
+      const taxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
         const modes = itinerary.legs.map(leg => leg.mode);
         return modes.indexOf('TAXI') !== -1;
       });
 
-      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
+      const valopilkkuTaxiRoutes = taxiRoutes.filter(itinerary => {
         const agencyIds = itinerary.legs.map(leg => leg.agencyId);
         return _.includes(agencyIds, 'Valopilkku');
       });
 
       const firstValopilkkuTaxiRoute = valopilkkuTaxiRoutes[0];
       const valopilkkuTaxiRouteTaxiLegs = firstValopilkkuTaxiRoute.legs.filter(leg => {
-        return leg.mode !== 'TAXI';
+        return leg.mode === 'TAXI';
       });
 
       expect(firstValopilkkuTaxiRoute).to.not.be.undefined;
@@ -393,19 +397,19 @@ module.exports = options => {
         return (typeof unallowed === typeof undefined);
       });
 
-      const directTaxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
+      const taxiRoutes = itinerariesWithAllowedModes.filter(itinerary => {
         const modes = itinerary.legs.map(leg => leg.mode);
         return modes.indexOf('TAXI') !== -1;
       });
 
-      const valopilkkuTaxiRoutes = directTaxiRoutes.filter(itinerary => {
+      const valopilkkuTaxiRoutes = taxiRoutes.filter(itinerary => {
         const agencyIds = itinerary.legs.map(leg => leg.agencyId);
         return _.includes(agencyIds, 'Valopilkku');
       });
 
       const firstValopilkkuTaxiRoute = valopilkkuTaxiRoutes[0];
       const valopilkkuTaxiRouteTaxiLegs = firstValopilkkuTaxiRoute.legs.filter(leg => {
-        return leg.mode !== 'TAXI';
+        return leg.mode === 'TAXI';
       });
 
       expect(firstValopilkkuTaxiRoute).to.not.be.undefined;
