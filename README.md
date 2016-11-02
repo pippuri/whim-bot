@@ -48,8 +48,10 @@ npm install npm -g
 
 ### Install Serverless
 
+This project uses Serverless versin 0.5.6:
+
 ```
-npm install -g serverless
+npm install -g serverless@0.5.6
 ```
 
 ### Download Backend Code
@@ -149,6 +151,13 @@ below.
 mocha -g TripGo
 mocha -g leaveAt
 mocha -g "TripGo \(South Finland\) leaveAt request response"
+```
+
+If you see timeout errors, try increasing timeout for mocha run:
+
+```
+mocha -g TripGo -t 25000
+mocha -t 25000
 ```
 
 ### Running a Serverless Function In The Cloud
