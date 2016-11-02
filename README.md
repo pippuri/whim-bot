@@ -48,7 +48,7 @@ npm install npm -g
 
 ### Install Serverless
 
-This project uses Serverless versin 0.5.6:
+This project uses Serverless version 0.5.6:
 
 ```
 npm install -g serverless@0.5.6
