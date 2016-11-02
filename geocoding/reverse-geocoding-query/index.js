@@ -2,10 +2,12 @@
 
 const bus = require('../../lib/service-bus');
 const geolocation = require('../../lib/geolocation');
-const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/request.json');
+const utils = require('../../lib/utils');
 const validator = require('../../lib/validator');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
+
+const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-reverse/request.json');
 
 function orderByDistance(features, reference) {
   const sorted = features.sort((a, b) => {
@@ -44,7 +46,7 @@ module.exports.respond = function (event, callback) {
 
     // Replace the delegate query info with our own query
     results.debug = event.payload;
-    callback(null, results);
+    callback(null, utils.sanitize(results));
   })
   .catch(_error => {
     console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

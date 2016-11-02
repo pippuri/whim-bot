@@ -1,13 +1,14 @@
 'use strict';
 
 const _ = require('lodash');
-const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
+const models = require('../../../lib/models');
+const moment = require('moment-timezone');
+const signatures = require('../../../lib/signatures');
 const schema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-list/response.json');
 const validator = require('../../../lib/validator');
-const utils = require('../../../lib/utils');
-const moment = require('moment-timezone');
-const models = require('../../../lib/models');
+const wrap = require('lambda-wrapper').wrap;
+
 const Database = models.Database;
 
 module.exports = function (optionsLambda, createLambda, listLambda) {
@@ -53,7 +54,7 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
           identityId: testIdentityId,
         };
         delete newEvent.payload.signature;
-        newEvent.payload.signature = utils.sign(newEvent.payload, process.env.MAAS_SIGNING_SECRET);
+        newEvent.payload.signature = signatures.sign(newEvent.payload, process.env.MAAS_SIGNING_SECRET);
 
         // Create a booking, then cancel it
         wrap(createLambda).run(newEvent, (_error, _response) => {

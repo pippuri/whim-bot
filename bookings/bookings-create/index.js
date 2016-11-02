@@ -1,11 +1,13 @@
 'use strict';
 
+const Booking = require('../../lib/business-objects/Booking');
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
+const signatures = require('../../lib/signatures');
 const utils = require('../../lib/utils');
+
 const Database = models.Database;
-const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validate event input
@@ -41,7 +43,7 @@ function validateInput(event) {
  * @return {object} A valid MaaS Response nesting the object & meta
  */
 function formatResponse(booking) {
-  const trimmed = utils.removeNulls(booking);
+  const trimmed = utils.sanitize(booking);
 
   return Promise.resolve({
     booking: trimmed,
@@ -60,7 +62,7 @@ module.exports.respond = (event, callback) => {
 
   return Database.init()
     .then(() => validateInput(event))
-    .then(() => utils.validateSignatures(event.payload))
+    .then(() => signatures.validateSignatures(event.payload))
     .then(signedBooking => utils.without(signedBooking, ['signature']))
     .then(unsignedBooking => Booking.startTransaction()
       .then(transaction => Promise.resolve(trx = transaction))

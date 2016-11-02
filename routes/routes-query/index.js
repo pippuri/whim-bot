@@ -1,12 +1,9 @@
 'use strict';
 
 const bus = require('../../lib/service-bus');
-const utils = require('../../lib/utils');
 const MaaSError = require('../../lib/errors/MaaSError');
+const signatures = require('../../lib/signatures');
 const ValidationError = require('../../lib/validator/ValidationError');
-const validator = require('../../lib/validator');
-
-const responseSchema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 
 function validateInput(event) {
   if (!event.payload.from) {
@@ -43,11 +40,11 @@ function signResponse(response) {
   itineraries.map(itinerary => {
     (itinerary.legs || []).map(leg => {
       if (!leg.signature) {
-        leg.signature = utils.sign(leg, process.env.MAAS_SIGNING_SECRET);
+        leg.signature = signatures.sign(leg, process.env.MAAS_SIGNING_SECRET);
       }
     });
 
-    itinerary.signature = utils.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
+    itinerary.signature = signatures.sign(itinerary, process.env.MAAS_SIGNING_SECRET);
   });
 
   return response;
@@ -86,7 +83,6 @@ function filterPastRoutes(leaveAt, response) {
 }
 
 function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
-
   if (!leaveAt && !arriveBy) {
     leaveAt = Date.now();
   }
@@ -105,17 +101,13 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
     parameters: event,
   })
   .then(response => filterPastRoutes(leaveAt, response))
-  .then(response => validator.validate(responseSchema, response))
-  .then(response => utils.toFixed(response, 6))
   .then(response => signResponse(response));
 }
 
 module.exports.respond = function (event, callback) {
   return validateInput(event)
-    .then(_ => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy, event.payload.modes))
-    .then(response => {
-      callback(null, response);
-    })
+    .then(() => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy, event.payload.modes))
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
@@ -130,7 +122,6 @@ module.exports.respond = function (event, callback) {
         callback(new MaaSError(_error.message, 400));
         return;
       }
-
       callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

@@ -1,16 +1,18 @@
 'use strict';
 
-const utils = require('../../lib/utils');
+const Itinerary = require('../../lib/business-objects/Itinerary');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
-const Database = models.Database;
-const TripEngine = require('../../lib/trip');
-const Itinerary = require('../../lib/business-objects/Itinerary');
 const Promise = require('bluebird');
+const signatures = require('../../lib/signatures');
+const TripEngine = require('../../lib/trip');
+const utils = require('../../lib/utils');
+
+const Database = models.Database;
 
 function formatResponse(itinerary) {
   return Promise.resolve({
-    itinerary: utils.removeNulls(itinerary),
+    itinerary: utils.sanitize(itinerary),
     maas: {},
   });
 }
@@ -20,7 +22,7 @@ module.exports.respond = function (event, callback) {
 //  const legErrors = [];
 
   return Database.init()
-    .then(() => utils.validateSignatures(event.itinerary))
+    .then(() => signatures.validateSignatures(event.itinerary))
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
     .then(unsignedItinerary => Itinerary.startTransaction()
       .then(transaction => {

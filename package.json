@@ -63,6 +63,8 @@
     "jsonwebtoken": "^5.7.0",
     "knex": "0.11.5",
     "lodash": "^4.13.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.merge": "^4.6.0",
     "maas-schemas": "git+ssh://git@github.com/maasglobal/maas-schemas.git",
     "node-uuid": "^1.4.7",
     "objection": "0.5.1",

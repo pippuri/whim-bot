@@ -12,10 +12,7 @@ const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 const MaaSError = require('../../lib/errors/MaaSError');
-const validator = require('../../lib/validator');
 const lib = require('./lib');
-
-const responseSchema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response.json');
 
 const DIGITRANSIT_FINLAND_API_URL = 'https://api.digitransit.fi/routing/v1/routers/finland/index/graphql';
 
@@ -124,7 +121,6 @@ module.exports.respond = function (event, callback) {
   }
 
   return getDigitransitRoutes(event.from, event.to, event.modes, event.leaveAt, event.arriveBy, event.format)
-  .then(response => validator.validate(responseSchema, response))
   .then(response => callback(null, response))
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

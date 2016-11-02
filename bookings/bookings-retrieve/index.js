@@ -38,7 +38,7 @@ function validateInput(event) {
  * @return {object} A valid MaaS Response nesting the object & meta
  */
 function formatResponse(booking) {
-  const trimmed = utils.removeNulls(booking);
+  const trimmed = utils.sanitize(booking);
 
   return Promise.resolve({
     booking: trimmed,

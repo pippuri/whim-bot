@@ -1,12 +1,14 @@
 'use strict';
 
-const Promise = require('bluebird');
 const expect = require('chai').expect;
-const wrap = require('lambda-wrapper').wrap;
-const moment = require('moment-timezone');
 const models = require('../../../lib/models');
-const utils = require('../../../lib/utils');
+const moment = require('moment-timezone');
 const Profile = require('../../../lib/business-objects/Profile');
+const Promise = require('bluebird');
+const signatures = require('../../../lib/signatures');
+const utils = require('../../../lib/utils');
+const wrap = require('lambda-wrapper').wrap;
+
 const Database = models.Database;
 
 const routesQueryLambda = require('../../../routes/routes-query/handler');
@@ -145,7 +147,7 @@ module.exports = function (input, results) {
       const tooExpensiveItinerary = utils.cloneDeep(queriedItinerary);
       tooExpensiveItinerary.fare.points = 99999;
       delete tooExpensiveItinerary.signature;
-      tooExpensiveItinerary.signature = utils.sign(tooExpensiveItinerary, process.env.MAAS_SIGNING_SECRET);
+      tooExpensiveItinerary.signature = signatures.sign(tooExpensiveItinerary, process.env.MAAS_SIGNING_SECRET);
 
       const event = {
         identityId: input.event.identityId,

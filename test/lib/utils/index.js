@@ -58,15 +58,15 @@ describe('utils', () => {
     });
   });
 
-  describe('removeNulls', () => {
+  describe('sanitize', () => {
     it('should return plain value as-is', () => {
       const value = 'foobar';
-      expect(utils.removeNulls(value)).to.equal('foobar');
+      expect(utils.sanitize(value)).to.equal('foobar');
     });
 
     it('should not touch root-level null', () => {
       const value = null;
-      expect(utils.removeNulls(value)).to.equal(null);
+      expect(utils.sanitize(value)).to.equal(null);
     });
 
     it('should return null values recursively', () => {
@@ -83,7 +83,7 @@ describe('utils', () => {
         },
       };
 
-      expect(utils.removeNulls(value)).to.deep.equal({
+      expect(utils.sanitize(value)).to.deep.equal({
         simpleValue: 'simple',
         nestedObject: {
           simpleValue: 123,
@@ -94,13 +94,38 @@ describe('utils', () => {
       });
     });
 
-    it('should parse the nested objects inside arrays, but leave nulls alone', () => {
+    it('should trim the nested numbers to max 6 decimals', () => {
       const value = {
-        arrayValue: [null, 'simple', { simpleValue: 123, nullValue: null }],
+        arrayValue: [0.1234567, { simpleValue: 0.12345678 }],
       };
 
-      expect(utils.removeNulls(value)).to.deep.equal({
-        arrayValue: [null, 'simple', { simpleValue: 123 }],
+      expect(utils.sanitize(value)).to.deep.equal({
+        arrayValue: [0.123457, { simpleValue: 0.123457 }],
+      });
+    });
+
+    it('should return null values recursively', () => {
+      const value = {
+        simpleValue: 'simple',
+        nullValue: null,
+        nestedObject: {
+          simpleValue: 123,
+          nullValue: null,
+          nestedObject: {
+            simpleValue: 234,
+            nullValue: null,
+          },
+        },
+      };
+
+      expect(utils.sanitize(value)).to.deep.equal({
+        simpleValue: 'simple',
+        nestedObject: {
+          simpleValue: 123,
+          nestedObject: {
+            simpleValue: 234,
+          },
+        },
       });
     });
   });
@@ -176,11 +201,6 @@ describe('utils', () => {
   });
 
   describe('toFixed', () => {
-    it('should return plain string as-is', () => {
-      const value = 'foobar';
-      expect(utils.toFixed(value, 2)).to.equal('foobar');
-    });
-
     it('should convert a plain decimal number to fixed decimals', () => {
       const value = 1.23456;
       expect(utils.toFixed(value, 2)).to.equal(1.23);
@@ -191,34 +211,9 @@ describe('utils', () => {
       expect(Number.isInteger(utils.toFixed(value, 2))).to.equal(true);
     });
 
-    it('should convert to fixed numbers recursively', () => {
-      const value = {
-        simpleValue: 'simple',
-        floatValue: 12345.6,
-        nestedObject: {
-          floatValue: 123.456,
-          nestedObject: {
-            integer: 234,
-            //nullValue: null, // FIXME There's something wrong with nulls
-            simpleString: 'string',
-          },
-        },
-        nestedArray: [1.23456, 123.456],
-      };
-
-      expect(utils.toFixed(value, 1)).to.deep.equal({
-        simpleValue: 'simple',
-        floatValue: 12345.6,
-        nestedObject: {
-          floatValue: 123.5,
-          nestedObject: {
-            integer: 234,
-            //nullValue: null, // FIXME There's something wrong with nulls
-            simpleString: 'string',
-          },
-        },
-        nestedArray: [1.2, 123.5],
-      });
+    it('should throw a TypeError on other types', () => {
+      const value = 'foobar';
+      expect(utils.toFixed.bind(utils, value, 2)).to.throw(TypeError);
     });
   });
 });
