@@ -13,7 +13,7 @@ const Database = models.Database;
 
 module.exports = function (optionsLambda, createLambda, listLambda) {
 
-  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
 
   describe('retrieve one or more bookings, created by bookings create', () => {
     let error;
@@ -68,7 +68,7 @@ module.exports = function (optionsLambda, createLambda, listLambda) {
 
           bookingId = _response.booking.id;
 
-          const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+          const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
           const listEvent = {
             identityId: testIdentityId,
             startTime: String(_response.booking.startTime),

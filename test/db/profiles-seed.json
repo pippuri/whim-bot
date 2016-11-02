@@ -145,5 +145,26 @@
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
+  },
+  {
+    "id": 13377,
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000007",
+    "balance": 13377,
+    "subscription": {
+      "planId": "fi-whim-premium",
+      "monthlyBalance": 0,
+      "agencies": []
+    },
+    "favoriteLocations": {},
+    "phone": "+35850123456789",
+    "email": "john.doe@maas.fi",
+    "firstName": "Joe-Booker",
+    "lastName": "Used for bookings tests",
+    "city": "Helsinki",
+    "country": "Finland",
+    "zipCode": 100,
+    "profileImageUrl": null,
+    "created": "2016-10-13T14:01:10.611552+00:00",
+    "modified": null
   }
 ]

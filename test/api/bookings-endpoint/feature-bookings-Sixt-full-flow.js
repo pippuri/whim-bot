@@ -29,7 +29,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
     let retrieveResponse;
     let error;
 
-    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
     const tueMoment = moment().tz('Europe/Helsinki').day(7 + 2).hour(12).minute(0).second(0).millisecond(0).valueOf();
     const wedMoment = moment().tz('Europe/Helsinki').day(7 + 3).hour(12).minute(0).second(0).millisecond(0).valueOf();
 
