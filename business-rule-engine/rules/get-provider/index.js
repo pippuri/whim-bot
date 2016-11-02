@@ -15,6 +15,7 @@ const geoUtils = require('geojson-utils');
 const models = require('../../../lib/models/index');
 const utils = require('../../../lib/utils');
 const Provider = models.Provider;
+const BusinessRuleError = require('../../BusinessRuleError.js');
 
 // Static provider cache to speed up queries, refreshes every 5min.
 let cachedProviders;
@@ -70,7 +71,7 @@ function filterProviders(providers, rule) {
   // Validate the rule
   if (typeof rule.type !== 'string' && typeof rule.agencyId !== 'string'
   && typeof rule.providerName !== 'string') {
-    throw new Error('Missing rule parameters: type, agencyId or providerName expected');
+    throw new BusinessRuleError('Missing rule parameters: type, agencyId or providerName expected', 500, 'get-provider');
   }
 
   // Filter
@@ -132,7 +133,7 @@ function getProviderBatch(requests) {
     const keys = Object.keys(requests);
 
     if (keys.length === 0) {
-      return Promise.reject(new Error('Request with no keys given'));
+      return Promise.reject(new BusinessRuleError('Request with no keys given'));
     }
 
     keys.forEach(key => {
@@ -142,7 +143,7 @@ function getProviderBatch(requests) {
     return Promise.props(queries);
   }
 
-  return Promise.reject(new Error('Invalid request, expecting array or object'));
+  return Promise.reject(new BusinessRuleError('Invalid request, expecting array or object'));
 }
 
 module.exports = {

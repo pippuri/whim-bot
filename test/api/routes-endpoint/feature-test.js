@@ -255,7 +255,7 @@ module.exports = options => {
     });
   });
 
-  describe('request for a route from Helsinki to Delhi', () => {
+  describe('request for a route from Helsinki to ', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
@@ -286,7 +286,7 @@ module.exports = options => {
     });
 
     it('should return an error', () => {
-      expect(error.message).to.equal('500: Internal server error: Error: Could not retrieve any routes provider');
+      expect(error.message).to.equal('500: get-routes: Could not retrieve any routes provider');
       expect(response).to.be.undefined;
     });
   });

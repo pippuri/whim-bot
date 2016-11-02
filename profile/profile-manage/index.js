@@ -8,7 +8,7 @@ function getUserData(event) {
   const identityId = event.identityId;
 
   if (typeof identityId !== 'string') {
-    return Promise.reject(new Error('Invalid or missing identityId'));
+    return Promise.reject(new MaaSError('Invalid or missing identityId', 400));
   }
 
   return Subscription.getLoginURL(identityId);
@@ -31,7 +31,7 @@ module.exports.respond = (event, callback) => {
     .then(response => wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 

@@ -32,14 +32,21 @@ function sendSmsMessage(phone, message) {
 module.exports.respond = (event, callback) => {
   sendSmsMessage(event.phone, event.message)
   .then(response => callback(null, response.toString()))
-  .catch(err => {
-    const response = JSON.parse(err.response.toString());
-    if (err.statusCode === 400) {
-      callback(new MaaSError(response.message, 400));
+  .catch(_error => {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+
+    if (_error.statusCode === 400) {
+      callback(new MaaSError(JSON.parse(_error.response.toString()).message, 400));
     }
 
-    console.warn(err);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    callback(new MaaSError(`Internal server error: ${response.message}`, 500));
+    // Uncaught, unexpected error
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

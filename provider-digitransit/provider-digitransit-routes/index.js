@@ -31,7 +31,7 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
   };
 
   if (leaveAt && arriveBy) {
-    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return Promise.reject(new MaaSError('Both leaveAt and arriveBy provided.', 400));
   } else if (leaveAt) {
     qs.arriveBy = false;
     const date = new Date(parseInt(leaveAt, 10));
@@ -127,6 +127,12 @@ module.exports.respond = function (event, callback) {
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
 
-    callback(_error);
+    // Uncaught, unexpected error
+    if (_error instanceof MaaSError) {
+      callback(_error);
+      return;
+    }
+
+    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
   });
 };

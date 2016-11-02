@@ -29,19 +29,19 @@ function getActiveItinerary(identityId) {
  */
 function validateInput(event) {
   if (!event.identityId) {
-    return Promise.reject(new Error('400 identityId is required'));
+    return Promise.reject(new MaaSError('identityId is required', 400));
   }
 
   if (!event.leg) {
-    return Promise.reject(new Error('400 leg is required'));
+    return Promise.reject(new MaaSError('leg is required', 400));
   }
 
   if (!event.leg.id) {
-    return Promise.reject(new Error('400 leg.id is required'));
+    return Promise.reject(new MaaSError('leg.id is required', 400));
   }
 
   if (!event.leg.timestamp) {
-    return Promise.reject(new Error('400 leg.timestamp is required'));
+    return Promise.reject(new MaaSError('leg.timestamp is required', 400));
   }
 
   return Promise.resolve();

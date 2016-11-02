@@ -2,6 +2,7 @@
 
 const Promise = require('bluebird');
 const serviceBus = require('../../../lib/service-bus');
+const MaaSError = require('../../../lib/errors/MaaSError.js');
 
 const GEOMETRY_QUERY_MODE = 'TAXI';
 
@@ -53,7 +54,7 @@ function extractTaxiLegFromHereResponse(response) {
   }
 
   // Throw this so that the error handler can sort it out
-  throw new Error('Could not extract taxi leg from HERE response');
+  throw new MaaSError('Could not extract taxi leg from HERE response', 500);
 }
 
 function extractEndTimeFromHereLegIntoOption(leg, option) {
@@ -63,7 +64,7 @@ function extractEndTimeFromHereLegIntoOption(leg, option) {
   }
 
   // Throw this so that the error handler can sort it out
-  throw new Error('Could not extract endTime from HERE leg');
+  throw new MaaSError('Could not extract endTime from HERE leg', 500);
 }
 
 function extractGeometryFromHereLeg(leg) {
@@ -72,7 +73,7 @@ function extractGeometryFromHereLeg(leg) {
   }
 
   // Throw this so that the error handler can sort it out
-  throw new Error('Could not extract Geometry from HERE leg');
+  throw new MaaSError('Could not extract Geometry from HERE leg', 500);
 }
 
 function extractDistanceFromHereLeg(leg) {

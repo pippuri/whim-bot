@@ -10,6 +10,7 @@ const validator = require('../../../lib/validator');
 
 const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 
+const BusinessRuleError = require('../../BusinessRuleError.js');
 
 const MAX_PARALLEL = 1; // how many common provider to use
 // @NOTE support partially train route (go to Leppavaraa on train E)
@@ -144,8 +145,8 @@ function _buildMixedRoutesProvidersQuery(modes, from, to) {
  * @return common {Common provider}
  */
 function _resolveRoutesProviders(params) {
-  if (!params.from) throw new Error('Missing from input: ' + JSON.stringify(params, null, 2));
-  if (!params.to) throw new Error('Missing to input: ' + JSON.stringify(params, null, 2));
+  if (!params.from) throw new BusinessRuleError('Missing from input: ' + JSON.stringify(params, null, 2), 500, 'get-routes');
+  if (!params.to) throw new BusinessRuleError('Missing to input: ' + JSON.stringify(params, null, 2), 500, 'get-routes');
 
   const location = {
     from: {
@@ -183,7 +184,7 @@ function _resolveRoutesProviders(params) {
       if (cars.length > 0) result = result.concat(cars);
     }
     if (result.length === 0) {
-      return Promise.reject(new Error('Could not retrieve any routes provider'));
+      return Promise.reject(new BusinessRuleError('Could not retrieve any routes provider', 500, 'get-routes'));
     }
     return Promise.resolve(result);
   });
@@ -292,7 +293,7 @@ function _setLegAgency(leg) {
  */
 function _setAgency(route) {
   if (!route.plan.itineraries) {
-    throw new Error('Response from route adapter is malformed');
+    throw new BusinessRuleError('Response from route adapter is malformed', 500, 'get-routes');
   }
 
   route.plan.itineraries.map(itinerary => itinerary.legs.map(_setLegAgency));

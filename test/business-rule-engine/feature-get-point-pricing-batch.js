@@ -80,7 +80,7 @@ module.exports = function () {
     it('should return correct error', () => {
       expect(error).to.not.be.undefined;
       expect(error).to.be.an.instanceOf(Error);
-      expect(error.message).to.equal('Expected params.prices to be an array of prices, got {}');
+      expect(error.message).to.equal('500: get-point-pricing-batch: Expected params.prices to be an array of prices, got {}');
     });
   });
 };

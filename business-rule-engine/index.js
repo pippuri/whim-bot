@@ -5,6 +5,8 @@ const Profile = require('../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const schema = require('maas-schemas/prebuilt/maas-backend/business-rule-engine/request.json');
 const validator = require('../lib/validator');
+const MaaSError = require('../lib/errors/MaaSError');
+const BusinessRuleError = require('./BusinessRuleError.js');
 
 // Rules
 const getProviderRules = require('./rules/get-provider');
@@ -36,7 +38,7 @@ function runRule(event) {
               return Profile.retrieve(event.identityId)
                 .then(profile => getTspPricingRule.getOptionsBatch(event.parameters, profile));
             default:
-              return Promise.reject(new Error('Unsupported rule'));
+              return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
           }
         })
         .then(response =>  Database.cleanup().then(() => Promise.resolve(response)))
@@ -52,7 +54,7 @@ function runRule(event) {
     case 'get-point-pricing-batch':
       return getPointsRules.getPointBatch(event.identityId, event.parameters);
     default:
-      return Promise.reject(new Error('Unsupported rule'));
+      return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
   }
 }
 
@@ -64,10 +66,19 @@ module.exports.respond = (event, callback) => {
     .then(() => runRule(event))
     .then(response => callback(null, response))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      callback(_error);
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      if (_error instanceof BusinessRuleError) {
+        callback(_error);
+      }
+
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

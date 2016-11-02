@@ -14,6 +14,7 @@
 
 const getProviderRules = require('../get-provider');
 const utils = require('../../../lib/utils');
+const BusinessRuleError = require('../../BusinessRuleError.js');
 
 /**
  * Combine pricing based on provider and profile information
@@ -41,7 +42,7 @@ function getProfileSpecificPricing(provider, profile) {
 function getOptions(params, profile) {
   if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
     // TODO Should be handled by validator, instead
-    throw new Error('No \'from\' supplied to the TSP engine');
+    throw new BusinessRuleError('No \'from\' supplied to the TSP engine', 400, 'get-routes');
   }
 
   const query = {
@@ -64,7 +65,7 @@ function getOptions(params, profile) {
 function getOptionsBatch(params, profile) {
   const queries = params.map(request => {
     if (!request.hasOwnProperty('from')) {
-      throw new Error(`The request does not supply 'from' to the TSP engine: ${JSON.stringify(request)}`);
+      throw new BusinessRuleError(`The request does not supply 'from' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
     }
 
     if (request.agencyId) {

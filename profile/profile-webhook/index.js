@@ -34,7 +34,7 @@ function handleWebhook(event) {
       return Chargebee.call(event);
     default:
       console.info('Unhandled callback');
-      return Promise.reject(new Error('Use of unauthorized key should not get this far'));
+      return Promise.reject(new MaaSError('Use of unauthorized key should not get this far', 500));
   }
 }
 

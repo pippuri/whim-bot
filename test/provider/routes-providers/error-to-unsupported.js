@@ -36,11 +36,12 @@ module.exports = (lambda, options) => {
     });
 
     it('should succeed without errors', () => {
-      expect(error).to.be.null;
+      expect(error).to.not.be.null;
+      expect(error.message).to.equal('500: Destination lies outside covered area.');
     });
 
-    it('should trigger a null response', () => {
-      expect(response.plan.itineraries.length).to.equal(0);
+    it('should not return any response', () => {
+      expect(response).to.be.undefined;
     });
 
   });

@@ -56,7 +56,7 @@ function getTripGoRoutesByUrl(baseUrl, from, to, leaveAt, arriveBy, modes) {
     modes: modes, // modes to use in routing, as an array
   };
   if (leaveAt && arriveBy) {
-    return Promise.reject(new Error('Both leaveAt and arriveBy provided.'));
+    return Promise.reject(new MaaSError('Both leaveAt and arriveBy provided.', 400));
   } else if (leaveAt) {
     qs.departAfter = Math.floor(parseInt(leaveAt, 10) / 1000);
   } else if (arriveBy) {
@@ -75,7 +75,7 @@ function getTripGoRoutesByUrl(baseUrl, from, to, leaveAt, arriveBy, modes) {
   })
   .then(result => {
     if (result.error) {
-      return Promise.reject(new Error(result.error));
+      return Promise.reject(new MaaSError(result.error, 500));
     }
 
     return result;
@@ -155,7 +155,7 @@ function getCombinedTripGoRoutes(from, to, modes, leaveAt, arriveBy, format) {
       queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_MIXED_MODES));
       queue.push(getTripGoRoutes(regions, from, to, leaveAt, arriveBy, TRIPGO_TAXI_MODES));
     } else if (modes.split(',').length > 1) {
-      throw new Error('Support either no input mode or only 1 input mode');
+      throw new MaaSError('Support either no input mode or only 1 input mode', 400);
     } else {
       modes.split(',').forEach(mode => {
         switch (mode) {

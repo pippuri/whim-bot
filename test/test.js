@@ -49,6 +49,9 @@ loadEnvironment();
 console.info = () => {};
 console.warn = () => {};
 
+// Test flag
+process.env.IS_TEST_ENVIRONMENT = 'TRUE';
+
 // Force local lambda & dynamo usage
 process.env.USE_MOCK_LAMBDA = 'TRUE';
 

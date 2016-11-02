@@ -4,6 +4,7 @@ const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
 const ValidationError = require('../../lib/validator/ValidationError');
+const BusinessRuleError = require('../../business-rule-engine/BusinessRuleError');
 
 function validateInput(event) {
   if (!event.payload.from) {
@@ -114,6 +115,11 @@ module.exports.respond = function (event, callback) {
       console.warn(_error.stack);
 
       if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
+
+      if (_error instanceof BusinessRuleError) {
         callback(_error);
         return;
       }

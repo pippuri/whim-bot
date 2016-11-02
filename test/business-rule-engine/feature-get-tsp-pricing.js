@@ -159,7 +159,7 @@ module.exports = function () {
 
     it('Should return an error', () => {
       expect(error).to.not.be.undefined;
-      expect(error.message).to.equal('No \'from\' supplied to the TSP engine');
+      expect(error.message).to.equal('400: get-routes: No \'from\' supplied to the TSP engine');
     });
 
     it('Should not return a response', () => {

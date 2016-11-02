@@ -60,7 +60,7 @@ function sendPushNotification(event) {
         return Promise.resolve(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       })
       .catch(error => {
-        return Promise.reject(new Error(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`));
+        return Promise.reject(new MaaSError(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`, 500));
       });
   }
 
@@ -110,7 +110,7 @@ function sendPushNotification(event) {
           },
         });
       }
-      return Promise.reject(new Error(`No successful push sends out of ${failureCount} tries.`));
+      return Promise.reject(new MaaSError(`No successful push sends out of ${failureCount} tries.`, 500));
     });
 
   });
@@ -130,7 +130,7 @@ module.exports.respond = (event, callback) => {
     })
     .then(response => callback(null, response))
     .catch(_error => {
-      console.warn(`Caught an error:  ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
