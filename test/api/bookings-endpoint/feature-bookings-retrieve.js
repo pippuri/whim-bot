@@ -20,7 +20,7 @@ module.exports = function (optionsLambda, createLambda, retrieveLambda) {
     let error;
     let bookingId;
 
-    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+    const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
 
     before(done => {
 

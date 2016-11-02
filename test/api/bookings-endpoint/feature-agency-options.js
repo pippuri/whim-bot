@@ -7,7 +7,7 @@ const validator = require('../../../lib/validator');
 const moment = require('moment-timezone');
 
 module.exports = function (lambda) {
-  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
+  const testIdentityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
 
   describe('request agency options for next Tuesday', () => {
     let error;

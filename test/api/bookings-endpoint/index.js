@@ -4,7 +4,8 @@ const agencyOptionsTest = require('./feature-agency-options.js');
 const bookingsRetrieveTest = require('./feature-bookings-retrieve');
 const bookingsListTest = require('./feature-bookings-list');
 const bookingsMaaSFullFlow = require('./feature-bookings-maas-full-flow');
-const bookingsSixtFullFlowTest = require('./feature-bookings-Sixt-full-flow.js');
+const bookingsHSLFullFlow = require('./feature-bookings-HSL-full-flow');
+const bookingsSixtFullFlow = require('./feature-bookings-Sixt-full-flow.js');
 
 describe('bookings endpoint', () => {
   const agencyOptionsLambda = require('../../../bookings/bookings-agency-options/handler.js');
@@ -31,8 +32,12 @@ describe('bookings endpoint', () => {
     bookingsListTest(agencyOptionsLambda, bookingsCreateLambda, bookingsListLambda);
   });
 
-  describe.skip('bookings-Sixt-full-flow', () => {
-    bookingsSixtFullFlowTest(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
+  describe('bookings-Sixt-full-flow', () => {
+    bookingsSixtFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
+  });
+
+  describe('bookings-HSL-full-flow', () => {
+    bookingsHSLFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
   });
 
   describe('bookings-MaaS-full-flow', () => {
