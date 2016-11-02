@@ -31,7 +31,6 @@ module.exports = (lambda, options) => {
       wrap(lambda).run(event, (err, data) => {
         error = err;
         response = data;
-        console.log(err, data);
         done();
       });
     });
@@ -41,8 +40,8 @@ module.exports = (lambda, options) => {
       expect(error.message).to.equal('500: Destination lies outside covered area.');
     });
 
-    it('should trigger a null response', () => {
-      expect(response).to.be.null;
+    it('should not return any response', () => {
+      expect(response).to.be.undefined;
     });
 
   });

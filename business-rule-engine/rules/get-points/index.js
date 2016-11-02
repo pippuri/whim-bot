@@ -36,7 +36,7 @@ const CHARGEBEE_ADDONS = {
  */
 function getPointPricing(identityId, params) {
   if (!CHARGEBEE_ADDONS.hasOwnProperty(params.currency)) {
-    return Promise.reject(new BusinessRuleError(`Currency '${params.currency}' is unsupported`, 'get-points'));
+    return Promise.reject(new BusinessRuleError(`Currency '${params.currency}' is unsupported`, 400, 'get-points'));
   }
 
   if (pricingCache.hasOwnProperty(params.currency)) {
