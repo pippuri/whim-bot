@@ -31,7 +31,6 @@ module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
     useDefaults: true,
-    transform: { from: '', to: undefined },
     sanitize: true,
   };
   let parsed;
