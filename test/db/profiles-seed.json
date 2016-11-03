@@ -15,7 +15,7 @@
     "lastName": "Change as you need in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -36,7 +36,7 @@
     "lastName": "Do not Change in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -57,7 +57,7 @@
     "lastName": "Do not Change in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -78,7 +78,7 @@
     "lastName": "Do not Change in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -99,7 +99,7 @@
     "lastName": "Do not Change in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -120,7 +120,7 @@
     "lastName": "Do not change in tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -141,7 +141,7 @@
     "lastName": "Used for balance tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
@@ -162,7 +162,7 @@
     "lastName": "Used for bookings tests",
     "city": "Helsinki",
     "country": "Finland",
-    "zipCode": 100,
+    "zipCode": "00100",
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
