@@ -4,7 +4,7 @@ const Database = require('../../lib/models').Database;
 const profilesData = require('./profiles-seed.json');
 
 const removeSeedDataQuery =
-  'DELETE FROM "Profile" where "id" BETWEEN 13370 and 13379';
+  'DELETE FROM "Profile" where "id" BETWEEN 13370 and 13399';
 const resetStatsQuery =
   `
   SELECT pg_stat_reset();

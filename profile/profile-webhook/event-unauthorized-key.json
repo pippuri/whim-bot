@@ -1,0 +1,7 @@
+{
+  "id": "NOT_VALID",
+  "payload": {
+    "event_type": "fiddly_dee",
+    "content": "Where is everybody?"
+  }
+}

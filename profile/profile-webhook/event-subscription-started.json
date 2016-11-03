@@ -1,0 +1,71 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "event_type": "subscription_started",
+    "webhook_status": "not_configured",
+    "content": {
+      "id": "ev_KyVqlqPh8DXgfH",
+      "occurred_at": 1341757839,
+      "source": "scheduled_job",
+      "object": "event",
+      "api_version": "v2",
+      "content": {
+          "subscription": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "plan_id": "fi-whim-medium",
+              "plan_quantity": 1,
+              "status": "in_trial",
+              "trial_start": 1341757838,
+              "trial_end": 1344436238,
+              "created_at": 1341153038,
+              "started_at": 1341757838,
+              "has_scheduled_changes": false,
+              "object": "subscription",
+              "addons": [{
+                  "id": "data_usage",
+                  "quantity": 1,
+                  "object": "addon"
+              }],
+              "due_invoices_count": 0
+          },
+          "customer": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "first_name": "Benjamin",
+              "last_name": "Ross",
+              "email": "Benjamin@test.com",
+              "auto_collection": "on",
+              "allow_direct_debit": false,
+              "created_at": 1341153038,
+              "taxability": "taxable",
+              "object": "customer",
+              "card_status": "valid",
+              "payment_method": {
+                  "object": "payment_method",
+                  "type": "card",
+                  "reference_id": "tok_KyVqlqPh8DXW32",
+                  "gateway": "chargebee",
+                  "status": "valid"
+              },
+              "promotional_credits": 0,
+              "refundable_credits": 0,
+              "excess_payments": 0
+          },
+          "card": {
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
+              "status": "valid",
+              "gateway": "chargebee",
+              "iin": "411111",
+              "last4": "1111",
+              "card_type": "visa",
+              "expiry_month": 9,
+              "expiry_year": 2012,
+              "object": "card",
+              "masked_number": "************1111"
+          }
+      },
+      "event_type": "subscription_started",
+      "webhook_status": "not_configured"
+    }
+  }
+}
+

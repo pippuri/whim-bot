@@ -1,70 +1,62 @@
 'use strict';
 
 const Promise = require('bluebird');
-const Database = require('../../lib/models/Database');
-const MaaSError = require('../../lib/errors/MaaSError');
-const Chargebee = require('./chargebee.js');
-const VALID_KEYS = {
-  KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
-  XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
-};
+const errors = require('../../lib/errors/index');
+const utils = require('../lib/utils');
 
-function handleWebhook(event) {
+const HANDLERS = [
+  require('./dummy/index'),
+  require('./chargebee/index'),
+];
+
+const DEFAULT_RESPONSE = 'OK';
+
+
+function validateEventAndExtractKey(event) {
   const key = event.id;
 
   if (Object.keys(event).length === 0) {
-    return Promise.reject(new MaaSError('Input missing', 400));
+    return Promise.reject(new errors.MaaSError('Input missing', 400));
   }
 
   if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new MaaSError('Payload missing', 400));
+    return Promise.reject(new errors.MaaSError('Payload missing', 400));
   }
 
   if (typeof key !== 'string') {
-    return Promise.reject(new MaaSError('Invalid or missing key', 400));
+    return Promise.reject(new errors.MaaSError('Invalid or missing key', 400));
   }
 
-  if (!VALID_KEYS.hasOwnProperty(key)) {
-    return Promise.reject(new MaaSError('Unauthorized key', 400));
+  // Remove card information altogether to avoid the possibility of using it
+  if (event.payload.content && event.payload.content && event.payload.content.content) {
+    event.payload.content.content.card = {};
   }
 
-  switch (VALID_KEYS[key]) {
-    case 'chargebee':
-    case 'chargebee-live':
-      return Chargebee.call(event);
-    default:
-      console.info('Unhandled callback');
-      return Promise.reject(new MaaSError('Use of unauthorized key should not get this far', 500));
-  }
+  return Promise.resolve(key);
 }
 
-function wrapToEnvelope(profile, event) {
-  return {
-    response: profile,
-  };
+function handleWebhook(event, key) {
+  for (const i in HANDLERS) {
+    // Find the first handler to match the key
+    if (HANDLERS[i].matches(key)) {
+      // Handle the event and break out of the search loop
+      return HANDLERS[i].handlePayload(event.payload, key, DEFAULT_RESPONSE);
+    }
+  }
+
+  // No handler matched the key => error
+  return Promise.reject(new errors.MaaSError('Unauthorized key', 400));
 }
 
 /**
  * Export respond to Handler
  */
 module.exports.respond = (event, callback) => {
-  return Database.init()
-    .then(() => handleWebhook(event))
-    .then(response => wrapToEnvelope(response, event))
+  return validateEventAndExtractKey(event)
+    .then(key      => handleWebhook(event, key))
+    .then(response => utils.wrapToEnvelope(response, event))
     .then(envelope => callback(null, envelope))
-    .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
-
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    })
-    .finally(() => {
-      Database.cleanup();
-    });
+    .catch(errors.alwaysSucceedIncludeErrorMessageErrorHandler(
+          callback, event, utils.wrapToEnvelope(DEFAULT_RESPONSE), 200));
 };
+

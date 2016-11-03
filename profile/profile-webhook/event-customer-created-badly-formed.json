@@ -1,0 +1,30 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "BAD_payload": {
+    "event_type": "customer_created",
+    "webhook_status": "not_configured",
+    "content": {
+      "customer": {
+        "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+        "auto_collection": "on",
+        "allow_direct_debit": false,
+        "created_at": 1476879060,
+        "taxability": "taxable",
+        "updated_at": 1476879060,
+        "resource_version": 1476879060898,
+        "deleted": false,
+        "object": "customer",
+        "billing_address": {
+          "phone": "+358555666",
+          "validation_status": "not_validated",
+          "object": "billing_address"
+        },
+        "card_status": "no_card",
+        "promotional_credits": 0,
+        "refundable_credits": 0,
+        "excess_payments": 0
+      }
+    }
+  }
+}
+

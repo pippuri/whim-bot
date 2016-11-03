@@ -1,0 +1,53 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "event_type": "subscription_created",
+    "webhook_status": "not_configured",
+    "content": {
+      "id": "ev_2rprAVboPs47buFUrB",
+      "occurred_at": 1469537981,
+      "source": "api",
+      "user": "full_access_key_v1",
+      "object": "event",
+      "api_version": "v2",
+      "content": {
+          "subscription": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022_4303500",
+              "plan_id": "fi-whim-medium",
+              "plan_quantity": 1,
+              "status": "active",
+              "current_term_start": 1469537981,
+              "current_term_end": 1472216381,
+              "created_at": 1469537981,
+              "started_at": 1469537981,
+              "activated_at": 1469537981,
+              "has_scheduled_changes": false,
+              "object": "subscription",
+              "currency_code": "EUR",
+              "due_invoices_count": 0
+          },
+          "customer": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "auto_collection": "on",
+              "allow_direct_debit": false,
+              "created_at": 1469537981,
+              "taxability": "taxable",
+              "object": "customer",
+              "card_status": "no_card",
+              "promotional_credits": 0,
+              "refundable_credits": 0,
+              "excess_payments": 0
+          }
+      },
+      "event_type": "subscription_created",
+      "webhook_status": "not_configured",
+      "webhooks": [{
+          "id": "whv2_IG5ryqKPrfNiNBpbu",
+          "webhook_status": "succeeded",
+          "object": "webhook"
+      }]
+    }
+  }
+}
+

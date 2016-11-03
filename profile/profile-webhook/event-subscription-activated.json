@@ -1,0 +1,144 @@
+{
+  "id": "KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM",
+  "payload": {
+    "event_type": "subscription_started",
+    "webhook_status": "not_configured",
+    "content": {
+      "id": "ev_KyVqlqPh8DXrHY",
+      "occurred_at": 1344436239,
+      "source": "scheduled_job",
+      "object": "event",
+      "api_version": "v2",
+      "content": {
+          "subscription": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "plan_id": "fi-whim-medium",
+              "plan_quantity": 1,
+              "status": "active",
+              "trial_start": 1341757838,
+              "trial_end": 1344436238,
+              "current_term_start": 1344436238,
+              "current_term_end": 1347114638,
+              "created_at": 1341153038,
+              "started_at": 1341757838,
+              "activated_at": 1344436238,
+              "has_scheduled_changes": false,
+              "object": "subscription",
+              "addons": [{
+                  "id": "data_usage",
+                  "quantity": 1,
+                  "object": "addon"
+              }],
+              "due_invoices_count": 0
+          },
+          "customer": {
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "first_name": "Benjamin",
+              "last_name": "Ross",
+              "email": "Benjamin@test.com",
+              "auto_collection": "on",
+              "allow_direct_debit": false,
+              "created_at": 1341153038,
+              "taxability": "taxable",
+              "object": "customer",
+              "card_status": "valid",
+              "payment_method": {
+                  "object": "payment_method",
+                  "type": "card",
+                  "reference_id": "tok_KyVqlqPh8DXW32",
+                  "gateway": "chargebee",
+                  "status": "valid"
+              },
+              "promotional_credits": 0,
+              "refundable_credits": 0,
+              "excess_payments": 0
+          },
+          "card": {
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000023",
+              "status": "valid",
+              "gateway": "chargebee",
+              "iin": "411111",
+              "last4": "1111",
+              "card_type": "visa",
+              "expiry_month": 9,
+              "expiry_year": 2012,
+              "object": "card",
+              "masked_number": "************1111"
+          },
+          "invoice": {
+              "id": "1",
+              "customer_id": "KyVqlqPh8DXQV1",
+              "subscription_id": "KyVqlqPh8DXQV1",
+              "recurring": true,
+              "status": "paid",
+              "price_type": "tax_exclusive",
+              "date": 1344436238,
+              "total": 995,
+              "amount_paid": 995,
+              "amount_adjusted": 0,
+              "write_off_amount": 0,
+              "credits_applied": 0,
+              "amount_due": 0,
+              "paid_at": 1344436239,
+              "object": "invoice",
+              "first_invoice": true,
+              "currency_code": "USD",
+              "tax": 0,
+              "line_items": [
+                  {
+                      "date_from": 1344436238,
+                      "date_to": 1347114638,
+                      "unit_amount": 900,
+                      "quantity": 1,
+                      "is_taxed": false,
+                      "tax_amount": 0,
+                      "object": "line_item",
+                      "amount": 900,
+                      "description": "Basic",
+                      "entity_type": "plan",
+                      "entity_id": "basic",
+                      "discount_amount": 0,
+                      "item_level_discount_amount": 0
+                  },
+                  {
+                      "date_from": 1344436238,
+                      "date_to": 1347114638,
+                      "unit_amount": 95,
+                      "quantity": 1,
+                      "is_taxed": false,
+                      "tax_amount": 0,
+                      "object": "line_item",
+                      "amount": 95,
+                      "description": "Data Usage",
+                      "entity_type": "addon",
+                      "entity_id": "data_usage",
+                      "discount_amount": 0,
+                      "item_level_discount_amount": 0
+                  }
+              ],
+              "sub_total": 995,
+              "linked_payments": [{
+                  "txn_id": "txn_KyVqlqPh8DXp1T",
+                  "applied_amount": 995,
+                  "applied_at": 1344436239,
+                  "txn_status": "success",
+                  "txn_date": 1344436239,
+                  "txn_amount": 995
+              }],
+              "applied_credits": [],
+              "adjustment_credit_notes": [],
+              "issued_credit_notes": [],
+              "linked_orders": [],
+              "billing_address": {
+                  "first_name": "Benjamin",
+                  "last_name": "Ross",
+                  "object": "billing_address"
+              }
+          }
+      },
+      "event_type": "subscription_activated",
+      "webhook_status": "not_configured"
+    }
+  }
+}
+
