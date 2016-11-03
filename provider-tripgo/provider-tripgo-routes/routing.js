@@ -6,7 +6,8 @@ const adapter = require('./adapter');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const serviceBus = require('../../lib/service-bus/index');
-const _ = require('lodash');
+const _intersection = require('lodash/intersection');
+const _sample = require('lodash/sample');
 
 const TRIPGO_PUBLIC_MODES = [
   'pt_pub',
@@ -93,7 +94,7 @@ function getTripGoRoutes(regions, from, to, leaveAt, arriveBy, modes) {
 
   const applicableRegions = regions.filter(region => {
     const area = region.area;
-    if (_.intersection(region.modes, modes).length !== modes.length) {
+    if (_intersection(region.modes, modes).length !== modes.length) {
       return false;
     }
 
@@ -108,8 +109,8 @@ function getTripGoRoutes(regions, from, to, leaveAt, arriveBy, modes) {
     return null;
   }
 
-  const selectedRegion = _.sample(applicableRegions);
-  const selectedURL = _.sample(selectedRegion.urls);
+  const selectedRegion = _sample(applicableRegions);
+  const selectedURL = _sample(selectedRegion.urls);
 
   const routingURL = selectedURL + '/routing.json';
   return getTripGoRoutesByUrl(routingURL, from, to, leaveAt, arriveBy, modes);

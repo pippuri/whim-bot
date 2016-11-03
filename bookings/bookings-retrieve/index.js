@@ -1,6 +1,5 @@
 'use strict';
 
-//const _ = require('lodash');
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
