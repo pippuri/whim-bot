@@ -33,17 +33,8 @@ function adapt(input) {
     app_id: process.env.HERE_APP_ID,
     app_code: process.env.HERE_APP_CODE,
     q: input.name,
+    at: [input.lat, input.lon].join(','),
   };
-
-  switch (input.hint) {
-    case 'latlon':
-      query.at = [input.lat, input.lon].join(',');
-      break;
-    case 'none':
-      break;
-    default:
-      throw new MaaSError('Location hint not given', 400);
-  }
 
   return request.get(ENDPOINT_URL, {
     json: true,

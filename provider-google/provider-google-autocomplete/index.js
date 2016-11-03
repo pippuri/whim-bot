@@ -32,24 +32,15 @@ function slice(numItems) {
 
 function adapt(input) {
 
-  // Customise query by the hints given
   const query = {
     key: process.env.GOOGLE_API_KEY,
     input: input.name,
     components: 'country:' + input.country,
     types: 'geocode',
+    location: [input.lat, input.lon].join(','),
+    radius: input.radius,
   };
 
-  switch (input.hint) {
-    case 'latlon':
-      query.location = [input.lat, input.lon].join(',');
-      query.radius = input.radius * 1000;
-      break;
-    case 'none':
-      break;
-    default:
-      throw new MaaSError('Location hint not given', 400);
-  }
 
   return request.get(ENDPOINT_URL, {
     json: true,
@@ -61,7 +52,7 @@ function adapt(input) {
   .then(suggestions => {
     return {
       suggestions: suggestions,
-      maas: {
+      debug: {
         query: query,
       },
     };
