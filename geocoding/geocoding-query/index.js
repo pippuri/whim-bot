@@ -32,6 +32,7 @@ module.exports.respond = function (event, callback) {
     coerceTypes: true,
     useDefaults: true,
     transform: { from: '', to: undefined },
+    sanitize: true,
   };
   let parsed;
 
