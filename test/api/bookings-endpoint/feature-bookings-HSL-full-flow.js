@@ -72,6 +72,7 @@ module.exports = function () {
         agencyId: 'HSL',
         mode: 'BUS',
         startTime: startTime,
+        endTime: startTime + 45 * 60 * 60 * 1000,
         from: '60.18948,24.97213',
         to: '60.18948,24.97213',
       };
@@ -86,7 +87,7 @@ module.exports = function () {
 
     // FIXME For some reason we do not get the same start time as requested,
     // but 10 minutes earlier
-    xit('The options have the same data as requested', () => {
+    it('The options have the same data as requested', () => {
       optionsResponse.options.forEach(option => {
         expect(option.leg.agencyId).to.equal(event.agencyId);
         expect(option.leg.startTime).to.equal(event.startTime);
@@ -121,7 +122,7 @@ module.exports = function () {
 
     // FIXME For some reason we do not get the same start time as requested,
     // but 10 minutes earlier
-    xit('The HSL booking data corresponds the chosen option', () => {
+    it('The HSL booking data corresponds the chosen option', () => {
       const option = optionsResponse.options[0];
       const booking = createResponse.booking;
 
