@@ -18,8 +18,8 @@ Promise.promisifyAll(cognitoSync);
 
 function sendPushNotification(event) {
 
-  // Helper for creating Apple Push Notification Service (APNS) endpoint
-  function iOScreatePlatformEndpoint(token, isSandBox) {
+  // Helper for creating Apple Push Notification Service (APNS) endpoint & sending a push
+  function iOSsendPushNotification(token, isSandBox) {
 
     // structure for APNS
     const apnMessage = {
@@ -47,20 +47,60 @@ function sendPushNotification(event) {
       params.PlatformApplicationArn = ARN;
     }
 
+    let endpointArn;
     return sns.createPlatformEndpointAsync(params)
-      .then(response => sns.publishAsync({
-        TargetArn: response.EndpointArn,
+      .catch(error => {
+        console.warn(`Platform endpoint creation FAILED via '${APNSKey}' for '${token}'`);
+        console.warn(error.stack);
+        return Promise.reject(error);
+      })
+      .then(response => {
+        endpointArn = response.EndpointArn;
+        return Promise.resolve();
+      })
+      // we have end-point, try to send
+      .then(() => sns.publishAsync({
+        TargetArn: endpointArn,
         MessageStructure: 'json',
         Subject: subject,
         Message: JSON.stringify({
           [APNSKey]: JSON.stringify(apnMessage),
         }),
       }))
+      // in case of endpoint is disabled, perform re-enabling and try once again
+      .catch(error => {
+        if (error.name !== 'EndpointDisabled' || !endpointArn) {
+          return Promise.reject(error);
+        }
+        console.warn(`Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
+        const params = {
+          Attributes: {
+            Enabled: 'true',
+          },
+          EndpointArn: endpointArn,
+        };
+        return sns.setEndpointAttributesAsync(params)
+          .catch(error => {
+            console.warn(`FAILED to re-enable endpoint for '${endpointArn}'`);
+            console.warn(error.stack);
+            return Promise.reject(error);
+          })
+          // and try to send one more time
+          .then(response => sns.publishAsync({
+            TargetArn: endpointArn,
+            MessageStructure: 'json',
+            Subject: subject,
+            Message: JSON.stringify({
+              [APNSKey]: JSON.stringify(apnMessage),
+            }),
+          }));
+      })
       .then(response => {
         return Promise.resolve(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       })
       .catch(error => {
-        return Promise.reject(new MaaSError(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`, 500));
+        console.warn(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
+        return Promise.reject(error);
       });
   }
 
@@ -78,13 +118,13 @@ function sendPushNotification(event) {
       const token = record.Value.replace(/\s/g, '');
       console.info('Message is being sent to : ' + token);
 
-      // Queue all user devices (Apple) to the list
-      platformEndpointList.push(iOScreatePlatformEndpoint(token));
+      // Create Apple push notification sender
+      platformEndpointList.push(iOSsendPushNotification(token));
 
       // If in development or test env, push also via sandbox (we don't know if
       // the device push token has been created for sandbox or production certificate)
       if (stage === 'dev' || stage === 'test') {
-        platformEndpointList.push(iOScreatePlatformEndpoint(token, true));
+        platformEndpointList.push(iOSsendPushNotification(token, true));
       }
     });
 
