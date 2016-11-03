@@ -55,7 +55,7 @@ process.env.IS_TEST_ENVIRONMENT = 'TRUE';
 // Force local lambda & dynamo usage
 process.env.USE_MOCK_LAMBDA = 'TRUE';
 
-  // DB performance pre-setup (clear statistics) & seed data
+// DB performance pre-setup (clear statistics) & seed data
 before(() => {
   console.log('Preparing Database for tests');
   return dbUtils.init()

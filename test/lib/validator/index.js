@@ -42,16 +42,14 @@ describe('validator errors', () => {
 });
 
 describe('validator', () => {
-  describe(`validate: ${test.name}`, () => {
-    cases.forEach(test => {
-      it(`${test.name}`, () => {
-        // Validate the test cases for success & failure
-        return validator.validate(schema, test.input, test.options)
-          .then(
-            validated => ((test.pass) ? Promise.resolve() : Promise.reject(new Error('Should not pass'))),
-            error => ((test.pass) ? Promise.reject(new Error('Should not fail')) : Promise.resolve())
-          );
-      });
+  cases.forEach(test => {
+    it(`${test.name}`, () => {
+      // Validate the test cases for success & failure
+      return validator.validate(schema, test.input, test.options)
+        .then(
+          validated => ((test.pass) ? Promise.resolve() : Promise.reject(new Error('Should not pass'))),
+          error => ((test.pass) ? Promise.reject(new Error('Should not fail')) : Promise.resolve())
+        );
     });
   });
 });
