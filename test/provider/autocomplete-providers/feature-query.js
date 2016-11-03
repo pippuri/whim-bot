@@ -10,10 +10,11 @@ module.exports = function (lambda) {
 
   describe('autocomplete request', () => {
     const event = {
-      name: 'Kamp',
+      name: 'Kamppi',
       count: 5,
       lat: 60.1675800,
       lon: 24.9302260,
+      radius: 5000,
     };
 
     let error;
@@ -33,6 +34,10 @@ module.exports = function (lambda) {
 
     it('should trigger a valid response', () => {
       return validator.validate(schema, response);
+    });
+
+    it('should have one or more responses', () => {
+      expect(response.suggestions.length).to.be.above(0);
     });
   });
 
@@ -41,6 +46,8 @@ module.exports = function (lambda) {
       name: 'Sörnä',
       lat: 60.1675800,
       lon: 24.9302260,
+      radius: 5000,
+      count: 5,
     };
 
     let error;
@@ -60,6 +67,10 @@ module.exports = function (lambda) {
 
     it('should trigger a valid response', () => {
       return validator.validate(schema, response);
+    });
+
+    it('should have one or more responses', () => {
+      expect(response.suggestions.length).to.be.above(0);
     });
   });
 };

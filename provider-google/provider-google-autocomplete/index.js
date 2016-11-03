@@ -35,12 +35,10 @@ function adapt(input) {
   const query = {
     key: process.env.GOOGLE_API_KEY,
     input: input.name,
-    components: 'country:' + input.country,
     types: 'geocode',
     location: [input.lat, input.lon].join(','),
     radius: input.radius,
   };
-
 
   return request.get(ENDPOINT_URL, {
     json: true,

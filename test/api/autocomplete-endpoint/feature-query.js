@@ -35,12 +35,12 @@ module.exports = function (lambda) {
     let response;
 
     const event = {
-      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      identityId: '',
       payload: {
-        name: 'Sör',
-        count: '5',
-        lat: '24',
-        lon: '24',
+        name: 'Sörnä',
+        count: '',
+        lat: '60.1675800',
+        lon: '24.9302260',
       },
     };
 
@@ -58,6 +58,10 @@ module.exports = function (lambda) {
 
     it('should trigger a valid response', () => {
       return validator.validate(schema, response);
+    });
+
+    it('should have one or more responses', () => {
+      expect(response.suggestions.length).to.be.above(0);
     });
   });
 
