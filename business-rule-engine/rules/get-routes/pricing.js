@@ -9,7 +9,6 @@ const _groupBy = require('lodash/groupBy');
 const _merge = require('lodash/merge');
 const _sortBy = require('lodash/sortBy');
 const _sumBy = require('lodash/sumBy');
-const _uniqBy = require('lodash/uniqBy');
 const _uniqWith = require('lodash/uniqWith');
 const _values = require('lodash/values');
 const Promise = require('bluebird');
@@ -254,10 +253,9 @@ function _isItineraryTraversableWithTickets(ticketOptionsForLegs, ticketCombo) {
  * Used to remove provider option that has been covered by another
  */
 function _reduceProviders(providers) {
-  // Then filter by ticketName to only get the unique ones
-  providers = _uniqBy(providers, 'ticketName');
-
-  if (providers.length > 1) {
+  // Then filter by ticketName and providerPrio to only get the unique ones
+  providers = _uniqWith(providers, _isEqual);
+  if (providers.length >= 1) {
     // Lastly remove all provider with same agencyId but higher prio, E.g: [1,2,3,4,5] -> [5]
     const requiredProvidersByAgencyId = _groupBy(providers, 'agencyId');
     // eslint-disable-next-line
