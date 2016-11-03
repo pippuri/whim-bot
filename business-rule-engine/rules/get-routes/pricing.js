@@ -1,10 +1,19 @@
 'use strict';
 
+const BusinessRuleError = require('../../BusinessRuleError.js');
+const getTspPricingRules = require('../get-tsp-pricing');
+const _intersectionWith = require('lodash/intersectionWith');
+const _isEqual = require('lodash/isEqual');
+const _flatten = require('lodash/flatten');
+const _groupBy = require('lodash/groupBy');
+const _merge = require('lodash/merge');
+const _sortBy = require('lodash/sortBy');
+const _sumBy = require('lodash/sumBy');
+const _uniq = require('lodash/uniq');
+const _uniqWith = require('lodash/uniqWith');
+const _values = require('lodash/values');
 const Promise = require('bluebird');
 const powerset = require('powerset');
-const _ = require('lodash');
-const getTspPricingRules = require('../get-tsp-pricing');
-const BusinessRuleError = require('../../BusinessRuleError.js');
 
 const tspData = {
   dev: require('../../../lib/tsp/tspData-dev.json'),
@@ -184,7 +193,7 @@ function _getLegTicketOptions(leg, providers) {
 function _uniqueTickets(tickets) {
 
   const emptyGroups = { leg: [], itinerary: [] };
-  const ticketsByExpiration = _.merge(emptyGroups, _.groupBy(tickets, ticket => {
+  const ticketsByExpiration = _merge(emptyGroups, _groupBy(tickets, ticket => {
     if (ticket.type === 'U_PMIN') {
       return 'leg';
     }
@@ -203,14 +212,14 @@ function _uniqueTickets(tickets) {
 
   // Itinerary tickets are duplicates if the contents of the ticket objects match
 
-  const uniqueItineraryTickets = _.uniqWith(itineraryTickets, _.isEqual);
+  const uniqueItineraryTickets = _uniqWith(itineraryTickets, _isEqual);
 
   const uniqueTickets = uniqueLegTickets.concat(uniqueItineraryTickets);
   return uniqueTickets;
 }
 
 function _isLegTraversableWithTickets(legTicketOption, ticketCombo) {
-  const suitableTickets = _.intersectionWith(legTicketOption, ticketCombo, _.isEqual);
+  const suitableTickets = _intersectionWith(legTicketOption, ticketCombo, _isEqual);
   const isTraversable = (suitableTickets.length > 0);
   return isTraversable;
 }
@@ -229,7 +238,7 @@ function _isItineraryTraversableWithTickets(ticketOptionsForLegs, ticketCombo) {
 function _calculateItineraryCost(itinerary, providers) {
 
   // Save the leg agencyId to ensure ticket's presence in the end
-  const requiredProviders = _.uniq(
+  const requiredProviders = _uniq(
     itinerary.legs
       .map(leg => leg.agencyId)
       .filter(agencyId => agencyId !== '' && agencyId)
@@ -239,7 +248,7 @@ function _calculateItineraryCost(itinerary, providers) {
     return _getLegTicketOptions(leg, providers);
   });
 
-  const allTickets = _.flatten(ticketOptionsForLegs);
+  const allTickets = _flatten(ticketOptionsForLegs);
 
   const ticketCandidates = _uniqueTickets(allTickets);
   const ticketCombos = powerset(ticketCandidates);
@@ -252,8 +261,8 @@ function _calculateItineraryCost(itinerary, providers) {
     return null;
   }
 
-  const combosByCost = _.sortBy(applicableTicketCombos, ticketCombo => {
-    return _.sumBy(ticketCombo, 'cost');
+  const combosByCost = _sortBy(applicableTicketCombos, ticketCombo => {
+    return _sumBy(ticketCombo, 'cost');
   });
 
   let cheapestCombo;
@@ -263,7 +272,7 @@ function _calculateItineraryCost(itinerary, providers) {
 
     const cheapestComboProviders = cheapestCombo.map(item => item.agencyId).filter(agencyId => agencyId !== '' && agencyId);
 
-    const check = _.intersectionWith(requiredProviders, cheapestComboProviders, (a, b) => {
+    const check = _intersectionWith(requiredProviders, cheapestComboProviders, (a, b) => {
       return b.indexOf(a) >= 0;
     });
 
@@ -272,7 +281,7 @@ function _calculateItineraryCost(itinerary, providers) {
     }
   }
 
-  const cost = _.sumBy(cheapestCombo, 'cost');
+  const cost = _sumBy(cheapestCombo, 'cost');
   return cost;
 }
 
@@ -316,7 +325,7 @@ function _calculateCost(itineraries, profile) {
     });
   });
 
-  return getTspPricingRules.getOptionsBatch(_.values(bookingAgencies), profile)
+  return getTspPricingRules.getOptionsBatch(_values(bookingAgencies), profile)
     .then(providers => {
       // Filter null responses (e.g. no provider found)
       const filteredProviders = providers.filter(provider => provider !== null);
