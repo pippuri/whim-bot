@@ -72,7 +72,7 @@ function getOptions(params, profile) {
   }
 
   if (!params.agencyId) {
-    throw new Error('No agencyId supplied to the engine');
+    throw new BusinessRuleError('No agencyId supplied to the engine', 400, 'get-routes');
   }
 
   const query = {
@@ -99,7 +99,7 @@ function getOptionsBatch(params, profile) {
     }
 
     if (!request.agencyId) {
-      throw new Error(`The request does not supply 'agencyId' to the TSP engine: ${JSON.stringify(request)}`);
+      throw new BusinessRuleError(`The request does not supply 'agencyId' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
     }
 
     return {
