@@ -20,7 +20,7 @@ exports.up = function (knex, Promise) {
     `)
     .raw(`
       INSERT INTO "BookingProvider"
-      SELECT * FROM json_populate_recordset(NULL::"Provider", '${JSON.stringify(bookingProvidersDump)}')
+      SELECT * FROM json_populate_recordset(NULL::"BookingProvider", '${JSON.stringify(bookingProvidersDump)}')
     `)
     .raw(`
       ALTER TABLE "RoutesProvider"
@@ -28,7 +28,7 @@ exports.up = function (knex, Promise) {
     `)
     .raw(`
       INSERT INTO "RoutesProvider"
-      SELECT * FROM json_populate_recordset(NULL::"Provider", '${JSON.stringify(routesProvidersDump)}')
+      SELECT * FROM json_populate_recordset(NULL::"RoutesProvider", '${JSON.stringify(routesProvidersDump)}')
     `);
 };
 
