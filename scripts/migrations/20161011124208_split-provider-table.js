@@ -1,5 +1,10 @@
 'use strict';
 
+const models = require('../../lib/models');
+const Database = models.Database;
+const BookingProvider = models.BookingProvider;
+const RoutesProvider = models.RoutesProvider;
+
 const bookingProvidersDump = require('./BookingProviderDumpOct25.json');
 const routesProvidersDump = require('./RoutesProviderDumpOct25.json');
 
@@ -19,36 +24,51 @@ exports.up = function (knex, Promise) {
       DROP CONSTRAINT IF EXISTS enforce_geotype_geom;
     `)
     .raw(`
-      INSERT INTO "BookingProvider"
-      SELECT * FROM json_populate_recordset(NULL::"BookingProvider", '${JSON.stringify(bookingProvidersDump)}')
-    `)
-    .raw(`
       ALTER TABLE "RoutesProvider"
       DROP CONSTRAINT IF EXISTS enforce_geotype_geom;
     `)
-    .raw(`
-      INSERT INTO "RoutesProvider"
-      SELECT * FROM json_populate_recordset(NULL::"RoutesProvider", '${JSON.stringify(routesProvidersDump)}')
-    `);
+    .then(() => {
+      Database.init()
+        .then(() => {
+          return BookingProvider.query().insert(bookingProvidersDump);
+        })
+        .then(() => {
+          return RoutesProvider.query().insert(routesProvidersDump);
+        })
+        .then(() => {
+          return Database.cleanup()
+            .then(() => {
+              console.log('Successfully plant seed data to BookingProvider and RoutesProvider');
+              return Promise.resolve();
+            });
+        })
+        .catch(error => {
+          console.log(error);
+          return Database.cleanup()
+            .then( _ => {
+              console.log('Failed to Dump data to Postgre!');
+              return Promise.reject(error);
+            });
+        });
+    });
+
 };
 
 exports.down = function (knex, Promise) {
   return knex.schema
     .raw(`
-      ALTER TABLE "RoutesProvider"
-      CONSTRAINT enforce_geotype_geom CHECK (geometrytype(the_geom) = 'POLYGON'::text OR the_geom IS NULL)
+      DELETE FROM "BookingProvider"
     `)
     .raw(`
-      ALTER TABLE "BookingProvider"
-      CONSTRAINT enforce_geotype_geom CHECK (geometrytype(the_geom) = 'POLYGON'::text OR the_geom IS NULL)
+      DELETE FROM "RoutesProvider"
     `)
     .table('RoutesProvider', table => {
       table.dropColumn('region');
     })
     .table('BookingProvider', table => {
       table.dropColumn('aliases');
-      table.dropColumn('ticket');
+      table.dropColumn('ticketName');
       table.dropColumn('region');
-      table.specificType('providerType', 'varchar(50)').notNullable();
+      table.specificType('providerType', 'varchar(50)');
     });
 };

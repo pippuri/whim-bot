@@ -5,9 +5,7 @@
     "active": true,
     "providerName": "Valopilkku",
     "agencyId": "Valopilkku",
-    "modes": [
-      "TAXI"
-    ],
+    "modes": ["TAXI"],
     "type": "U_PKM",
     "value": 32,
     "baseValue": 118,
