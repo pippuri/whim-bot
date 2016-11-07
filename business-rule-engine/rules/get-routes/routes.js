@@ -394,7 +394,7 @@ function _setRouteAgency(route) {
 function _calculateLegsDistance(route) {
   route.plan.itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
-      if (leg.legGeometry && leg.legGeometry.points) {
+      if (!leg.distance && leg.legGeometry && leg.legGeometry.points) {
         leg.distance = Math.ceil(polylineEncoder.length(leg.legGeometry.points, 'meter'));
       }
     });
