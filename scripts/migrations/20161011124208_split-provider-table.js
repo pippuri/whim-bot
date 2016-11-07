@@ -1,23 +1,22 @@
 'use strict';
 
-const models = require('../../lib/models');
-const Database = models.Database;
-const BookingProvider = models.BookingProvider;
-const RoutesProvider = models.RoutesProvider;
-
-const bookingProvidersDump = require('./BookingProviderDumpOct25.json');
-const routesProvidersDump = require('./RoutesProviderDumpOct25.json');
+const bookingProvidersDump = require('./20161011124208_split-provider-table/BookingProvider.json');
+const routesProvidersDump = require('./20161011124208_split-provider-table/RoutesProvider.json');
 
 exports.up = function (knex, Promise) {
   return knex.schema
     .table('BookingProvider', table => {
       table.dropColumn('providerType');
-      table.string('region');
-      table.string('ticketName');
-      table.specificType('aliases', 'varchar(50)[]').defaultTo('{}');
+      table.string('region').notNullable();
+      table.string('ticketName').notNullable();
+      table.specificType('aliases', 'varchar(255)[]').defaultTo('{}').notNullable();
     })
     .table('RoutesProvider', table => {
-      table.string('region');
+      table.dropColumn('modes');
+    })
+    .table('RoutesProvider', table => {
+      table.string('region').notNullable();
+      table.specificType('modes', 'varchar(255)[]').defaultTo('{}').notNullable();
     })
     .raw(`
       ALTER TABLE "BookingProvider"
@@ -28,30 +27,11 @@ exports.up = function (knex, Promise) {
       DROP CONSTRAINT IF EXISTS enforce_geotype_geom;
     `)
     .then(() => {
-      Database.init()
-        .then(() => {
-          return BookingProvider.query().insert(bookingProvidersDump);
-        })
-        .then(() => {
-          return RoutesProvider.query().insert(routesProvidersDump);
-        })
-        .then(() => {
-          return Database.cleanup()
-            .then(() => {
-              console.log('Successfully plant seed data to BookingProvider and RoutesProvider');
-              return Promise.resolve();
-            });
-        })
-        .catch(error => {
-          console.log(error);
-          return Database.cleanup()
-            .then( _ => {
-              console.log('Failed to Dump data to Postgre!');
-              return Promise.reject(error);
-            });
-        });
+      return knex.insert(bookingProvidersDump).into('BookingProvider');
+    })
+    .then(() => {
+      return knex.insert(routesProvidersDump).into('RoutesProvider');
     });
-
 };
 
 exports.down = function (knex, Promise) {
@@ -62,13 +42,25 @@ exports.down = function (knex, Promise) {
     .raw(`
       DELETE FROM "RoutesProvider"
     `)
-    .table('RoutesProvider', table => {
-      table.dropColumn('region');
-    })
     .table('BookingProvider', table => {
       table.dropColumn('aliases');
       table.dropColumn('ticketName');
       table.dropColumn('region');
       table.specificType('providerType', 'varchar(50)');
-    });
+    })
+    .table('RoutesProvider', table => {
+      table.dropColumn('region');
+      table.dropColumn('modes');
+    })
+    .table('RoutesProvider', table => {
+      table.specificType('modes', 'varchar(15)[]').notNullable();
+    })
+    .raw(`
+      ALTER TABLE "BookingProvider"
+      ADD CONSTRAINT enforce_geotype_geom CHECK (geometrytype(the_geom) = 'POLYGON'::text OR the_geom IS NULL);
+    `)
+    .raw(`
+      ALTER TABLE "RoutesProvider"
+      ADD CONSTRAINT enforce_geotype_geom CHECK (geometrytype(the_geom) = 'POLYGON'::text OR the_geom IS NULL);
+    `);
 };
