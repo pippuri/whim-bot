@@ -6,7 +6,7 @@ const bus = require('../../lib/service-bus');
 
 module.exports = function () {
 
-  describe('[NEGATIVE] Unknown request', () => {
+  describe('[NEGATIVE] Unknown rule', () => {
 
     const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
 

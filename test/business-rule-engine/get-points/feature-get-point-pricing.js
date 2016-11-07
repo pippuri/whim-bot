@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const bus = require('../../lib/service-bus');
+const bus = require('../../../lib/service-bus');
 
 module.exports = function () {
 
@@ -39,7 +39,7 @@ module.exports = function () {
     });
 
     it('response should be a number with type Float', () => {
-      expect(Number(response) === response).to.be.true;
+      expect(response).to.be.a('number');
     });
   });
 

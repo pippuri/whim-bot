@@ -9,11 +9,12 @@ const _groupBy = require('lodash/groupBy');
 const _merge = require('lodash/merge');
 const _sortBy = require('lodash/sortBy');
 const _sumBy = require('lodash/sumBy');
-const _uniq = require('lodash/uniq');
 const _uniqWith = require('lodash/uniqWith');
 const _values = require('lodash/values');
 const Promise = require('bluebird');
 const powerset = require('powerset');
+const geoUtils = require('geojson-utils');
+const utils = require('../../../lib/utils');
 
 const tspData = {
   dev: require('../../../lib/tsp/tspData-dev.json'),
@@ -95,14 +96,23 @@ function _calculateItineraryCo2(itinerary) {
   return co2Cost;
 }
 
-function _getApplicablePrices(leg, providers) {
+function _getTicketSpec(leg, providers) {
   // Walking etc. legs are free
   if (MODES_WITHOUT_TICKET.some(mode => mode === leg.mode)) {
     return [{ type: 'U_NA' }];
   }
 
-  return providers
-    .map(provider => provider.providerMeta);
+  return providers.map(provider => {
+    const ticketSpec = {
+      ticketName: provider.ticketName,
+      providerPrio: provider.providerPrio,
+      type: provider.type,
+      value: provider.value,
+      baseValue: provider.baseValue,
+      agencyId: provider.agencyId,
+    };
+    return ticketSpec;
+  });
 }
 
 function _createNotApplicableTicket(priceSpec) {
@@ -121,6 +131,8 @@ function _createPerMinTicket(leg, priceSpec) {
   const floor = priceSpec.baseValue ? priceSpec.baseValue : 0;
 
   const ticket = {
+    ticketName: priceSpec.ticketName,
+    providerPrio: priceSpec.providerPrio,
     type: priceSpec.type,
     cost: (durationInMin * pmin) + floor,
     agencyId: priceSpec.agencyId,
@@ -136,6 +148,8 @@ function _createPerKmTicket(leg, priceSpec) {
   const basePrice = priceSpec.baseValue ? priceSpec.baseValue : 0;
 
   const ticket = {
+    ticketName: priceSpec.ticketName,
+    providerPrio: priceSpec.providerPrio,
     type: priceSpec.type,
     cost: basePrice + (distance * pricePkm),
     agencyId: priceSpec.agencyId,
@@ -148,6 +162,8 @@ function _createPerItineraryTicket(priceSpec) {
   const piti = priceSpec.value;
 
   const ticket = {
+    ticketName: priceSpec.ticketName,
+    providerPrio: priceSpec.providerPrio,
     type: priceSpec.type,
     cost: piti,
     agencyId: priceSpec.agencyId,
@@ -185,13 +201,12 @@ function _createTicket(leg, priceSpec) {
  * @param tspPrices {}
  */
 function _getLegTicketOptions(leg, providers) {
-  const applicablePrices = _getApplicablePrices(leg, providers);
+  const applicablePrices = _getTicketSpec(leg, providers);
   const ticketOptions = applicablePrices.map(spec => _createTicket(leg, spec));
   return ticketOptions;
 }
 
 function _uniqueTickets(tickets) {
-
   const emptyGroups = { leg: [], itinerary: [] };
   const ticketsByExpiration = _merge(emptyGroups, _groupBy(tickets, ticket => {
     if (ticket.type === 'U_PMIN') {
@@ -234,25 +249,77 @@ function _isItineraryTraversableWithTickets(ticketOptionsForLegs, ticketCombo) {
   return true;
 }
 
-// FIXME figure out how to ensure the taxi leg cost is always included as a ticket
-function _calculateItineraryCost(itinerary, providers) {
+/**
+ * Used to remove provider option that has been covered by another
+ */
+function _reduceProviders(providers) {
+  // Then filter by ticketName and providerPrio to only get the unique ones
+  providers = _uniqWith(providers, _isEqual);
+  if (providers.length >= 1) {
+    // Lastly remove all provider with same agencyId but higher prio, E.g: [1,2,3,4,5] -> [5]
+    const requiredProvidersByAgencyId = _groupBy(providers, 'agencyId');
+    // eslint-disable-next-line
+    for (let key in requiredProvidersByAgencyId) {
+      requiredProvidersByAgencyId[key] = requiredProvidersByAgencyId[key].reduce((previous, current) => {
+        if (previous.agencyId === current.agencyId && previous.providerPrio < current.providerPrio) {
+          return current;
+        }
 
-  // Save the leg agencyId to ensure ticket's presence in the end
-  const requiredProviders = _uniq(
-    itinerary.legs
-      .map(leg => leg.agencyId)
-      .filter(agencyId => agencyId !== '' && agencyId)
-  );
+        return previous;
+      });
+    }
+    providers = _values(requiredProvidersByAgencyId);
+  }
+
+  // If there are multiple of the same agencyId with different priority, get the one with lower priority
+  // Because lower priority provider will cover higher priority provider
+
+  return providers;
+}
+
+/**
+ * Resolve the list of providers that is nessesarry inside the itinerary
+ */
+function _resolveRequiredProviders(itinerary) {
+  // Save the leg agencyId, ticketName and priority to ensure ticket's presence and not redundant in the end
+  // Also sort requiredProviders by providerPrio
+  let requiredProviders = itinerary.legs
+      .map(leg => {
+        return {
+          agencyId: leg.agencyId,
+          ticketName: leg.agencyData ? leg.agencyData.ticketName : undefined,
+          providerPrio: leg.agencyData ? leg.agencyData.providerPrio : undefined,
+        };
+      })
+      .sort((a, b) => a.providerPrio > b.providerPrio)
+      .filter(item => item.agencyId && item.ticketName);
+
+  // Reduce providers that has been covered by others
+  requiredProviders = _reduceProviders(requiredProviders);
+  return requiredProviders;
+}
+
+/**
+ * Calculate to sum cost of the itinerary
+ */
+function _calculateItineraryCost(itinerary) {
+  const requiredProviders = _resolveRequiredProviders(itinerary);
+  const itineraryTicketProviders = itinerary.legs.filter(leg => typeof leg.agencyData !== typeof undefined).map(leg => leg.agencyData);
+  // Remove agencyData after use
+  itinerary.legs.forEach(leg => {
+    if (leg.agencyData) {
+      delete leg.agencyData;
+    }
+  });
 
   const ticketOptionsForLegs = itinerary.legs.map(leg => {
-    return _getLegTicketOptions(leg, providers);
+    return _getLegTicketOptions(leg, itineraryTicketProviders);
   });
 
   const allTickets = _flatten(ticketOptionsForLegs);
 
   const ticketCandidates = _uniqueTickets(allTickets);
   const ticketCombos = powerset(ticketCandidates);
-
   const applicableTicketCombos = ticketCombos.filter(ticketCombo => {
     return _isItineraryTraversableWithTickets(ticketOptionsForLegs, ticketCombo);
   });
@@ -270,10 +337,18 @@ function _calculateItineraryCost(itinerary, providers) {
   for (let i = 0; i < combosByCost.length; i++) {
     cheapestCombo = combosByCost[i];
 
-    const cheapestComboProviders = cheapestCombo.map(item => item.agencyId).filter(agencyId => agencyId !== '' && agencyId);
+    let cheapestComboProviders = cheapestCombo.map(item => {
+      return { agencyId: item.agencyId, ticketName: item.ticketName, providerPrio: item.providerPrio };
+    }).filter(item => {
+      return item.agencyId && item.ticketName && item.providerPrio;
+    });
 
+    // Reduce providers that have been covered by others
+    cheapestComboProviders = _reduceProviders(cheapestComboProviders);
+    // If required providers have one or more ticket that can be covered by another,
+    // remove all and keep the one that can cover all (basically the more pricy one with lower priority)
     const check = _intersectionWith(requiredProviders, cheapestComboProviders, (a, b) => {
-      return b.indexOf(a) >= 0;
+      return a.agencyId === b.agencyId && a.ticketName === b.ticketName && a.providerPrio === b.providerPrio;
     });
 
     if (check.length === requiredProviders.length) {
@@ -286,22 +361,52 @@ function _calculateItineraryCost(itinerary, providers) {
 }
 
 /**
- * Decide which provider from the list of possible provider to handle the leg
+ * Checks whether a given point is inside the polygon
+ *
+ * @param {object} location - a {lat,lon} pair
+ * @param {object} polygon - a GeoJSON polygon
+ * @return true if it is inside polygon, false otherwise
  */
-function _setBookingProviders(itinerary, providers) {
-  itinerary.legs.forEach(leg => {
-    if (!leg.agencyId) {
-      return;
-    }
+function isInside(location, polygon) {
+  const point = {
+    type: 'Point',
+    coordinates: [location.lon, location.lat],
+  };
+  return geoUtils.pointInPolygon(point, polygon);
+}
 
-    const booker = providers.find(provider => {
-      return provider.agencyId === leg.agencyId;
-    });
+function _setLegBookingProvider(leg, providers) {
+  if (providers.length === 0) {
+    return leg;
+  }
 
-    if (!booker) return;
+  if (!leg.agencyId) {
+    return leg;
+  }
 
-    leg.agencyId = booker.agencyId;
-  });
+  if (leg.agencyId === providers[0].agencyId && isInside(leg.to, JSON.parse(providers[0].geometry))) {
+    leg.agencyData = providers[0];
+    return leg;
+  }
+
+  // Remove the first provider in the list and check the 2nd one.
+  const clone = utils.cloneDeep(providers);
+  clone.shift();
+
+  // Self loop the function again if no providers was found
+  return _setLegBookingProvider(leg, clone);
+}
+
+/**
+ * Decide booking providers for all legs of the itineraries
+ * @param {Object} itinerary
+ * @param {Array} providers - List of providers to decide from.
+ */
+function _setItineraryBookingProviders(itinerary, providers) {
+  // First ascending sort providers by priority
+  providers = providers.sort((a, b) => a.value - b.value);
+  itinerary.legs = itinerary.legs.map(leg => _setLegBookingProvider(leg, providers));
+  return itinerary;
 }
 
 /**
@@ -324,16 +429,15 @@ function _calculateCost(itineraries, profile) {
       }
     });
   });
-
   return getTspPricingRules.getOptionsBatch(_values(bookingAgencies), profile)
     .then(providers => {
+      providers = _flatten(providers);
       // Filter null responses (e.g. no provider found)
       const filteredProviders = providers.filter(provider => provider !== null);
-
       itineraries.forEach(itinerary => {
-        _setBookingProviders(itinerary, filteredProviders);
+        itinerary = _setItineraryBookingProviders(itinerary, filteredProviders);
         itinerary.fare = {
-          points: _calculateItineraryCost(itinerary, filteredProviders),
+          points: _calculateItineraryCost(itinerary),
           co2: _calculateItineraryCo2(itinerary),
         };
       });
@@ -371,7 +475,8 @@ function _nullifyUnpurchasableItineraries(itineraries) {
         itinerary.fare.points = null;
       }
 
-      if (!leg.agencyId && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode)) === -1) {
+      // NOTE since HKL-BICYCLE not available, should this be bookable? Logically it should right?
+      if (!leg.agencyId && (['WALK', 'WAIT', 'TRANSFER', 'BICYCLE'].indexOf(leg.mode)) === -1) {
         itinerary.fare.points = null;
       }
     });

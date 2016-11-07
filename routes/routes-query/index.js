@@ -84,8 +84,9 @@ function filterPastRoutes(leaveAt, response) {
 }
 
 function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
+  // If not leaveAt, search for routes starting 2 mins from now
   if (!leaveAt && !arriveBy) {
-    leaveAt = Date.now();
+    leaveAt = Date.now() + 2 * 60 * 1000;
   }
 
   const event = {

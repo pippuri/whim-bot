@@ -1,10 +1,9 @@
 {
-  "identityId": "eu-west-1:6d6ba277-783e-40e1-a05f-bf6794e76d0a",
+  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000001",
   "rule": "get-routes",
   "parameters": {
-    "to": "60.159294,24.9419313",
-    "leaveAt": "1476532800000",
-    "from": "60.218362,24.7732003",
-    "modes": "TAXI"
+    "from": "60.1657520782836,24.9449517015989",
+    "to": "60.220307,24.7752453",
+    "leaveAt": 1478530800000
   }
 }

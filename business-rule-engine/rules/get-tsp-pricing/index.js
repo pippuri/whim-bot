@@ -16,17 +16,43 @@ const getProviderRules = require('../get-provider');
 const utils = require('../../../lib/utils');
 const BusinessRuleError = require('../../BusinessRuleError.js');
 
-/**
- * Combine pricing based on provider and profile information
- */
-function getProfileSpecificPricing(provider, profile) {
-  const clone = utils.cloneDeep(provider);
-  const agencyId = provider.providerMeta.agencyId;
+// TODO Move dataset to another place
+const zipcodeDataset = require('../../zipcode-Uusimaa.json');
 
-  // If agency is included in the plan, skip costs
-  if (profile.subscription.agencies.some(a => a === agencyId)) {
-    clone.providerMeta.value = 0;
-    clone.providerMeta.baseValue = 0;
+/**
+ * Give profile free service from agencyId if included in profile subscription.
+ * Region context based on City registered on client
+ * TODO many thing, these logic checks are not enough
+ */
+function getProfileSpecificPricing(providers, profile) {
+  const clone = utils.cloneDeep(providers);
+
+  if (providers instanceof Array) {
+    clone.forEach(provider => {
+      if (profile.subscription.agencies.some(agency => {
+        return agency === provider.agencyId && // Agency is included in plan
+              profile.zipCode && profile.city && // Profile have zipcode and city data
+              zipcodeDataset[profile.zipCode] && // Zipcode is in Uusimaa
+              provider.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
+              provider.providerPrio === 1; // Give free ticket only to single region
+      })) {
+        provider.value = 0;
+        provider.baseValue = 0;
+      }
+    });
+
+    return clone;
+  }
+
+  if (profile.subscription.agencies.some(agency => {
+    return agency === clone.agencyId && // Agency is included in plan
+            profile.zipCode && profile.city && // Profile have zipcode and city data
+            zipcodeDataset[profile.zipCode] && // Zipcode is in Uusimaa
+            clone.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
+            clone.providerPrio === 1; // Give free ticket only to single region
+  })) {
+    clone.value = 0;
+    clone.baseValue = 0;
   }
 
   return clone;
@@ -45,11 +71,15 @@ function getOptions(params, profile) {
     throw new BusinessRuleError('No \'from\' supplied to the TSP engine', 400, 'get-routes');
   }
 
+  if (!params.agencyId) {
+    throw new BusinessRuleError('No agencyId supplied to the engine', 400, 'get-routes');
+  }
+
   const query = {
-    type: 'tsp-booking-' + params.type.toLowerCase(),
+    agencyId: params.agencyId,
     from: params.from,
   };
-  return getProviderRules.getProvider(query)
+  return getProviderRules.getBookingProvider(query)
     .then(providers => {
       if (providers.length < 1) {
         console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
@@ -68,29 +98,25 @@ function getOptionsBatch(params, profile) {
       throw new BusinessRuleError(`The request does not supply 'from' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
     }
 
-    if (request.agencyId) {
-      return {
-        agencyId: request.agencyId,
-        location: request.from,
-      };
+    if (!request.agencyId) {
+      throw new BusinessRuleError(`The request does not supply 'agencyId' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
     }
 
     return {
-      type: `tsp-booking-${request.type.toLowerCase()}`,
-      location: request.from,
+      agencyId: request.agencyId,
+      from: request.from,
     };
   });
 
-  return getProviderRules.getProviderBatch(queries)
-    .then(responses => {
-      return responses.map((providers, index) => {
+  return getProviderRules.getBookingProvidersBatch(queries)
+    .then(providers => {
+      return providers.map((providers, index) => {
         // Always pick the first provider - they are in priority order
         if (providers.length < 1) {
           console.warn(`Could not find pricing provider for ${JSON.stringify(queries[index])}`);
           return null;
         }
-
-        return getProfileSpecificPricing(providers[0], profile);
+        return getProfileSpecificPricing(providers, profile);
       })
       .filter(provider => typeof provider !== typeof undefined);
     });

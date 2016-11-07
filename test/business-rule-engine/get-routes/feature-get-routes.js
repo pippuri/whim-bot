@@ -2,7 +2,7 @@
 
 const expect = require('chai').expect;
 const moment = require('moment-timezone');
-const bus = require('../../lib/service-bus');
+const bus = require('../../../lib/service-bus');
 
 // NOTE test library for this rule is not nessesary need to be extensive as many tests for routes-query has been written for routes-query API
 
@@ -188,17 +188,17 @@ module.exports = function () {
     });
 
     it('should return null costs for itinerary that is unbookable', () => {
-      const purchasableProvider = Object.keys(require('../../lib/tsp/tspData-dev.json'));
+      const purchasableProvider = Object.keys(require('../../../lib/tsp/tspData-dev.json'));
       const unbookableItineraries = [];
 
       response.plan.itineraries.forEach(itinerary => {
         itinerary.legs.forEach(leg => {
           // If leg doesn't have an agencyId and is not a WALK / WAIT / TRANSFER leg, make itinerary unpurchasable
-          if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1) && purchasableProvider.indexOf(leg.agencyId) === -1) {
+          if (leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER', 'BICYCLE'].indexOf(leg.mode) === -1) && purchasableProvider.indexOf(leg.agencyId) === -1) {
             unbookableItineraries.push(itinerary);
           }
 
-          if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER'].indexOf(leg.mode) === -1)) {
+          if (!leg.hasOwnProperty('agencyId') && (['WALK', 'WAIT', 'TRANSFER', 'BICYCLE'].indexOf(leg.mode) === -1)) {
             unbookableItineraries.push(itinerary);
           }
         });
