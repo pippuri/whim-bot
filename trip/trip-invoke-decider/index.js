@@ -264,7 +264,7 @@ class Decider {
 
     // process those legs that need immediate attention (capture failures so returns always success)
     let hasErrors = false;
-    return Promise.all(promiseQueue)
+    return Promise.mapSeries(promiseQueue, result => result)
       .each(inspection => {
         if (!inspection.isFulfilled()) {
           console.error('[Decider] Error: Failed check/act for a leg: ', inspection.reason());

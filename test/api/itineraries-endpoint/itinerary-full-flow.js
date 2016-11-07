@@ -217,28 +217,6 @@ module.exports = function (input, results) {
       expect(createdItinerary.state).to.equal('PAID');
     });
 
-    it('Creates bookings for legs that are bookable', () => {
-      // Check that each bookable leg is actually booked
-      createdItinerary.legs.forEach(leg => {
-        const bookableAgencies = input.filter.bookable || [];
-        if (bookableAgencies.some(agencyId => agencyId === leg.agencyId)) {
-          expect(leg.booking).to.be.an('object');
-          expect(leg.booking.state).to.be.oneOf(['PAID', 'RESERVED', 'CONFIRMED']);
-        }
-      });
-    });
-
-    it('Does not create bookings for legs that are not bookable', () => {
-      // Check that there are no bookings for legs that are not bookable
-      createdItinerary.legs.forEach(leg => {
-        const bookableAgencies = input.filter.bookable || [];
-
-        if (!bookableAgencies.some(agencyId => agencyId === leg.agencyId)) {
-          expect(leg.booking).to.be.undefined;
-        }
-      });
-    });
-
     it('Creates the itinerary, legs as PAID', () => {
       expect(createdItinerary.state).to.equal('PAID');
       // Check each bookable leg is actually booked
@@ -386,13 +364,17 @@ module.exports = function (input, results) {
       skip = false;
     });
 
-    it('Fare is refunded if clean cancel', () => {
-      if (cancelledItinerary.state === 'CANCELLED') {
-        expect(startingBalance).to.equal(endBalance);
-      } else {
-        expect(startingBalance - (cancelledItinerary.fare.points || 0)).to.equal(endBalance);
+    it('Fare is refunded all or partially', () => {
+      // calculate expected refund
+      let refunded = cancelledItinerary.fare.points - cancelledItinerary.legs.reduce((sum, leg) => {
+        return leg.state === 'CANCELLED_WITH_ERRORS' ? sum + leg.fare.amount : sum;
+      }, 0);
+      if (refunded < 0) {
+        refunded = 0;
       }
+      expect(startingBalance).to.equal(endBalance + refunded);
     });
+
   });
 
   after(() => {
