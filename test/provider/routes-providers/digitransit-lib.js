@@ -6,8 +6,8 @@ const moment = require('moment-timezone');
 module.exports = function (lib) {
 
   describe('daylight saving times', () => {
-    const UTC_SUMMER_OFFSET = 2 * 60 * 60 * 1000;
-    const UTC_WINTER_OFFSET = 3 * 60 * 60 * 1000;
+    const UTC_SUMMER_OFFSET = 3 * 60 * 60 * 1000;
+    const UTC_WINTER_OFFSET = 2 * 60 * 60 * 1000;
 
     it('Computes UTC offset of Finnish summer time correctly', () => {
       const lastMinuteSummer =

@@ -5,8 +5,8 @@
  */
 const gregorian = require('gregorian');
 
-const UTC_SUMMER_OFFSET = 2 * 60 * 60 * 1000;
-const UTC_WINTER_OFFSET = 3 * 60 * 60 * 1000;
+const UTC_SUMMER_OFFSET = 3 * 60 * 60 * 1000;
+const UTC_WINTER_OFFSET = 2 * 60 * 60 * 1000;
 
 function getUTCOffset(date) {
   // Determine the UTC offset from daylight saving time between last Sunday
