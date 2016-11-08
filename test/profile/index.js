@@ -53,8 +53,8 @@ describe('profile tools', () => {
   });
 
   after(() => {
-    // Un-set the extra options for request-promise-lite in the environment
-    process.env.RPL_DEFAULTS = undefined;
+    // Clear the extra options for request-promise-lite in the environment
+    process.env.RPL_DEFAULTS = '{}';
   });
 
   require('./profile-card-update/index.js')(testUserIdentity);
