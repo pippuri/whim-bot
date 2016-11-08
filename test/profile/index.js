@@ -52,17 +52,10 @@ describe('profile tools', () => {
       });
   });
 
-  // Do not cleanup in the end, because parallel Travis runs might get
-  // messed up of this. Better have the cleanup in the beginning.
-  /*after(() => {
-    return mgr.deleteUserSubscription(testUserIdentity)
-    .catch(error => {
-      console.log('Caught an exception:', error.message);
-      console.log(error.response.toString());
-      console.log(error.toString());
-      throw error;
-    });
-  });*/
+  after(() => {
+    // Un-set the extra options for request-promise-lite in the environment
+    process.env.RPL_DEFAULTS = undefined;
+  });
 
   require('./profile-card-update/index.js')(testUserIdentity);
   require('./profile-manage/index.js')(testUserIdentity);
