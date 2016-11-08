@@ -1,5 +1,5 @@
 {
-  "name": "webhooks/bookings",
+  "name": "webhooks-bookings-update",
   "runtime": "nodejs4.3",
   "description": "Webhook for tsp adapter to update the booking in MaaS-backend DB",
   "customName": false,
