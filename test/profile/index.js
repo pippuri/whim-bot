@@ -2,6 +2,14 @@
 
 const mgr = require('../../lib/subscription-manager');
 
+// Extra headers to pass to request-promise-lite during tests;
+// this header supresses the triggering of webhooks by Chargebee
+const EXTRA_REQUEST_OPTIONS = JSON.stringify({
+  headers: {
+    'chargebee-event-webhook': 'all-disabled',
+  },
+});
+
 describe('profile tools', () => {
   const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000005';
   const creditCardData = {
@@ -20,6 +28,9 @@ describe('profile tools', () => {
   };
 
   before(() => {
+    // Set the extra options for request-promise-lite in the environment
+    process.env.RPL_DEFAULTS = EXTRA_REQUEST_OPTIONS;
+
     // Try to cleanup Chargebee identity - fetch, delete if exists (!404),
     // and then create a new one. Deletion may fail with 400 if the Profile
     // is already scheduled for deletion.
@@ -41,17 +52,10 @@ describe('profile tools', () => {
       });
   });
 
-  // Do not cleanup in the end, because parallel Travis runs might get
-  // messed up of this. Better have the cleanup in the beginning.
-  /*after(() => {
-    return mgr.deleteUserSubscription(testUserIdentity)
-    .catch(error => {
-      console.log('Caught an exception:', error.message);
-      console.log(error.response.toString());
-      console.log(error.toString());
-      throw error;
-    });
-  });*/
+  after(() => {
+    // Clear the extra options for request-promise-lite in the environment
+    process.env.RPL_DEFAULTS = '{}';
+  });
 
   require('./profile-card-update/index.js')(testUserIdentity);
   require('./profile-manage/index.js')(testUserIdentity);
