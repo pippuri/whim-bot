@@ -21,7 +21,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       console.info(payload.content.content);
 
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
 
       // Make sure we have at least something
@@ -46,7 +46,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       console.info(payload.content.content);
 
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
       return Profile.updateSubscription(identityId,
                                         WHIM_DEFAULT,

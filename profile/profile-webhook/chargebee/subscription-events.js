@@ -22,7 +22,7 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_started':
     case 'subscription_activated':
     case 'subscription_reactivated':
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
       activePlan = profile.plan.id;
 
@@ -31,7 +31,7 @@ function handle(payload, key, defaultResponse) {
 
     case 'subscription_changed':
       console.info(`\t${payload.event_type}`);
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
       activePlan = profile.plan.id;
 
@@ -43,7 +43,7 @@ function handle(payload, key, defaultResponse) {
 
     case 'subscription_renewed':
       console.info(`\t${payload.event_type}`);
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
       activePlan = profile.plan.id;
 
@@ -54,7 +54,7 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_deleted':
       console.info(`\t${payload.event_type}`);
 
-      profile = Subscription.formatUser(payload.content.content);
+      profile = Subscription.formatUser(payload.content);
       identityId = profile.identityId;
       return Profile.updateSubscription(identityId,
                                         WHIM_DEFAULT,

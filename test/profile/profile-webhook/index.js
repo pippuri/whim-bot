@@ -25,11 +25,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_changed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -102,11 +98,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_created',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -179,11 +171,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_deleted',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -261,11 +249,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_created',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -344,11 +328,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_started',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -427,11 +407,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_activated',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -510,11 +486,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_changed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -593,11 +565,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_cancelled',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -681,11 +649,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_deleted',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -769,11 +733,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_renewed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
