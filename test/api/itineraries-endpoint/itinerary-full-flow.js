@@ -372,7 +372,7 @@ module.exports = function (input, results) {
       if (refunded < 0) {
         refunded = 0;
       }
-      expect(startingBalance).to.equal(endBalance + refunded);
+      expect(endBalance).to.equal(midBalance + refunded);
     });
 
   });

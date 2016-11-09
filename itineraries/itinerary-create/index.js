@@ -29,8 +29,8 @@ module.exports.respond = function (event, callback) {
         trx = transaction;
         return Promise.resolve();
       })
-      .then(() => Itinerary.create(unsignedItinerary, event.identityId, trx)))
-    .then(itinerary => itinerary.pay(trx))
+      .then(() => Itinerary.create(unsignedItinerary, event.identityId, { trx })))
+    .then(itinerary => itinerary.pay({ trx }))
 /*
     // Testing bold version where all bookings are handled in TripEngine side. If finding
     // problems, reverting back that legs are activated (booking happens) already here.
@@ -50,7 +50,7 @@ module.exports.respond = function (event, callback) {
         .then(() => {
           if (legErrors.length > 0) {
             console.warn('Errors while activating legs; cancelling itinerary...', legErrors);
-            return itinerary.cancel(trx);
+            return itinerary.cancel({ trx });
           }
           return itinerary.activate();
         });

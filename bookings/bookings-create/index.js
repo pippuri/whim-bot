@@ -66,14 +66,14 @@ module.exports.respond = (event, callback) => {
     .then(signedBooking => utils.without(signedBooking, ['signature']))
     .then(unsignedBooking => Booking.startTransaction()
       .then(transaction => Promise.resolve(trx = transaction))
-      .then(transaction => Booking.create(unsignedBooking, event.identityId, false, transaction)))
-    .then(booking => booking.pay(trx))
+      .then(transaction => Booking.create(unsignedBooking, event.identityId, { skipInsert: false, trx })))
+    .then(booking => booking.pay({ trx }))
     .then(booking => trx.commit()
       .then(() => {
-        trx = undefined; // prevent rollback from now on
+        trx = undefined; // prevent possible rollback in error handler from now on
         return Promise.resolve(booking);
       }))
-    .then(booking => booking.reserve()) // Not bind to transaction by purpose
+    .then(booking => booking.reserve())
     .then(booking => formatResponse(booking.toObject()))
     .then(bookingData => {
       Database.cleanup()
