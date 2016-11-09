@@ -19,7 +19,7 @@ describe('routes provider', () => {
   });
 
   describe('TripGo', () => {
-    const lambda = require('../../../provider-tripgo/provider-tripgo-routes/handler.js');
+    const lambda = require('../../../routes/providers/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: false });
     testArriveBy(lambda);
     testFromUnsupported(lambda, { skip: true });
@@ -28,8 +28,8 @@ describe('routes provider', () => {
   });
 
   describe('Digitransit', () => {
-    const lambda = require('../../../provider-digitransit/provider-digitransit-routes/handler.js');
-    const lib = require('../../../provider-digitransit/provider-digitransit-routes/lib.js');
+    const lambda = require('../../../routes/providers/provider-digitransit-routes/handler.js');
+    const lib = require('../../../routes/providers/provider-digitransit-routes/lib.js');
     const testLib = require('./digitransit-lib');
 
     testLib(lib);
@@ -41,7 +41,7 @@ describe('routes provider', () => {
   });
 
   describe('HERE', () => {
-    const lambda = require('../../../provider-here/provider-here-routes/handler.js');
+    const lambda = require('../../../routes/providers/provider-here-routes/handler.js');
     testLeaveAt(lambda);
     testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda, { skip: true });
@@ -49,7 +49,7 @@ describe('routes provider', () => {
   });
 
   describe('Valopilkku', () => {
-    const lambda = require('../../../provider-valopilkku/provider-valopilkku-routes/handler.js');
+    const lambda = require('../../../routes/providers/provider-valopilkku-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: true });
     testFromUnsupported(lambda, { skip: true });
     testToUnsupported(lambda, { skip: true });
