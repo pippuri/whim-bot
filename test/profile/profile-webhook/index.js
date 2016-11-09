@@ -25,11 +25,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_changed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -102,11 +98,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_created',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -179,11 +171,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'customer_deleted',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -261,11 +249,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_created',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -344,11 +328,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_started',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -427,11 +407,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_activated',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -510,11 +486,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_changed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -593,11 +565,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_cancelled',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -681,11 +649,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_deleted',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -769,11 +733,7 @@ module.exports = function (identityId) {
 
     const event = {
       id: CHARGEBEE_ID,
-      payload: {
-        webhook_status: 'not_configured',
-        event_type: 'subscription_renewed',
-        content: webhookContent,
-      },
+      payload: webhookContent,
     };
 
     let pre = null;
@@ -988,133 +948,6 @@ module.exports = function (identityId) {
     });
   });
   //}}}
-
-  //------------------------------------------------------------------------
-  // Negative test events {{{
-  /*[XXX: remove these?]
-  for (const event_type in testEvents.negative) {
-    if (!testEvents.negative.hasOwnProperty(event_type)) {
-      console.log(`Negative: ${event_type}. Nope.`);
-      continue;
-    }
-
-    const testName = `profile-webhook-chargebee-test-events-negative [${event_type}]`;
-
-    if (event_type.startsWith('_')) {
-      describe.skip(testName, () => {});
-      continue;
-    }
-
-    describe(testName, () => {
-      const event = {
-        id: CHARGEBEE_ID,
-        payload: {
-          webhook_status: 'not_configured',
-          event_type: event_type,
-          content: testEvents.negative[event_type],
-        },
-      };
-
-      let response = null;
-      let error = null;
-
-      before(done => {
-        bus.call(LAMBDA, event)
-          .then(data => {
-            response = data;
-            done();
-          })
-          .catch(err => {
-            error = err;
-            done();
-          });
-      });
-
-      it('should not raise an error', () => {
-        if (error) {
-          console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
-          console.log(error.stack);
-        }
-
-        expect(error).to.be.null;
-      });
-
-      it('should not return empty', () => {
-        expect(response).to.not.be.null;
-        expect(response.response).to.be.defined;
-        expect(response.response).to.equal('OK');
-      });
-
-      it('the response should contain an error', () => {
-        expect(response).to.include.key(errors.errorMessageFieldName);
-      });
-    });
-  }
-  */
-  //}}}//
-
-  //------------------------------------------------------------------------
-  // Badly formed test events {{{
-  /*[XXX: remove these?]
-  for (const event_type in testEvents.badly_formed) {
-    if (!testEvents.badly_formed.hasOwnProperty(event_type)) {
-      continue;
-    }
-
-    const testName = `profile-webhook-chargebee-test-events-badly-formed [${event_type}]`;
-
-    if (event_type.startsWith('_')) {
-      describe.skip(testName, () => {});
-      continue;
-    }
-
-    describe(testName, () => {
-      const event = {
-        id: 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM',
-        BAD_payload: {
-          webhook_status: 'not_configured',
-          event_type: event_type,
-          content: testEvents.badly_formed[event_type],
-        },
-      };
-
-      let response = null;
-      let error = null;
-
-      before(done => {
-        bus.call(LAMBDA, event)
-          .then(data => {
-            response = data;
-            done();
-          })
-        .catch(err => {
-          error = err;
-          done();
-        });
-      });
-
-      it('should not raise an error', () => {
-        if (error) {
-          console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
-          console.log(error.stack);
-        }
-
-        expect(error).to.be.null;
-      });
-
-      it('should not return empty', () => {
-        expect(response).to.not.be.null;
-        expect(response.response).to.be.defined;
-        expect(response.response).to.equal('OK');
-      });
-
-      it('the response should contain an error', () => {
-        expect(response).to.include.key(errors.errorMessageFieldName);
-      });
-    });
-  }
-  */
-  //}}}//
 
   //------------------------------------------------------------------------
   // Default test events {{{
