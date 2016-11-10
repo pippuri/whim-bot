@@ -11,7 +11,7 @@ module.exports = function (lambda) {
   // Monday one week forward around five
   const arriveBy = moment().tz('Europe/Helsinki').day(8).hour(17).minute(0).second(0);
 
-  describe(`arriveby request at ${arriveBy.format()}`, () => {
+  describe(`arriveBy request at ${arriveBy.format()}`, () => {
 
     const event = {
       from: '60.1684126,24.9316739', // SC5 Office
@@ -41,9 +41,13 @@ module.exports = function (lambda) {
         });
     });
 
-    it('response should have route', () => {
-      expect(response.plan.itineraries).to.not.be.empty;
+    it('response should have itineraries that arrive by the given time', () => {
+      expect(response.plan.itineraries).to.be.an.instanceof(Array);
+      expect(response.plan.itineraries.length).to.be.above(0);
+      response.plan.itineraries.forEach(itinerary => {
+        const lastLeg = itinerary.legs[itinerary.legs.length - 1];
+        expect(lastLeg.endTime).to.be.most(arriveBy.valueOf());
+      });
     });
-
   });
 };
