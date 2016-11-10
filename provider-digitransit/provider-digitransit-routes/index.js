@@ -15,6 +15,8 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const lib = require('./lib');
 
 const DIGITRANSIT_FINLAND_API_URL = 'https://api.digitransit.fi/routing/v1/routers/finland/index/graphql';
+const DIGITRANSIT_WALKING_SPEED = 1.39; // 1,39m/s ~ 5km/h
+const DIGITRANSIT_ITINERARIES = 20;
 
 function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
   const qs = {
@@ -57,11 +59,12 @@ function getDigitransitRoutes(from, to, modes, leaveAt, arriveBy, format) {
       from: {lat: ${qs.coords.from.lat}, lon: ${qs.coords.from.lon}},
       to: {lat: ${qs.coords.to.lat}, lon: ${qs.coords.to.lon}},
       modes: "${lib.convertDigitransitModes(modes)}",
-      walkSpeed: 1.39,
+      arriveBy: ${qs.arriveBy},
+      walkSpeed: ${DIGITRANSIT_WALKING_SPEED},
       date: "${qs.date}"
       time: "${qs.time}"
       optimize: SAFE
-      numItineraries: 20
+      numItineraries: ${DIGITRANSIT_ITINERARIES}
     ) {
       itineraries{
         startTime

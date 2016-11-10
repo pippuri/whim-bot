@@ -195,6 +195,23 @@ function getCombinedTripGoRoutes(from, to, modes, leaveAt, arriveBy, format) {
         const response = mergeResults(actualResults);
 
         return adapter(response, formattedFrom);
+      })
+      .then(response => {
+        // Filter the itineraries of the plan by leaveAt and arriveBy
+        const filteredPlan = Object.assign({}, response.plan);
+        filteredPlan.itineraries = response.plan.itineraries.filter(i => {
+          if (leaveAt && i.startTime < leaveAt) {
+            return false;
+          }
+
+          if (arriveBy && i.endTime > arriveBy) {
+            return false;
+          }
+
+          return true;
+        });
+
+        return { plan: filteredPlan };
       });
   });
 }
