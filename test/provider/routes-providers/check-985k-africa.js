@@ -1,12 +1,12 @@
 'use strict';
 
-const wrap = require('lambda-wrapper').wrap;
 const chai = require('chai');
 const expect = chai.expect;
 const moment = require('moment-timezone');
-const schema = require('maas-schemas/');
+const schema = require('maas-schemas/prebuilt/maas-backend/provider/routes/response');
+const utils = require('../../../lib/utils');
 const validator = require('../../../lib/validator');
-
+const wrap = require('lambda-wrapper').wrap;
 
 module.exports = function (lambda) {
 
@@ -37,14 +37,11 @@ module.exports = function (lambda) {
       expect(error).to.be.null;
     });
 
-    xit('should trigger a valid response', () => {
-      return validator.validate(schema, response)
-        .then(validationError => {
-          expect(validationError).to.be.null;
-        });
+    it('should trigger a valid response after sanification', () => {
+      return validator.validate(schema, utils.sanitize(response));
     });
 
-    xit('response should have route', () => {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 

@@ -1,12 +1,11 @@
 'use strict';
 
-const moment = require('moment-timezone');
 const bus = require('../../../lib/service-bus');
 const expect = require('chai').expect;
+const moment = require('moment-timezone');
 const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
-const validator = require('../../../lib/validator');
 const utils = require('../../../lib/utils');
-const clone = require('lodash/clone');
+const validator = require('../../../lib/validator');
 
 module.exports = (test, provider) => {
 
@@ -45,8 +44,8 @@ module.exports = (test, provider) => {
     const providerName = provider.name;
 
     // These are clones so that possible modifiers don't affect other providers
-    const input = clone(test.input);
-    const results = clone(test.results);
+    const input = utils.cloneDeep(test.input);
+    const results = utils.cloneDeep(test.results);
 
     if (test.inputModifiers && test.inputModifiers[providerName]) {
       utils.merge(input, test.inputModifiers[providerName]);
@@ -79,7 +78,7 @@ module.exports = (test, provider) => {
       });
 
 
-      it('should trigger a valid response after sanitizing', () => {
+      it('should trigger a valid response after sanification', () => {
         return validator.validate(schema, utils.sanitize(response));
       });
 

@@ -1,21 +1,22 @@
 'use strict';
 
-const getProviderRules = require('../get-provider');
-const Promise = require('bluebird');
-const polylineEncoder = require('polyline-extended');
-const utils = require('../../../lib/utils');
-
-const lambdaWrapper = require('../../lambdaWrapper');
-
 const BusinessRuleError = require('../../BusinessRuleError.js');
+const getProviderRules = require('../get-provider');
+const lambdaWrapper = require('../../lambdaWrapper');
+const polylineEncoder = require('polyline-extended');
+const Promise = require('bluebird');
+const utils = require('../../../lib/utils');
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
+const validator = require('../../../lib/validator');
 
 // @NOTE support partially train route (go to Leppavaraa on train E)
 const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
 
 /**
- * Return only common providers for a leg that provide both From and To location
- * @param arriveBy {Float} Input arriveBy
- * @param leaveAt {Float} Input leaveAt
+ * Return common providers for a leg that provide both from and to locations.
+ *
+ * @param arriveBy {integer} Input arriveBy
+ * @param leaveAt {integer} Input leaveAt
  * @param providersTo {Object}
  * @param providersFrom {Object}
  */
@@ -41,7 +42,8 @@ function _filterCommonLegProvider(arriveBy, leaveAt, providersFrom, providersTo)
 }
 
 /**
- * Build provider query for public transit
+ * Build a provider query for public transit.
+ *
  * @param from {Object} contain lat and lon of 'from' provider
  * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
@@ -64,7 +66,8 @@ function _buildPtRoutesProvidersQuery(from, to) {
 }
 
 /**
- * Build provider query for taxi
+ * Build a provider query for taxi.
+ *
  * @param from {Object} contain lat and lon of 'from' provider
  * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
@@ -84,9 +87,9 @@ function _buildTaxiRoutesProvidersQuery(from, to) {
   ];
 }
 
-
 /**
- * Build provider query for walking legs
+ * Build a provider query for walking legs.
+ *
  * @param from {Object} contain lat and lon of 'from' provider
  * @param to {Object} contain lat and lon of 'to' provider
  * @return {Array} array of queries, contains query for provider of 'from' and 'to'
@@ -107,7 +110,8 @@ function _buildWalkingRoutesProvidersQuery(from, to) {
 }
 
 /**
- * Build provider query for public transit
+ * Build a provider query for public transit.
+ *
  * @param from {Object} contain lat and lon of 'from' provider
  * @param to {Object} contain lat and lon of 'to' provider
  * @return {Object} Object queries, with the attribute is the mode to be called
@@ -128,7 +132,8 @@ function _buildCyclingRoutesProvidersQuery(from, to) {
 }
 
 /**
- * Combine all routes provider query and run them though getProviderBatch
+ * Combine all routes provider query and run them though getProviderBatch.
+ *
  * @param params {Object} contains modes, from, to, leaveAt and arriveBy
  * @return {Object} each property present the list of providers to invoke and the mode to query for
  */
@@ -232,7 +237,7 @@ function _resolveRoutesProviders(params) {
 }
 
 /**
- * Run the lambda call for a batch of providers with the same priority
+ * Run the lambda call for a batch of providers with the same priority.
  */
 function _resolvePromises(input, params, priorityList) {
   // If none of our routes providers return anything, that means the routes just cannot be retrieved
@@ -243,14 +248,18 @@ function _resolvePromises(input, params, priorityList) {
   return Promise.all(input.filter(item => item.provider.providerPrio === priorityList[0]).map(item => {
     const event = utils.cloneDeep(params);
     event.modes = item.modes;
-    return lambdaWrapper.wrap(item.provider.providerName, event).reflect();
+
+    // run the queries, then validate & sanitize them
+    return lambdaWrapper.wrap(item.provider.providerName, event)
+      .then(result => validator.validate(schema, utils.sanitize(result)))
+      .reflect();
   }))
   .then(inspections => {
     // Inspection that succeeded
     const fulfilledInspections = inspections.filter(inspection => inspection.isFulfilled());
 
-    // If no inspection passed, remove first priority and use the second one.
-    // If inspection return empty route, treat it as a failed request
+    // If no inspection passed, remove the first priority one and use the second one.
+    // If an inspection returns an empty route, treat it as a failed request
     if (fulfilledInspections.length === 0) {
       return _resolvePromises(input, params, priorityList.filter(priority => priority !== priorityList[0]));
     }
@@ -260,7 +269,9 @@ function _resolvePromises(input, params, priorityList) {
 }
 
 /**
- * Logic for invoking providers by priority and fallback for higher priority providers invocation failure
+ * Logic for invoking providers by priority and fallback for higher priority
+ * providers invocation failure.
+ *
  * @param input {Object} contains providers data filtered by request mode and the mode to query for
  * @param params {Object} event input for the lambda
  * @return response {Promise - Array} response from provider invocation
@@ -271,14 +282,17 @@ function _invokeProviders(input, params) {
   // fallback to the 1 step lower priority provider
   //
   // E.g: {
-  //  taxi: provider1(failed), provider2(failed), provider3(success) -> response from provider3
+  //  taxi: provider1(failed), provider2(failed), provider3(success) -> response
+  //  from provider3
   //  walk: provider1(success) -> response from provider1
   //  pt: provider1(failed), provider2(success) -> response from provider2
   //  bicycle: provider1(success) -> response from provider1
   // }
 
-  // Sort grouped providers and cache providerPrio number into a list if it doensn't exist
-  // Priority list will be used to determine which is the next provider to be called when its higher priority friend failed
+  // Sort grouped providers and cache providerPrio number into a list if it
+  // doens not exist
+  // Priority list will be used to determine which is the next provider to be
+  // called when its higher priority friend failed
   const priorityList = [];
   // eslint-disable-next-line
   for (let key in input) {
@@ -313,32 +327,27 @@ function _invokeProviders(input, params) {
 }
 
 /**
- * Merge all the responses received from providers invocation
+ * Merge all the responses received from providers invocation.
+ *
  * @param responses {Array} input
  * @return {Object} merged output
  */
 function _mergeProviderResponses(responses, params) {
   const coords = params.from.split(',').map(parseFloat);
-  const output = {
+  return utils.sanitize({
     plan: {
       from: {
         lat: coords[0],
         lon: coords[1],
       },
-      itineraries: [],
+      itineraries: [].concat.apply([], responses.map(r => r.plan.itineraries)),
     },
-  };
-
-  responses.forEach(item => {
-    output.plan.itineraries = output.plan.itineraries.concat(item.plan.itineraries);
   });
-  // Remove null responses before return
-  output.plan.itineraries = output.plan.itineraries.filter(item => item !== null);
-  return output;
 }
 
 /**
- * Set agency for a leg, NOTE this is to adapt leg modes into carrier types
+ * Set agency for a leg, NOTE this is to adapt leg modes into carrier types.
+ *
  * TODO Do not brute force, have a mapping data set on Provider table
  * @param leg {Object}
  * @return agencyId {String} agencyId of the leg
@@ -374,7 +383,9 @@ function _setLegAgency(leg) {
 }
 
 /**
- * Set agency for a leg in an itinerary, NOTE this is to adapt leg modes into carrier types
+ * Set agency for a leg in an itinerary, NOTE this is to adapt leg modes into
+ * carrier types.
+ *
  * @param route {Object}
  * @return route {Object}
  */
@@ -404,7 +415,8 @@ function _calculateLegsDistance(route) {
 }
 
 /**
- * Sotr the itienraries by a specification
+ * Sort the itienraries by a specification.
+ *
  * @param route {Object} route to sort
  * @param sortBy {String} spec to sort according to
  * @return sorted route {Object} if sort routes if provided
@@ -435,7 +447,8 @@ function _sortRoute(route, sortBy) {
 }
 
 /**
- * Get routes using from, to , leaveAt, arriveBy and modes
+ * Get routes using from, to , leaveAt, arriveBy and modes.
+ *
  * @param params {Object} contains from, to , leaveAt, arriveBy and modes
  */
 function getRoutes(params) {
@@ -444,7 +457,8 @@ function getRoutes(params) {
     .then(responses => _mergeProviderResponses(responses, params))
     .then(route => _setRouteAgency(route))
     .then(route => _calculateLegsDistance(route))
-    .then(route => _sortRoute(route, params.sortBy || 'endTime')); // Sort by endTime by default if no sortBy is input
+    // Sort by endTime by default if no sortBy is input
+    .then(route => _sortRoute(route, params.sortBy || 'endTime'));
 }
 
 module.exports = {
