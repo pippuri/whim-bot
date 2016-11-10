@@ -1,6 +1,6 @@
 'use strict';
 const providerDump = require('./ProviderDumpOct26.json');
-const oldProviderDump = require('./September-23rd-dump.json');
+const oldProviderDump = require('./20160923154536_September23rd/September-23rd-dump.json');
 
 exports.up = function (knex, Promise) {
   return knex.schema
