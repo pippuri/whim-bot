@@ -1,10 +1,11 @@
 'use strict';
 
-const wrap = require('lambda-wrapper').wrap;
 const expect = require('chai').expect;
 const moment = require('moment-timezone');
 const schema = require('maas-schemas/');
+const utils = require('../../../lib/utils');
 const validator = require('../../../lib/validator');
+const wrap = require('lambda-wrapper').wrap;
 
 module.exports = (lambda, options) => {
 
@@ -38,11 +39,8 @@ module.exports = (lambda, options) => {
       expect(error).to.be.null;
     });
 
-    xit('should trigger a valid response', () => {
-      return validator.validate(schema, response)
-        .then(validationError => {
-          expect(validationError).to.be.null;
-        });
+    it('should trigger a valid response after sanification', () => {
+      return validator.validate(schema, utils.sanitize(response));
     });
 
     it('response should have route', () => {
