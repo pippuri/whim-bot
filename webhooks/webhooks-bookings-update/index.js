@@ -7,11 +7,13 @@ const models = require('../../lib/models/');
 const utils = require('../../lib/utils/');
 const stateMachine =  require('../../lib/states').StateMachine;
 const validator = require('../../lib/validator');
+const bus = require('../../lib/service-bus');
 
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/response.json');
 
-// TODO request schemas validation
+const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
+
 function validateInput(event) {
   if (!event.agencyId) {
     return Promise.reject(new MaaSError('Missing agencyId in input', 400));
@@ -97,6 +99,7 @@ function webhookCallback(agencyId, tspId, payload) {
 
 function formatResponse(response) {
   return {
+    id: response.id,
     tspId: response.tspId,
     state: response.state,
     token: response.token,
@@ -106,15 +109,49 @@ function formatResponse(response) {
   };
 }
 
+function sendPushNotification(identityId, type, data, message) {
+
+  console.info(`[Webhook] Sending push notification to user ${identityId}: '${message || '(no message)'}'`);
+
+  const notifData = {
+    identityId: identityId,
+    badge: 0,
+    type,
+    data,
+  };
+  if (typeof message !== 'undefined') {
+    notifData.message = message;
+  }
+
+  return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE)
+    .then(result => {
+      console.info(`[Webhook] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
+    })
+    .catch(err => {
+      console.error(`[Webhook] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
+    })
+    .finally(() => {
+      return Promise.resolve();
+    });
+}
+
 module.exports.respond = (event, callback) => {
+  let identityId;
   return validateInput(event)
     .then(_event => validator.validate(requestSchema, _event.payload, { sanitize: true }))
     .then(() => models.Database.init())
     .then(() => webhookCallback(event.agencyId, event.payload.tspId, event.payload))
-    .then(updatedBooking => formatResponse(updatedBooking))
+    .then(updatedBooking => {
+      identityId = updatedBooking.customer.identityId;
+      return formatResponse(updatedBooking);
+    })
     .then(updatedBooking => validator.validate(responseSchema, updatedBooking, { sanitize: true }))
     .then(response => {
+
+      const userMessage = '';
+
       models.Database.cleanup()
+        .then(() => sendPushNotification(identityId, 'ObjectChange', { ids: [response.id], objectType: 'Booking' }, userMessage))
         .then(() => callback(null, response));
     })
     .catch(_error => {
