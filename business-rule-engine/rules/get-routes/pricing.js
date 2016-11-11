@@ -300,6 +300,45 @@ function _resolveRequiredProviders(itinerary) {
 }
 
 /**
+ * Annotate the fare field of itinerary based on the cheapestCombo for that itinerary
+ */
+function annotateLegFare(itinerary, cheapestCombo) {
+
+  // Clone input combo and sort by cost
+  let combo = utils.cloneDeep(cheapestCombo).sort((a, b) => b.cost - a.cost);
+
+  // Remove unpurchasable tickets from cheapestCombo
+  combo = combo.filter(item => item.type !== 'U_NA');
+
+  itinerary.legs.forEach(leg => {
+    leg.fare = {};
+
+    // Filter the cheapestCombo, sort and get the most expensive ticket first and append its cost to the first leg, then remove that ticket so that the next leg that use the same ticket will have 0 point cost
+    // NOTE this implementation is applicable only to HSL case
+    if (!leg.agencyId && ['WALK', 'WAIT', 'BICYCLE', 'TRANSFER', 'LEG_SWITCH'].some(mode => mode === leg.mode)) {
+      leg.fare.currency = 'POINT';
+      leg.fare.amount = 0;
+    } else if (combo.length === 0) {
+      leg.fare.currency = 'POINT';
+      leg.fare.amount = 0;
+    } else if (!combo.find(item => item.agencyId === leg.agencyId)) {
+      leg.fare.currency = 'POINT';
+      leg.fare.amount = null;
+    } else {
+      let tmp;
+      leg.fare.currency = 'POINT';
+      leg.fare.amount = combo.find((item, index) => {
+        tmp = index;
+        return item.agencyId === leg.agencyId;
+      }).cost;
+      combo.splice(tmp, 1);
+    }
+  });
+
+  return itinerary;
+}
+
+/**
  * Calculate to sum cost of the itinerary
  */
 function _calculateItineraryCost(itinerary) {
@@ -356,6 +395,8 @@ function _calculateItineraryCost(itinerary) {
     }
   }
 
+  // Annotate fare to each leg
+  itinerary = annotateLegFare(itinerary, cheapestCombo);
   const cost = _sumBy(cheapestCombo, 'cost');
   return cost;
 }
