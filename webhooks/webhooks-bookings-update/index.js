@@ -1,10 +1,15 @@
 'use strict';
 
 const Promise = require('bluebird');
+const objection = require('objection');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models/');
 const utils = require('../../lib/utils/');
-const stateMachine =  require('../../lib/states');
+const stateMachine =  require('../../lib/states').StateMachine;
+const validator = require('../../lib/validator');
+
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/request.json');
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/response.json');
 
 // TODO request schemas validation
 function validateInput(event) {
@@ -20,7 +25,7 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Missing tspId in payload', 400));
   }
 
-  return Promise.resolve();
+  return Promise.resolve(event);
 }
 
 /**
@@ -41,12 +46,12 @@ function webhookCallback(agencyId, tspId, payload) {
   if (!payload.cost || Object.keys(payload.cost).length === 0) return Promise.reject(new MaaSError('Payload missing cost input', 400));
   if (!payload.state) return Promise.reject(new MaaSError('Payload missing state input', 400));
   if (!payload.terms) return Promise.reject(new MaaSError('Payload missing terms input', 400));
-  if (!payload.token) return Promise.reject(new MaaSError('Payload missing token input', 400));
+  if (!payload.token || Object.keys(payload.token).length === 0) return Promise.reject(new MaaSError('Payload missing of empty token input', 400));
   if (!payload.meta) return Promise.reject(new MaaSError('Payload missing meta input', 400));
 
   let trx;
 
-  return this.startTransaction()
+  return objection.transaction.start(models.Booking)
     .then(transaction => {
       trx = transaction;
       return models.Booking.bindTransaction(trx)
@@ -80,19 +85,37 @@ function webhookCallback(agencyId, tspId, payload) {
     .catch(e => {
       return trx.rollback()
         .then(rollbackMessage => {
-          console.log(rollbackMessage);
+          console.warn('Bookings-Webhook transaction finished:', rollbackMessage);
           return Promise.reject(e);
+        })
+        .catch(rollbackError => {
+          console.warn('Bookings-Webhook transaction failed:', rollbackError.errorMessage);
+          return Promise.reject(rollbackError);
         });
     });
 }
 
+function formatResponse(response) {
+  return {
+    tspId: response.tspId,
+    state: response.state,
+    token: response.token,
+    terms: response.terms,
+    meta: response.meta,
+    cost: response.cost,
+  };
+}
+
 module.exports.respond = (event, callback) => {
   return validateInput(event)
+    .then(_event => validator.validate(requestSchema, _event.payload, { sanitize: true }))
     .then(() => models.Database.init())
     .then(() => webhookCallback(event.agencyId, event.payload.tspId, event.payload))
-    .then(updatedBooking => {
+    .then(updatedBooking => formatResponse(updatedBooking))
+    .then(updatedBooking => validator.validate(responseSchema, updatedBooking, { sanitize: true }))
+    .then(response => {
       models.Database.cleanup()
-        .then(() => callback(null, updatedBooking));
+        .then(() => callback(null, response));
     })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
