@@ -78,6 +78,7 @@ function webhookCallback(agencyId, tspId, payload) {
               terms: utils.merge(targetedBooking.terms, payload.terms),
               token: utils.merge(targetedBooking.token, payload.token),
               meta: utils.merge(targetedBooking.meta, payload.meta),
+              leg: payload.leg ? utils.merge(targetedBooking.leg, payload.leg) : undefined,
             })
             .where('id', targetedBooking.id)
             .returning('*');
@@ -101,14 +102,17 @@ function webhookCallback(agencyId, tspId, payload) {
 }
 
 function formatResponse(response) {
+  if (response.leg.agencyId) {
+    delete response.leg.agencyId;
+  }
   return {
-    id: response.id,
     tspId: response.tspId,
-    state: response.state,
-    token: response.token,
-    terms: response.terms,
-    meta: response.meta,
     cost: response.cost,
+    leg: response.leg,
+    state: response.state,
+    meta: response.meta,
+    terms: response.terms,
+    customer: response.customer,
   };
 }
 
@@ -140,7 +144,6 @@ function sendPushNotification(identityId, type, data, message) {
 
 module.exports.respond = (event, callback) => {
   let identityId;
-  console.warn(event);
   return validateInput(event)
     .then(_event => validator.validate(requestSchema, _event.payload, { sanitize: true }))
     .then(() => models.Database.init())
