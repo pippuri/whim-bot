@@ -1,0 +1,73 @@
+[
+  {
+    "description": "Missing tspId in payload",
+    "errorMessage": "400: Missing tspId in payload",
+    "input": {
+      "tspId": "",
+      "agencyId": "HSL",
+      "payload": {
+        "cost": {
+          "amount": 7.20,
+          "currency": "EUR"
+        },
+        "state": "CONFIRMED",
+        "terms": {
+          "startTime": 1476088965000,
+          "endTime": 1481272965000
+        },
+        "token": {
+          "meta": {
+            "ticketData": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoc2wiLCJqdGkiOiJsenpia0JHdXdsVmQ2N2pqYzgzeUhHWHk4bmZQMTNhYiIsImF1ZCI6Im1hYXNnbG9iYWwiLCJpYXQiOjE0NzczODk3NjgsInN0YXR1cyI6Ik9LIiwic3RhdHVzX2Rlc2NyaXB0aW9uIjoiIiwic2Vzc2lvbl90b2tlbiI6IkhHcXlsVmFXc1RXVFREVXZQZDNqS1AzcGtKQ29MaFVobnVQZmRYTnBZMUZPNkFzeWkyaEpFVWp1NlVmc2Q4Ym4iLCJ2YWxpZF9mcm9tIjoiMjAxNi0xMC0xMFQwODo0Mjo0NSswMDAwIiwidmFsaWRfdG8iOiIyMDE2LTEyLTA5VDA4OjQyOjQ1KzAwMDAiLCJ0YXJpZmZfY2VudHMiOjcyMCwic2VyaWFsIjoiMDA4NTYwMzIiLCJ0aWNrZXRfY29udGVudCI6ImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUpwYzNNaU9pSnRZV0Z6WDJkc2IySmhiQ0lzSW1wMGFTSTZJbXg2ZW1KclFrZDFkMnhXWkRZM2FtcGpPRE41U0VkWWVUaHVabEF4TWxaRklpd2lZWFZrSWpvaVltOXVkMkZzSWl3aWFXRjBJam94TkRjM016ZzVOelk0TENKMGFXTnJaWFJmZEhsd1pWOXBaQ0k2SWpRd056SWlMQ0p2Y21SbGNsOTBhVzFsSWpvaU1qQXhOaTB4TUMweE1GUXdPRG8wTWpvME5Tc3dNREF3SW4wLnVtUUQ2MFZ1NHVHRl9sNHpRaWNYbVZBVHg3TGxia3g1THBDT1ZYWC15a3MifQ.WuTrzEyAULY_ZA0ZjpohX8gMKcYL7EBa32hqOFtUseQ"
+          }
+        },
+        "meta": {}
+      }
+    }
+  },
+  {
+    "description": "Invalid state in payload",
+    "errorMessage": "403: Booking state changing from RESERVED to PAID is not permitted",
+    "input": {
+      "agencyId": "HSL",
+      "payload": {
+        "tspId": "002eeb50-86e0-11e6-bf65-274ad46d6766",
+        "cost": {
+          "amount": 7.20,
+          "currency": "EUR"
+        },
+        "state": "PAID",
+        "terms": {
+          "startTime": 1476088965000,
+          "endTime": 1481272965000
+        },
+        "token": {
+          "meta": {
+            "ticketData": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJoc2wiLCJqdGkiOiJsenpia0JHdXdsVmQ2N2pqYzgzeUhHWHk4bmZQMTNhYiIsImF1ZCI6Im1hYXNnbG9iYWwiLCJpYXQiOjE0NzczODk3NjgsInN0YXR1cyI6Ik9LIiwic3RhdHVzX2Rlc2NyaXB0aW9uIjoiIiwic2Vzc2lvbl90b2tlbiI6IkhHcXlsVmFXc1RXVFREVXZQZDNqS1AzcGtKQ29MaFVobnVQZmRYTnBZMUZPNkFzeWkyaEpFVWp1NlVmc2Q4Ym4iLCJ2YWxpZF9mcm9tIjoiMjAxNi0xMC0xMFQwODo0Mjo0NSswMDAwIiwidmFsaWRfdG8iOiIyMDE2LTEyLTA5VDA4OjQyOjQ1KzAwMDAiLCJ0YXJpZmZfY2VudHMiOjcyMCwic2VyaWFsIjoiMDA4NTYwMzIiLCJ0aWNrZXRfY29udGVudCI6ImV5SjBlWEFpT2lKS1YxUWlMQ0poYkdjaU9pSklVekkxTmlKOS5leUpwYzNNaU9pSnRZV0Z6WDJkc2IySmhiQ0lzSW1wMGFTSTZJbXg2ZW1KclFrZDFkMnhXWkRZM2FtcGpPRE41U0VkWWVUaHVabEF4TWxaRklpd2lZWFZrSWpvaVltOXVkMkZzSWl3aWFXRjBJam94TkRjM016ZzVOelk0TENKMGFXTnJaWFJmZEhsd1pWOXBaQ0k2SWpRd056SWlMQ0p2Y21SbGNsOTBhVzFsSWpvaU1qQXhOaTB4TUMweE1GUXdPRG8wTWpvME5Tc3dNREF3SW4wLnVtUUQ2MFZ1NHVHRl9sNHpRaWNYbVZBVHg3TGxia3g1THBDT1ZYWC15a3MifQ.WuTrzEyAULY_ZA0ZjpohX8gMKcYL7EBa32hqOFtUseQ"
+          }
+        },
+        "meta": {}
+      }
+    }
+  },
+  {
+    "description": "Empty token field in payload",
+    "errorMessage": "400: Payload missing of empty token input",
+    "input": {
+      "agencyId": "HSL",
+      "payload": {
+        "tspId": "002eeb50-86e0-11e6-bf65-274ad46d6766",
+        "cost": {
+          "amount": 7.20,
+          "currency": "EUR"
+        },
+        "state": "CONFIRMED",
+        "terms": {
+          "startTime": 1476088965000,
+          "endTime": 1481272965000
+        },
+        "token": {},
+        "meta": {}
+      }
+    }
+  }
+]

@@ -4,7 +4,7 @@ const Promise = require('bluebird');
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 
-const zendeskPushNotiticationLambda = require('../../../webhooks/zendesk-push-notification/handler');
+const zendeskPushNotiticationLambda = require('../../../../webhooks/zendesk-push-notification/handler');
 const positiveEvents = require('./zendesk-push-notification-positive-events.json');
 const negativeEvents = require('./zendesk-push-notification-negative-events.json');
 
