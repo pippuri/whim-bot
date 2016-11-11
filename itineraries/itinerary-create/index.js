@@ -19,7 +19,7 @@ function formatResponse(itinerary) {
 
 module.exports.respond = function (event, callback) {
   let trx;
-  //const legErrors = [];
+//  const legErrors = [];
 
   return Database.init()
     .then(() => signatures.validateSignatures(event.itinerary))
@@ -31,8 +31,8 @@ module.exports.respond = function (event, callback) {
       })
       .then(() => Itinerary.create(unsignedItinerary, event.identityId, { trx })))
     .then(itinerary => itinerary.pay({ trx }))
-/*
 
+/*
     // Testing bold version where all bookings are handled in TripEngine side. If finding
     // problems, reverting back that legs are activated (booking happens) already here.
 

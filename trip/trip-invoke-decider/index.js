@@ -224,70 +224,67 @@ class Decider {
    * Helper traverse itinerary legs and decide what to do them.
    */
   _processLegs(itinerary) {
-    const promiseQueue = [];
     let nextCheckWakeUpTime;
-
-    // check legs
-    for (let i = 0; i < itinerary.legs.length; i++) {
-      const leg = itinerary.legs[i];
+    // Check legs. Capture failures with reflcect() so all legs will be processed regardless of individual errors
+    let hasErrors = false;
+    return Promise.mapSeries(itinerary.legs, leg => {
       // skip finished
       if (leg.state === 'FINISHED') {
         console.info(`[Decider] Skipping checking FINISHED leg id '${leg.id}'`);
-        continue;
-      } else if (leg.state === 'ACTIVATED') {
+        return Promise.resolve().reflect();
+      }
+      if (leg.state === 'ACTIVATED') {
         // finish legs that were active but now gone
         if (leg.endTime < this.now) { // eslint-disable-line max-depth
           console.info(`[Decider] Finishing leg id '${leg.id}'...`);
-          promiseQueue.push(leg.finish().reflect());
-        } else {
-          console.info(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
+          return leg.finish().reflect();
         }
-        continue;
+        console.info(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
+        return Promise.resolve().reflect();
       }
-
       // upcoming legs
       const activationTime = leg.activationTime();
       if (activationTime < this.now) {
         // need to activate this leg rightaway
-        promiseQueue.push(this._activateLeg(leg).reflect());
-      } else if (!nextCheckWakeUpTime || nextCheckWakeUpTime > activationTime) {
+        return this._activateLeg(leg).reflect();
+      }
+      if (!nextCheckWakeUpTime || nextCheckWakeUpTime > activationTime) {
         nextCheckWakeUpTime = activationTime;
       }
-    }
-
+      return Promise.resolve().reflect();
+    })
+    .each(inspection => {
+      if (!inspection.isFulfilled()) {
+        console.error('[Decider] Error: Failed check/act for a leg: ', inspection.reason());
+        hasErrors = true;
+      }
+    })
     // schedule next leg checking point if needed
-    if (nextCheckWakeUpTime) {
-      this.decision.scheduleTimedTask(nextCheckWakeUpTime + (5 * 1000), TripWorkFlow.TASK_CHECK_ITINERARY);
-      console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' ` +
-                   `into ${new Date(nextCheckWakeUpTime + (5 * 1000))}.`);
-    }
-
-    // process those legs that need immediate attention (capture failures so returns always success)
-    let hasErrors = false;
-    return Promise.mapSeries(promiseQueue, result => result)
-      .each(inspection => {
-        if (!inspection.isFulfilled()) {
-          console.error('[Decider] Error: Failed check/act for a leg: ', inspection.reason());
-          hasErrors = true;
-        }
-      })
-      .then(() => {
-        // if last leg is activated or finished, schedule closing trip
-        const lastLegState = itinerary.legs[itinerary.legs.length - 1].state;
-        if (lastLegState === 'ACTIVATED' || lastLegState === 'FINISHED') {
-          const timeout = Date.now() + (30 * 60 * 1000);
-          this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
-          console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
-                      `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
-        }
-        if (hasErrors === true) {
-          console.warn('[Decider] legs processed, warning user about errors');
-          const message = 'Problems with one or more bookings. Click to check the trip.';
-          return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, message, 'Alert');
-        }
-        console.info('[Decider] legs processed');
-        return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' });
-      });
+    .then(() => {
+      if (nextCheckWakeUpTime) {
+        this.decision.scheduleTimedTask(nextCheckWakeUpTime + (5 * 1000), TripWorkFlow.TASK_CHECK_ITINERARY);
+        console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CHECK_ITINERARY}' ` +
+                     `into ${new Date(nextCheckWakeUpTime + (5 * 1000))}.`);
+      }
+      return Promise.resolve();
+    })
+    // if last leg is activated or finished, schedule closing trip & notify user
+    .then(() => {
+      const lastLegState = itinerary.legs[itinerary.legs.length - 1].state;
+      if (lastLegState === 'ACTIVATED' || lastLegState === 'FINISHED') {
+        const timeout = Date.now() + (30 * 60 * 1000);
+        this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
+        console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
+                    `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
+      }
+      if (hasErrors === true) {
+        console.warn('[Decider] legs processed, warning user about errors');
+        const message = 'Problems with one or more bookings. Click to check the trip.';
+        return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }, message, 'Alert');
+      }
+      console.info('[Decider] legs processed');
+      return this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' });
+    });
   }
 
   /**
@@ -338,7 +335,7 @@ class Decider {
     }
 
     // try to activate leg
-    return leg.activate()
+    return leg.activate({ tryReuseBooking: true })
       .then(() => {
         // check booking if leg have one
         if (!leg.booking) {

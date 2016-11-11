@@ -1,190 +1,158 @@
 {
-  "identityId":"eu-west-1:149a2cf1-553e-4e74-9a1c-ef5fa9dcbf77",
+  "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
   "itinerary": {
-        "startTime": 1478867849000,
-        "endTime": 1478877366000,
-        "legs": [
-          {
-            "startTime": 1478867849000,
-            "endTime": 1478867940000,
-            "mode": "WALK",
-            "from": {
-              "name": "Korkeavuorenkatu",
-              "lon": 24.94506,
-              "lat": 60.16583
-            },
-            "to": {
-              "name": "Kolmikulma",
-              "lon": 24.94395,
-              "lat": 60.16516
-            },
-            "legGeometry": {
-              "points": "mcfnJsagwCBbEt@R??^Gh@A@N"
-            },
-            "distance": 131,
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "25713e3771cd92455ae7e3a8fe23ff6070c6d76af87914a8631ea88612e45c34"
-          },
-          {
-            "startTime": 1478867940000,
-            "endTime": 1478868540000,
-            "mode": "TRAM",
-            "from": {
-              "name": "Kolmikulma",
-              "lon": 24.94395,
-              "lat": 60.16516
-            },
-            "to": {
-              "name": "Ooppera",
-              "lon": 24.92659,
-              "lat": 60.18228
-            },
-            "route": "10",
-            "routeShortName": "10",
-            "routeLongName": "Kirurgi - Pikku Huopalahti",
-            "agencyId": "HSL",
-            "legGeometry": {
-              "points": "g_fnJuzfwC@B{Aj@eCJWDe@j@mBzCsAdCeChD??FNi@~@gHzLqBzC??BFkAlBu@jB_@nAe@x@UXuDrDsOrN????oD`EuFdHy@p@sAj@kAn@???BsKfE{GhDa@`@gApB"
-            },
-            "distance": 2181,
-            "fare": {
-              "currency": "POINT",
-              "amount": 144
-            },
-            "signature": "28580ce06eae14131c90c656720cbd8774aaa0b00b3ed36ab30a9d40ef12cc74"
-          },
-          {
-            "startTime": 1478868540000,
-            "endTime": 1478868612000,
-            "mode": "WALK",
-            "from": {
-              "name": "Ooppera",
-              "lon": 24.92659,
-              "lat": 60.18228
-            },
-            "to": {
-              "name": "Ooppera",
-              "lon": 24.92675,
-              "lat": 60.18216
-            },
-            "legGeometry": {
-              "points": "gjinJencwCC]Wh@BLBF@D@FDJ??r@oAOK"
-            },
-            "distance": 89,
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "372afe8efc1e8de8ed8eab329f6fac4820fc999c9ca046796f4d7a85dc093180"
-          },
-          {
-            "startTime": 1478868612000,
-            "endTime": 1478869380000,
-            "mode": "TRANSFER",
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "97da78bc8443a901c85e1435f031c58783cf1c9f2c8f63df9c9adf6b3cb50c76"
-          },
-          {
-            "startTime": 1478869380000,
-            "endTime": 1478871720000,
-            "mode": "BUS",
-            "from": {
-              "name": "Ooppera",
-              "lon": 24.92675,
-              "lat": 60.18216
-            },
-            "to": {
-              "name": "Palopolku",
-              "lon": 24.42122,
-              "lat": 60.27475
-            },
-            "route": "280",
-            "routeShortName": "280",
-            "routeLongName": "Helsinki - Turunväylä - Veikkola -",
-            "agencyId": "HSL",
-            "legGeometry": {
-              "points": "miinJeocwC??Yb@eAnBmC|EKP{@`Bi@`Aa@t@e@x@aA`BgClE]j@a@n@i@t@k@x@i@t@W`@aCdDQXcCdCw@|@c@b@mCvCSXyAhA??L`@y@|AkAbDwD~KY`A?zB?fAAt@E~GYdO??Pe@?h@CbC?p@IdMIrNC|DA~@AhACp@G|AUvAUbAuJpZ??pAkAY`AW|@Qn@MZSx@_@jAa@dA{CnIiA~CK\\Ql@S|@Mr@Mp@Kj@Kf@Gp@OrAQxAWhB_@bD]jCm@xEiAQWFIBIDSFc@Y??Dj@i@Tu@T_C`AoB|@kE~@??Fn@{MxF[JeAb@gE|AVdA\\z@b@hAXbAR|@R`B@dBCvCIbCI~DCV?~GHzDPvGn@lMXbG@XP`GJtF?pDI~GCjBK~B]zHg@pGc@fEsMvhAqOrmAYvM{@~J{ApTGdAU~DGrBCr@[bFMpCKrD@fIDpEPzDR`E\\bETrDRfELvH??H?\\pILzCVtKLtUDpED|CZhP`@zRAdC|Ath@D|ABfB?jDD|BBr@BfAH|@LvAR|Ab@tD??FCl@nFVhCf@xFNpCh@jLDzALnID|KAjIWtu@BhI?tDOvBUfESbFYrFEpAC`BBhABfFx@`D??LEtAbLh@~F`@vDj@pER~A|CbQXlBnFh^bBtLjA|IjAbKb@pEZ~Cx@bKZ`FLvBV|ETxE\\bLN~ILrKBzIA|EG~JI|FMnESfFm@tJa@pEq@lHq@tFk@fDuBjKyA|FqDnKyHdRqCnIa@vAuAfFgAtDa@`Bu@zCoA`FcFbUkAxFmA|GoA|IgAzJ{@nGm@`EiAnG{@tEUbAaDnPqGf\\mC~Ma@~B_AhD_BzGY`BD`C??c@VKhAO|Ag@tFg@hFk@pDcA`GwB~KsCzKmC`LqBzIw@bFiAvHGv@e@lESlDIpBUhEElAIzCQ`HYfLs@fOs@|J}@~JiAjKmAfJgApI_@zD]fEy@zLY|Gg@tIm@~Hs@fGu@dF_BlJ_B~GkAtFuA~Iq@vGe@dHa@~H_@jGcA`LcAvHcBxJm@~B_AfEoBvH}@pCcAhDsEnLcDpHqDnHuCfFiDdFaCrCaC~BmCnBgCrBqCpCqCpDkDrFcCvEwBvEyBtFqA|D{ApEyApEyAdF_BfG{@jEq@pDoAlHu@pFcAfJi@xEo@vHu@dKi@nHKdAo@xGqAtMsAfM_AtJ{@xHu@tGgAzHw@dF}DnVgC`NiCvMwApHeA`GkBvL}AzJ_AzGkAfJ{@dHiA|Ju@xGo@bIk@tI]jLGfJKxGU~G_@bGe@`F}@dGs@zDqA`FgClJeCxJmAlGcBrIiAjFoA|EiBdGiAhDiBrEyAdDcCnFmC`FcDfFgDvGiA~CsA~D}@zDcAnEq@hEo@nF{@~IcAfIaA`HwAxIiA|FiBlIsChMkBhJ_ChNsApIi@vBkAdGg@rBc@vAa@jA]t@c@f@q@f@{@^eAd@s@l@]|@Ux@Ib@MrAA`ABnAJbAR`AVp@^|@h@dA~@|A|AvB~@rAd@b@jBlCv@pAbAhBb@`Ab@bAd@zA^pA\\rAZ|A^tBZfBJXHTRVAX?XFTHPo@~EIz@_@`@??JhAKvBWbEOEQLGX?^H^LPyBdVi@vB??FxAcBzQ{BxVs@lHI`B_@P??FzBc@xEi@lDc@zBg@~B}@nCcAtCu@jBa@pAYp@i@j@"
-            },
-            "distance": 32881,
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "d5ad33cec66369974356ec235f3ba092f1289f6cce83e188950ced5635a4acec"
-          },
-          {
-            "startTime": 1478871720000,
-            "endTime": 1478873640000,
-            "mode": "TRANSFER",
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "e305940669768b0b6de2564be71039523597abef8a837f25a020f9e066850ee5"
-          },
-          {
-            "startTime": 1478873640000,
-            "endTime": 1478874000000,
-            "mode": "BUS",
-            "from": {
-              "name": "Palopolku",
-              "lon": 24.42122,
-              "lat": 60.27475
-            },
-            "to": {
-              "name": "Perälänjärventie",
-              "lon": 24.44233,
-              "lat": 60.28596
-            },
-            "route": "908",
-            "routeShortName": "908",
-            "routeLongName": "Kirkkonummi - Evitskog - Kylmälä - Veikkola - Kaislampi",
-            "agencyId": "HSL",
-            "legGeometry": {
-              "points": "cl{nJqw`tC_@nB_AjCcBlEsCxHwC~HFQ_@aAQLMX{@dCW`@UHyA?sAXgAf@[?e@a@Sg@m@gBm@qA????y@aAwAu@kBw@e@cAQoAGy@QaAcAmCc@sA[yAy@uCi@aBQ]????Wq@{@sAg@a@a@Iy@Co@?y@Bi@Me@]{@y@a@s@Y_AUeASmBa@}AJcB????PcC|AiL^gBxCuGjAyFz@uE????LiAz@cE`BwLLeEIqDUQ]c@[k@gOuY"
-            },
-            "distance": 2914,
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "8aa6286d4a85de0c2f2c5b567c875dc398ab8849a363b4ebc098bc479e60d4bd"
-          },
-          {
-            "startTime": 1478874000000,
-            "endTime": 1478877366000,
-            "mode": "WALK",
-            "from": {
-              "name": "Perälänjärventie",
-              "lon": 24.44233,
-              "lat": 60.28596
-            },
-            "to": {
-              "name": "Valklammentie",
-              "lon": 24.46223,
-              "lat": 60.31295
-            },
-            "legGeometry": {
-              "points": "gr}nJo{dtC]i@Uk@Q[Kc@CBG?oCfAgBn@AMMD??s@LeB`@y@f@y@p@k@t@u@vA{@rAi@n@u@ZkAX{Af@u@HiAE{@Pg@Ge@MUg@OaAEaAM_@WMc@H_@PUBOUkAwCEG[q@QIY@}@`@_APo@Gi@Qu@q@u@aAq@aB_@}@i@aAi@c@e@Q_C{AmAc@[]O_@a@qAQu@]_AUe@i@y@YQa@M[?g@La@CaAMu@Bg@Li@Pc@NY^_@|@Yp@g@rAW`@[^g@Tq@b@]f@s@vAo@|@y@x@w@j@o@^o@|@g@|@qAdBy@x@{@r@m@^uB`Ay@f@o@b@q@r@}@dAw@~@_A`AiA`BS`@[l@o@r@??q@`@eA?{@Qu@eAkAi@c@Qk@s@k@mB{@oBsAaA_@}AYeBW{BW{BAIGoAO_DE{@EcCDgD?wC??@oA@aJ?iHMgCeBcNa@_Dq@wEkAqIo@wFFoASmDMgDJqBn@kBj@{Az@qC"
-            },
-            "distance": 4499,
-            "fare": {
-              "currency": "POINT",
-              "amount": 0
-            },
-            "signature": "bfaa0e0b114fc204e84ea7cc40d585f175c1c07175a00e3bd45b238417b2de1e"
-          }
-        ],
-        "fare": {
-          "points": 144,
-          "co2": 1550
+    "startTime": 1479127519000,
+    "endTime": 1479136566000,
+    "legs": [
+      {
+        "startTime": 1479127519000,
+        "endTime": 1479127620000,
+        "mode": "WALK",
+        "from": {
+          "name": "Ludviginkatu",
+          "lon": 24.94523,
+          "lat": 60.16578
         },
-        "signature": "0303875e2813f532f8d44f8fc9416967dddcfdb94fa8a4b01be880868c3657fa"
+        "to": {
+          "name": "Kolmikulma",
+          "lon": 24.94395,
+          "lat": 60.16516
+        },
+        "legGeometry": {
+          "points": "ccfnJsbgwC?T@?ARBtA?p@@d@?Lh@P??^Gh@A@N"
+        },
+        "distance": 135,
+        "signature": "2a41fc3a32270443c9da2ef9343ed69e309a2db9644a2dc2d5f603ac355707af"
+      },
+      {
+        "startTime": 1479127620000,
+        "endTime": 1479128220000,
+        "mode": "TRAM",
+        "from": {
+          "name": "Kolmikulma",
+          "lon": 24.94395,
+          "lat": 60.16516
+        },
+        "to": {
+          "name": "Ooppera",
+          "lon": 24.92659,
+          "lat": 60.18228
+        },
+        "route": "10",
+        "routeShortName": "10",
+        "routeLongName": "Kirurgi - Pikku Huopalahti",
+        "agencyId": "HSL",
+        "legGeometry": {
+          "points": "g_fnJuzfwC@B{Aj@eCJWDe@j@mBzCsAdCeChD??FNi@~@gHzLqBzC??BFkAlBu@jB_@nAe@x@UXuDrDsOrN????oD`EuFdHy@p@sAj@kAn@???BsKfE{GhDa@`@gApB"
+        },
+        "distance": 2181,
+        "signature": "a93726ea10db2f13c0746a1dd4062908e7afd9f2f8a0ea5fc3c3e8224751d4f6"
+      },
+      {
+        "startTime": 1479128220000,
+        "endTime": 1479128292000,
+        "mode": "WALK",
+        "from": {
+          "name": "Ooppera",
+          "lon": 24.92659,
+          "lat": 60.18228
+        },
+        "to": {
+          "name": "Ooppera",
+          "lon": 24.92675,
+          "lat": 60.18216
+        },
+        "legGeometry": {
+          "points": "gjinJencwCC]Wh@BLBF@D@FDJ??r@oAOK"
+        },
+        "distance": 89,
+        "signature": "114f0b013074aaeb366f9d6b984b037dc8c7996e154c2bfdfa3a6a4e300b682a"
+      },
+      {
+        "startTime": 1479128292000,
+        "endTime": 1479128580000,
+        "mode": "TRANSFER",
+        "signature": "b1af8065a45a7f3a4acc9426b10e265b3737070a049b035fbe93a37be307363c"
+      },
+      {
+        "startTime": 1479128580000,
+        "endTime": 1479130920000,
+        "mode": "BUS",
+        "from": {
+          "name": "Ooppera",
+          "lon": 24.92675,
+          "lat": 60.18216
+        },
+        "to": {
+          "name": "Palopolku",
+          "lon": 24.42122,
+          "lat": 60.27475
+        },
+        "route": "280",
+        "routeShortName": "280",
+        "routeLongName": "Helsinki - Turunväylä - Veikkola -",
+        "agencyId": "HSL",
+        "legGeometry": {
+          "points": "miinJeocwC??Yb@eAnBmC|EKP{@`Bi@`Aa@t@e@x@aA`BgClE]j@a@n@i@t@k@x@i@t@W`@aCdDQXcCdCw@|@c@b@mCvCSXyAhA??L`@y@|AkAbDwD~KY`A?zB?fAAt@E~GYdO??Pe@?h@CbC?p@IdMIrNC|DA~@AhACp@G|AUvAUbAuJpZ??pAkAY`AW|@Qn@MZSx@_@jAa@dA{CnIiA~CK\\Ql@S|@Mr@Mp@Kj@Kf@Gp@OrAQxAWhB_@bD]jCm@xEiAQWFIBIDSFc@Y??Dj@i@Tu@T_C`AoB|@kE~@??Fn@{MxF[JeAb@gE|AVdA\\z@b@hAXbAR|@R`B@dBCvCIbCI~DCV?~GHzDPvGn@lMXbG@XP`GJtF?pDI~GCjBK~B]zHg@pGc@fEsMvhAqOrmAYvM{@~J{ApTGdAU~DGrBCr@[bFMpCKrD@fIDpEPzDR`E\\bETrDRfELvH??H?\\pILzCVtKLtUDpED|CZhP`@zRAdC|Ath@D|ABfB?jDD|BBr@BfAH|@LvAR|Ab@tD??FCl@nFVhCf@xFNpCh@jLDzALnID|KAjIWtu@BhI?tDOvBUfESbFYrFEpAC`BBhABfFx@`D??LEtAbLh@~F`@vDj@pER~A|CbQXlBnFh^bBtLjA|IjAbKb@pEZ~Cx@bKZ`FLvBV|ETxE\\bLN~ILrKBzIA|EG~JI|FMnESfFm@tJa@pEq@lHq@tFk@fDuBjKyA|FqDnKyHdRqCnIa@vAuAfFgAtDa@`Bu@zCoA`FcFbUkAxFmA|GoA|IgAzJ{@nGm@`EiAnG{@tEUbAaDnPqGf\\mC~Ma@~B_AhD_BzGY`BD`C??c@VKhAO|Ag@tFg@hFk@pDcA`GwB~KsCzKmC`LqBzIw@bFiAvHGv@e@lESlDIpBUhEElAIzCQ`HYfLs@fOs@|J}@~JiAjKmAfJgApI_@zD]fEy@zLY|Gg@tIm@~Hs@fGu@dF_BlJ_B~GkAtFuA~Iq@vGe@dHa@~H_@jGcA`LcAvHcBxJm@~B_AfEoBvH}@pCcAhDsEnLcDpHqDnHuCfFiDdFaCrCaC~BmCnBgCrBqCpCqCpDkDrFcCvEwBvEyBtFqA|D{ApEyApEyAdF_BfG{@jEq@pDoAlHu@pFcAfJi@xEo@vHu@dKi@nHKdAo@xGqAtMsAfM_AtJ{@xHu@tGgAzHw@dF}DnVgC`NiCvMwApHeA`GkBvL}AzJ_AzGkAfJ{@dHiA|Ju@xGo@bIk@tI]jLGfJKxGU~G_@bGe@`F}@dGs@zDqA`FgClJeCxJmAlGcBrIiAjFoA|EiBdGiAhDiBrEyAdDcCnFmC`FcDfFgDvGiA~CsA~D}@zDcAnEq@hEo@nF{@~IcAfIaA`HwAxIiA|FiBlIsChMkBhJ_ChNsApIi@vBkAdGg@rBc@vAa@jA]t@c@f@q@f@{@^eAd@s@l@]|@Ux@Ib@MrAA`ABnAJbAR`AVp@^|@h@dA~@|A|AvB~@rAd@b@jBlCv@pAbAhBb@`Ab@bAd@zA^pA\\rAZ|A^tBZfBJXHTRVAX?XFTHPo@~EIz@_@`@??JhAKvBWbEOEQLGX?^H^LPyBdVi@vB??FxAcBzQ{BxVs@lHI`B_@P??FzBc@xEi@lDc@zBg@~B}@nCcAtCu@jBa@pAYp@i@j@"
+        },
+        "distance": 32881,
+        "signature": "54f5969291e4924b34cf521eaa484af51d0f759f40a7b6e4cc0dd5b7cbbdf2c6"
+      },
+      {
+        "startTime": 1479130920000,
+        "endTime": 1479132840000,
+        "mode": "TRANSFER",
+        "signature": "c7c23bd76774bb076b05b9580d4243a3cd48fecacc102842d8db3dd28330b6de"
+      },
+      {
+        "startTime": 1479132840000,
+        "endTime": 1479133200000,
+        "mode": "BUS",
+        "from": {
+          "name": "Palopolku",
+          "lon": 24.42122,
+          "lat": 60.27475
+        },
+        "to": {
+          "name": "Perälänjärventie",
+          "lon": 24.44233,
+          "lat": 60.28596
+        },
+        "route": "908",
+        "routeShortName": "908",
+        "routeLongName": "Kirkkonummi - Evitskog - Kylmälä - Veikkola - Kaislampi",
+        "agencyId": "HSL",
+        "legGeometry": {
+          "points": "cl{nJqw`tC_@nB_AjCcBlEsCxHwC~HFQ_@aAQLMX{@dCW`@UHyA?sAXgAf@[?e@a@Sg@m@gBm@qA????y@aAwAu@kBw@e@cAQoAGy@QaAcAmCc@sA[yAy@uCi@aBQ]????Wq@{@sAg@a@a@Iy@Co@?y@Bi@Me@]{@y@a@s@Y_AUeASmBa@}AJcB????PcC|AiL^gBxCuGjAyFz@uE????LiAz@cE`BwLLeEIqDUQ]c@[k@gOuY"
+        },
+        "distance": 2914,
+        "signature": "2a4800cf01e0695659e63c1e6bb5161d9242b1a44c77476373c7877ff9ea61ee"
+      },
+      {
+        "startTime": 1479133200000,
+        "endTime": 1479136566000,
+        "mode": "WALK",
+        "from": {
+          "name": "Perälänjärventie",
+          "lon": 24.44233,
+          "lat": 60.28596
+        },
+        "to": {
+          "name": "Valklammentie",
+          "lon": 24.46223,
+          "lat": 60.31295
+        },
+        "legGeometry": {
+          "points": "gr}nJo{dtC]i@Uk@Q[Kc@CBG?oCfAgBn@AMMD??s@LeB`@y@f@y@p@k@t@u@vA{@rAi@n@u@ZkAX{Af@u@HiAE{@Pg@Ge@MUg@OaAEaAM_@WMc@H_@PUBOUkAwCEG[q@QIY@}@`@_APo@Gi@Qu@q@u@aAq@aB_@}@i@aAi@c@e@Q_C{AmAc@[]O_@a@qAQu@]_AUe@i@y@YQa@M[?g@La@CaAMu@Bg@Li@Pc@NY^_@|@Yp@g@rAW`@[^g@Tq@b@]f@s@vAo@|@y@x@w@j@o@^o@|@g@|@qAdBy@x@{@r@m@^uB`Ay@f@o@b@q@r@}@dAw@~@_A`AiA`BS`@[l@o@r@??q@`@eA?{@Qu@eAkAi@c@Qk@s@k@mB{@oBsAaA_@}AYeBW{BW{BAIGoAO_DE{@EcCDgD?wC??@oA@aJ?iHMgCeBcNa@_Dq@wEkAqIo@wFFoASmDMgDJqBn@kBj@{Az@qC"
+        },
+        "distance": 4499,
+        "signature": "34e65fda123e5ef93db2ba84220e0febfee7afcb3485574a0afd6c81432d1fad"
       }
+    ],
+    "fare": {
+      "points": 144,
+      "co2": 1550
+    },
+    "signature": "904f268dec227d91bc112512c45b2244f9a529e143dfbb010d964c18bdcfe38b"
+  }
 }
