@@ -65,7 +65,10 @@ function webhookCallback(agencyId, tspId, payload) {
           const targetedBooking = bookings[0];
           if (!targetedBooking) return Promise.reject(new MaaSError(`Booking with tspId ${tspId} not found`, 404));
           if (!stateMachine.isStateValid('Booking', targetedBooking.state, payload.state)) {
-            return Promise.reject(new MaaSError(`Booking state changing from ${targetedBooking.state} to ${payload.state} is not permitted`, 403));
+            if (targetedBooking.state !== payload.state) {
+              return Promise.reject(new MaaSError(`Booking state changing from ${targetedBooking.state} to ${payload.state} is not permitted`, 403));
+            }
+            // It is ok if the booking stays in the same state
           }
           return models.Booking.bindTransaction(trx)
             .query()
@@ -137,6 +140,7 @@ function sendPushNotification(identityId, type, data, message) {
 
 module.exports.respond = (event, callback) => {
   let identityId;
+  console.warn(event);
   return validateInput(event)
     .then(_event => validator.validate(requestSchema, _event.payload, { sanitize: true }))
     .then(() => models.Database.init())
