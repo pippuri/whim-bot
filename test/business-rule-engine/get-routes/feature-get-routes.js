@@ -98,18 +98,20 @@ module.exports = function () {
       expect(itinerariesWithoutCo2Cost).to.be.empty;
     });
 
-    it('sum of legs fare must be equal to itinerary fare', () => {
+    it('sum of legs fare must be equal to itinerary fare (if not null)', () => {
       response.plan.itineraries.forEach(itinerary => {
-        let legFareSum = 0;
-        itinerary.legs.forEach(leg => {
-          if (leg.fare.amount === null) {
-            legFareSum += 0;
-          } else {
-            legFareSum += leg.fare.amount;
-          }
-        });
+        if (itinerary.fare.points !== null) {
+          let legFareSum = 0;
+          itinerary.legs.forEach(leg => {
+            if (leg.fare.amount === null) {
+              legFareSum += 0;
+            } else {
+              legFareSum += leg.fare.amount;
+            }
+          });
 
-        expect(legFareSum).to.equal(itinerary.fare.points);
+          expect(legFareSum).to.equal(itinerary.fare.points);
+        }
       });
     });
 
@@ -223,16 +225,18 @@ module.exports = function () {
 
     it('sum of legs fare must be equal to itinerary fare', () => {
       response.plan.itineraries.forEach(itinerary => {
-        let legFareSum = 0;
-        itinerary.legs.forEach(leg => {
-          if (leg.fare.amount === null) {
-            legFareSum += 0;
-          } else {
-            legFareSum += leg.fare.amount;
-          }
-        });
+        if (itinerary.fare.points !== null) {
+          let legFareSum = 0;
+          itinerary.legs.forEach(leg => {
+            if (leg.fare.amount === null) {
+              legFareSum += 0;
+            } else {
+              legFareSum += leg.fare.amount;
+            }
+          });
 
-        expect(legFareSum).to.equal(itinerary.fare.points);
+          expect(legFareSum).to.equal(itinerary.fare.points);
+        }
       });
     });
 
