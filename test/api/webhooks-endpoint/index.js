@@ -1,13 +1,12 @@
 'use strict';
 
-const testZendeskPushNotification = require('./zendesk-push-notification.js');
+const testZendeskPushNotification = require('./zendesk-push-notification/zendesk-push-notification.js');
+const testWebhooksBookingsUpdate = require('./webhooks-bookings-update/webhooks-bookings-update.js');
 
-describe('webhooks endpoint', function () {
-  this.timeout(20000);
-
-  describe('zendesk-push-notification', function () {
-    this.timeout(20000);
+describe('webhooks endpoint', function () { //eslint-disable-line
+  describe('zendesk-push-notification', function () { //eslint-disable-line
     testZendeskPushNotification();
   });
 
+  testWebhooksBookingsUpdate();
 });
