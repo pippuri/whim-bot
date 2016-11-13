@@ -1,113 +1,123 @@
 'use strict';
 
+const bus = require('../../../../lib/service-bus');
 const expect = require('chai').expect;
 const models = require('../../../../lib/models');
-const bus = require('../../../../lib/service-bus');
+const negativeCases = require('./webhooks-bookings-update-negative-events.json');
 const utils = require('../../../../lib/utils');
-const negativeEvents = require('./webhooks-bookings-update-negative-events.json');
-const positiveEvents = require('./webhooks-bookings-update-positive-events.json');
+const positiveCases = require('./webhooks-bookings-update-positive-events.json');
+const schema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/response.json');
+const validator = require('../../../../lib/validator');
 
 module.exports = function () {
+  describe('webhooks-bookings-update', function () { //eslint-disable-line
 
-  describe('Webhooks-bookings-update', function () {
+    before(() => {
+      return models.Database.init();
+    });
 
-    this.timeout(20000);
+    after(() => {
+      return models.Database.cleanup();
+    });
 
     describe('[POSITIVE]', () => {
-
       const seedBooking = {
-        id: utils.createId(),
-        tspId: utils.createId() + Math.floor(Math.random() * (10 - 2) + 2), // Append random number to make sure it is unique
         cost: {},
-        state: 'RESERVED',
+        state: 'CONFIRMED',
         terms: {},
         token: {},
         meta: {},
+        customer: {
+          identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+        },
       };
 
-      positiveEvents.forEach(event => {
-
-        describe(`${event.description}`, () => {
-
+      positiveCases.forEach(test => {
+        describe(`${test.description}`, () => {
+          const event = utils.cloneDeep(test.input);
+          let booking;
           let error;
           let response;
 
           before(() => {
-            seedBooking.leg = {
-              agencyId: event.input.agencyId,
+            booking = utils.cloneDeep(seedBooking);
+            booking.id =  utils.createId();
+            booking.tspId = utils.createId();
+            booking.leg = {
+              to: { lat: 60.16627, lon: 24.92699, name: 'Lapinrinne' },
+              from: { lat: 60.16297, lon: 24.73716, name: 'Piispansilta' }, mode: 'BUS', endTime: 1476643500000, startTime: 1476638700000,
+              agencyId: test.input.agencyId,
             };
-            event.input.payload.tspId = seedBooking.tspId;
-            return models.Database.init()
-              .then(() => models.Booking.query().insert(seedBooking))
-              .then(() => bus.call('MaaS-webhooks-bookings-update', event.input))
-              .then(res => {
-                response = res;
-              })
-              .catch(err => {
-                error = err;
-              })
-              .finally(() => {
-                return models.Booking.query()
-                  .delete()
-                  .where('id', seedBooking.id);
-              });
+
+            event.payload.tspId = booking.tspId;
+
+            return models.Booking.query().insert(booking)
+              .then(() => bus.call('MaaS-webhooks-bookings-update', event))
+              .then(
+                res => (response = res),
+                err => (error = err)
+              )
+              .finally(() => models.Booking.query().deleteById(booking.id));
           });
 
           it('should succeed without error', () => {
             expect(error).to.be.undefined;
           });
 
-          it('should return a valid response', () => {
+          it('should correspond the input data', () => {
             expect(response).to.not.be.undefined;
-            expect(response.tspId).to.equal(seedBooking.tspId);
-            expect(response.state).to.equal(event.input.payload.state);
-            expect(response.token).to.deep.equal(event.input.payload.token);
+            expect(response.booking.tspId).to.equal(booking.tspId);
+            expect(response.booking.state).to.equal(event.payload.state);
+            expect(response.booking.token).to.deep.equal(event.payload.token);
+          });
+
+          it('should return a valid response', () => {
+            return validator.validate(schema, response);
           });
         });
       });
     });
 
     describe('[NEGATIVE]', () => {
-
       const seedBooking = {
-        id: utils.createId(),
-        tspId: utils.createId() + Math.floor(Math.random() * (10 - 2) + 2), // Append random number to make sure it is unique
         cost: {},
-        state: 'RESERVED',
+        state: 'CONFIRMED',
         terms: {},
         token: {},
         meta: {},
+        customer: {
+          identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+        },
       };
 
-      negativeEvents.forEach(event => {
-
-        describe(`${event.description}`, () => {
-
+      negativeCases.forEach(test => {
+        describe(`${test.description}`, () => {
+          const event = utils.cloneDeep(test.input);
+          let booking;
           let error;
           let response;
 
           before(() => {
-            seedBooking.leg = {
-              agencyId: event.input.agencyId,
+            booking = utils.cloneDeep(seedBooking);
+            booking.id =  utils.createId();
+            booking.tspId = utils.createId();
+            booking.leg = {
+              to: { lat: 60.16627, lon: 24.92699, name: 'Lapinrinne' },
+              from: { lat: 60.16297, lon: 24.73716, name: 'Piispansilta' }, mode: 'BUS', endTime: 1476643500000, startTime: 1476638700000,
+              agencyId: test.input.agencyId,
             };
-            if (event.description !== 'Missing tspId in payload') {
-              event.input.payload.tspId = seedBooking.tspId;
+
+            if (test.description !== 'Missing tspId in payload') {
+              event.payload.tspId = booking.tspId;
             }
-            return models.Database.init()
-              .then(() => models.Booking.query().insert(seedBooking))
-              .then(() => bus.call('MaaS-webhooks-bookings-update', event.input))
-              .then(res => {
-                response = res;
-              })
-              .catch(err => {
-                error = err;
-              })
-              .finally(() => {
-                return models.Booking.query()
-                  .delete()
-                  .where('id', seedBooking.id)
-                  .then(() => models.Database.cleanup());
-              });
+
+            return models.Booking.query().insert(booking)
+              .then(() => bus.call('MaaS-webhooks-bookings-update', event))
+              .then(
+                res => (response = res),
+                err => (error = err)
+              )
+              .finally(() => models.Booking.query().deleteById(booking.id));
           });
 
           it('should return an error, without any response', () => {
@@ -116,7 +126,7 @@ module.exports = function () {
           });
 
           it('should produce the expected error message', () => {
-            expect(error.message).to.equal(event.errorMessage);
+            expect(error.message).to.have.string(test.errorMessage);
           });
         });
       });
