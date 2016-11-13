@@ -61,6 +61,7 @@ module.exports.respond = function (event, callback) {
 
     if (_error instanceof ValidationError) {
       callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
+      return;
     }
 
     callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
