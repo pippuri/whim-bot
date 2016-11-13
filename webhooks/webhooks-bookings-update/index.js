@@ -7,6 +7,7 @@ const models = require('../../lib/models/');
 const utils = require('../../lib/utils/');
 const stateMachine =  require('../../lib/states').StateMachine;
 const validator = require('../../lib/validator');
+const ValidationError = require('../../lib/validator/ValidationError');
 const bus = require('../../lib/service-bus');
 
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/request.json');
@@ -14,26 +15,14 @@ const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webh
 
 const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
 
-function validateInput(event) {
-  if (!event.agencyId) {
-    return Promise.reject(new MaaSError('Missing agencyId in input', 400));
-  }
-
-  if (!event.payload || Object.keys(event.payload).length === 0) {
-    return Promise.reject(new MaaSError('Missing or empty payload', 400));
-  }
-
-  if (!event.payload.tspId) {
-    return Promise.reject(new MaaSError('Missing tspId in payload', 400));
-  }
-
-  return Promise.resolve(event);
+function parseAndValidateInput(event) {
+  return validator.validate(requestSchema, event);
 }
 
 /**
- * Handle booking related data sent to Booking webhook
- * for agencyId, tspId. The tsp adapter will receive webhook
- * calls from the actual tsp in the future to update the booking to replace the current polling
+ * Handle booking related data sent to Booking webhook agencyId, tspId and
+ * payload.
+ *
  * @static
  * @param {String} agencyId - agencyId of the requested booking
  * @param {String} tspId - provider id of the requested booking
@@ -41,126 +30,124 @@ function validateInput(event) {
  * @return {Promise -> Booking with updated data}
  */
 function webhookCallback(agencyId, tspId, payload) {
-
-  if (!agencyId) return Promise.reject(new MaaSError('Missing agencyId in input', 400));
-  if (!tspId) return Promise.reject(new MaaSError('Missing agencyId in input', 400));
-  if (!payload) return Promise.reject(new MaaSError('Missing agencyId in input', 400));
-  if (!payload.cost || Object.keys(payload.cost).length === 0) return Promise.reject(new MaaSError('Payload missing cost input', 400));
-  if (!payload.state) return Promise.reject(new MaaSError('Payload missing state input', 400));
-  if (!payload.terms) return Promise.reject(new MaaSError('Payload missing terms input', 400));
-  if (!payload.token || Object.keys(payload.token).length === 0) return Promise.reject(new MaaSError('Payload missing of empty token input', 400));
-  if (!payload.meta) return Promise.reject(new MaaSError('Payload missing meta input', 400));
-
   let trx;
 
   return objection.transaction.start(models.Booking)
     .then(transaction => {
       trx = transaction;
+
       return models.Booking.bindTransaction(trx)
         .query()
         .whereRaw('leg ->> \'agencyId\' = ?', [agencyId])
         .andWhere('tspId', tspId)
-        .orderBy('created', 'desc') // Sort by time newest to oldest (Rarely does the tspId stay the same in a short period of time)
-        .then(bookings => {
-          const targetedBooking = bookings[0];
-          if (!targetedBooking) return Promise.reject(new MaaSError(`Booking with tspId ${tspId} not found`, 404));
-          if (!stateMachine.isStateValid('Booking', targetedBooking.state, payload.state)) {
-            if (targetedBooking.state !== payload.state) {
-              return Promise.reject(new MaaSError(`Booking state changing from ${targetedBooking.state} to ${payload.state} is not permitted`, 403));
-            }
-            // It is ok if the booking stays in the same state
-          }
-          return models.Booking.bindTransaction(trx)
-            .query()
-            .patch({
-              cost: utils.merge(targetedBooking.cost, payload.cost),
-              state: utils.merge(targetedBooking.state, payload.state),
-              terms: utils.merge(targetedBooking.terms, payload.terms),
-              token: utils.merge(targetedBooking.token, payload.token),
-              meta: utils.merge(targetedBooking.meta, payload.meta),
-              leg: payload.leg ? utils.merge(targetedBooking.leg, payload.leg) : undefined,
-            })
-            .where('id', targetedBooking.id)
-            .returning('*');
-        });
+        // Sort by time newest to oldest (in case we have a duplicate tspId)
+        .orderBy('created', 'desc');
     })
     .then(bookings => {
-      return trx.commit()
-        .then(() => bookings[0]);
+      const booking = bookings[0];
+
+      if (!booking) {
+        const message = `Booking with tspId ${tspId} not found`;
+        return Promise.reject(new MaaSError(message, 404));
+      }
+
+      // It is ok if the booking stays in the same state
+      if (booking.state !== payload.state &&
+        !stateMachine.isStateValid('Booking', booking.state, payload.state)) {
+        const message = `Booking state change from ${booking.state} to ${payload.state} is not permitted`;
+        return Promise.reject(new MaaSError(message, 403));
+      }
+
+      return models.Booking.bindTransaction(trx)
+        .query()
+        .patchAndFetchById(booking.id, {
+          cost: utils.merge(booking.cost, payload.cost),
+          state: utils.merge(booking.state, payload.state),
+          terms: utils.merge(booking.terms, payload.terms),
+          token: utils.merge(booking.token, payload.token),
+          meta: utils.merge(booking.meta, payload.meta),
+          leg: utils.merge(booking.leg, payload.leg),
+        });
     })
-    .catch(e => {
+    .then(booking => trx.commit().then(() => booking))
+    .catch(error => {
       return trx.rollback()
         .then(rollbackMessage => {
-          console.warn('Bookings-Webhook transaction finished:', rollbackMessage);
-          return Promise.reject(e);
+          console.warn('[Webhooks-Bookings-Update] transaction cancelled:', rollbackMessage);
+          return Promise.reject(error);
         })
         .catch(rollbackError => {
-          console.warn('Bookings-Webhook transaction failed:', rollbackError.errorMessage);
+          console.warn('[Webhooks-Bookings-Update] transaction rollback failed:', rollbackError.errorMessage);
           return Promise.reject(rollbackError);
         });
     });
 }
 
-function formatResponse(response) {
-  if (response.leg.agencyId) {
-    delete response.leg.agencyId;
-  }
+function formatResponse(booking) {
+  const sanitized = utils.sanitize(booking);
+
+  delete sanitized.leg.agencyId;
+
   return {
-    tspId: response.tspId,
-    cost: response.cost,
-    leg: response.leg,
-    state: response.state,
-    meta: response.meta,
-    terms: response.terms,
-    customer: response.customer,
+    booking: {
+      tspId: sanitized.tspId,
+      cost: sanitized.cost,
+      leg: sanitized.leg,
+      state: sanitized.state,
+      meta: sanitized.meta,
+      terms: sanitized.terms,
+      token: sanitized.token,
+    },
+    debug: {
+    },
   };
 }
 
 function sendPushNotification(identityId, type, data, message) {
+  console.info(`[Webhooks-Bookings-Update] Sending push notification to user ${identityId}: '${message || '(no message)'}'`);
 
-  console.info(`[Webhook] Sending push notification to user ${identityId}: '${message || '(no message)'}'`);
-
-  const notifData = {
+  const event = {
     identityId: identityId,
     badge: 0,
     type,
     data,
+    message,
   };
-  if (typeof message !== 'undefined') {
-    notifData.message = message;
-  }
 
-  return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE)
+  return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, event)
     .then(result => {
-      console.info(`[Webhook] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
+      console.info(`[Webhooks-Bookings-Update] Push notification to user ${identityId} sent, result:`, result);
     })
     .catch(err => {
-      console.error(`[Webhook] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
-    })
-    .finally(() => {
-      return Promise.resolve();
+      console.warn(`[Webhooks-Bookings-Update] Error: Failed to send push notification to user ${identityId}, err:`, err);
     });
 }
 
 module.exports.respond = (event, callback) => {
   let identityId;
-  return validateInput(event)
-    .then(_event => validator.validate(requestSchema, _event.payload, { sanitize: true }))
-    .then(() => models.Database.init())
-    .then(() => webhookCallback(event.agencyId, event.payload.tspId, event.payload))
+
+  return models.Database.init()
+    .then(() => parseAndValidateInput(event))
+    .then(parsed => webhookCallback(parsed.agencyId, parsed.payload.tspId, parsed.payload))
     .then(updatedBooking => {
       identityId = updatedBooking.customer.identityId;
       return formatResponse(updatedBooking);
     })
     .then(updatedBooking => validator.validate(responseSchema, updatedBooking, { sanitize: true }))
     .then(response => {
+      const message = 'Booking updated';
+      const payload = { ids: [response.id], objectType: 'Booking' };
 
-      const userMessage = '';
-
-      models.Database.cleanup()
-        .then(() => sendPushNotification(identityId, 'ObjectChange', { ids: [response.id], objectType: 'Booking' }, userMessage))
-        .then(() => callback(null, response));
+      return Promise.all([
+        response,
+        sendPushNotification(identityId, 'ObjectChange', payload, message),
+      ]);
     })
+    .spread(
+      (response, pushResponse) => {
+        return models.Database.cleanup()
+        .then(() => callback(null, response));
+      })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
@@ -170,6 +157,11 @@ module.exports.respond = (event, callback) => {
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
+            return;
+          }
+
+          if (_error instanceof ValidationError) {
+            callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
             return;
           }
 

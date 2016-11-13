@@ -1,7 +1,7 @@
 [
   {
     "description": "Missing tspId in payload",
-    "errorMessage": "400: Missing tspId in payload",
+    "errorMessage": "400: Validation failed: '.payload.tspId' is a required property",
     "input": {
       "tspId": "",
       "agencyId": "HSL",
@@ -26,7 +26,7 @@
   },
   {
     "description": "Invalid state in payload",
-    "errorMessage": "403: Booking state changing from RESERVED to PAID is not permitted",
+    "errorMessage": "403: Booking state change from CONFIRMED to RESERVED is not permitted",
     "input": {
       "agencyId": "HSL",
       "payload": {
@@ -35,7 +35,7 @@
           "amount": 7.20,
           "currency": "EUR"
         },
-        "state": "PAID",
+        "state": "RESERVED",
         "terms": {
           "startTime": 1476088965000,
           "endTime": 1481272965000
@@ -50,8 +50,8 @@
     }
   },
   {
-    "description": "Empty token field in payload",
-    "errorMessage": "400: Payload missing of empty token input",
+    "description": "Empty string in token field in payload",
+    "errorMessage": "400: Validation failed: '.payload.token' should be object,",
     "input": {
       "agencyId": "HSL",
       "payload": {
@@ -65,7 +65,7 @@
           "startTime": 1476088965000,
           "endTime": 1481272965000
         },
-        "token": {},
+        "token": "",
         "meta": {}
       }
     }
