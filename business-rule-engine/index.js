@@ -10,6 +10,7 @@ const BusinessRuleError = require('../lib/errors/BusinessRuleError.js');
 
 // Rules
 const getProviderRules = require('./rules/get-provider');
+const getRoutesProviderRules = require('./rules/get-routes-provider');
 const getRoutesRules = require('./rules/get-routes');
 const getTspPricingRule = require('./rules/get-tsp-pricing');
 const getPointsRules = require('./rules/get-points');
@@ -19,8 +20,7 @@ function runRule(event) {
   switch (event.rule) {
     case 'get-booking-provider':
     case 'get-booking-provider-batch':
-    case 'get-routes-provider':
-    case 'get-routes-provider-batch':
+    case 'get-routes-providers-by-modes':
     case 'get-routes':
     case 'get-tsp-pricing':
     case 'get-tsp-pricing-batch':
@@ -29,12 +29,10 @@ function runRule(event) {
           switch (event.rule) {
             case 'get-booking-provider':
               return getProviderRules.getBookingProvider(event.parameters);
-            case 'get-routes-provider':
-              return getProviderRules.getRoutesProvider(event.parameters);
             case 'get-booking-provider-batch':
               return getProviderRules.getBookingProvidersBatch(event.parameters);
-            case 'get-routes-provider-batch':
-              return getProviderRules.getRoutesProvidersBatch(event.parameters);
+            case 'get-routes-providers-by-modes':
+              return getRoutesProviderRules.getRoutesProvidersByModes(event.parameters);
             case 'get-routes':
               return getRoutesRules.getRoutes(event.identityId, event.parameters);
             case 'get-tsp-pricing': // used to get contract rates from TSP
