@@ -30,6 +30,7 @@
     "space-in-parens": 0,
     "no-restricted-syntax": 0,
     "import/no-unresolved": 0, // fails in Travis
+    "prefer-rest-params": 0, // Not available in node 4.3.2 by default
 
     "no-unused-vars": [2, { "vars": "all", "args": "none" }],
     "max-len": [2, 256],
