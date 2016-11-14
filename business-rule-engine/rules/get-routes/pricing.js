@@ -300,38 +300,47 @@ function _resolveRequiredProviders(itinerary) {
 }
 
 /**
- * Annotate the fare field of itinerary based on the cheapestCombo for that itinerary
+ * Annotate the fare field of itinerary based on the cheapestCombo for that
+ * itinerary.
+ *
+ * Sort the fares combinations from most expensive to cheapest, then assign
+ * the fares per agencyId, starting from the most expensive. The reasoning for
+ * this is: the user may have e.g. three HSL legs, of which one we have seutu
+ * and for the leftovers we cover with regional tickets. When refunding, we
+ * assume the user has consumed the seutu ticket first, and we only refund the
+ * leftovers (if he has consumed even one).
  */
 function annotateLegFare(itinerary, cheapestCombo) {
 
-  // Clone input combo and sort by cost
-  let combo = utils.cloneDeep(cheapestCombo).sort((a, b) => b.cost - a.cost);
+  // Filter the cheapestCombo, sort and get the most expensive ticket first.
+  const combo = utils.cloneDeep(cheapestCombo)
+    // Remove unpurchasable tickets from cheapestCombo
+    .filter(item => item.type !== 'U_NA')
+    .sort((a, b) => b.cost - a.cost);
 
-  // Remove unpurchasable tickets from cheapestCombo
-  combo = combo.filter(item => item.type !== 'U_NA');
-
+  // Append its cost to the first leg, then remove that ticket so that the next
+  // leg that uses the same ticket will have 0 point cost
   itinerary.legs.forEach(leg => {
-    leg.fare = {};
+    // Safe defaults to fare - we assume this leg is not priced.
+    leg.fare = { currency: 'POINT', amount: null };
 
-    // Filter the cheapestCombo, sort and get the most expensive ticket first and append its cost to the first leg, then remove that ticket so that the next leg that use the same ticket will have 0 point cost
-    // NOTE this implementation is applicable only to HSL case
     if (!leg.agencyId && ['WALK', 'WAIT', 'BICYCLE', 'TRANSFER', 'LEG_SWITCH'].some(mode => mode === leg.mode)) {
-      leg.fare.currency = 'POINT';
+      // A mode that does not need to be purchased
       leg.fare.amount = 0;
     } else if (combo.length === 0) {
-      leg.fare.currency = 'POINT';
+      // There's no ticket left. The number of tickets may be less or equal to
+      // the number of legs, because the earlier pricing engine may have been
+      // able to combine two or more legs into one.
       leg.fare.amount = 0;
-    } else if (!combo.find(item => item.agencyId === leg.agencyId)) {
-      leg.fare.currency = 'POINT';
-      leg.fare.amount = null;
     } else {
-      let tmp;
-      leg.fare.currency = 'POINT';
-      leg.fare.amount = combo.find((item, index) => {
-        tmp = index;
-        return item.agencyId === leg.agencyId;
-      }).cost;
-      combo.splice(tmp, 1);
+      // Find the first match - starting from the most expensive ticket for this
+      // agency.
+      const index = combo.findIndex(item => item.agencyId === leg.agencyId);
+
+      if (index !== -1) {
+        leg.fare.amount = combo[index].cost;
+        combo.splice(index, 1);
+      }
     }
   });
 
