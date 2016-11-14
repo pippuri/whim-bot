@@ -1,0 +1,69 @@
+{
+  "name": "webhooks-bookings-update",
+  "runtime": "nodejs4.3",
+  "description": "Webhook for tsp adapter to update the booking in MaaS-backend DB",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 30,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {},
+  "endpoints": [
+    {
+      "path": "webhooks/bookings/{agencyId}",
+      "method": "POST",
+      "type": "AWS",
+      "authorizationType": "none",
+      "authorizerFunction": false,
+      "apiKeyRequired": true,
+      "requestParameters": {
+        "integration.request.path.agencyId": "method.request.path.agencyId"
+      },
+      "requestTemplates": {
+        "application/json": {
+          "agencyId": "$input.params('agencyId')",
+          "payload": "$input.json('$')"
+        }
+      },
+      "responses": {
+        "^400[\\s\\S]*": {
+          "statusCode": "400",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^401[\\s\\S]*": {
+          "statusCode": "401",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^404[\\s\\S]*": {
+          "statusCode": "404",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "^\\d{3}[\\s\\S]*": {
+          "statusCode": "500",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          }
+        },
+        "default": {
+          "statusCode": "200",
+          "responseParameters": {
+            "method.response.header.Access-Control-Allow-Origin": "'*'"
+          },
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}"
+}
