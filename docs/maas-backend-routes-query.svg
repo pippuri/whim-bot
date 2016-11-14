@@ -1,0 +1,865 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="420mm"
+   height="297mm"
+   viewBox="1 -89 834.22019 593.64643"
+   id="svg3633"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="maas-backend-routes-query.svg">
+  <metadata
+     id="metadata3969">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3967" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1918"
+     inkscape:window-height="1036"
+     id="namedview3965"
+     showgrid="false"
+     units="mm"
+     inkscape:zoom="0.29498942"
+     inkscape:cx="1877.9528"
+     inkscape:cy="-274.58612"
+     inkscape:window-x="0"
+     inkscape:window-y="43"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg3633" />
+  <g
+     id="g3971"
+     transform="matrix(0.36223534,0,0,0.36223534,32.963682,-69.662827)">
+    <g
+       id="g3635">
+      <rect
+         id="rect3637"
+         height="38"
+         width="297"
+         y="100.103"
+         x="2.31371"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3639"
+         height="38"
+         width="297"
+         y="100.103"
+         x="2.31371"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3641"
+         y="123.003"
+         x="150.814"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3643"
+           y="123.003"
+           x="150.814">getRoutes()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3645">
+      <rect
+         id="rect3647"
+         height="38"
+         width="296"
+         y="200"
+         x="501.5"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3649"
+         height="38"
+         width="296"
+         y="200"
+         x="501.5"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3651"
+         y="222.89999"
+         x="649.5"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3653"
+           y="222.89999"
+           x="649.5">getRoutesRules.getRoutes()</tspan>
+      </text>
+    </g>
+    <text
+       id="text3655"
+       y="34.002602"
+       x="160"
+       style="font-style:normal;font-weight:600;font-size:24.09049988px;font-family:'Open Sans';text-anchor:middle;fill:#000000"
+       font-size="24.0905">
+      <tspan
+         id="tspan3657"
+         y="34.002602"
+         x="160">routes-query</tspan>
+    </text>
+    <text
+       id="text3659"
+       y="34.002602"
+       x="649.80798"
+       style="font-style:normal;font-weight:600;font-size:24.09049988px;font-family:'Open Sans';text-anchor:middle;fill:#000000"
+       font-size="24.0905">
+      <tspan
+         id="tspan3661"
+         y="34.002602"
+         x="649.80798">MaaS-business-rules-engine</tspan>
+    </text>
+    <g
+       id="g3663">
+      <rect
+         id="rect3665"
+         height="38"
+         width="294.64999"
+         y="320"
+         x="502.17499"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3667"
+         height="38"
+         width="294.64999"
+         y="320"
+         x="502.17499"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3669"
+         y="342.89999"
+         x="649.5"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3671"
+           y="342.89999"
+           x="649.5">routes.getRoutes()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3673">
+      <rect
+         id="rect3675"
+         height="38"
+         width="296.10001"
+         y="400"
+         x="995.69598"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3677"
+         height="38"
+         width="296.10001"
+         y="400"
+         x="995.69598"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3679"
+         y="422.89999"
+         x="1143.75"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3681"
+           y="422.89999"
+           x="1143.75">_resolveRoutesProviders()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3683">
+      <rect
+         id="rect3685"
+         height="38"
+         width="296.10001"
+         y="820"
+         x="995.97198"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3687"
+         height="38"
+         width="296.10001"
+         y="820"
+         x="995.97198"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3689"
+         y="842.90002"
+         x="1144.02"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3691"
+           y="842.90002"
+           x="1144.02">_invokeProviders()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3693">
+      <rect
+         id="rect3695"
+         height="38"
+         width="296.60001"
+         y="928.66803"
+         x="995.72198"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3697"
+         height="38"
+         width="296.60001"
+         y="928.66803"
+         x="995.72198"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3699"
+         y="951.56799"
+         x="1144.02"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3701"
+           y="951.56799"
+           x="1144.02">_mergeProviderResponses()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3703">
+      <rect
+         id="rect3705"
+         height="38"
+         width="295.60001"
+         y="1037.34"
+         x="996.22198"
+         style="fill:#ffc0cb" />
+      <rect
+         id="rect3707"
+         height="38"
+         width="295.60001"
+         y="1037.34"
+         x="996.22198"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3709"
+         y="1060.24"
+         x="1144.02"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3711"
+           y="1060.24"
+           x="1144.02">_setRouteAgency()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3713">
+      <rect
+         id="rect3715"
+         height="38"
+         width="295.60001"
+         y="1224.3"
+         x="996.22198"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3717"
+         height="38"
+         width="295.60001"
+         y="1224.3"
+         x="996.22198"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3719"
+         y="1247.2"
+         x="1144.02"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3721"
+           y="1247.2"
+           x="1144.02">_calculateLegsDistance()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3723">
+      <rect
+         id="rect3725"
+         height="38"
+         width="295.60001"
+         y="1332.97"
+         x="996.22198"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3727"
+         height="38"
+         width="295.60001"
+         y="1332.97"
+         x="996.22198"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3729"
+         y="1355.87"
+         x="1144.02"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3731"
+           y="1355.87"
+           x="1144.02">_sortRoute()</tspan>
+      </text>
+    </g>
+    <text
+       id="text3733"
+       y="34.002602"
+       x="1249.67"
+       style="font-style:normal;font-weight:600;font-size:24.09049988px;font-family:'Open Sans';text-anchor:middle;fill:#000000"
+       font-size="24.0905">
+      <tspan
+         id="tspan3735"
+         y="34.002602"
+         x="1249.67">routes-rules</tspan>
+    </text>
+    <text
+       id="text3737"
+       y="34.002602"
+       x="1834.08"
+       style="font-style:normal;font-weight:600;font-size:24.09049988px;font-family:'Open Sans';text-anchor:middle;fill:#000000"
+       font-size="24.0905">
+      <tspan
+         id="tspan3739"
+         y="34.002602"
+         x="1834.08">provider-rules</tspan>
+    </text>
+    <g
+       id="g3741">
+      <rect
+         id="rect3743"
+         height="38"
+         width="296.10001"
+         y="532.77399"
+         x="1605.38"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3745"
+         height="38"
+         width="296.10001"
+         y="532.77399"
+         x="1605.38"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3747"
+         y="555.67401"
+         x="1753.4301"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3749"
+           y="555.67401"
+           x="1753.4301">getRoutesProvidersBatch()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3751">
+      <rect
+         id="rect3753"
+         height="38"
+         width="236.8"
+         y="478.38199"
+         x="1276.65"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3755"
+         height="38"
+         width="236.8"
+         y="478.38199"
+         x="1276.65"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3757"
+         y="501.28201"
+         x="1395.05"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3759"
+           y="501.28201"
+           x="1395.05">_buildTaxiRoutesProvidersQuery()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3761">
+      <rect
+         id="rect3763"
+         height="38"
+         width="296.10001"
+         y="621.64398"
+         x="1605.38"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3765"
+         height="38"
+         width="296.10001"
+         y="621.64398"
+         x="1605.38"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3767"
+         y="644.54401"
+         x="1753.4301"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3769"
+           y="644.54401"
+           x="1753.4301">_queryRoutesProviders()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3771">
+      <path
+         id="path3773"
+         d="m 2040,692.142 c 25,-13.5 37.5,-18 62.49,-18 25,0 37.5,4.5 62.5,18 l 0,72 c -25,13.5 -37.5,18 -62.5,18 -24.99,0 -37.49,-4.5 -62.49,-18 l 0,-72 z"
+         style="fill:#dce198"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path3775"
+         d="m 2040,692.142 c 25,-13.5 37.5,-18 62.49,-18 25,0 37.5,4.5 62.5,18 l 0,72 c -25,13.5 -37.5,18 -62.5,18 -24.99,0 -37.49,-4.5 -62.49,-18 l 0,-72"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
+         inkscape:connector-curvature="0" />
+      <path
+         id="path3777"
+         d="m 2040,692.142 c 25,13.5 37.5,18 62.49,18 25,0 37.5,-4.5 62.5,-18"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2"
+         inkscape:connector-curvature="0" />
+      <text
+         id="text3779"
+         y="733.14203"
+         x="2102.49"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3781"
+           y="733.14203"
+           x="2102.49">MaaS</tspan>
+        <tspan
+           id="tspan3783"
+           y="749.14203"
+           x="2102.49">RoutesProvider</tspan>
+      </text>
+    </g>
+    <g
+       id="g3785">
+      <polyline
+         id="polyline3787"
+         points="299.314,119.103 649.5,119.103 649.5,190.264 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3789"
+         points="654.5,187.764 649.5,197.764 644.5,187.764 649.5,190.264 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3791"
+         points="654.5,187.764 649.5,197.764 644.5,187.764 649.5,190.264 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3793">
+      <polyline
+         id="polyline3795"
+         points="796.825,339 880,339 880,419 985.96,419 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3797"
+         points="983.46,414 993.46,419 983.46,424 985.96,419 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3799"
+         points="983.46,414 993.46,419 983.46,424 985.96,419 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3801">
+      <polyline
+         id="polyline3803"
+         points="1513.45,497.382 1827.45,497.382 1827.45,523.038 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3805"
+         points="1832.45,520.538 1827.45,530.538 1822.45,520.538 1827.45,523.038 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3807"
+         points="1832.45,520.538 1827.45,530.538 1822.45,520.538 1827.45,523.038 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3809">
+      <line
+         id="line3811"
+         y2="611.90802"
+         x2="1827.45"
+         y1="570.77399"
+         x1="1827.45"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3813"
+         points="1832.45,609.408 1827.45,619.408 1822.45,609.408 1827.45,611.908 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3815"
+         points="1832.45,609.408 1827.45,619.408 1822.45,609.408 1827.45,611.908 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3817">
+      <polyline
+         id="polyline3819"
+         points="2102.49,782.15 2102.49,800 1753.43,800 1753.43,669.38 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3821"
+         points="1748.43,671.88 1753.43,661.88 1758.43,671.88 1753.43,669.38 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3823"
+         points="1748.43,671.88 1753.43,661.88 1758.43,671.88 1753.43,669.38 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3825">
+      <polyline
+         id="polyline3827"
+         points="1605.38,640.644 1605.38,642.812 1217.77,642.812 1217.77,447.736 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3829"
+         points="1212.77,450.236 1217.77,440.236 1222.77,450.236 1217.77,447.736 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3831"
+         points="1212.77,450.236 1217.77,440.236 1222.77,450.236 1217.77,447.736 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3833">
+      <polyline
+         id="polyline3835"
+         points="1291.8,419 1395.05,419 1395.05,467.636 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3837"
+         points="1400.05,465.136 1395.05,475.136 1390.05,465.136 1395.05,467.636 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3839"
+         points="1400.05,465.136 1395.05,475.136 1390.05,465.136 1395.05,467.636 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3841">
+      <line
+         id="line3843"
+         y2="918.93201"
+         x2="1144.02"
+         y1="858"
+         x1="1144.02"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3845"
+         points="1149.02,916.432 1144.02,926.432 1139.02,916.432 1144.02,918.932 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3847"
+         points="1149.02,916.432 1144.02,926.432 1139.02,916.432 1144.02,918.932 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3849">
+      <line
+         id="line3851"
+         y2="1027.6"
+         x2="1144.02"
+         y1="966.66803"
+         x1="1144.02"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3853"
+         points="1149.02,1025.1 1144.02,1035.1 1139.02,1025.1 1144.02,1027.6 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3855"
+         points="1149.02,1025.1 1144.02,1035.1 1139.02,1025.1 1144.02,1027.6 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3857">
+      <line
+         id="line3859"
+         y2="1213.72"
+         x2="1144.02"
+         y1="1075.34"
+         x1="1144.02"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3861"
+         points="1149.02,1211.22 1144.02,1221.22 1139.02,1211.22 1144.02,1213.72 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3863"
+         points="1149.02,1211.22 1144.02,1221.22 1139.02,1211.22 1144.02,1213.72 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3865">
+      <line
+         id="line3867"
+         y2="1323.23"
+         x2="1144.02"
+         y1="1262.3"
+         x1="1144.02"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3869"
+         points="1149.02,1320.73 1144.02,1330.73 1139.02,1320.73 1144.02,1323.23 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3871"
+         points="1149.02,1320.73 1144.02,1330.73 1139.02,1320.73 1144.02,1323.23 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <line
+       id="line3873"
+       y2="1588.29"
+       x2="361.854"
+       y1="-87.839401"
+       x1="361.854"
+       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:2;stroke-dasharray:4" />
+    <line
+       id="line3875"
+       y2="1588.29"
+       x2="919.64398"
+       y1="-87.839401"
+       x1="919.64398"
+       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:2;stroke-dasharray:4" />
+    <line
+       id="line3877"
+       y2="1588.29"
+       x2="1573.75"
+       y1="-87.839401"
+       x1="1573.75"
+       style="fill:none;fill-opacity:0;stroke:#7f7f7f;stroke-width:2;stroke-dasharray:4" />
+    <g
+       id="g3879">
+      <rect
+         id="rect3881"
+         height="38"
+         width="236.8"
+         y="1121.13"
+         x="1272.55"
+         style="fill:#ffc0cb" />
+      <rect
+         id="rect3883"
+         height="38"
+         width="236.8"
+         y="1121.13"
+         x="1272.55"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3885"
+         y="1144.03"
+         x="1390.95"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3887"
+           y="1144.03"
+           x="1390.95">_setLegAgency()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3889">
+      <polyline
+         id="polyline3891"
+         points="1291.82,1056.34 1291.82,1052.56 1390.95,1052.56 1390.95,1111.4 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3893"
+         points="1395.95,1108.9 1390.95,1118.9 1385.95,1108.9 1390.95,1111.4 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3895"
+         points="1395.95,1108.9 1390.95,1118.9 1385.95,1108.9 1390.95,1111.4 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3897">
+      <polyline
+         id="polyline3899"
+         points="1272.55,1140.13 1272.55,1138.83 1217.92,1138.83 1217.92,1085.07 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3901"
+         points="1212.92,1087.57 1217.92,1077.57 1222.92,1087.57 1217.92,1085.07 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3903"
+         points="1212.92,1087.57 1217.92,1077.57 1222.92,1087.57 1217.92,1085.07 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3905">
+      <rect
+         id="rect3907"
+         height="38"
+         width="294.64999"
+         y="1420"
+         x="502.17499"
+         style="fill:#ffffff" />
+      <rect
+         id="rect3909"
+         height="38"
+         width="294.64999"
+         y="1420"
+         x="502.17499"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3911"
+         y="1442.9"
+         x="649.5"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3913"
+           y="1442.9"
+           x="649.5">pricing.resolveRoutesPrice()</tspan>
+      </text>
+    </g>
+    <g
+       id="g3915">
+      <polyline
+         id="polyline3917"
+         points="1144.02,1370.97 1144.02,1439 806.561,1439 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3919"
+         points="809.061,1444 799.061,1439 809.061,1434 806.561,1439 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3921"
+         points="809.061,1444 799.061,1439 809.061,1434 806.561,1439 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3923">
+      <rect
+         id="rect3925"
+         height="38"
+         width="294.64999"
+         y="1489.9"
+         x="3.4887099"
+         style="fill:#d8e5e5" />
+      <rect
+         id="rect3927"
+         height="38"
+         width="294.64999"
+         y="1489.9"
+         x="3.4887099"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <text
+         id="text3929"
+         y="1512.8"
+         x="150.814"
+         style="font-style:normal;font-weight:normal;font-size:12.80000019px;font-family:sans-serif;text-anchor:middle;fill:#000000"
+         font-size="12.8">
+        <tspan
+           id="tspan3931"
+           y="1512.8"
+           x="150.814">Response</tspan>
+      </text>
+    </g>
+    <g
+       id="g3933">
+      <polyline
+         id="polyline3935"
+         points="649.5,1458 649.5,1508.9 307.875,1508.9 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3937"
+         points="310.375,1513.9 300.375,1508.9 310.375,1503.9 307.875,1508.9 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3939"
+         points="310.375,1513.9 300.375,1508.9 310.375,1503.9 307.875,1508.9 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3941">
+      <line
+         id="line3943"
+         y2="310.26401"
+         x2="649.5"
+         y1="238"
+         x1="649.5"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3945"
+         points="654.5,307.764 649.5,317.764 644.5,307.764 649.5,310.264 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3947"
+         points="654.5,307.764 649.5,317.764 644.5,307.764 649.5,310.264 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3949">
+      <line
+         id="line3951"
+         y2="810.26398"
+         x2="1144.01"
+         y1="438"
+         x1="1143.75"
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3953"
+         points="1149.01,807.76 1144.02,817.764 1139.01,807.768 1144.01,810.264 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3955"
+         points="1149.01,807.76 1144.02,817.764 1139.01,807.768 1144.01,810.264 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+    <g
+       id="g3957">
+      <polyline
+         id="polyline3959"
+         points="1901.48,640.644 2102.49,640.644 2102.49,664.406 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+      <polygon
+         id="polygon3961"
+         points="2107.49,661.906 2102.49,671.906 2097.49,661.906 2102.49,664.406 "
+         style="fill:#000000" />
+      <polygon
+         id="polygon3963"
+         points="2107.49,661.906 2102.49,671.906 2097.49,661.906 2102.49,664.406 "
+         style="fill:none;fill-opacity:0;stroke:#000000;stroke-width:2" />
+    </g>
+  </g>
+</svg>
