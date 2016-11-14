@@ -7,24 +7,8 @@
 
 const utils = require('../../../lib/utils');
 const RoutesProvider = require('../../../lib/models').RoutesProvider;
-const geoUtils = require('geojson-utils');
 const _uniq = require('lodash/uniq');
 
-/**
- * Checks whether a given point is inside the polygon
- *
- * @param {object} location - a {lat,lon} pair
- * @param {object} polygon - a GeoJSON polygon
- * @return true if it is inside polygon, false otherwise
- */
-function isInside(name, location, polygon) {
-  const point = {
-    type: 'Point',
-    coordinates: [location.lon, location.lat],
-  };
-
-  return geoUtils.pointInPolygon(point, polygon);
-}
 
 /**
  * Filter the given map of routes providers by those
@@ -89,7 +73,7 @@ const routesProvidersLocationFilter = locations => provider => {
   const geometry = JSON.parse(provider.geometry);
 
   // To be a valid provider, it must be able to cover all the given locations
-  return locations.every(loc => isInside(provider.providerName, loc, geometry));
+  return locations.every(loc => utils.isInside(loc, geometry));
 };
 
 

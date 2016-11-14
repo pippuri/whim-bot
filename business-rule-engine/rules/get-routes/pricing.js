@@ -13,7 +13,6 @@ const _uniqWith = require('lodash/uniqWith');
 const _values = require('lodash/values');
 const Promise = require('bluebird');
 const powerset = require('powerset');
-const geoUtils = require('geojson-utils');
 const utils = require('../../../lib/utils');
 
 const tspData = {
@@ -421,21 +420,6 @@ function _calculateItineraryCost(itinerary) {
   return cost;
 }
 
-/**
- * Checks whether a given point is inside the polygon
- *
- * @param {object} location - a {lat,lon} pair
- * @param {object} polygon - a GeoJSON polygon
- * @return true if it is inside polygon, false otherwise
- */
-function isInside(location, polygon) {
-  const point = {
-    type: 'Point',
-    coordinates: [location.lon, location.lat],
-  };
-  return geoUtils.pointInPolygon(point, polygon);
-}
-
 function _setLegBookingProvider(leg, providers) {
   if (providers.length === 0) {
     return leg;
@@ -445,7 +429,7 @@ function _setLegBookingProvider(leg, providers) {
     return leg;
   }
 
-  if (leg.agencyId === providers[0].agencyId && isInside(leg.to, JSON.parse(providers[0].geometry))) {
+  if (leg.agencyId === providers[0].agencyId && utils.isInside(leg.to, JSON.parse(providers[0].geometry))) {
     leg.agencyData = providers[0];
     return leg;
   }
