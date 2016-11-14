@@ -4,84 +4,131 @@
  * This rule is used to decide which provider is used for the pricing based on the location of the customer
  */
 
+const utils = require('../../../lib/utils');
+const Promise = require('bluebird');
 const BookingProvider = require('../../../lib/models').BookingProvider;
-const geoUtils = require('geojson-utils');
+
 
 /**
- * Checks whether a given point is inside the polygon
+ * Fetch all active RoutesProviders from the database, ordered by priority.
  *
- * @param {object} location - a {lat,lon} pair
- * @param {object} polygon - a GeoJSON polygon
- * @return true if it is inside polygon, false otherwise
+ * @return {Object} a promise which resolves to a list of database records
  */
-function isInside(location, polygon) {
-  const point = {
-    type: 'Point',
-    coordinates: [location.lon, location.lat],
-  };
-
-  return geoUtils.pointInPolygon(point, polygon);
-}
-
-/**
- * Filters all possible providers from the query "from" field
- *
- * @param {array} providers - A list of providers, returned by a query
- * @param {object} rule - A filtering rule w/ type, name, agencyId & location
- */
-function filter(providers, rule) {
-  // Validate the rule
-  if (typeof rule.agencyId !== 'string' && typeof rule.providerName !== 'string') {
-    throw new Error('Missing rule parameters: type, agencyId or providerName expected');
-  }
-
-  // Filter
-  return providers.filter(provider => {
-    if (rule.agencyId && rule.agencyId === provider.agencyId) {
-       // OK
-    } else if (rule.providerName && rule.providerName === provider.providerName) {
-      // OK
-    } else {
-       // Not OK
-      return false;
-    }
-
-    // Geographic match
-    if (rule.from) {
-      const geometry = JSON.parse(provider.geometry);
-      return isInside(rule.from, geometry);
-    }
-    return false;
-  });
-}
-
 function getActive() {
   return BookingProvider.query()
-    .select('BookingProvider.*', BookingProvider.raw('ST_AsGeoJSON("BookingProvider"."the_geom") as geometry'))
+    .select('gid',
+            'providerPrio',
+            'active',
+            'providerName',
+            'agencyId',
+            'modes',
+            'type',
+            'value',
+            'baseValue',
+            'validFor',
+            'payableUntil',
+            'bookableUntil',
+            'region',
+            'ticketName',
+            'aliases',
+            BookingProvider.raw('ST_AsGeoJSON("BookingProvider"."the_geom") as geometry'))
     .where('active', true)
-    .orderBy('providerPrio')
-    .then(providers => providers.map(provider => {
-      if (provider.the_geom) {
-        delete provider.the_geom;
-      }
-      return provider;
-    }));
+    .orderBy('providerPrio');
 }
 
-function getAll() {
-  return BookingProvider.query()
-    .select('BookingProvider.*', BookingProvider.raw('ST_AsGeoJSON("BookingProvider"."the_geom") as geometry'))
-    .orderBy('providerPrio')
-    .then(providers => providers.map(provider => {
-      if (provider.the_geom) {
-        delete provider.the_geom;
-      }
-      return provider;
-    }));
+
+/**
+ * A memoized version of getActive() which will cache the result for future calls
+ *
+ * @return {Object} a promise which resolves to a list of database records
+ */
+const getActiveCached = utils.memoizePromise(getActive);
+
+/**
+ * A function to filter booking providers by those which can service
+ * in the given locations.
+ *
+ * This function is designed to be curried with the locations argument so that
+ * it can then be used as a filter predicate with filterBookingProviders()
+ *
+ * @param locations {Array} list of [lat,lon] pairs
+ *
+ * @param provider {Object} a booking provider
+ *
+ * @return {Function / Boolean} a predicate function or True/False test for a provider
+ */
+const _bookingProvidersLocationFilter = locations => provider => {
+  const geometry = JSON.parse(provider.geometry);
+
+  // To be a valid provider, it must be able to cover all the given locations
+  return locations.every(loc => utils.isInside(loc, geometry));
+};
+
+/**
+ * A function to filter booking providers by agencyId
+ *
+ * This function is designed to be curried with the agencyId argument so that
+ * it can then be used as a filter predicate with filterBookingProviders()
+ *
+ * @param agencyId {String}
+ *
+ * @param provider {Object} a booking provider
+ *
+ * @return {Function / Boolean} a predicate function or True/False test for a provider
+ */
+const _bookingProvidersAgencyIdFilter = agencyId => provider => {
+  // To be a valid provider, it must be match the given agencyId
+  return (provider.agencyId === agencyId);
+};
+
+/**
+ * Get a list of booking providers which match the given bookingProviderQuery
+ *
+ * NOTE: this uses the memoized version of getActive,
+ *       so multiple calls only hit the database once.
+ *
+ * @param {Object} a bookingProviderQuery which has at least agencyId, from and to properties
+ *
+ * @return {Object} a promise which resolves to a list of booking providers, sorted in priority order (ASC)
+ */
+function getBookingProviders(bookingProviderQuery) {
+  return getActiveCached()
+    .then(bookingProviders => (
+          bookingProviders
+            .filter(_bookingProvidersAgencyIdFilter(bookingProviderQuery.agencyId))))
+    .then(bookingProviders => (
+          bookingProviders
+            .filter(_bookingProvidersLocationFilter([bookingProviderQuery.from]))))
+    .then(bookingProviders => Object.freeze(bookingProviders));
+}
+
+/**
+ * Get a single booking provider which matches the given bookingProviderQuery
+ *
+ * @param {Object} a bookingProviderQuery which has at least agencyId, from and to properties
+ *
+ * @return {Object} a promise which resolves to a booking provider
+ */
+function getBookingProvider(bookingProviderQuery) {
+  return getBookingProviders(bookingProviderQuery)
+    .then(bookingProviders => bookingProviders[0]);
+}
+
+/**
+ * Get a list of booking providers which matches a given list of bookingProviderQueries
+ *
+ * @param {Array} a list of bookingProviderQuery objects which each have at least agencyId, from and to properties
+ *
+ * @return {Object} a promise which resolves to a list of booking providers
+ */
+function getBookingProvidersBatch(bookingProviderQueryList) {
+  return Promise.map(bookingProviderQueryList, getBookingProvider)
+    .then(result => result.filter(item => (typeof item !== typeof undefined)));
 }
 
 module.exports = {
-  filter,
   getActive,
-  getAll,
+  getActiveCached,
+  getBookingProvider,
+  getBookingProvidersBatch,
 };

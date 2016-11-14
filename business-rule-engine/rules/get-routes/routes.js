@@ -17,6 +17,35 @@ const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
 const DEFAULT_MODES = 'PUBLIC_TRANSIT,TAXI,WALK';
 
 
+/*
+ * In the following code the following terms are used:
+ *  - routes provider: an object which is retrieved from the RoutesProvider database table
+ *
+ *  - mode: A string, e.g. 'TAXI', 'WALK'
+ *
+ *  - routesProviderList: an array of routes providers
+ *
+ *  - routesProviderMap: an object which maps modes to routesProviderLists:
+ *    e.g.
+ *      {
+ *        'TAXI': [ rpA, rpB, rpC ],
+ *        'WALK': [ rpD ]
+ *      }
+ *
+ *  - groupedRoutesProviderList: an array of arrays, each sub-array is a
+ *    list of routes providers with the same priority:
+ *    e.g.
+ *      [ [ rpA, rpC, rpD ], [ rpB ] ]
+ *
+ *  - groupedRoutesProvidersMap: an object which maps modes to groupedRoutesProviderLists
+ *    e.g.
+ *      {
+ *        'TAXI': [ [ rpA, rpC ], [ rpB ] ],
+ *        'WALK': [ [ rpC ] ]
+ *      }
+ */
+
+
 /**
  * Helper predicate function to determine if the given routesProvidersMap is empty.
  * 'Empty' means there are no keys in the map, or that every property of the map is an empty list.
@@ -178,7 +207,7 @@ function _resolveRoutesProviders(params) {
   const modesList = modes.split(',');
 
   // Get the routes providers which can service our modes
-  return rules.getRoutesProvidersByModes(modesList)
+  return rules.getRoutesProvidersBatch(modesList)
     .then(routesProvidersMap => {
 
       // Filter the routes providers by capability to leave only those providers

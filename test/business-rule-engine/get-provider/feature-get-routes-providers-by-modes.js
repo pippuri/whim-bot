@@ -16,7 +16,7 @@ module.exports = function () {
     before(() => {
       return bus.call('MaaS-business-rule-engine', {
         identityId: identityId,
-        rule: 'get-routes-providers-by-modes',
+        rule: 'get-routes-providers-batch',
         parameters: params,
       })
       .then(res => {

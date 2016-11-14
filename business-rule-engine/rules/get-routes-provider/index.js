@@ -42,7 +42,7 @@ function filterRoutesProviders(routesProvidersMap, fn) {
  *
  * @param provider {Object} a routes provider
  *
- * @return {Function} a predicate function
+ * @return {Function / Boolean} a predicate function or True/False test for a provider
  */
 const routesProvidersCapabilityFilter = params => provider => {
   function _hasCapability(provider, capability) {
@@ -60,14 +60,14 @@ const routesProvidersCapabilityFilter = params => provider => {
 /**
  * A function to filter routes providers by those which can operate
  * in the given locations.
- * This function is designed to be curried with the params argument so that
+ * This function is designed to be curried with the locations argument so that
  * it can then be used as a filter predicate with filterRoutesProviders()
  *
  * @param locations {Array} list of [lat,lon] pairs
  *
  * @param provider {Object} a routes provider
  *
- * @return {Function} a predicate function
+ * @return {Function / Boolean} a predicate function or True/False test for a provider
  */
 const routesProvidersLocationFilter = locations => provider => {
   const geometry = JSON.parse(provider.geometry);
@@ -76,50 +76,33 @@ const routesProvidersLocationFilter = locations => provider => {
   return locations.every(loc => utils.isInside(loc, geometry));
 };
 
-
 /**
- * Filters a list of providers by a given rule
+ * Fetch all active RoutesProviders from the database, ordered by priority.
  *
- * @param {array} providers - A list of providers, returned by a query
- * @param {object} rule - A filtering rule w/ type, name, agencyId & location
+ * @return {Object} a promise which resolves to a list of database records
  */
-/*[XXX: remove]
-function filter(providers, rule) {
-  // Validate the rule
-  if (typeof rule.type !== 'string' && typeof rule.agencyId !== 'string' && typeof rule.providerName !== 'string') {
-    throw new Error('Missing rule parameters: type, agencyId or providerName expected');
-  }
-  // Filter
-  return providers.filter(provider => {
-    if (rule.type && rule.type === provider.providerType) {
-      // OK
-    } else if (rule.agencyId && rule.agencyId === provider.agencyId) {
-       // OK
-    } else if (rule.providerName && rule.providerName === provider.providerName) {
-      // OK
-    } else {
-       // Not OK
-      return false;
-    }
-
-    // Geographic match and contain requested mode
-    if (rule.location && rule.mode) {
-      const geometry = JSON.parse(provider.geometry);
-      return isInside(rule.location, geometry) && provider..some(mode => mode === rule.mode);
-    }
-
-    return false;
-  });
-}
-*/
-
 function getActive() {
   return RoutesProvider.query()
-    .select('gid', 'providerPrio', 'active', 'providerName', 'providerType', 'agencyId', 'options', 'capabilities', 'region', 'modes', RoutesProvider.raw('ST_AsGeoJSON("RoutesProvider"."the_geom") as geometry'))
+    .select('gid',
+            'providerPrio',
+            'active',
+            'providerName',
+            'providerType',
+            'agencyId',
+            'options',
+            'capabilities',
+            'region',
+            'modes',
+            RoutesProvider.raw('ST_AsGeoJSON("RoutesProvider"."the_geom") as geometry'))
     .where('active', true)
     .orderBy('providerPrio');
 }
 
+/**
+ * A memoized version of getActive() which will cache the result for future calls
+ *
+ * @return {Object} a promise which resolves to a list of database records
+ */
 const getActiveCached = utils.memoizePromise(getActive);
 
 /**
@@ -167,7 +150,7 @@ function _subsetModeToRoutesProvidersMap(map, modes) {
  *
  * @return {Object} of routes providers keyed by mode
  */
-function getRoutesProvidersByModes(modes) {
+function getRoutesProvidersBatch(modes) {
   return getActiveCached()
     .then(providers => _mapModesToRoutesProviders(providers))
     .then(map => _subsetModeToRoutesProvidersMap(map, modes));
@@ -176,7 +159,7 @@ function getRoutesProvidersByModes(modes) {
 module.exports = {
   getActive,
   getActiveCached,
-  getRoutesProvidersByModes,
+  getRoutesProvidersBatch,
   filterRoutesProviders,
   routesProvidersCapabilityFilter,
   routesProvidersLocationFilter,

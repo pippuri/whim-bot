@@ -41,14 +41,17 @@ module.exports = function () {
     });
 
     it('should return valid responses', () => {
-      expect(response).to.not.be.undefined;
       expect(response).is.an('array');
       expect(response).to.have.length.least(2);
+      expect(response[0]).to.have.deep.property('agencyId', 'HSL');
+      expect(response[0]).to.be.an('object');
+      expect(response[1]).to.have.deep.property('agencyId', 'Valopilkku');
+      expect(response[1]).to.be.an('object');
     });
 
   });
 
-  describe('[POSITIVE] batch get booking provider with Object request', () => {
+  describe.skip('[POSITIVE] batch get booking provider with Object request', () => {
     let response;
     let error;
 

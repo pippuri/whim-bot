@@ -474,6 +474,7 @@ function _calculateCost(itineraries, profile) {
       }
     });
   });
+
   return getTspPricingRules.getOptionsBatch(_values(bookingAgencies), profile)
     .then(providers => {
       providers = _flatten(providers);

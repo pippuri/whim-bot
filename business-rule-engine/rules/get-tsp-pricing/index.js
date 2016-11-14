@@ -12,7 +12,7 @@
  *      - userProfile {Object}
  */
 
-const getProviderRules = require('../get-provider');
+const rules = require('../get-booking-provider');
 const utils = require('../../../lib/utils');
 const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 
@@ -79,7 +79,7 @@ function getOptions(params, profile) {
     agencyId: params.agencyId,
     from: params.from,
   };
-  return getProviderRules.getBookingProvider(query)
+  return rules.getBookingProvider(query)
     .then(providers => {
       if (providers.length < 1) {
         console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
@@ -108,7 +108,8 @@ function getOptionsBatch(params, profile) {
     };
   });
 
-  return getProviderRules.getBookingProvidersBatch(queries)
+  return rules.getBookingProvidersBatch(queries)
+    .then(providers => providers.filter(provider => typeof provider !== typeof undefined))
     .then(providers => {
       return providers.map((providers, index) => {
         // Always pick the first provider - they are in priority order
@@ -118,7 +119,6 @@ function getOptionsBatch(params, profile) {
         }
         return getProfileSpecificPricing(providers, profile);
       })
-      .filter(provider => typeof provider !== typeof undefined);
     });
 }
 
