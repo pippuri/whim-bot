@@ -3,10 +3,7 @@
 const rules = require('../get-routes-provider');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
-const Promise = require('bluebird');
 const utils = require('../../../lib/utils');
-const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
-const validator = require('../../../lib/validator');
 
 const lambdaWrapper = require('../../lambdaWrapper');
 
