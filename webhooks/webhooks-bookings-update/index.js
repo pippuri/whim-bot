@@ -125,18 +125,20 @@ function sendPushNotification(identityId, type, data, message) {
 
 module.exports.respond = (event, callback) => {
   let identityId;
+  let bookingId;
 
   return models.Database.init()
     .then(() => parseAndValidateInput(event))
     .then(parsed => webhookCallback(parsed.agencyId, parsed.payload.tspId, parsed.payload))
     .then(updatedBooking => {
       identityId = updatedBooking.customer.identityId;
+      bookingId = updatedBooking.id;
       return formatResponse(updatedBooking);
     })
     .then(updatedBooking => validator.validate(responseSchema, updatedBooking, { sanitize: true }))
     .then(response => {
       const message = 'Booking updated';
-      const payload = { ids: [response.id], objectType: 'Booking' };
+      const payload = { ids: [bookingId], objectType: 'Booking' };
 
       return Promise.all([
         response,
