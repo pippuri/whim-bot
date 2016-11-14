@@ -14,7 +14,7 @@
 
 const getProviderRules = require('../get-provider');
 const utils = require('../../../lib/utils');
-const BusinessRuleError = require('../../BusinessRuleError.js');
+const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 
 // TODO Move dataset to another place
 const zipcodeDataset = require('../../zipcode-Uusimaa.json');

@@ -13,7 +13,7 @@
 
 const Promise = require('bluebird');
 const subscriptionManager = require('../../../lib/subscription-manager');
-const BusinessRuleError = require('../../BusinessRuleError');
+const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 
 const pricingCache = {};
 

@@ -9,7 +9,7 @@
 
 const Promise = require('bluebird');
 const utils = require('../../../lib/utils');
-const BusinessRuleError = require('../../BusinessRuleError.js');
+const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 const bookingProviders = require('./booking-providers');
 const routesProviders = require('./routes-providers');
 

@@ -6,7 +6,7 @@ const Promise = require('bluebird');
 const schema = require('maas-schemas/prebuilt/maas-backend/business-rule-engine/request.json');
 const validator = require('../lib/validator');
 const MaaSError = require('../lib/errors/MaaSError');
-const BusinessRuleError = require('./BusinessRuleError.js');
+const BusinessRuleError = require('../lib/errors/BusinessRuleError.js');
 
 // Rules
 const getProviderRules = require('./rules/get-provider');

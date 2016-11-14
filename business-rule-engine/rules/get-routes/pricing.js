@@ -1,6 +1,6 @@
 'use strict';
 
-const BusinessRuleError = require('../../BusinessRuleError.js');
+const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 const getTspPricingRules = require('../get-tsp-pricing');
 const _intersectionWith = require('lodash/intersectionWith');
 const _isEqual = require('lodash/isEqual');
