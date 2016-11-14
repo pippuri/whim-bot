@@ -88,15 +88,17 @@ function _groupProvidersByPrioritySorted(routesProvidersMap) {
 /**
  * Function to execute a routes provider with the given params.
  *
- * NOTE: This function is designed to be curried with the params parameter
+ * NOTE: This function is designed to be curried with the (mode, params) arguments
  * so that it can be then mapped over an array of routes providers.
  *
+ * @param mode {String} the mode for this provider request
  * @param params {Object} the routes-query parameters
  * @param provider {Object} the routes provider to execute
  * @return {Object} a promise which resolves to the result of executing the routes provider
  */
-const _executeProvider = params => provider => {
+const _executeProvider = (mode, params) => provider => {
   const event = utils.cloneDeep(params);
+  event.modes = mode;
 
   // run the queries, then validate & sanitize them
   return lambdaWrapper.wrap(provider.providerName, event)
@@ -112,10 +114,11 @@ const _executeProvider = params => provider => {
  * The groupedProvidersList is expected to be in priority order (ASC)
  *
  * @param groupedProvidersList {Array} a list of lists of routes providers, each sub-list is a list of routes providers with the same priority
+ * @param mode {String} the mode for this provider request
  * @param params {Object} the routes-query parameters
  * @return {Object} a promise which resolves to the result of the first successful execution
  */
-function _executeUntilSuccess(groupedProvidersList, params) {
+function _executeUntilSuccess(groupedProvidersList, mode, params) {
   // If none of our routes providers return anything, that means the routes just cannot be retrieved
   // THEN we return empty
   if (groupedProvidersList.length === 0) {
@@ -126,15 +129,15 @@ function _executeUntilSuccess(groupedProvidersList, params) {
   const tail = groupedProvidersList.slice(1);
 
   // Each item in the groupedProvidersList is itself a list of routes providers
-  // so we map the _executeProvider function curried with the params over each provider
-  return Promise.all(head.map(_executeProvider(params)))
+  // so we map the _executeProvider function curried with (mode, params) over each provider
+  return Promise.all(head.map(_executeProvider(mode, params)))
     .then(inspections => {
       // Inspection that succeeded
       const fulfilledInspections = inspections.filter(inspection => inspection.isFulfilled());
 
       // If no inspection passed, proceed with the rest of the list
       if (fulfilledInspections.length === 0) {
-        _executeUntilSuccess(tail, params);
+        _executeUntilSuccess(tail, mode, params);
       }
 
       // If even one of them success, we're happy, return that. NOTE Should we be happy?
@@ -222,7 +225,7 @@ function _invokeProviders(routesProvidersMap, params) {
 
   const queries = {};
   Object.keys(groupedRoutesProvidersMap).forEach(mode => (
-    queries[mode] = _executeUntilSuccess(groupedRoutesProvidersMap[mode], params)
+    queries[mode] = _executeUntilSuccess(groupedRoutesProvidersMap[mode], mode, params)
   ));
 
   return Promise.props(queries)
