@@ -4,6 +4,8 @@ const rules = require('../get-routes-provider');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
+const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
+const validator = require('../../../lib/validator');
 
 const lambdaWrapper = require('../../lambdaWrapper');
 
@@ -95,7 +97,11 @@ function _groupProvidersByPrioritySorted(routesProvidersMap) {
  */
 const _executeProvider = params => provider => {
   const event = utils.cloneDeep(params);
-  return lambdaWrapper.wrap(provider.providerName, event).reflect();
+
+  // run the queries, then validate & sanitize them
+  return lambdaWrapper.wrap(provider.providerName, event)
+    .then(result => validator.validate(schema, utils.sanitize(result)))
+    .reflect();
 };
 
 
