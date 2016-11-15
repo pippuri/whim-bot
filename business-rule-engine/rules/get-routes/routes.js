@@ -1,6 +1,7 @@
 'use strict';
 
-const rules = require('../get-routes-provider');
+const routesProviderRules = require('../get-routes-provider');
+const bookingProviderRules = require('../get-booking-provider');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
@@ -115,6 +116,23 @@ function _groupProvidersByPrioritySorted(routesProvidersMap) {
   return Object.freeze(ret);
 }
 
+
+/**
+ * Add the details of the responsible routes provider to a result set
+ *
+ * [XXX: this function mutates the routes param]
+ *
+ * @param {Object} provider - the routes provider
+ * @param {???} result - ???
+ */
+function _addProviderDetails(routesProvider, routes) {
+  routes.plan.itineraries.forEach(itinerary => {
+    itinerary.routesProvider = routesProvider.providerName;
+  });
+
+  return routes;
+}
+
 /**
  * Function to execute a routes provider with the given params.
  *
@@ -133,6 +151,7 @@ const _executeProvider = (mode, params) => provider => {
   // run the queries, then validate & sanitize them
   return lambdaWrapper.wrap(provider.providerName, event)
     .then(result => validator.validate(schema, utils.sanitize(result)))
+    .then(result => _addProviderDetails(provider, result))
     .reflect();
 };
 
@@ -208,22 +227,22 @@ function _resolveRoutesProviders(params) {
   const modesList = modes.split(',');
 
   // Get the routes providers which can service our modes
-  return rules.getRoutesProvidersBatch(modesList)
+  return routesProviderRules.getRoutesProvidersBatch(modesList)
     .then(routesProvidersMap => {
 
       // Filter the routes providers by capability to leave only those providers
       // that can handles the given search parameters
       const capableRoutesProvidersMap =
-        rules.filterRoutesProviders(
+        routesProviderRules.filterRoutesProviders(
                 routesProvidersMap,
-                rules.routesProvidersCapabilityFilter(params));
+                routesProviderRules.routesProvidersCapabilityFilter(params));
 
       // Further filter the routes providers by location to leave only those providers
       // that can provide routes for the 'from' and 'to' coordiantes.
       const result =
-        rules.filterRoutesProviders(
+        routesProviderRules.filterRoutesProviders(
                 capableRoutesProvidersMap,
-                rules.routesProvidersLocationFilter(locations));
+                routesProviderRules.routesProvidersLocationFilter(locations));
 
       // Check that we have at least one routes provider to work with
       if (_routesProvidersMapEmpty(result)) {
@@ -312,26 +331,34 @@ function _overrideFromToName(response, params) {
 }
 
 /**
- * Set agency for a leg, NOTE this is to adapt leg modes into carrier types.
+ * Set agency for a leg if it is missing
+ *
+ * NOTE: this is to adapt leg modes into carrier types.
+ * NOTE: this function is designed to be curried on routesProvider
+ *       so that the result can be used to map over a list of legs.
  *
  * [TODO: Do not brute force, have a mapping data set on Provider table]
  *
+ * @param {Object} routesProvider - the routes provider which was the source of this leg
  * @param {Object} leg - the leg to amend
  * @return {Object} - the leg, amended if necessary
  */
-function _setLegAgency(leg) {
+const _setLegAgency = routesProvider => leg => {
   if (leg.mode && leg.agencyId) {
     return leg;
   }
 
   switch (leg.mode) {
     case 'CAR':
-      leg.mode = 'TAXI';
-      leg.agencyId = 'Valopilkku';
-      break;
     case 'TAXI':
+      leg.mode = 'TAXI';
+      bookingProviderRules
+        .getBookingProvidersByModeAndLocation('TAXI', leg.from, leg.to)
+        .then(bookingProviders => console.log('KONK40', bookingProviders));
+
       leg.agencyId = 'Valopilkku';
       break;
+
     case 'TRAIN':
       // hook to see about VR and others
       if (!leg.agencyId && HSL_TRAINS.some(route => route === leg.route)) {
@@ -347,7 +374,7 @@ function _setLegAgency(leg) {
   }
 
   return leg;
-}
+};
 
 /**
  * Set agency for each leg in each itinerary in a route
@@ -365,7 +392,10 @@ function _setRouteAgency(route) {
   if (!route.plan.itineraries.every(itinerary => !itinerary.legs.some(leg => !leg.mode))) {
     throw new Error(`This route contains a leg that does not have mode: ${route}`);
   }
-  route.plan.itineraries.map(itinerary => itinerary.legs.map(_setLegAgency));
+  route.plan.itineraries.map(
+    itinerary => itinerary.legs.map(
+      _setLegAgency(itinerary.routesProvider)));
+
   return route;
 }
 

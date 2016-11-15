@@ -82,6 +82,23 @@ const _bookingProvidersAgencyIdFilter = agencyId => provider => {
 };
 
 /**
+ * A function to filter booking providers by mode
+ *
+ * This function is designed to be curried with the mode argument so that
+ * it can then be used as a filter predicate with filterBookingProviders()
+ *
+ * @param {String} mode
+ *
+ * @param {Object} provider - a booking provider
+ *
+ * @return {Boolean} - result for filter
+ */
+const _bookingProvidersModeFilter = mode => provider => {
+  // To be a valid provider, it must be match the given agencyId
+  return (provider.modes.indexOf(mode) !== -1);
+};
+
+/**
  * Get a list of booking providers which match the given bookingProviderQuery
  *
  * NOTE: this uses the memoized version of getActive,
@@ -99,6 +116,29 @@ function getBookingProviders(bookingProviderQuery) {
     .then(bookingProviders => (
           bookingProviders
             .filter(_bookingProvidersLocationFilter([bookingProviderQuery.from]))))
+    .then(bookingProviders => Object.freeze(bookingProviders));
+}
+
+/**
+ * Get a list of booking providers which match the given mode and location parameters
+ *
+ * NOTE: this uses the memoized version of getActive,
+ *       so multiple calls only hit the database once.
+ *
+ * @param {String} mode - a mode string, e.g. 'TAXI'
+ * @param {Object} from - a location object in the form { lat: y, lon: x }
+ * @param {Object} to - a location object in the form { lat: y, lon: x }
+ *
+ * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
+ */
+function getBookingProvidersByModeAndLocation(mode, from, to) {
+  return getActiveCached()
+    .then(bookingProviders => (
+          bookingProviders
+            .filter(_bookingProvidersModeFilter(mode))))
+    .then(bookingProviders => (
+          bookingProviders
+            .filter(_bookingProvidersLocationFilter([from, to]))))
     .then(bookingProviders => Object.freeze(bookingProviders));
 }
 
@@ -132,4 +172,5 @@ module.exports = {
   getActiveCached,
   getBookingProvider,
   getBookingProvidersBatch,
+  getBookingProvidersByModeAndLocation,
 };

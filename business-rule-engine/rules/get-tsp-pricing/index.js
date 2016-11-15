@@ -19,107 +19,159 @@ const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 // TODO Move dataset to another place
 const zipcodeDataset = require('../../zipcode-Uusimaa.json');
 
+
 /**
- * Give profile free service from agencyId if included in profile subscription.
- * Region context based on City registered on client
- * TODO many thing, these logic checks are not enough
+ * Test if the given profile has a city with within the given zipcode set.
+ *
+ * @param {Object} profile - a user profile
+ * @param {Object} zipcodeDataset - zipcode data to test against
+ * @return {Boolean}
  */
-function getProfileSpecificPricing(providers, profile) {
-  const clone = utils.cloneDeep(providers);
-
-  if (providers instanceof Array) {
-    clone.forEach(provider => {
-      if (profile.subscription.agencies.some(agency => {
-        return agency === provider.agencyId && // Agency is included in plan
-              profile.zipCode && profile.city && // Profile have zipcode and city data
-              zipcodeDataset[profile.zipCode] && // Zipcode is in Uusimaa
-              provider.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
-              provider.providerPrio === 1; // Give free ticket only to single region
-      })) {
-        provider.value = 0;
-        provider.baseValue = 0;
-      }
-    });
-
-    return clone;
-  }
-
-  if (profile.subscription.agencies.some(agency => {
-    return agency === clone.agencyId && // Agency is included in plan
-            profile.zipCode && profile.city && // Profile have zipcode and city data
-            zipcodeDataset[profile.zipCode] && // Zipcode is in Uusimaa
-            clone.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
-            clone.providerPrio === 1; // Give free ticket only to single region
-  })) {
-    clone.value = 0;
-    clone.baseValue = 0;
-  }
-
-  return clone;
+function _profileHasValidZipcode(profile, zipcodeDataset) {
+  return (
+    profile.zipCode && profile.city && // Profile have zipcode and city data
+    zipcodeDataset[profile.zipCode]);  // Zipcode is in the given zip code dataset
 }
 
 /**
- * Get the geographically relevant TSP along with pricing information
- * TODO make this use the new TSP API to query for options in real time
- * and provide customized results to a given user
- * @param  {Object} event
- * @return {Object} TSP pricing structure
+ * Test if the given booking provider's region of operation is able to handle
+ * the given profile's city.
+ *
+ * @param {Object} zipcodeDataset - zipcode data to reverse lookup against
+ * @param {Object} profile - a user profile
+ * @param {Object} bookingProvider - a booking provider to test
+ * @return {Boolean}
  */
-function getOptions(params, profile) {
+function _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) {
+  return (
+      // Provider region contain profile city data
+      bookingProvider
+        .region
+        .toLowerCase()
+        .indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0);
+}
+
+/**
+ * Test if the given booking provider's service is included in the
+ * given profile's subscription.
+ *
+ * [TODO: many things, these logic checks are not enough]
+ *
+ * @param {Object} profile - a user profile
+ * @param {Object} bookingProvider - a booking provider to test
+ * @return {Boolean}
+ */
+function _isIncludedInSubscription(profile, bookingProvider) {
+  return (
+    // Agency is included in plan
+    profile
+      .subscription
+      .agencies
+      .some(agency => agency === bookingProvider.agencyId) &&
+    _profileHasValidZipcode(profile, zipcodeDataset) &&
+    _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) &&
+    bookingProvider.providerPrio === 1); // Give free ticket only to single region
+}
+
+/**
+ * Give profile free service from agencyId if included in profile subscription.
+ *
+ * @param {Object} profile - a user profile
+ * @param {Object} bookingProvider - a booking provider to test
+ * @return {Object} - the bookingProvider, possibly updated if necessary
+ */
+function _setProfileSpecificPricing(profile, bookingProvider) {
+  // If the booking provider is included as part of the subscription
+  if (_isIncludedInSubscription(profile, bookingProvider)) {
+    // Make a copy to amend
+    const ret = utils.cloneDeep(bookingProvider);
+
+    // Set the costs to zero
+    ret.value = 0;
+    ret.baseValue = 0;
+
+    // Return the amended copy
+    return Object.freeze(ret);
+  }
+
+  // Return the bookingProvider unchanged
+  return bookingProvider;
+}
+
+/**
+ * Process a single booking provider to set profile
+ */
+function _processBookingProvider(profile, query, bookingProvider) {
+  if (typeof bookingProvider === typeof undefined) {
+    console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
+    return null;
+  }
+
+  // Set any profile-specific options/amendments and return
+  return _setProfileSpecificPricing(profile, bookingProvider);
+}
+
+/**
+ * Validate inputs to getOptions and getOptionsBatch
+ *
+ * @param {Object} params - the input to validate
+ *
+ * [TODO Should be handled by validator, instead]
+ */
+function _validateOptionsParams(params) {
   if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
-    // TODO Should be handled by validator, instead
-    throw new BusinessRuleError('No \'from\' supplied to the TSP engine', 400, 'get-routes');
+    throw new BusinessRuleError(`The request does not supply 'from' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
   }
 
   if (!params.agencyId) {
-    throw new BusinessRuleError('No agencyId supplied to the engine', 400, 'get-routes');
+    throw new BusinessRuleError(`The request does not supply 'agencyId' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
   }
+}
+
+/**
+ * Get the geographically relevant booking provider along with pricing information
+ *
+ * [TODO: make this use the new TSP API to query for options in real time
+ *        and provide customized results to a given user]
+ *
+ * @param {Object} params - query parameters
+ * @paran {Object} profile - a user profile
+ * @return {Object} - a suitable booking provider
+ */
+function getOptions(params, profile) {
+  _validateOptionsParams(params);
 
   const query = {
     agencyId: params.agencyId,
     from: params.from,
   };
-  return rules.getBookingProvider(query)
-    .then(provider => {
-      if (typeof provider === typeof undefined) {
-        console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
-        return null;
-      }
 
-      // use only the pricing provider in the order of priority
-      return getProfileSpecificPricing(provider, profile);
-    });
+  return rules.getBookingProvider(query)
+    .then(bookingProvider => _processBookingProvider(profile, query, bookingProvider));
 }
 
-// TODO Why do we only use from, but not to?
-function getOptionsBatch(params, profile) {
-  const queries = params.map(request => {
-    if (!request.hasOwnProperty('from')) {
-      throw new BusinessRuleError(`The request does not supply 'from' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
-    }
+/**
+ * Get the geographically relevant booking provider along with pricing information
+ * for a list of input queries.
+ *
+ * [TODO: make this use the new TSP API to query for options in real time
+ *        and provide customized results to a given user]
+ *
+ * @param {Object} paramsList - a list of query parameters
+ * @paran {Object} profile - a user profile
+ * @return {Array} - a list of suitable booking providers
+ */
+function getOptionsBatch(paramsList, profile) {
+  paramsList.map(_validateOptionsParams);
 
-    if (!request.agencyId) {
-      throw new BusinessRuleError(`The request does not supply 'agencyId' to the TSP engine: ${JSON.stringify(request)}`, 400, 'get-routes');
-    }
-
-    return {
-      agencyId: request.agencyId,
-      from: request.from,
-    };
-  });
+  //[TODO: Why do we only use from, but not to?]
+  const queries = paramsList.map(params => ({
+    agencyId: params.agencyId,
+    from: params.from,
+  }));
 
   return rules.getBookingProvidersBatch(queries)
-    .then(providers => providers.filter(provider => typeof provider !== typeof undefined))
-    .then(providers => {
-      return providers.map((providers, index) => {
-        // Always pick the first provider - they are in priority order
-        if (providers.length < 1) {
-          console.warn(`Could not find pricing provider for ${JSON.stringify(queries[index])}`);
-          return null;
-        }
-        return getProfileSpecificPricing(providers, profile);
-      });
-    });
+    .then(bookingProviders => bookingProviders.map((bookingProvider, i) => _processBookingProvider(profile, queries[i], bookingProvider)));
 }
 
 module.exports = {
