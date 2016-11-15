@@ -42,8 +42,8 @@ function _queryBookingProviders(requests) {
       return utils.cloneDeep(cachedBookingProviders);
     })
     .then(providers => {
-
       return requests.map(request => {
+        console.log(request);
         return bookingProviders.filter(providers, request);
       });
     });
