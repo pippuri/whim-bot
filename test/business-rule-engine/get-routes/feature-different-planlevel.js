@@ -77,8 +77,10 @@ module.exports = function () {
           return iti.legs.some(leg => transitModes.some(mode => leg.mode === mode));
         });
 
+console.log('KONK20', itinerariesWithTransits.length);
         expect(itinerariesWithTransits.length).to.be.above(0);
         itinerariesWithTransits.forEach(itinerary => {
+console.log('KONK21', itinerary.fare.points);
           expect(itinerary.fare.points).to.satisfy(num => {
             return ((Number(num) === num && num > 0) || num === null);
           });

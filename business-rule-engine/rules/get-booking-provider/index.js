@@ -111,6 +111,7 @@ function getBookingProviders(bookingProviderQuery) {
  */
 function getBookingProvider(bookingProviderQuery) {
   return getBookingProviders(bookingProviderQuery)
+    .then(bookingProviders => bookingProviders.filter(item => (typeof item !== typeof undefined)))
     .then(bookingProviders => bookingProviders[0]);
 }
 

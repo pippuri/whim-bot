@@ -36,6 +36,7 @@ function getProfileSpecificPricing(providers, profile) {
               provider.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
               provider.providerPrio === 1; // Give free ticket only to single region
       })) {
+console.log('KONK40');
         provider.value = 0;
         provider.baseValue = 0;
       }
@@ -51,6 +52,7 @@ function getProfileSpecificPricing(providers, profile) {
             clone.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
             clone.providerPrio === 1; // Give free ticket only to single region
   })) {
+console.log('KONK41', clone.agencyId, profile);
     clone.value = 0;
     clone.baseValue = 0;
   }
@@ -80,14 +82,14 @@ function getOptions(params, profile) {
     from: params.from,
   };
   return rules.getBookingProvider(query)
-    .then(providers => {
-      if (providers.length < 1) {
+    .then(provider => {
+      if (typeof provider === typeof undefined) {
         console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
         return null;
       }
 
       // use only the pricing provider in the order of priority
-      return getProfileSpecificPricing(providers[0], profile);
+      return getProfileSpecificPricing(provider, profile);
     });
 }
 
@@ -118,7 +120,7 @@ function getOptionsBatch(params, profile) {
           return null;
         }
         return getProfileSpecificPricing(providers, profile);
-      })
+      });
     });
 }
 

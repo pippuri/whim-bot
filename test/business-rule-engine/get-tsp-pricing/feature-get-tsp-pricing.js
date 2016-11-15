@@ -34,13 +34,11 @@ module.exports = function () {
       });
     });
 
-    it(`should succeed and return all provider with agencyId ${params.agencyId}`, () => {
-      response.forEach(item => {
-        expect(item).to.not.be.undefined;
-        expect(item.providerName).to.not.be.undefined;
-        expect(item.providerPrio).to.not.be.undefined;
-        expect(item.agencyId).to.equal(params.agencyId);
-      });
+    it(`should succeed and return a provider with agencyId ${params.agencyId}`, () => {
+      expect(response).to.not.be.undefined;
+      expect(response.providerName).to.not.be.undefined;
+      expect(response.providerPrio).to.not.be.undefined;
+      expect(response.agencyId).to.equal(params.agencyId);
     });
 
     it('should not return an error', () => {
