@@ -14,10 +14,10 @@ const testPlanLevel = require('./get-routes/feature-different-planlevel.js');
 
 // get-booking-provider
 // get-booking-provider-batch
-// get-routes-providers-by-modes
+// get-routes-providers-batch
 // NOTE get-booking-provider basically gets batch with 1 request, no test needed
 const testGetBookingProviderBatch = require('./get-provider/feature-get-booking-provider-batch.js');
-const testGetRoutesProvidersByModes = require('./get-provider/feature-get-routes-providers-by-modes.js');
+const testGetRoutesProvidersBatch = require('./get-provider/feature-get-routes-providers-batch.js');
 
 // get-point-pricing
 // get-point-pricing-batch
@@ -38,8 +38,8 @@ describe('Business rule engine', function () {
     });
   });
 
-  describe('Rule: get-routes-providers-by-modes', () => {
-    testGetRoutesProvidersByModes();
+  describe('Rule: get-routes-providers-batch', () => {
+    testGetRoutesProvidersBatch();
   });
 
   describe('Rule: get-booking-provider-batch', () => {
