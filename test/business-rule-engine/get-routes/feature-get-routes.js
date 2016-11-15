@@ -98,6 +98,23 @@ module.exports = function () {
       expect(itinerariesWithoutCo2Cost).to.be.empty;
     });
 
+    it('sum of legs fare must be equal to itinerary fare (if not null)', () => {
+      response.plan.itineraries.forEach(itinerary => {
+        if (itinerary.fare.points !== null) {
+          let legFareSum = 0;
+          itinerary.legs.forEach(leg => {
+            if (leg.fare.amount === null) {
+              legFareSum += 0;
+            } else {
+              legFareSum += leg.fare.amount;
+            }
+          });
+
+          expect(legFareSum).to.equal(itinerary.fare.points);
+        }
+      });
+    });
+
   });
 
   describe('[POSITIVE] query for routes from Ludviginkatu to Hervanta', () => {
@@ -204,6 +221,23 @@ module.exports = function () {
         });
       });
       expect(unbookableItineraries.map(itinerary => itinerary.fare.points).every(cost => cost === null)).to.be.true;
+    });
+
+    it('sum of legs fare must be equal to itinerary fare', () => {
+      response.plan.itineraries.forEach(itinerary => {
+        if (itinerary.fare.points !== null) {
+          let legFareSum = 0;
+          itinerary.legs.forEach(leg => {
+            if (leg.fare.amount === null) {
+              legFareSum += 0;
+            } else {
+              legFareSum += leg.fare.amount;
+            }
+          });
+
+          expect(legFareSum).to.equal(itinerary.fare.points);
+        }
+      });
     });
 
   });

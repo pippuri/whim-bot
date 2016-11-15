@@ -29,19 +29,29 @@ module.exports.respond = function (event, callback) {
         trx = transaction;
         return Promise.resolve();
       })
-      .then(() => Itinerary.create(unsignedItinerary, event.identityId, trx)))
-    .then(itinerary => itinerary.pay(trx))
+      .then(() => Itinerary.create(unsignedItinerary, event.identityId, { trx })))
+    .then(itinerary => itinerary.pay({ trx }))
+
 /*
     // Testing bold version where all bookings are handled in TripEngine side. If finding
     // problems, reverting back that legs are activated (booking happens) already here.
 
+    // Since TSP activity via leg activation is not transactional, we need to commit
+    // itinerary create first, then try to activate legs
     .then(itinerary => {
-      // Activate itinerary and legs rightaway. Later these are done by TripEngine
-      // in the background.
-      const legActivates = itinerary.legs.map(leg => {
-        return leg.activate().reflect();
-      });
-      return Promise.all(legActivates)
+      return trx.commit()
+        .then(() => {
+          trx = undefined;
+          return Promise.resolve(itinerary);
+        });
+    })
+    // Activate itinerary and legs rightaway.
+    .then(itinerary => itinerary.activate())
+    .then(itinerary => {
+      return Promise.mapSeries(itinerary.legs, leg => {
+        return leg.activate({ tryReuseBooking: true })
+          .reflect();
+      })
         .each(inspection => {
           if (!inspection.isFulfilled()) {
             legErrors.push(inspection.reason());
@@ -50,9 +60,9 @@ module.exports.respond = function (event, callback) {
         .then(() => {
           if (legErrors.length > 0) {
             console.warn('Errors while activating legs; cancelling itinerary...', legErrors);
-            return itinerary.cancel(trx);
+            return itinerary.cancel();
           }
-          return itinerary.activate();
+          return Promise.resolve(itinerary);
         });
     })
     .then(itinerary => {
@@ -63,8 +73,11 @@ module.exports.respond = function (event, callback) {
     })
 */
     .then(itinerary => TripEngine.startWithItinerary(itinerary)) // Start workflow execution
-    .then(itinerary => trx.commit()
-      .then(() => Promise.resolve(itinerary)))
+    .then(itinerary => {
+      const action = trx ? trx.commit() : Promise.resolve();
+      return action
+        .then(() => Promise.resolve(itinerary));
+    })
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
       Database.cleanup()

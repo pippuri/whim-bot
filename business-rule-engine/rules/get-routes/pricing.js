@@ -300,6 +300,54 @@ function _resolveRequiredProviders(itinerary) {
 }
 
 /**
+ * Annotate the fare field of itinerary based on the cheapestCombo for that
+ * itinerary.
+ *
+ * Sort the fares combinations from most expensive to cheapest, then assign
+ * the fares per agencyId, starting from the most expensive. The reasoning for
+ * this is: the user may have e.g. three HSL legs, of which one we have seutu
+ * and for the leftovers we cover with regional tickets. When refunding, we
+ * assume the user has consumed the seutu ticket first, and we only refund the
+ * leftovers (if he has consumed even one).
+ */
+function annotateLegFare(itinerary, cheapestCombo) {
+
+  // Filter the cheapestCombo, sort and get the most expensive ticket first.
+  const combo = utils.cloneDeep(cheapestCombo)
+    // Remove unpurchasable tickets from cheapestCombo
+    .filter(item => item.type !== 'U_NA')
+    .sort((a, b) => b.cost - a.cost);
+
+  // Append its cost to the first leg, then remove that ticket so that the next
+  // leg that uses the same ticket will have 0 point cost
+  itinerary.legs.forEach(leg => {
+    // Safe defaults to fare - we assume this leg is not priced.
+    leg.fare = { currency: 'POINT', amount: null };
+
+    if (!leg.agencyId && ['WALK', 'WAIT', 'BICYCLE', 'TRANSFER', 'LEG_SWITCH'].some(mode => mode === leg.mode)) {
+      // A mode that does not need to be purchased
+      leg.fare.amount = 0;
+    } else if (combo.length === 0) {
+      // There's no ticket left. The number of tickets may be less or equal to
+      // the number of legs, because the earlier pricing engine may have been
+      // able to combine two or more legs into one.
+      leg.fare.amount = 0;
+    } else {
+      // Find the first match - starting from the most expensive ticket for this
+      // agency.
+      const index = combo.findIndex(item => item.agencyId === leg.agencyId);
+
+      if (index !== -1) {
+        leg.fare.amount = combo[index].cost;
+        combo.splice(index, 1);
+      }
+    }
+  });
+
+  return itinerary;
+}
+
+/**
  * Calculate to sum cost of the itinerary
  */
 function _calculateItineraryCost(itinerary) {
@@ -356,6 +404,8 @@ function _calculateItineraryCost(itinerary) {
     }
   }
 
+  // Annotate fare to each leg
+  itinerary = annotateLegFare(itinerary, cheapestCombo);
   const cost = _sumBy(cheapestCombo, 'cost');
   return cost;
 }

@@ -64,26 +64,6 @@
     }
   },
   {
-    "name": "Ludviginkatu to Oulu next Tuesday at 14",
-    "skip": false,
-    "input": {
-      "event": {
-        "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000006",
-        "payload": {
-          "from": "60.16576,24.94514",
-          "to": "65.012362,25.4450749",
-          "leaveAt": "1475578800000"
-        }
-      },
-      "filter": {
-        "bookable": [ "HSL", "Valopilkku" ]
-      }
-    },
-    "results": {
-      "pass": true
-    }
-  },
-  {
     "name": "Ludviginkatu to Turku next Tuesday at 14",
     "skip": true,
     "input": {
