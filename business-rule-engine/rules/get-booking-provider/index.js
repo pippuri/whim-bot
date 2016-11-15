@@ -40,7 +40,7 @@ function getActive() {
 /**
  * A memoized version of getActive() which will cache the result for future calls
  *
- * @return {Object} a promise which resolves to a list of database records
+ * @return {Promise} - a promise which resolves to a list of database records
  */
 const getActiveCached = utils.memoizePromise(getActive);
 
@@ -51,11 +51,11 @@ const getActiveCached = utils.memoizePromise(getActive);
  * This function is designed to be curried with the locations argument so that
  * it can then be used as a filter predicate with filterBookingProviders()
  *
- * @param locations {Array} list of [lat,lon] pairs
+ * @param {Array} locations - list of [lat,lon] pairs
  *
- * @param provider {Object} a booking provider
+ * @param {Object} provider - a booking provider
  *
- * @return {Function / Boolean} a predicate function or True/False test for a provider
+ * @return {Boolean} - result for filter
  */
 const _bookingProvidersLocationFilter = locations => provider => {
   const geometry = JSON.parse(provider.geometry);
@@ -70,11 +70,11 @@ const _bookingProvidersLocationFilter = locations => provider => {
  * This function is designed to be curried with the agencyId argument so that
  * it can then be used as a filter predicate with filterBookingProviders()
  *
- * @param agencyId {String}
+ * @param {String} agencyId
  *
- * @param provider {Object} a booking provider
+ * @param {Object} provider - a booking provider
  *
- * @return {Function / Boolean} a predicate function or True/False test for a provider
+ * @return {Boolean} - result for filter
  */
 const _bookingProvidersAgencyIdFilter = agencyId => provider => {
   // To be a valid provider, it must be match the given agencyId
@@ -87,9 +87,9 @@ const _bookingProvidersAgencyIdFilter = agencyId => provider => {
  * NOTE: this uses the memoized version of getActive,
  *       so multiple calls only hit the database once.
  *
- * @param {Object} a bookingProviderQuery which has at least agencyId, from and to properties
+ * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
  *
- * @return {Object} a promise which resolves to a list of booking providers, sorted in priority order (ASC)
+ * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
  */
 function getBookingProviders(bookingProviderQuery) {
   return getActiveCached()
@@ -105,9 +105,9 @@ function getBookingProviders(bookingProviderQuery) {
 /**
  * Get a single booking provider which matches the given bookingProviderQuery
  *
- * @param {Object} a bookingProviderQuery which has at least agencyId, from and to properties
+ * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
  *
- * @return {Object} a promise which resolves to a booking provider
+ * @return {Promise} - a promise which resolves to a booking provider
  */
 function getBookingProvider(bookingProviderQuery) {
   return getBookingProviders(bookingProviderQuery)
@@ -118,9 +118,9 @@ function getBookingProvider(bookingProviderQuery) {
 /**
  * Get a list of booking providers which matches a given list of bookingProviderQueries
  *
- * @param {Array} a list of bookingProviderQuery objects which each have at least agencyId, from and to properties
+ * @param {Array} bookingProviderQueryList - a list of bookingProviderQuery objects which each have at least agencyId, from and to properties
  *
- * @return {Object} a promise which resolves to a list of booking providers
+ * @return {Promise} - a promise which resolves to a list of booking providers
  */
 function getBookingProvidersBatch(bookingProviderQueryList) {
   return Promise.map(bookingProviderQueryList, getBookingProvider)

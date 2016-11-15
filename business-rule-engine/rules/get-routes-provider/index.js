@@ -14,10 +14,10 @@ const _uniq = require('lodash/uniq');
  * Filter the given map of routes providers by those
  * which fulfill the given predicate function.
  *
- * @param routesProvidersMap {Object} an object containing lists of routes providers keyed by mode
- * @param fn {Function} predicate function to determine whether a provider should remain or not
+ * @param {Object} routesProvidersMap - an object containing lists of routes providers keyed by mode
+ * @param {Function} fn - predicate function to determine whether a provider should remain or not
  *
- * @return {Array} of filtered routes providers
+ * @return {Array} - a list of filtered routes providers
  */
 function filterRoutesProviders(routesProvidersMap, fn) {
   // New mapping to return after filtering
@@ -38,11 +38,11 @@ function filterRoutesProviders(routesProvidersMap, fn) {
  * This function is designed to be curried with the params argument so that
  * it can then be used as a filter predicate with filterRoutesProviders()
  *
- * @param params {Object} param of the search query we want to perform
+ * @param {Object} params - the search query we want to perform
  *
- * @param provider {Object} a routes provider
+ * @param {Object} provider - a routes provider
  *
- * @return {Function / Boolean} a predicate function or True/False test for a provider
+ * @return {Boolean} - result for filter
  */
 const routesProvidersCapabilityFilter = params => provider => {
   function _hasCapability(provider, capability) {
@@ -63,11 +63,11 @@ const routesProvidersCapabilityFilter = params => provider => {
  * This function is designed to be curried with the locations argument so that
  * it can then be used as a filter predicate with filterRoutesProviders()
  *
- * @param locations {Array} list of [lat,lon] pairs
+ * @param {Array} locations - list of [lat,lon] pairs
  *
- * @param provider {Object} a routes provider
+ * @param {Object} provider - a routes provider
  *
- * @return {Function / Boolean} a predicate function or True/False test for a provider
+ * @return {Boolean} - result for filter
  */
 const routesProvidersLocationFilter = locations => provider => {
   const geometry = JSON.parse(provider.geometry);
@@ -79,7 +79,7 @@ const routesProvidersLocationFilter = locations => provider => {
 /**
  * Fetch all active RoutesProviders from the database, ordered by priority.
  *
- * @return {Object} a promise which resolves to a list of database records
+ * @return {Promise} - a promise which resolves to a list of database records
  */
 function getActive() {
   return RoutesProvider.query()
@@ -101,13 +101,15 @@ function getActive() {
 /**
  * A memoized version of getActive() which will cache the result for future calls
  *
- * @return {Object} a promise which resolves to a list of database records
+ * @return {Promise} - a promise which resolves to a list of database records
  */
 const getActiveCached = utils.memoizePromise(getActive);
 
 /**
  * Given a list of routes providers, map each possible mode
  * to a list of routes providers which can handle that mode.
+ *
+ * @return {Object} - the resulting map
  */
 function _mapModesToRoutesProviders(providers) {
   const ret = {};
@@ -130,6 +132,8 @@ function _mapModesToRoutesProviders(providers) {
 /**
  * Return a subset of the given modesToRouteProviders map
  * with only keys from the given list of modes.
+ *
+ * @return {Object} - the subset
  */
 function _subsetModeToRoutesProvidersMap(map, modes) {
   const ret = {};
@@ -146,9 +150,9 @@ function _subsetModeToRoutesProvidersMap(map, modes) {
  * with each key being a mode, and each value being a list
  * of routes providers for that mode.
  *
- * @param modes {Array} of mode strings
+ * @param {Array} modes - a list of mode strings
  *
- * @return {Object} of routes providers keyed by mode
+ * @return {Object} - lists of routes providers keyed by mode
  */
 function getRoutesProvidersBatch(modes) {
   return getActiveCached()

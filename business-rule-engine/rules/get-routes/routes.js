@@ -50,7 +50,8 @@ const DEFAULT_MODES = 'PUBLIC_TRANSIT,TAXI,WALK';
  * Helper predicate function to determine if the given routesProvidersMap is empty.
  * 'Empty' means there are no keys in the map, or that every property of the map is an empty list.
  *
- * @param routesProvidersMap {Object} each property is a list of routes providers, keyed by mode
+ * @param {Object} routesProvidersMap - each property is a list of routes providers, keyed by mode
+ * @return {Boolean}
  */
 function _routesProvidersMapEmpty(routesProvidersMap) {
   return (!routesProvidersMap ||
@@ -62,8 +63,8 @@ function _routesProvidersMapEmpty(routesProvidersMap) {
  * Get all the distinct priorities of routes providers in the given list.
  * The return list is sorted in priority order (ASC)
  *
- * @param routesProvidersList {Array} a list of routes providers
- * @return {Array} a sorted list of priorities
+ * @param {Array} routesProvidersList - a list of routes providers
+ * @return {Array} - a sorted list of priorities
  */
 function _getPrioritiesSorted(routesProvidersList) {
   const ret = [];
@@ -91,8 +92,8 @@ function _getPrioritiesSorted(routesProvidersList) {
  *
  *    { TAXI: [pA, pB, pC] } -> { TAXI: [ [pA, pC], [pB] ] }
  *
- * @param routesProvidersMap {Object} each property is a list of routes providers, keyed by mode
- * @return {Object} a groupedRoutesProvidersMap which is a groupedList of routes providers, keyed by mode
+ * @param {Object} routesProvidersMap - each property is a list of routes providers, keyed by mode
+ * @return {Object} - a groupedRoutesProvidersMap which is a groupedList of routes providers, keyed by mode
  */
 function _groupProvidersByPrioritySorted(routesProvidersMap) {
   const ret = {};
@@ -120,10 +121,10 @@ function _groupProvidersByPrioritySorted(routesProvidersMap) {
  * NOTE: This function is designed to be curried with the (mode, params) arguments
  * so that it can be then mapped over an array of routes providers.
  *
- * @param mode {String} the mode for this provider request
- * @param params {Object} the routes-query parameters
- * @param provider {Object} the routes provider to execute
- * @return {Object} a promise which resolves to the result of executing the routes provider
+ * @param {String} mode - the mode for this provider request
+ * @param {Object} params - the routes-query parameters
+ * @param {Object} provider - the routes provider to execute
+ * @return {Object} - a promise which resolves to the result of executing the routes provider
  */
 const _executeProvider = (mode, params) => provider => {
   const event = utils.cloneDeep(params);
@@ -142,10 +143,10 @@ const _executeProvider = (mode, params) => provider => {
  * Each sub-list is a list of routes providers which have the same priority.
  * The groupedProvidersList is expected to be in priority order (ASC)
  *
- * @param groupedProvidersList {Array} a list of lists of routes providers, each sub-list is a list of routes providers with the same priority
- * @param mode {String} the mode for this provider request
- * @param params {Object} the routes-query parameters
- * @return {Object} a promise which resolves to the result of the first successful execution
+ * @param {Array} groupedProvidersList - a list of lists of routes providers, each sub-list is a list of routes providers with the same priority
+ * @param {String} mode - the mode for this provider request
+ * @param {Object} params - the routes-query parameters
+ * @return {Object} - a promise which resolves to the result of the first successful execution
  */
 function _executeUntilSuccess(groupedProvidersList, mode, params) {
   // If none of our routes providers return anything, that means the routes just cannot be retrieved
@@ -177,8 +178,8 @@ function _executeUntilSuccess(groupedProvidersList, mode, params) {
 /**
  * Get a routesProvidersMap to match the modes in the given query params.
  *
- * @param params {Object} contains modes, from, to, leaveAt and arriveBy
- * @return {Object} each property is a list of routes providers, keyed by mode
+ * @param {Object} params - contains modes, from, to, leaveAt and arriveBy
+ * @return {Object} - each property is a list of routes providers, keyed by mode
  */
 function _resolveRoutesProviders(params) {
   if (!params.from) {
@@ -241,9 +242,9 @@ function _resolveRoutesProviders(params) {
  * Then execute each group of providers until at least one provider succeeds.
  * These groups are in priority order (ASC)
  *
- * @param routesProvidersMap {Object} each property is a list of routes providers, keyed by mode
- * @param params {Object} the routes-query parameters
- * @returns {Array} a combined list of all successful routes provider queries
+ * @param {Object} routesProvidersMap - each property is a list of routes providers, keyed by mode
+ * @param {Object} params - the routes-query parameters
+ * @returns {Array} - a combined list of all successful routes provider queries
  */
 function _invokeProviders(routesProvidersMap, params) {
   if (_routesProvidersMapEmpty(routesProvidersMap)) {
@@ -274,8 +275,9 @@ function _invokeProviders(routesProvidersMap, params) {
 /**
  * Merge all the responses received from providers invocation.
  *
- * @param responses {Array} input
- * @return {Object} merged output
+ * @param {Array} responses - input
+ * @param {Object} params - original query params
+ * @return {Object} - merged output
  */
 function _mergeProviderResponses(responses, params) {
   const coords = params.from.split(',').map(parseFloat);
@@ -312,9 +314,10 @@ function _overrideFromToName(response, params) {
 /**
  * Set agency for a leg, NOTE this is to adapt leg modes into carrier types.
  *
- * TODO Do not brute force, have a mapping data set on Provider table
- * @param leg {Object}
- * @return agencyId {String} agencyId of the leg
+ * [TODO: Do not brute force, have a mapping data set on Provider table]
+ *
+ * @param {Object} leg - the leg to amend
+ * @return {Object} - the leg, amended if necessary
  */
 function _setLegAgency(leg) {
   if (leg.mode && leg.agencyId) {
@@ -347,11 +350,12 @@ function _setLegAgency(leg) {
 }
 
 /**
- * Set agency for a leg in an itinerary, NOTE this is to adapt leg modes into
- * carrier types.
+ * Set agency for each leg in each itinerary in a route
  *
- * @param route {Object}
- * @return route {Object}
+ * NOTE: this is to adapt leg modes into carrier types
+ *
+ * @param {Object} route - the route to amend
+ * @return {Object} - the route, amended as necessary
  */
 function _setRouteAgency(route) {
   if (!route.plan.itineraries) {
@@ -365,6 +369,12 @@ function _setRouteAgency(route) {
   return route;
 }
 
+/**
+ * Calculate the geographic distance for each leg in each itinerary in the given route
+ *
+ * @param {Object} route - the route to amend
+ * @return {Object} - the route, amended as necessary
+ */
 function _calculateLegsDistance(route) {
   route.plan.itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
@@ -378,11 +388,13 @@ function _calculateLegsDistance(route) {
 }
 
 /**
- * Sort the itienraries by a specification.
+ * Sort the itienraries by a specification
  *
- * @param route {Object} route to sort
- * @param sortBy {String} spec to sort according to
- * @return sorted route {Object} if sort routes if provided
+ * NOTE: Sort by endTime by default if no sortBy is input
+ *
+ * @param {Object} route - route to sort
+ * @param {String} sortBy - spec to sort according to
+ * @return {Object} - sorted route if sort routes if provided
  */
 function _sortRoute(route, sortBy) {
 
@@ -410,9 +422,10 @@ function _sortRoute(route, sortBy) {
 }
 
 /**
- * Get routes using from, to , leaveAt, arriveBy and modes.
+ * Get routes using from, to , leaveAt, arriveBy and modes
  *
- * @param params {Object} contains from, to , leaveAt, arriveBy and modes
+ * @param {Object} params - contains from, to , leaveAt, arriveBy and modes
+ * @return {Promise} - a promise which resolves to the result route
  */
 function getRoutes(params) {
   return _resolveRoutesProviders(params)
@@ -421,7 +434,6 @@ function getRoutes(params) {
     .then(response => _overrideFromToName(response, params))
     .then(route => _setRouteAgency(route))
     .then(route => _calculateLegsDistance(route))
-    // Sort by endTime by default if no sortBy is input
     .then(route => _sortRoute(route, params.sortBy || 'endTime'));
 }
 
