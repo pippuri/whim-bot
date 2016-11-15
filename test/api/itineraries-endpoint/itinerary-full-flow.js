@@ -110,8 +110,8 @@ module.exports = function (input, results) {
               return found;
             });
 
-          // The itinerary is valid if all the legs passed the filters
-          return filtered.length === itinerary.legs.length;
+          // The itinerary is valid if all the legs passed the filters & fare is not null
+          return filtered.length === itinerary.legs.length && itinerary.fare.points !== null;
         });
 
         // Assume at least one matching itinerary; save it
