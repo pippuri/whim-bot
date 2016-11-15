@@ -36,7 +36,6 @@ function getProfileSpecificPricing(providers, profile) {
               provider.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
               provider.providerPrio === 1; // Give free ticket only to single region
       })) {
-console.log('KONK40');
         provider.value = 0;
         provider.baseValue = 0;
       }
@@ -52,7 +51,6 @@ console.log('KONK40');
             clone.region.toLowerCase().indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0 && // Provider region contain profile city data
             clone.providerPrio === 1; // Give free ticket only to single region
   })) {
-console.log('KONK41', clone.agencyId, profile);
     clone.value = 0;
     clone.baseValue = 0;
   }
