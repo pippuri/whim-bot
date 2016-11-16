@@ -88,12 +88,12 @@ function resolve(itineraries, options) {
   }
 
   if (options.distanceDeltaThreshold) {
-    if (Number(options.distanceDeltaThreshold) === options.distanceDeltaThreshold) throw new Error('distanceDeltaThreshold must be a number');
+    if (Number(options.distanceDeltaThreshold) !== options.distanceDeltaThreshold) throw new Error('distanceDeltaThreshold must be a number');
     itineraries = filterUnsensibleItinerary(itineraries, options.distanceDeltaThreshold);
   }
 
   if (options.longThreshold) {
-    if (Number(options.longThreshold) === options.longThreshold) throw new Error('longThreshold must be a number');
+    if (Number(options.longThreshold) !== options.longThreshold) throw new Error('longThreshold must be a number');
     itineraries = filterLongWalkingItineraries(itineraries, options.longThreshold);
   }
 
