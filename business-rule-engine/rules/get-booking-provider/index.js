@@ -52,9 +52,7 @@ const getActiveCached = utils.memoizePromise(getActive);
  * it can then be used as a filter predicate with filterBookingProviders()
  *
  * @param {Array} locations - list of [lat,lon] pairs
- *
  * @param {Object} provider - a booking provider
- *
  * @return {Boolean} - result for filter
  */
 const _bookingProvidersLocationFilter = locations => provider => {
@@ -71,9 +69,7 @@ const _bookingProvidersLocationFilter = locations => provider => {
  * it can then be used as a filter predicate with filterBookingProviders()
  *
  * @param {String} agencyId
- *
  * @param {Object} provider - a booking provider
- *
  * @return {Boolean} - result for filter
  */
 const _bookingProvidersAgencyIdFilter = agencyId => provider => {
@@ -88,9 +84,7 @@ const _bookingProvidersAgencyIdFilter = agencyId => provider => {
  * it can then be used as a filter predicate with filterBookingProviders()
  *
  * @param {String} mode
- *
  * @param {Object} provider - a booking provider
- *
  * @return {Boolean} - result for filter
  */
 const _bookingProvidersModeFilter = mode => provider => {
@@ -105,7 +99,6 @@ const _bookingProvidersModeFilter = mode => provider => {
  *       so multiple calls only hit the database once.
  *
  * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
- *
  * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
  */
 function getBookingProviders(bookingProviderQuery) {
@@ -128,7 +121,6 @@ function getBookingProviders(bookingProviderQuery) {
  * @param {String} mode - a mode string, e.g. 'TAXI'
  * @param {Object} from - a location object in the form { lat: y, lon: x }
  * @param {Object} to - a location object in the form { lat: y, lon: x }
- *
  * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
  */
 function getBookingProvidersByModeAndLocation(mode, from, to) {
@@ -146,7 +138,6 @@ function getBookingProvidersByModeAndLocation(mode, from, to) {
  * Get a single booking provider which matches the given bookingProviderQuery
  *
  * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
- *
  * @return {Promise} - a promise which resolves to a booking provider
  */
 function getBookingProvider(bookingProviderQuery) {
@@ -159,7 +150,6 @@ function getBookingProvider(bookingProviderQuery) {
  * Get a list of booking providers which matches a given list of bookingProviderQueries
  *
  * @param {Array} bookingProviderQueryList - a list of bookingProviderQuery objects which each have at least agencyId, from and to properties
- *
  * @return {Promise} - a promise which resolves to a list of booking providers
  */
 function getBookingProvidersBatch(bookingProviderQueryList) {
