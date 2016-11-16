@@ -43,7 +43,6 @@ function _queryBookingProviders(requests) {
     })
     .then(providers => {
       return requests.map(request => {
-        console.log(request);
         return bookingProviders.filter(providers, request);
       });
     });

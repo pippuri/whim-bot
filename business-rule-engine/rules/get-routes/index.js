@@ -17,9 +17,10 @@ function getRoutes(identityId, params) {
     })
     .then(routes => {
       const filterOptions = {
-        keepUnpurchasable: params.keepUnpurchasable ? params.keepUnpurchasable : true,
-        shortThreshold: 180, // %
+        keepUnpurchasable: true,
+        distanceDeltaThreshold: 180, // %
         longThreshold: 5000, // meter
+        removeIdentical: true,
       };
 
       // Keep unpurchasable itineraries by default
