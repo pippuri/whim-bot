@@ -1,7 +1,6 @@
 'use strict';
 
 const routesProviderRules = require('../get-routes-provider');
-const bookingProviderRules = require('../get-booking-provider');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
@@ -56,8 +55,8 @@ const DEFAULT_MODES = 'PUBLIC_TRANSIT,TAXI,WALK';
  */
 function _routesProvidersMapEmpty(routesProvidersMap) {
   return (!routesProvidersMap ||
-          (Object.keys(routesProvidersMap).length === 0 &&
-           Object.keys(routesProvidersMap).every(key => routesProvidersMap[key].length === 0)));
+          Object.keys(routesProvidersMap).length === 0 ||
+          Object.keys(routesProvidersMap).every(key => routesProvidersMap[key].length === 0));
 }
 
 /**
@@ -116,23 +115,6 @@ function _groupProvidersByPrioritySorted(routesProvidersMap) {
   return Object.freeze(ret);
 }
 
-
-/**
- * Add the details of the responsible routes provider to a result set
- *
- * [XXX: this function mutates the routes param]
- *
- * @param {Object} provider - the routes provider
- * @param {???} result - ???
- */
-function _addProviderDetails(routesProvider, routes) {
-  routes.plan.itineraries.forEach(itinerary => {
-    itinerary.routesProvider = routesProvider.providerName;
-  });
-
-  return routes;
-}
-
 /**
  * Function to execute a routes provider with the given params.
  *
@@ -151,7 +133,6 @@ const _executeProvider = (mode, params) => provider => {
   // run the queries, then validate & sanitize them
   return lambdaWrapper.wrap(provider.providerName, event)
     .then(result => validator.validate(schema, utils.sanitize(result)))
-    .then(result => _addProviderDetails(provider, result))
     .reflect();
 };
 
@@ -227,7 +208,7 @@ function _resolveRoutesProviders(params) {
   const modesList = modes.split(',');
 
   // Get the routes providers which can service our modes
-  return routesProviderRules.getRoutesProvidersBatch(modesList)
+  return routesProviderRules.getRoutesProvidersByModesList(modesList)
     .then(routesProvidersMap => {
 
       // Filter the routes providers by capability to leave only those providers
@@ -352,10 +333,6 @@ const _setLegAgency = routesProvider => leg => {
     case 'CAR':
     case 'TAXI':
       leg.mode = 'TAXI';
-      bookingProviderRules
-        .getBookingProvidersByModeAndLocation('TAXI', leg.from, leg.to)
-        .then(bookingProviders => console.log('KONK40', bookingProviders));
-
       leg.agencyId = 'Valopilkku';
       break;
 
@@ -394,7 +371,7 @@ function _setRouteAgency(route) {
   }
   route.plan.itineraries.map(
     itinerary => itinerary.legs.map(
-      _setLegAgency(itinerary.routesProvider)));
+      _setLegAgency(itinerary.__routesProvider)));
 
   return route;
 }

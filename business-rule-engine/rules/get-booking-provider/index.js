@@ -5,8 +5,8 @@
  */
 
 const utils = require('../../../lib/utils');
-const Promise = require('bluebird');
 const BookingProvider = require('../../../lib/models').BookingProvider;
+const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 
 
 /**
@@ -93,23 +93,62 @@ const _bookingProvidersModeFilter = mode => provider => {
 };
 
 /**
+ * Validate inputs to getBookingProvidersByAgencyAndLocation()
+ *
+ * @param {Object} params - the input to validate
+ *
+ * [TODO Should be handled by validator, instead]
+ */
+function _validateOptionsParamsAgencyAndLocation(params) {
+  if (!params.agencyId) {
+    throw new BusinessRuleError(`The request does not supply 'agencyId' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+
+  if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
+    throw new BusinessRuleError(`The request does not supply 'from' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+
+  if (!params.hasOwnProperty('to') || Object.keys(params.to).length === 0) {
+    throw new BusinessRuleError(`The request does not supply 'to' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+}
+
+/**
+ * Validate inputs to getBookingProvidersByModeAndLocation()
+ *
+ * @param {Object} params - the input to validate
+ *
+ * [TODO Should be handled by validator, instead]
+ */
+function _validateOptionsParamsModeAndLocation(params) {
+  if (!params.mode) {
+    throw new BusinessRuleError(`The request does not supply 'mode' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+
+  if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
+    throw new BusinessRuleError(`The request does not supply 'from' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+
+  if (!params.hasOwnProperty('to') || Object.keys(params.to).length === 0) {
+    throw new BusinessRuleError(`The request does not supply 'to' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
+  }
+}
+
+/**
  * Get a list of booking providers which match the given bookingProviderQuery
  *
  * NOTE: this uses the memoized version of getActive,
  *       so multiple calls only hit the database once.
  *
- * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
+ * @param {Object} params - a params object containing 'agencyId', 'from' and 'to' properties
  * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
  */
-function getBookingProviders(bookingProviderQuery) {
+function getBookingProvidersByAgencyAndLocation(params) {
+  _validateOptionsParamsAgencyAndLocation(params);
+
   return getActiveCached()
-    .then(bookingProviders => (
-          bookingProviders
-            .filter(_bookingProvidersAgencyIdFilter(bookingProviderQuery.agencyId))))
-    .then(bookingProviders => (
-          bookingProviders
-            .filter(_bookingProvidersLocationFilter([bookingProviderQuery.from]))))
-    .then(bookingProviders => Object.freeze(bookingProviders));
+    .then(ps => ps.filter(_bookingProvidersAgencyIdFilter(params.agencyId)))
+    .then(ps => ps.filter(_bookingProvidersLocationFilter([params.from, params.to])));
 }
 
 /**
@@ -118,49 +157,21 @@ function getBookingProviders(bookingProviderQuery) {
  * NOTE: this uses the memoized version of getActive,
  *       so multiple calls only hit the database once.
  *
- * @param {String} mode - a mode string, e.g. 'TAXI'
- * @param {Object} from - a location object in the form { lat: y, lon: x }
- * @param {Object} to - a location object in the form { lat: y, lon: x }
+ * @param {Object} params - a params object containing 'mode', 'from' and 'to' properties
  * @return {Promise} - a promise which resolves to a list of booking providers, sorted in priority order (ASC)
  */
-function getBookingProvidersByModeAndLocation(mode, from, to) {
+function getBookingProvidersByModeAndLocation(params) {
+  _validateOptionsParamsModeAndLocation(params);
+
   return getActiveCached()
-    .then(bookingProviders => (
-          bookingProviders
-            .filter(_bookingProvidersModeFilter(mode))))
-    .then(bookingProviders => (
-          bookingProviders
-            .filter(_bookingProvidersLocationFilter([from, to]))))
-    .then(bookingProviders => Object.freeze(bookingProviders));
+    .then(ps => ps.filter(_bookingProvidersModeFilter(params.mode)))
+    .then(ps => ps.filter(_bookingProvidersLocationFilter([params.from, params.to])));
 }
 
-/**
- * Get a single booking provider which matches the given bookingProviderQuery
- *
- * @param {Object} bookingProviderQuery - a query which has at least agencyId, from and to properties
- * @return {Promise} - a promise which resolves to a booking provider
- */
-function getBookingProvider(bookingProviderQuery) {
-  return getBookingProviders(bookingProviderQuery)
-    .then(bookingProviders => bookingProviders.filter(item => (typeof item !== typeof undefined)))
-    .then(bookingProviders => bookingProviders[0]);
-}
-
-/**
- * Get a list of booking providers which matches a given list of bookingProviderQueries
- *
- * @param {Array} bookingProviderQueryList - a list of bookingProviderQuery objects which each have at least agencyId, from and to properties
- * @return {Promise} - a promise which resolves to a list of booking providers
- */
-function getBookingProvidersBatch(bookingProviderQueryList) {
-  return Promise.map(bookingProviderQueryList, getBookingProvider)
-    .then(result => result.filter(item => (typeof item !== typeof undefined)));
-}
 
 module.exports = {
   getActive,
   getActiveCached,
-  getBookingProvider,
-  getBookingProvidersBatch,
+  getBookingProvidersByAgencyAndLocation,
   getBookingProvidersByModeAndLocation,
 };

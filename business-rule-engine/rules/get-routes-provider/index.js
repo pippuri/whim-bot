@@ -150,20 +150,20 @@ function _subsetModeToRoutesProvidersMap(map, modes) {
  * with each key being a mode, and each value being a list
  * of routes providers for that mode.
  *
- * @param {Array} modes - a list of mode strings
+ * @param {Array} modesList - a list of mode strings
  *
  * @return {Object} - lists of routes providers keyed by mode
  */
-function getRoutesProvidersBatch(modes) {
+function getRoutesProvidersByModesList(modesList) {
   return getActiveCached()
     .then(providers => _mapModesToRoutesProviders(providers))
-    .then(map => _subsetModeToRoutesProvidersMap(map, modes));
+    .then(map => _subsetModeToRoutesProvidersMap(map, modesList));
 }
 
 module.exports = {
   getActive,
   getActiveCached,
-  getRoutesProvidersBatch,
+  getRoutesProvidersByModesList,
   filterRoutesProviders,
   routesProvidersCapabilityFilter,
   routesProvidersLocationFilter,

@@ -16,23 +16,23 @@ const getTspPricingRule = require('./rules/get-tsp-pricing');
 const getPointsRules = require('./rules/get-points');
 
 function runRule(event) {
-  // Switch for non DB connection related rules and those that do
+  // Switch for non DB connection related bookingProviderRules and those that do
   switch (event.rule) {
-    case 'get-booking-provider':
-    case 'get-booking-provider-batch':
-    case 'get-routes-providers-batch':
+    case 'get-booking-providers-by-agency-location':
+    case 'get-booking-providers-by-mode-location':
+    case 'get-routes-providers-by-modes':
     case 'get-routes':
     case 'get-tsp-pricing':
     case 'get-tsp-pricing-batch':
       return Database.init()
         .then(() => {
           switch (event.rule) {
-            case 'get-booking-provider':
-              return getBookingProviderRules.getBookingProvider(event.parameters);
-            case 'get-booking-provider-batch':
-              return getBookingProviderRules.getBookingProvidersBatch(event.parameters);
-            case 'get-routes-providers-batch':
-              return getRoutesProviderRules.getRoutesProvidersBatch(event.parameters);
+            case 'get-booking-providers-by-agency-location':
+              return getBookingProviderRules.getBookingProvidersByAgencyAndLocation(event.parameters);
+            case 'get-booking-providers-by-mode-location':
+              return getBookingProviderRules.getBookingProvidersByModeAndLocation(event.parameters);
+            case 'get-routes-providers-by-modes':
+              return getRoutesProviderRules.getRoutesProvidersByModesList(event.parameters);
             case 'get-routes':
               return getRoutesRules.getRoutes(event.identityId, event.parameters);
             case 'get-tsp-pricing': // used to get contract rates from TSP

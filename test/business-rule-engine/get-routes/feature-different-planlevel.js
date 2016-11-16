@@ -77,11 +77,19 @@ module.exports = function () {
           return iti.legs.some(leg => transitModes.some(mode => leg.mode === mode));
         });
 
+        // We have some valid itineraries
         expect(itinerariesWithTransits.length).to.be.above(0);
+
+        // None of the itineraries have a fare === 0
         itinerariesWithTransits.forEach(itinerary => {
           expect(itinerary.fare.points).to.satisfy(num => {
             return ((Number(num) === num && num > 0) || num === null);
           });
+        });
+
+        // At least some itineraries have a non-null fare
+        expect(itinerariesWithTransits).to.satisfy(itineraries => {
+          return itineraries.some(itinerary => itinerary.fare.points !== null);
         });
       });
 

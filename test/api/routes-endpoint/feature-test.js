@@ -202,7 +202,7 @@ module.exports = options => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
-    // FIXME Our current business rules engine does not support this case
+    // FIXME Our current business bookingProviderRules engine does not support this case
     // (it picks the first provider matching the geometry)
     it('response should have direct taxi route', () => {
 
@@ -246,13 +246,13 @@ module.exports = options => {
     });
   });
 
-  describe('request for a route from Helsinki to ', () => {
+  describe('request for a route from Helsinki to New Delhi', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
       payload: {
         from: '60.1684126,24.9316739', // SC5 Office, Helsinki
-        to: '77.2388263,28.6561592',   // Red Fort, New Delhi
+        to: '28.6561592,77.2388263',   // Red Fort, New Delhi
         leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(), // Monday one week forward around five
         arriveBy: '',
       },
@@ -277,6 +277,7 @@ module.exports = options => {
     });
 
     it('should return an error', () => {
+      expect(error).to.not.be.undefined;
       expect(error.message).to.equal('500: get-routes: Could not retrieve any routes provider');
       expect(response).to.be.undefined;
     });

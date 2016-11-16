@@ -12,9 +12,10 @@
  *      - userProfile {Object}
  */
 
-const rules = require('../get-booking-provider');
+const Promise = require('bluebird');
+const bookingProviderRules = require('../get-booking-provider');
 const utils = require('../../../lib/utils');
-const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
+const _flatten = require('lodash/flatten');
 
 // TODO Move dataset to another place
 const zipcodeDataset = require('../../zipcode-Uusimaa.json');
@@ -99,9 +100,16 @@ function _setProfileSpecificPricing(profile, bookingProvider) {
 }
 
 /**
- * Process a single booking provider to set profile
+ * Process a single booking provider to perform profile-specific transformations
+ *
+ * NOTE: this funciton is designed to be curried on the first two arguments
+ *       to make is convenient to use as a map funciton on a list of booking providers.
+ *
+ * @param {Object} profile - a user profile
+ * @param {Object} query - the query parameters which yielded the bookingProvider
+ * @param {Object} bookingProvider - the booking provider to process
  */
-function _processBookingProvider(profile, query, bookingProvider) {
+const _processBookingProvider = (profile, query) => bookingProvider => {
   if (typeof bookingProvider === typeof undefined) {
     console.warn(`Could not find pricing provider for ${JSON.stringify(query)}`);
     return null;
@@ -109,45 +117,21 @@ function _processBookingProvider(profile, query, bookingProvider) {
 
   // Set any profile-specific options/amendments and return
   return _setProfileSpecificPricing(profile, bookingProvider);
-}
+};
 
 /**
- * Validate inputs to getOptions and getOptionsBatch
- *
- * @param {Object} params - the input to validate
- *
- * [TODO Should be handled by validator, instead]
- */
-function _validateOptionsParams(params) {
-  if (!params.hasOwnProperty('from') || Object.keys(params.from).length === 0) {
-    throw new BusinessRuleError(`The request does not supply 'from' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
-  }
-
-  if (!params.agencyId) {
-    throw new BusinessRuleError(`The request does not supply 'agencyId' to the engine: ${JSON.stringify(params)}`, 400, 'get-routes');
-  }
-}
-
-/**
- * Get the geographically relevant booking provider along with pricing information
+ * Get all geographically relevant booking providers along with pricing information
  *
  * [TODO: make this use the new TSP API to query for options in real time
  *        and provide customized results to a given user]
  *
  * @param {Object} params - query parameters
  * @paran {Object} profile - a user profile
- * @return {Object} - a suitable booking provider
+ * @return {Promise} - a promise which resolves to a list of suitable booking provider
  */
 function getOptions(params, profile) {
-  _validateOptionsParams(params);
-
-  const query = {
-    agencyId: params.agencyId,
-    from: params.from,
-  };
-
-  return rules.getBookingProvider(query)
-    .then(bookingProvider => _processBookingProvider(profile, query, bookingProvider));
+  return bookingProviderRules.getBookingProvidersByAgencyAndLocation(params)
+    .then(providers => providers.map(_processBookingProvider(profile, params)));
 }
 
 /**
@@ -159,19 +143,11 @@ function getOptions(params, profile) {
  *
  * @param {Object} paramsList - a list of query parameters
  * @paran {Object} profile - a user profile
- * @return {Array} - a list of suitable booking providers
+ * @return {Promise} - a promise which resolves to a list of suitable booking providers
  */
 function getOptionsBatch(paramsList, profile) {
-  paramsList.map(_validateOptionsParams);
-
-  //[TODO: Why do we only use from, but not to?]
-  const queries = paramsList.map(params => ({
-    agencyId: params.agencyId,
-    from: params.from,
-  }));
-
-  return rules.getBookingProvidersBatch(queries)
-    .then(bookingProviders => bookingProviders.map((bookingProvider, i) => _processBookingProvider(profile, queries[i], bookingProvider)));
+  return Promise.map(paramsList, params => getOptions(params, profile))
+      .then(results => Object.freeze(_flatten(results)));
 }
 
 module.exports = {
