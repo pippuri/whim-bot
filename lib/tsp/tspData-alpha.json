@@ -1,7 +1,7 @@
 {
   "HSL": {
     "id": "HSL",
-    "baseUrl": "https://tsp.alpha.maas.global/hsl/",
+    "baseUrl": "https://tsp.alpha.maas.global/hsl-mock/",
     "headers": {
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },
