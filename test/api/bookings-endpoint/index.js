@@ -40,7 +40,8 @@ describe('bookings endpoint', () => {
     bookingsHSLFullFlow(agencyOptionsLambda, bookingsCreateLambda, bookingsCancelLambda, bookingsRetrieveLambda);
   });
 
-  describe('bookings-MaaS-full-flow', () => {
+  // Skip this as MaaS ticket is not in use
+  describe.skip('bookings-MaaS-full-flow', () => {
     bookingsMaaSFullFlow(agencyOptionsLambda);
   });
 });
