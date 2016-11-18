@@ -137,12 +137,11 @@ module.exports.respond = (event, callback) => {
     })
     .then(updatedBooking => validator.validate(responseSchema, updatedBooking, { sanitize: true }))
     .then(response => {
-      const message = 'Booking updated';
       const payload = { ids: [bookingId], objectType: 'Booking' };
 
       return Promise.all([
         response,
-        sendPushNotification(identityId, 'ObjectChange', payload, message),
+        sendPushNotification(identityId, 'ObjectChange', payload),
       ]);
     })
     .spread(
