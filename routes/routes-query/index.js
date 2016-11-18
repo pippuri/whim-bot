@@ -20,11 +20,19 @@ function validateInput(event) {
   }
 
   if (event.payload.modes && !event.payload.modes.match(/^[\w\S]+[^,\s]$/g)) {
-    return Promise.reject(new MaaSError('Input modes must satisfy this regex', new RegExp(/^[\w\S]+[^,\s]$/g).toString()));
+    return Promise.reject(new MaaSError('Input modes must satisfy this regex ' + new RegExp(/^[\w\S]+[^,\s]$/g).toString(), 400));
   }
 
   if (event.payload.modes && event.payload.modes.split(',').length > 1) {
-    return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none'));
+    return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none', 400));
+  }
+
+  if (event.payload.fromName && !event.payload.modes.match(/[\w\d\s]/g)) {
+    return Promise.reject(new MaaSError('Origin name supports only words, digits and spaces', 400));
+  }
+
+  if (event.payload.toName && !event.payload.modes.match(/[\w\d\s]/g)) {
+    return Promise.reject(new MaaSError('Destination name supports only words, digits and spaces', 400));
   }
 
   return Promise.resolve();
@@ -83,18 +91,20 @@ function filterPastRoutes(leaveAt, response) {
   return response;
 }
 
-function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
+function getRoutes(identityId, payload) {
   // If not leaveAt, search for routes starting 2 mins from now
-  if (!leaveAt && !arriveBy) {
-    leaveAt = Date.now() + 2 * 60 * 1000;
+  if (!payload.leaveAt && !payload.arriveBy) {
+    payload.leaveAt = Date.now() + 2 * 60 * 1000;
   }
 
   const event = {
-    from: from,
-    to: to,
-    leaveAt: leaveAt,
-    arriveBy: arriveBy,
-    modes: modes,
+    from: payload.from,
+    to: payload.to,
+    leaveAt: payload.leaveAt,
+    arriveBy: payload.arriveBy,
+    modes: payload.modes,
+    fromName: payload.fromName,
+    toName: payload.toName,
   };
 
   return bus.call('MaaS-business-rule-engine', {
@@ -102,13 +112,13 @@ function getRoutes(identityId, from, to, leaveAt, arriveBy, modes) {
     rule: 'get-routes',
     parameters: event,
   })
-  .then(response => filterPastRoutes(leaveAt, response))
+  .then(response => filterPastRoutes(payload.leaveAt, response))
   .then(response => signResponse(response));
 }
 
 module.exports.respond = function (event, callback) {
   return validateInput(event)
-    .then(() => getRoutes(event.identityId, event.payload.from, event.payload.to, event.payload.leaveAt, event.payload.arriveBy, event.payload.modes))
+    .then(() => getRoutes(event.identityId, event.payload))
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

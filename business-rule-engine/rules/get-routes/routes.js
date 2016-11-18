@@ -346,6 +346,25 @@ function _mergeProviderResponses(responses, params) {
 }
 
 /**
+ * If fromName or toName exist, override it onto firstLeg name and lastLeg name field
+ * @param {String} fromName - name of the first leg's "to"
+ * @param {String} toName - name of the last leg's "from"
+ * @return {Object} response - contains the injected data is exist
+ */
+function _overrideFromToName(response, params) {
+  response.plan.itineraries.forEach(iti => {
+    if (iti.legs.length === 0) throw new BusinessRuleError('Itinerary has 0 leg ' + iti, 500, 'get-routes');
+    if (params.fromName) {
+      iti.legs[0].from.name = params.fromName;
+    }
+    if (params.toName) {
+      iti.legs[iti.legs.length - 1].to.name = params.toName;
+    }
+  });
+  return response;
+}
+
+/**
  * Set agency for a leg, NOTE this is to adapt leg modes into carrier types.
  *
  * TODO Do not brute force, have a mapping data set on Provider table
@@ -455,6 +474,7 @@ function getRoutes(params) {
   return _resolveRoutesProviders(params)
     .then(response => _invokeProviders(response, params))
     .then(responses => _mergeProviderResponses(responses, params))
+    .then(response => _overrideFromToName(response, params))
     .then(route => _setRouteAgency(route))
     .then(route => _calculateLegsDistance(route))
     // Sort by endTime by default if no sortBy is input

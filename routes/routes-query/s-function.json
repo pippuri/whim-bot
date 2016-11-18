@@ -32,7 +32,9 @@
             "to": "$input.params('to')",
             "leaveAt": "$input.params('leaveAt')",
             "arriveBy": "$input.params('arriveBy')",
-            "modes": "$input.params('modes')"
+            "modes": "$input.params('modes')",
+            "fromName": "$input.params('fromName')",
+            "toName": "$input.params('toName')"
           }
         }
       },
