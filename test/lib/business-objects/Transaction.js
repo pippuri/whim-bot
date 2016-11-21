@@ -19,30 +19,26 @@ before(() => {
 });
 
 after(() => {
-  let promise;
 
-  //if (!logEntry) {
-  promise = Promise.resolve();
-  /*} else {
-    promise = TransactionLog.query().deleteById(logEntry.id);
-  }*/
+  const promise = Promise.resolve();
 
-  return promise.then(() => Database.cleanup());
+  return promise.then(() => TransactionLog.query().deleteById(logEntry.id))
+    .then(() => Database.cleanup());
 });
 
 describe('Writes the transaction to the DB', () => {
   it(`starts & commits transaction: ${identityId}, ${message}, ${value}`, () => {
-    transaction = new Transaction();
-    return transaction.start(identityId, message, value)
+    transaction = new Transaction(identityId);
+    return transaction.start()
       .then(() => transaction.bind(bookingId, Booking))
-      .then(() => transaction.commit())
+      .then(() => transaction.commit(value, message))
       .then(_logEntry => (logEntry = _logEntry));
   });
 
   it('stores the values in the object correctly', () => {
-    expect(transaction.identityId).to.equal(identityId);
-    expect(transaction.message).to.equal(message);
-    expect(transaction.value).to.equal(value);
+    expect(transaction.getRecord.identityId).to.equal(identityId);
+    expect(transaction.getRecord.message).to.equal(message);
+    expect(transaction.getRecord.value).to.equal(value);
   });
 
   it('returns a proper log entry', () => {
@@ -60,7 +56,7 @@ describe('Writes the transaction to the DB', () => {
         expect(entry.identityId).to.equal(identityId);
         expect(entry.message).to.equal(message);
         expect(entry.value).to.equal(value);
-        expect(entry.value).to.equal(value);
+        expect(entry.associations).to.have.property('Booking');
       });
   });
 });
