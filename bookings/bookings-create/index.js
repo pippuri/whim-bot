@@ -69,10 +69,14 @@ module.exports.respond = (event, callback) => {
     .then(unsignedBooking => {
       return transaction.start()
         .then(() => transaction.bind(models.Booking))
-        .then(() => Booking.create(unsignedBooking, event.identityId, { skipInsert: false, trx: transaction.self }))
-        .then(newBooking => newBooking.pay({ trx: transaction.self }))
-        .then(booking => {
-          const bookingData = booking.booking;
+        .then(() => Booking.create(unsignedBooking, event.identityId, transaction.self, { skipInsert: false }))
+        .then(newBooking => newBooking.pay(transaction.self))
+        .then(paidBooking => {
+          return transaction.associate(models.Booking, paidBooking.booking.id)
+            .then(() => Promise.resolve(paidBooking));
+        })
+        .then(paidBooking => {
+          const bookingData = paidBooking.booking;
           // Prevent faulty negative point in booking fare as all booking must cost more or equal to 0
           if (bookingData.fare.amount < 0) {
             return transaction.rollback()
@@ -90,14 +94,14 @@ module.exports.respond = (event, callback) => {
 
           // Always commit a negative value as paying means losing
           return transaction.commit(-1 * bookingData.fare.amount, message)
-            .then(() => Promise.resolve(booking));
+            .then(() => Promise.resolve(paidBooking));
         })
         .then(booking => booking.reserve())
         .then(booking => formatResponse(booking.toObject()))
-          .then(bookingData => {
-            Database.cleanup()
-              .then(() => callback(null, bookingData));
-          });
+        .then(bookingData => {
+          Database.cleanup()
+            .then(() => callback(null, bookingData));
+        });
     })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

@@ -7,6 +7,7 @@ const utils = require('../../lib/utils');
 const Database = models.Database;
 const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
+const Transaction  = require('../../lib/business-objects/Transaction');
 
 function validateInput(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
@@ -29,12 +30,33 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = (event, callback) => {
-  return Database.init()
-    .then(() => validateInput(event))
+
+  const transaction = new Transaction(event.identityId);
+
+  return validateInput(event)
+    .then(() => Database.init())
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
-    .then(itinerary => itinerary.cancel())
+    .then(itinerary => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Itinerary))
+        .then(() => transaction.associate(models.Itinerary, itinerary.id))
+        .then(() => Promise.resolve(itinerary));
+    })
+    .then(itinerary => itinerary.cancel(transaction.self))
     .then(itinerary => Trip.cancelWithItinerary(itinerary))
+    .then(response => {
+      const itinerary = response.toObject();
+      const firstLeg = itinerary.legs[0];
+      const lastLeg = itinerary.legs[itinerary.legs.length - 1];
+
+      const fromName = firstLeg.from.name ? firstLeg.from.name : `${firstLeg.from.lat},${firstLeg.from.lon}`;
+      const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
+
+      const message = `Cancelled a trip from ${fromName} to ${toName}`;
+      return transaction.commit(-1 * itinerary.fare.points, message)
+        .then(() => Promise.resolve(response));
+    })
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
       Database.cleanup()

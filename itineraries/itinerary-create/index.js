@@ -5,6 +5,7 @@ const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
 const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
+const Transaction = require('../../lib/business-objects/Transaction');
 const TripEngine = require('../../lib/trip');
 const utils = require('../../lib/utils');
 
@@ -18,65 +19,42 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  let trx;
-//  const legErrors = [];
+  const transaction = new Transaction(event.identityId);
 
-  return Database.init()
-    .then(() => signatures.validateSignatures(event.itinerary))
+  return signatures.validateSignatures(event.itinerary)
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
-    .then(unsignedItinerary => Itinerary.startTransaction()
-      .then(transaction => {
-        trx = transaction;
-        return Promise.resolve();
-      })
-      .then(() => Itinerary.create(unsignedItinerary, event.identityId, { trx })))
-    .then(itinerary => itinerary.pay({ trx }))
-
-/*
-    // Testing bold version where all bookings are handled in TripEngine side. If finding
-    // problems, reverting back that legs are activated (booking happens) already here.
-
-    // Since TSP activity via leg activation is not transactional, we need to commit
-    // itinerary create first, then try to activate legs
-    .then(itinerary => {
-      return trx.commit()
-        .then(() => {
-          trx = undefined;
-          return Promise.resolve(itinerary);
+    .then(unsignedItinerary => Database.init().then(() => Promise.resolve(unsignedItinerary)))
+    .then(unsignedItinerary => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Itinerary))
+        .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction.self))
+        .then(newItinerary => {
+          return transaction.associate(models.Itinerary, newItinerary.id)
+            .then(() => Promise.resolve(newItinerary));
         });
     })
-    // Activate itinerary and legs rightaway.
-    .then(itinerary => itinerary.activate())
-    .then(itinerary => {
-      return Promise.mapSeries(itinerary.legs, leg => {
-        return leg.activate({ tryReuseBooking: true })
-          .reflect();
-      })
-        .each(inspection => {
-          if (!inspection.isFulfilled()) {
-            legErrors.push(inspection.reason());
-          }
-        })
-        .then(() => {
-          if (legErrors.length > 0) {
-            console.warn('Errors while activating legs; cancelling itinerary...', legErrors);
-            return itinerary.cancel();
-          }
-          return Promise.resolve(itinerary);
-        });
-    })
-    .then(itinerary => {
-      if (itinerary.state === 'CANCELLED' || itinerary.state === 'CANCELLED_WITH_ERRORS') {
-        return Promise.reject(new MaaSError(`Failed to reserve legs: ${legErrors}`, 400));
+    .then(newItinerary => newItinerary.pay(transaction.self))
+    // Juha's block of code, reinsert right here in case of emergency http://codepen.io/blackevil245/pen/eBvoBX
+    .then(itinerary => TripEngine.startWithItinerary(itinerary))
+    .then(response => {
+      // Response is a Itinerary class instance
+      const itinerary = response.toObject();
+
+      // Prevent faulty negative point in itinerary fare as all itineraries must cost more or equal to 0
+      if (itinerary.fare && itinerary.fare.points < 0) {
+        return transaction.rollback()
+          .then(() => Promise.reject(new MaaSError('Faulty new itinerary, fare is smaller than 0', 500)));
       }
-      return Promise.resolve(itinerary);
-    })
-*/
-    .then(itinerary => TripEngine.startWithItinerary(itinerary)) // Start workflow execution
-    .then(itinerary => {
-      const action = trx ? trx.commit() : Promise.resolve();
-      return action
-        .then(() => Promise.resolve(itinerary));
+
+      const firstLeg = itinerary.legs[0];
+      const lastLeg = itinerary.legs[itinerary.legs.length - 1];
+
+      const fromName = firstLeg.from.name ? firstLeg.from.name : `${firstLeg.from.lat},${firstLeg.from.lon}`;
+      const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
+
+      const message = `Reserved a trip from ${fromName} to ${toName}`;
+      return transaction.commit(-1 * itinerary.fare.points, message)
+        .then(() => Promise.resolve(response));
     })
     .then(itinerary => formatResponse(itinerary.toObject()))
     .then(response => {
@@ -88,8 +66,8 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      const rollback = trx ? trx.rollback() : Promise.resolve();
-      return rollback
+      // return transaction.rollback()
+      return Promise.resolve()
         .then(() => Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
@@ -100,5 +78,4 @@ module.exports.respond = function (event, callback) {
           callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
         });
     });
-
 };
