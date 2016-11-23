@@ -81,14 +81,15 @@ module.exports.respond = (event, callback) => {
       console.warn(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       console.warn(_error.stack);
 
-      models.Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
 };

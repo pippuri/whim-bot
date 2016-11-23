@@ -9,8 +9,6 @@ const Transaction = require('../../lib/business-objects/Transaction');
 const TripEngine = require('../../lib/trip');
 const utils = require('../../lib/utils');
 
-const Database = models.Database;
-
 function formatResponse(itinerary) {
   return Promise.resolve({
     itinerary: utils.sanitize(itinerary),
@@ -23,7 +21,7 @@ module.exports.respond = function (event, callback) {
 
   return signatures.validateSignatures(event.itinerary)
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
-    .then(unsignedItinerary => Database.init().then(() => Promise.resolve(unsignedItinerary)))
+    .then(unsignedItinerary => models.Database.init().then(() => Promise.resolve(unsignedItinerary)))
     .then(unsignedItinerary => {
       return transaction.start()
         .then(() => transaction.bind(models.Itinerary))
@@ -58,7 +56,7 @@ module.exports.respond = function (event, callback) {
     })
     .then(itinerary => formatResponse(itinerary))
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -66,9 +64,8 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      // return transaction.rollback()
-      return Promise.resolve()
-        .then(() => Database.cleanup())
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

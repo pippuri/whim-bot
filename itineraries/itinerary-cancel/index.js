@@ -4,7 +4,6 @@ const Promise = require('bluebird');
 const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
-const Database = models.Database;
 const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const Transaction  = require('../../lib/business-objects/Transaction');
@@ -34,7 +33,7 @@ module.exports.respond = (event, callback) => {
   const transaction = new Transaction(event.identityId);
 
   return validateInput(event)
-    .then(() => Database.init())
+    .then(() => models.Database.init())
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
     .then(itinerary => {
@@ -59,7 +58,7 @@ module.exports.respond = (event, callback) => {
     })
     .then(itinerary => formatResponse(itinerary))
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -67,7 +66,8 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
