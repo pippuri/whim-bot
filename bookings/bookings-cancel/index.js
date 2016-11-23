@@ -1,11 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Booking = require('../../lib/business-objects/Booking');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
+const Promise = require('bluebird');
+const Transaction  = require('../../lib/business-objects/Transaction');
 const utils = require('../../lib/utils');
-const Database = models.Database;
-const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validate event input
@@ -43,14 +43,37 @@ function formatResponse(booking) {
 
 module.exports.respond = (event, callback) => {
 
-  return Database.init()
-    .then(() => validateInput(event))
+  const transaction = new Transaction(event.identityId);
+
+  return validateInput(event)
+    .then(() => models.Database.init())
     .then(() => Booking.retrieve(event.bookingId))
     .then(booking => booking.validateOwnership(event.identityId))
-    .then(booking => booking.cancel())
-    .then(booking => formatResponse(booking.toObject()))
+    .then(booking => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Booking))
+        .then(() => transaction.associate(models.Booking, booking.id))
+        .then(() => Promise.resolve(booking));
+    })
+    .then(booking => booking.cancel(transaction.self))
     .then(response => {
-      Database.cleanup()
+      const booking = response.toObject();
+      let message;
+      switch (booking.leg.mode) {
+        case 'CAR':
+          message = `Cancelled a ${booking.leg.mode} reservation from ${booking.leg.agencyId}`;
+          break;
+        default:
+          message = `Cancelled a ${booking.leg.mode} ticket from ${booking.leg.agencyId}`;
+          break;
+      }
+
+      return transaction.commit(booking.fare.amount, message)
+        .then(() => Promise.resolve(booking));
+    })
+    .then(booking => formatResponse(booking))
+    .then(response => {
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -58,7 +81,7 @@ module.exports.respond = (event, callback) => {
       console.warn(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       console.warn(_error.stack);
 
-      Database.cleanup()
+      models.Database.cleanup()
       .then(() => {
         if (_error instanceof MaaSError) {
           callback(_error);
@@ -68,5 +91,4 @@ module.exports.respond = (event, callback) => {
         callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
       });
     });
-
 };

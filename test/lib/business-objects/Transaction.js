@@ -30,7 +30,8 @@ describe('Writes the transaction to the DB', () => {
   it(`starts & commits transaction: ${identityId}, ${message}, ${value}`, () => {
     transaction = new Transaction(identityId);
     return transaction.start()
-      .then(() => transaction.bind(bookingId, Booking))
+      .then(() => transaction.bind(Booking))
+      .then(() => transaction.associate(Booking, bookingId))
       .then(() => transaction.commit(value, message))
       .then(_logEntry => (logEntry = _logEntry));
   });

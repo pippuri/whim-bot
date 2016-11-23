@@ -54,9 +54,9 @@ module.exports.respond = function (event, callback) {
 
       const message = `Reserved a trip from ${fromName} to ${toName}`;
       return transaction.commit(-1 * itinerary.fare.points, message)
-        .then(() => Promise.resolve(response));
+        .then(() => Promise.resolve(itinerary));
     })
-    .then(itinerary => formatResponse(itinerary.toObject()))
+    .then(itinerary => formatResponse(itinerary))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));

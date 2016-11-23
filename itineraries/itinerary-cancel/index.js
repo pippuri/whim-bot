@@ -54,10 +54,10 @@ module.exports.respond = (event, callback) => {
       const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
 
       const message = `Cancelled a trip from ${fromName} to ${toName}`;
-      return transaction.commit(-1 * itinerary.fare.points, message)
-        .then(() => Promise.resolve(response));
+      return transaction.commit(itinerary.fare.points, message)
+        .then(() => Promise.resolve(itinerary));
     })
-    .then(itinerary => formatResponse(itinerary.toObject()))
+    .then(itinerary => formatResponse(itinerary))
     .then(response => {
       Database.cleanup()
         .then(() => callback(null, response));

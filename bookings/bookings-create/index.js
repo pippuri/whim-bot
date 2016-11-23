@@ -76,7 +76,7 @@ module.exports.respond = (event, callback) => {
             .then(() => Promise.resolve(paidBooking));
         })
         .then(paidBooking => {
-          const bookingData = paidBooking.booking;
+          const bookingData = paidBooking.toObject();
           // Prevent faulty negative point in booking fare as all booking must cost more or equal to 0
           if (bookingData.fare.amount < 0) {
             return transaction.rollback()
@@ -93,6 +93,8 @@ module.exports.respond = (event, callback) => {
           }
 
           // Always commit a negative value as paying means losing
+          // FIXME Why is the transaction commited before booking reservation???
+          // Should be be inside the same transaction instead
           return transaction.commit(-1 * bookingData.fare.amount, message)
             .then(() => Promise.resolve(paidBooking));
         })
