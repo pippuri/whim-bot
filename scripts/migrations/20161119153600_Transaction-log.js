@@ -4,7 +4,7 @@ exports.up = function (knex, Promise) {
   return knex.schema
     .createTable('TransactionLog', table => {
       // Identifiers
-      table.increments('id').primary().notNullable().unique();
+      table.uuid('id').primary().notNullable().unique();
       table.string('identityId').index().notNullable();
       table.string('message').notNullable();
       table.integer('value').notNullable();
