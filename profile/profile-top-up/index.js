@@ -96,7 +96,7 @@ function makePurchase(identityId, transaction, productId, cost, points) {
 
 module.exports.respond = function (event, callback) {
 
-  const transaction = new Transaction(event.identityId);
+  const transaction = new Transaction();
   let payload;
 
   return parseAndValidateInput(event)
@@ -105,12 +105,12 @@ module.exports.respond = function (event, callback) {
       models.Database.init()
         .then(() => transaction.start())
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile, event.identityId));
+        .then(() => transaction.associate(models.Profile.tableName, event.identityId));
     })
     .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
     .then(confirmed => makePurchase(confirmed.identityId, transaction.self, confirmed.productId, confirmed.cost, confirmed.points))
     .then(response => {
-      return transaction.commit(payload.points, `Topup ${payload.points}p`)
+      return transaction.commit(`Topup ${payload.points}p`, event.identityId, payload.points)
         .then(() => Promise.resolve(response));
     })
     .then(response => {
@@ -122,7 +122,8 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      models.Database.cleanup()
+      return transaction.rollback(_error.message)
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

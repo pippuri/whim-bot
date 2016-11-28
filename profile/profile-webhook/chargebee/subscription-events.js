@@ -20,7 +20,7 @@ function handle(payload, key, defaultResponse) {
   const identityId = profile.identityId;
   const activePlan = profile.plan.id;
 
-  const transaction = new Transaction(identityId);
+  const transaction = new Transaction();
 
   switch (payload.event_type) {
     case 'subscription_created':
@@ -33,7 +33,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile, identityId))
+        .then(() => transaction.associate(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,
@@ -45,7 +45,7 @@ function handle(payload, key, defaultResponse) {
         .then(oldProfile => {
           return Profile.update(identityId, { balance: 0 }, transaction.self)
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(balanceChange, `Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}`))
+            .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
@@ -60,7 +60,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile, identityId))
+        .then(() => transaction.associate(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,
@@ -73,7 +73,7 @@ function handle(payload, key, defaultResponse) {
         .then(oldProfile => {
           return Profile.update(identityId, { balance: 0 }, transaction.self)
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(balanceChange, `Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`))
+            .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));

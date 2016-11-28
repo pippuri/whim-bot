@@ -6,7 +6,6 @@ const models = require('../../lib/models');
 const signatures = require('../../lib/signatures');
 const utils = require('../../lib/utils');
 
-const Database = models.Database;
 const Transaction = require('../../lib/business-objects/Transaction');
 const Booking = require('../../lib/business-objects/Booking');
 
@@ -60,19 +59,19 @@ function formatResponse(booking) {
  */
 module.exports.respond = (event, callback) => {
 
-  const transaction = new Transaction(event.identityId);
+  const transaction = new Transaction();
 
   return validateInput(event)
     .then(() => signatures.validateSignatures(event.payload))
     .then(signedBooking => utils.without(signedBooking, ['signature']))
-    .then(unsignedBooking => Database.init().then(() => Promise.resolve(unsignedBooking)))
+    .then(unsignedBooking => models.Database.init().then(() => Promise.resolve(unsignedBooking)))
     .then(unsignedBooking => {
       return transaction.start()
         .then(() => transaction.bind(models.Booking))
         .then(() => Booking.create(unsignedBooking, event.identityId, transaction.self, { skipInsert: false }))
         .then(newBooking => newBooking.pay(transaction.self))
         .then(paidBooking => {
-          return transaction.associate(models.Booking, paidBooking.booking.id)
+          return transaction.associate(models.Booking.tableName, paidBooking.booking.id)
             .then(() => Promise.resolve(paidBooking));
         })
         .then(paidBooking => {
@@ -95,13 +94,13 @@ module.exports.respond = (event, callback) => {
           // Always commit a negative value as paying means losing
           // FIXME Why is the transaction commited before booking reservation???
           // Should be be inside the same transaction instead
-          return transaction.commit(-1 * bookingData.fare.amount, message)
+          return transaction.commit(message, event.identityId, -1 * bookingData.fare.amount)
             .then(() => Promise.resolve(paidBooking));
         })
         .then(booking => booking.reserve())
         .then(booking => formatResponse(booking.toObject()))
         .then(bookingData => {
-          Database.cleanup()
+          models.Database.cleanup()
             .then(() => callback(null, bookingData));
         });
     })
@@ -110,8 +109,8 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      return transaction.rollback()
-        .then(() => Database.cleanup())
+      return transaction.rollback(_error.message)
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

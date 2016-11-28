@@ -31,8 +31,8 @@ describe('Writes the transaction to the DB', () => {
     transaction = new Transaction(identityId);
     return transaction.start()
       .then(() => transaction.bind(Booking))
-      .then(() => transaction.associate(Booking, bookingId))
-      .then(() => transaction.commit(value, message))
+      .then(() => transaction.associate(Booking.tableName, bookingId))
+      .then(() => transaction.commit(message, identityId, value))
       .then(_logEntry => (logEntry = _logEntry));
   });
 

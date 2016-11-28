@@ -43,7 +43,7 @@ function formatResponse(booking) {
 
 module.exports.respond = (event, callback) => {
 
-  const transaction = new Transaction(event.identityId);
+  const transaction = new Transaction();
 
   return validateInput(event)
     .then(() => models.Database.init())
@@ -52,7 +52,7 @@ module.exports.respond = (event, callback) => {
     .then(booking => {
       return transaction.start()
         .then(() => transaction.bind(models.Booking))
-        .then(() => transaction.associate(models.Booking, booking.id))
+        .then(() => transaction.associate(models.Booking.tableName, booking.id))
         .then(() => Promise.resolve(booking));
     })
     .then(booking => booking.cancel(transaction.self))
@@ -68,7 +68,7 @@ module.exports.respond = (event, callback) => {
           break;
       }
 
-      return transaction.commit(booking.fare.amount, message)
+      return transaction.commit(message, event.identityId, booking.fare.amount)
         .then(() => Promise.resolve(booking));
     })
     .then(booking => formatResponse(booking))
@@ -81,7 +81,7 @@ module.exports.respond = (event, callback) => {
       console.warn(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       console.warn(_error.stack);
 
-      return transaction.rollback()
+      return transaction.rollback(_error.message)
         .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {

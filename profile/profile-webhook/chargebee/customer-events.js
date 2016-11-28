@@ -17,7 +17,7 @@ function handle(payload, key, defaultResponse) {
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
 
-  const transaction = new Transaction(identityId);
+  const transaction = new Transaction();
 
   switch (payload.event_type) {
     case 'customer_changed':
@@ -49,7 +49,7 @@ function handle(payload, key, defaultResponse) {
 
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile, identityId))
+        .then(() => transaction.associate(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,
@@ -62,10 +62,10 @@ function handle(payload, key, defaultResponse) {
           .then(oldProfile => {
             return Profile.update(identityId, { balance: 0 }, transaction.self)
               .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-              .then(balanceChange => transaction.commit(balanceChange, `Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`))
+              .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
               .then(() => defaultResponse);
           })
-          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
+          .catch(error => transaction.rollback(error.message).then(() => Promise.reject(error)));
 
     default:
       return defaultResponse;

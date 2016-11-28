@@ -17,7 +17,7 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  const transaction = new Transaction(event.identityId);
+  const transaction = new Transaction();
 
   return signatures.validateSignatures(event.itinerary)
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
@@ -27,7 +27,7 @@ module.exports.respond = function (event, callback) {
         .then(() => transaction.bind(models.Itinerary))
         .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction.self))
         .then(newItinerary => {
-          return transaction.associate(models.Itinerary, newItinerary.id)
+          return transaction.associate(models.Itinerary.tableName, newItinerary.id)
             .then(() => Promise.resolve(newItinerary));
         });
     })
@@ -51,7 +51,7 @@ module.exports.respond = function (event, callback) {
       const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
 
       const message = `Reserved a trip from ${fromName} to ${toName}`;
-      return transaction.commit(-1 * itinerary.fare.points, message)
+      return transaction.commit(message, event.identityId, -1 * itinerary.fare.points)
         .then(() => Promise.resolve(itinerary));
     })
     .then(itinerary => formatResponse(itinerary))
@@ -64,7 +64,7 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      return transaction.rollback()
+      return transaction.rollback(_error.message)
         .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
