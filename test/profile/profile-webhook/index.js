@@ -961,11 +961,7 @@ module.exports = function (identityId) {
     describe(testName, () => {
       const event = {
         id: CHARGEBEE_ID,
-        payload: {
-          webhook_status: 'not_configured',
-          event_type: event_type,
-          content: testEvents.default[event_type],
-        },
+        payload: testEvents.default[event_type],
       };
 
       let response = null;

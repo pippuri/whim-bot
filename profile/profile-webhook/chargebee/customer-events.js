@@ -1,28 +1,29 @@
 'use strict';
 
+const models = require('../../../lib/models');
 const Profile = require('../../../lib/business-objects/Profile');
 const Subscription = require('../../../lib/subscription-manager');
+const Transaction = require('../../../lib/business-objects/Transaction');
 
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 const NO_PROMO_CODE = undefined;
 const SKIP_CHARGEBEE_UPDATE = true;
 const FORCE_SUBSCRIPTION_UPDATE = true;
 
-
 function handle(payload, key, defaultResponse) {
   console.info('handleCustomerEvents');
   console.info(JSON.stringify(payload));
 
-  let profile = null;
-  let identityId = null;
+  const profile = Subscription.formatUser(payload.content);
+  const identityId = profile.identityId;
+
+  const transaction = new Transaction(identityId);
+
   switch (payload.event_type) {
     case 'customer_changed':
     case 'customer_created':
       console.info(`\t${payload.event_type}`);
       console.info(payload.content.content);
-
-      profile = Subscription.formatUser(payload.content);
-      identityId = profile.identityId;
 
       // Make sure we have at least something
       if (!profile.hasOwnProperty('address')) {
@@ -46,15 +47,25 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       console.info(payload.content.content);
 
-      profile = Subscription.formatUser(payload.content);
-      identityId = profile.identityId;
-      return Profile.updateSubscription(identityId,
-                                        WHIM_DEFAULT,
-                                        NO_PROMO_CODE,
-                                        SKIP_CHARGEBEE_UPDATE,
-                                        FORCE_SUBSCRIPTION_UPDATE)
-        .then(() => Profile.update(identityId, { balance: 0 }))
-        .then(() => defaultResponse);
+      return transaction.start()
+        .then(() => transaction.bind(models.Profile))
+        .then(() => transaction.associate(models.Profile, identityId))
+        .then(() => Profile.updateSubscription(
+          identityId,
+          transaction.self,
+          WHIM_DEFAULT,
+          NO_PROMO_CODE,
+          SKIP_CHARGEBEE_UPDATE,
+          FORCE_SUBSCRIPTION_UPDATE))
+          .then(() => Profile.retrieve(identityId))
+          // NOTE DO NOT REMOVE ALL USER BALANCE
+          .then(oldProfile => {
+            return Profile.update(identityId, { balance: 0 }, transaction.self)
+              .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
+              .then(balanceChange => transaction.commit(balanceChange, `Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`))
+              .then(() => defaultResponse);
+          })
+          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 
     default:
       return defaultResponse;
