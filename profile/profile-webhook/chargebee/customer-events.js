@@ -49,7 +49,7 @@ function handle(payload, key, defaultResponse) {
 
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile.tableName, identityId))
+        .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,
@@ -65,7 +65,7 @@ function handle(payload, key, defaultResponse) {
               .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
               .then(() => defaultResponse);
           })
-          .catch(error => transaction.rollback(error.message).then(() => Promise.reject(error)));
+          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 
     default:
       return defaultResponse;

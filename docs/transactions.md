@@ -4,7 +4,7 @@ MaaS includes its own implementation of transaction to associate transaction log
 
 ## Sample Flow - Cancel an Itinerary
 
-The usage is almost as simple as with Objection transactions: Create a transaction that you give a name (and optionally a value), associate model instances it within the transaction and commit. The transaction log gets written on commit. If you rollback, nothing gets written into the transaction log (but this gets logged into system log).
+The usage is almost as simple as with Objection transactions: Create a transaction that you give a name (and optionally a value), put one or more meta details within the transaction and commit. The transaction log gets written on commit. If you rollback, nothing gets written into the transaction log (but this gets logged into system log).
 
 The following concept level sequence diagram illustrates the usage (open with PlantUML, e.g. with markdown-preview-enhanced plugin).
 

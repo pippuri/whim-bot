@@ -33,7 +33,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile.tableName, identityId))
+        .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,
@@ -60,7 +60,7 @@ function handle(payload, key, defaultResponse) {
       console.info(`\t${payload.event_type}`);
       return transaction.start()
         .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.associate(models.Profile.tableName, identityId))
+        .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
           transaction.self,

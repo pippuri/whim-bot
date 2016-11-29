@@ -8,7 +8,7 @@ exports.up = function (knex, Promise) {
       table.string('identityId').index().notNullable();
       table.string('message').notNullable();
       table.integer('value').notNullable();
-      table.jsonb('associations').notNullable();
+      table.jsonb('meta').notNullable();
 
       table.timestamp('created').index().notNullable().defaultTo(knex.raw('now()'));
       // Note: Transaction log is not intended to be modified after creation.

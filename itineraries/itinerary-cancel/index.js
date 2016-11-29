@@ -39,7 +39,7 @@ module.exports.respond = (event, callback) => {
     .then(itinerary => {
       return transaction.start()
         .then(() => transaction.bind(models.Itinerary))
-        .then(() => transaction.associate(models.Itinerary.tableName, itinerary.id))
+        .then(() => transaction.meta(models.Itinerary.tableName, itinerary.id))
         .then(() => Promise.resolve(itinerary));
     })
     .then(itinerary => itinerary.cancel(transaction.self))
@@ -66,7 +66,7 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      return transaction.rollback(_error.message)
+      return transaction.rollback()
         .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {

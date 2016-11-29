@@ -31,7 +31,7 @@ describe('Writes the transaction to the DB', () => {
     transaction = new Transaction(identityId);
     return transaction.start()
       .then(() => transaction.bind(Booking))
-      .then(() => transaction.associate(Booking.tableName, bookingId))
+      .then(() => transaction.meta(Booking.tableName, bookingId))
       .then(() => transaction.commit(message, identityId, value))
       .then(_logEntry => (logEntry = _logEntry));
   });
@@ -57,7 +57,7 @@ describe('Writes the transaction to the DB', () => {
         expect(entry.identityId).to.equal(identityId);
         expect(entry.message).to.equal(message);
         expect(entry.value).to.equal(value);
-        expect(entry.associations).to.have.property('Booking');
+        expect(entry.meta).to.have.property('Booking');
       });
   });
 });
