@@ -18,8 +18,8 @@ function getRoutes(identityId, params) {
     .then(routes => {
       const filterOptions = {
         keepUnpurchasable: true,
-        distanceDeltaThreshold: 180, // %
-        longThreshold: 5000, // meter
+        distanceGapThreshold: 180, // %
+        walkThreshold: 5000, // meter
         removeIdentical: true,
       };
 

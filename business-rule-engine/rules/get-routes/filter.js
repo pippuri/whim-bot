@@ -6,11 +6,11 @@ const _uniqWith = require('lodash/uniqWith');
 const _isEqual = require('lodash/isEqual');
 
 /**
- * Filter out all itinerary that is unpurchasable
+ * Filter out all itineraries that is unpurchasable
  * @param {Object} itineraries - input itineraries list
  * @return {Object} itineraries - filtered itineraries
  */
-function filterOutUnpurchasableItinerary(itineraries) {
+function filterOutUnpurchasableItineraries(itineraries) {
   return itineraries.filter(itinerary => {
     return itinerary.fare.points !== null;
   });
@@ -19,10 +19,10 @@ function filterOutUnpurchasableItinerary(itineraries) {
 /**
  * Filter itineraries with too large distance gap between bird distance and real route distance
  * @param {Object} itineraries - input itineraries list
- * @param {Float} threshold - distance delta threshold (percentage)
+ * @param {Float} threshold - routes distance gap threshold (percentage)
  * @return {Object} itineraries - filtered itineraries
  */
-function filterUnsensibleItinerary(itineraries, threshold) {
+function filterUnsensibleItineraries(itineraries, threshold) {
   const validItineraries = itineraries.filter(iti => {
 
     if (iti.legs.length === 0) throw new MaaSError('One itinerary has no leg', 500);
@@ -78,23 +78,23 @@ function filterIdenticalItineraries(itineraries) {
  * @param {Object} itineraries - input itineraries list
  * @param {Object} options - filtering options
  * @param {Boolean} options.keepUnpurchasable - keep unpurchasable or not
- * @param {Float} options.distanceDeltaThreshold - threshold for short walking itineraries
- * @param {Float} options.longThreshold - threshold for long walking itineraries
+ * @param {Float} options.distanceGapThreshold - threshold for short walking itineraries
+ * @param {Float} options.walkThreshold - threshold for long walking itineraries
  * @return {Object} itineraries - filtered itineraries
  */
 function resolve(itineraries, options) {
-  if (options.keepUnpurchasable === true) {
-    itineraries = filterOutUnpurchasableItinerary(itineraries);
+  if (options.keepUnpurchasable === false) {
+    itineraries = filterOutUnpurchasableItineraries(itineraries);
   }
 
-  if (options.distanceDeltaThreshold) {
-    if (Number(options.distanceDeltaThreshold) !== options.distanceDeltaThreshold) throw new Error('distanceDeltaThreshold must be a number');
-    itineraries = filterUnsensibleItinerary(itineraries, options.distanceDeltaThreshold);
+  if (options.distanceGapThreshold) {
+    if (Number(options.distanceGapThreshold) !== options.distanceGapThreshold) throw new Error('distanceGapThreshold must be a number');
+    itineraries = filterUnsensibleItineraries(itineraries, options.distanceGapThreshold);
   }
 
-  if (options.longThreshold) {
-    if (Number(options.longThreshold) !== options.longThreshold) throw new Error('longThreshold must be a number');
-    itineraries = filterLongWalkingItineraries(itineraries, options.longThreshold);
+  if (options.walkThreshold) {
+    if (Number(options.walkThreshold) !== options.walkThreshold) throw new Error('walkThreshold must be a number');
+    itineraries = filterLongWalkingItineraries(itineraries, options.walkThreshold);
   }
 
   if (options.removeIdentical === true) {
@@ -105,8 +105,8 @@ function resolve(itineraries, options) {
 }
 
 module.exports = {
-  filterOutUnpurchasableItinerary,
-  filterUnsensibleItinerary,
+  filterOutUnpurchasableItineraries,
+  filterUnsensibleItineraries,
   filterLongWalkingItineraries,
   resolve,
 };

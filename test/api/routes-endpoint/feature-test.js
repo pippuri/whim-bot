@@ -198,15 +198,15 @@ module.exports = options => {
       return validator.validate(schema, response);
     });
 
-    xit('response should have route', () => {
+    it('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
     // FIXME Our current business rules engine does not support this case
     // (it picks the first provider matching the geometry)
-    xit('response should have direct taxi route', () => {
+    it('response should have direct taxi route', () => {
 
-      const allowed = ['TAXI', 'WALK', 'WAIT', 'TRANSFER', 'LEG_SWITCH'];
+      const allowed = ['TAXI', 'WALK', 'WAIT'];
 
       const itinerariesWithAllowedModes = response.plan.itineraries.filter(itinerary => {
         const modes = _.map(itinerary.legs, 'mode');
