@@ -198,7 +198,7 @@ module.exports = options => {
       return validator.validate(schema, response);
     });
 
-    it('response should have route', () => {
+    xit('response should have route', () => {
       expect(response.plan.itineraries).to.not.be.empty;
     });
 
