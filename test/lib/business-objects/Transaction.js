@@ -36,12 +36,6 @@ describe('Writes the transaction to the DB', () => {
       .then(_logEntry => (logEntry = _logEntry));
   });
 
-  it('stores the values in the object correctly', () => {
-    expect(transaction.getRecord.identityId).to.equal(identityId);
-    expect(transaction.getRecord.message).to.equal(message);
-    expect(transaction.getRecord.value).to.equal(value);
-  });
-
   it('returns a proper log entry', () => {
     expect(logEntry.id).to.exist;
     expect(logEntry.identityId).to.equal(identityId);

@@ -108,7 +108,7 @@ module.exports.respond = function (event, callback) {
         .then(() => transaction.meta(models.Profile.tableName, event.identityId));
     })
     .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
-    .then(confirmed => makePurchase(confirmed.identityId, transaction.self, confirmed.productId, confirmed.cost, confirmed.points))
+    .then(confirmed => makePurchase(confirmed.identityId, transaction.toDbTransaction(), confirmed.productId, confirmed.cost, confirmed.points))
     .then(response => {
       return transaction.commit(`Topup ${payload.points}p`, event.identityId, payload.points)
         .then(() => Promise.resolve(response));

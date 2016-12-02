@@ -55,18 +55,10 @@ module.exports.respond = (event, callback) => {
         .then(() => transaction.meta(models.Booking.tableName, booking.id))
         .then(() => Promise.resolve(booking));
     })
-    .then(booking => booking.cancel(transaction.self))
-    .then(response => {
-      const booking = response.toObject();
-      let message;
-      switch (booking.leg.mode) {
-        case 'CAR':
-          message = `Cancelled a ${booking.leg.mode} reservation from ${booking.leg.agencyId}`;
-          break;
-        default:
-          message = `Cancelled a ${booking.leg.mode} ticket from ${booking.leg.agencyId}`;
-          break;
-      }
+    .then(booking => booking.cancel(transaction.toDbTransaction()))
+    .then(bookingInstance => {
+      const booking = bookingInstance.toObject();
+      const message = `Cancelled reservation for a ${booking.leg.mode}`;
 
       return transaction.commit(message, event.identityId, booking.fare.amount)
         .then(() => Promise.resolve(booking));

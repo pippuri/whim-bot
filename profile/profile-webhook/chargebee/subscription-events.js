@@ -14,7 +14,6 @@ function handle(payload, key, defaultResponse) {
   console.info('handleSubscriptionEvents');
   console.info(JSON.stringify(payload));
 
-  console.log(payload);
   const profile = Subscription.formatUser(payload.content);
 
   const identityId = profile.identityId;
@@ -36,14 +35,14 @@ function handle(payload, key, defaultResponse) {
         .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction.self,
+          transaction.toDbTransaction(),
           activePlan,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE))
         .then(() => Profile.retrieve(identityId))
         // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
-          return Profile.update(identityId, { balance: 0 }, transaction.self)
+          return Profile.update(identityId, { balance: 0 }, transaction.toDbTransaction())
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
             .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}`, identityId, balanceChange))
             .then(() => defaultResponse);
@@ -63,7 +62,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction.self,
+          transaction.toDbTransaction(),
           WHIM_DEFAULT,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE,
@@ -71,7 +70,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => Profile.retrieve(identityId))
         // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
-          return Profile.update(identityId, { balance: 0 }, transaction.self)
+          return Profile.update(identityId, { balance: 0 }, transaction.toDbTransaction())
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
             .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
             .then(() => defaultResponse);

@@ -25,32 +25,25 @@ module.exports.respond = function (event, callback) {
     .then(unsignedItinerary => {
       return transaction.start()
         .then(() => transaction.bind(models.Itinerary))
-        .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction.self))
+        .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction.toDbTransaction()))
         .then(newItinerary => {
           return transaction.meta(models.Itinerary.tableName, newItinerary.id)
             .then(() => Promise.resolve(newItinerary));
         });
     })
-    .then(newItinerary => newItinerary.pay(transaction.self))
+    .then(newItinerary => newItinerary.pay(transaction.toDbTransaction()))
     // Juha's block of code, reinsert right here in case of emergency http://codepen.io/blackevil245/pen/eBvoBX
     .then(itinerary => TripEngine.startWithItinerary(itinerary))
-    .then(response => {
+    .then(itineraryInstance => {
       // Response is a Itinerary class instance
-      const itinerary = response.toObject();
-
+      const itinerary = itineraryInstance.toObject();
       // Prevent faulty negative point in itinerary fare as all itineraries must cost more or equal to 0
       if (itinerary.fare && itinerary.fare.points < 0) {
         return transaction.rollback()
           .then(() => Promise.reject(new MaaSError('Faulty new itinerary, fare is smaller than 0', 500)));
       }
 
-      const firstLeg = itinerary.legs[0];
-      const lastLeg = itinerary.legs[itinerary.legs.length - 1];
-
-      const fromName = firstLeg.from.name ? firstLeg.from.name : `${firstLeg.from.lat},${firstLeg.from.lon}`;
-      const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
-
-      const message = `Reserved a trip from ${fromName} to ${toName}`;
+      const message = `Reserved a trip from ${itineraryInstance.fromName()} to ${itineraryInstance.toName()}`;
       return transaction.commit(message, event.identityId, -1 * itinerary.fare.points)
         .then(() => Promise.resolve(itinerary));
     })

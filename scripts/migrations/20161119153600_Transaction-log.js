@@ -7,7 +7,7 @@ exports.up = function (knex, Promise) {
       table.uuid('id').primary().notNullable().unique();
       table.string('identityId').index().notNullable();
       table.string('message').notNullable();
-      table.integer('value').notNullable();
+      table.integer('value');
       table.jsonb('meta').notNullable();
 
       table.timestamp('created').index().notNullable().defaultTo(knex.raw('now()'));

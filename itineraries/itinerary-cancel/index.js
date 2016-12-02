@@ -42,17 +42,11 @@ module.exports.respond = (event, callback) => {
         .then(() => transaction.meta(models.Itinerary.tableName, itinerary.id))
         .then(() => Promise.resolve(itinerary));
     })
-    .then(itinerary => itinerary.cancel(transaction.self))
+    .then(itinerary => itinerary.cancel(transaction.toDbTransaction()))
     .then(itinerary => Trip.cancelWithItinerary(itinerary))
-    .then(response => {
-      const itinerary = response.toObject();
-      const firstLeg = itinerary.legs[0];
-      const lastLeg = itinerary.legs[itinerary.legs.length - 1];
-
-      const fromName = firstLeg.from.name ? firstLeg.from.name : `${firstLeg.from.lat},${firstLeg.from.lon}`;
-      const toName = lastLeg.to.name ? lastLeg.to.name : `${lastLeg.to.lat},${lastLeg.to.lon}`;
-
-      const message = `Cancelled a trip from ${fromName} to ${toName}`;
+    .then(itineraryInstance => {
+      const itinerary = itineraryInstance.toObject();
+      const message = `Cancelled a trip from ${itineraryInstance.fromName()} to ${itineraryInstance.toName()}`;
       return transaction.commit(message, event.identityId, itinerary.fare.points)
         .then(() => Promise.resolve(itinerary));
     })

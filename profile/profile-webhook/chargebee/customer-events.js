@@ -52,7 +52,7 @@ function handle(payload, key, defaultResponse) {
         .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction.self,
+          transaction.toDbTransaction(),
           WHIM_DEFAULT,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE,
@@ -60,7 +60,7 @@ function handle(payload, key, defaultResponse) {
           .then(() => Profile.retrieve(identityId))
           // NOTE DO NOT REMOVE ALL USER BALANCE
           .then(oldProfile => {
-            return Profile.update(identityId, { balance: 0 }, transaction.self)
+            return Profile.update(identityId, { balance: 0 }, transaction.toDbTransaction())
               .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
               .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
               .then(() => defaultResponse);
