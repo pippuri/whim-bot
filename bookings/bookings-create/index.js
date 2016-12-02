@@ -84,12 +84,10 @@ module.exports.respond = (event, callback) => {
           const message = `Cancelled reservation for a ${bookingData.leg.mode}`;
 
           // Always commit a negative value as paying means losing
-          // FIXME Why is the transaction commited before booking reservation???
-          // Should be be inside the same transaction instead
-          return transaction.commit(message, event.identityId, -1 * bookingData.fare.amount)
+          return paidBooking.reserve(transaction.toDbTransaction())
+            .then(() => transaction.commit(message, event.identityId, -1 * bookingData.fare.amount))
             .then(() => Promise.resolve(paidBooking));
         })
-        .then(booking => booking.reserve())
         .then(booking => formatResponse(booking.toObject()))
         .then(bookingData => {
           models.Database.cleanup()

@@ -9,7 +9,7 @@ const MaaSError = require('../../lib/errors/MaaSError.js');
 const AWS = require('aws-sdk');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const models = require('../../lib/models');
-const Database = models.Database;
+const Transaction = require('../../lib/business-objects/Transaction');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
@@ -334,8 +334,11 @@ class Decider {
       return Promise.resolve();
     }
 
+    const transaction = new Transaction();
     // try to activate leg
-    return leg.activate({ tryReuseBooking: true })
+    return transaction.start()
+      .then(() => transaction.bind(models.Leg))
+      .then(() => leg.activate(transaction.toDbTransaction(), { tryReuseBooking: true }))
       .then(() => {
         // check booking if leg have one
         if (!leg.booking) {
@@ -349,7 +352,7 @@ class Decider {
           }
           return this._sendPushNotification('ObjectChange', { ids: [booking.id], objectType: 'Booking' }, message, 'Alert');
         }
-        return Promise.resolve();
+        return transaction.commit();
       })
       .then(() => {
         // if it is more than two minutues to leg start, schedule another check
@@ -364,7 +367,8 @@ class Decider {
       .catch(err => {
         console.error('[Decider] Could not check leg!', err);
         console.error(err.stack);
-        return Promise.reject(`error while checking leg '${leg.id}', err: ${err}`);
+        return transaction.rollback()
+          .then(() => Promise.reject(`error while checking leg '${leg.id}', err: ${err}`));
       });
   }
 
@@ -414,10 +418,10 @@ module.exports.respond = function (event, callback) {
     return callback(new MaaSError(err.message || err, 400));
   }
 
-  return Database.init()
+  return models.Database.init()
     .then(() => decider.decide())
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -426,7 +430,7 @@ module.exports.respond = function (event, callback) {
       console.warn(_error.stack);
 
       // Uncaught, unexpected error
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
@@ -438,4 +442,3 @@ module.exports.respond = function (event, callback) {
 
     });
 };
-
