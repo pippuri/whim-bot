@@ -95,7 +95,7 @@ class Decider {
           })
           // process the legs
           .then(itinerary => this._processLegs(itinerary))
-          // schedule trip closing into end, defaulting to one day
+          // schedule trip closing into end after 30mins of end of the trip
           .then(() => {
             const timeout = (this.flow.trip.endTime || Date.now() + (24 * 60 * 60 * 1000)) + (30 * 60 * 1000);
             this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
@@ -268,15 +268,7 @@ class Decider {
       }
       return Promise.resolve();
     })
-    // if last leg is activated or finished, schedule closing trip & notify user
     .then(() => {
-      const lastLegState = itinerary.legs[itinerary.legs.length - 1].state;
-      if (lastLegState === 'ACTIVATED' || lastLegState === 'FINISHED') {
-        const timeout = Date.now() + (30 * 60 * 1000);
-        this.decision.scheduleTimedTask(timeout, TripWorkFlow.TASK_CLOSE_TRIP);
-        console.info(`[Decider] decided to schedule task '${TripWorkFlow.TASK_CLOSE_TRIP}' ` +
-                    `itinerary id '${this.flow.trip.referenceId}' into ${new Date(timeout)}.`);
-      }
       if (hasErrors === true) {
         console.warn('[Decider] legs processed, warning user about errors');
         const message = 'Problems with one or more bookings. Click to check the trip.';
@@ -438,4 +430,3 @@ module.exports.respond = function (event, callback) {
 
     });
 };
-
