@@ -47,6 +47,7 @@ module.exports.respond = (event, callback) => {
     .then(itineraryInstance => {
       const itinerary = itineraryInstance.toObject();
       const message = `Cancelled a trip from ${itineraryInstance.fromName()} to ${itineraryInstance.toName()}`;
+      // At this points do not know how many points are actually returned, soooooo
       return transaction.commit(message, event.identityId, itinerary.fare.points)
         .then(() => Promise.resolve(itinerary));
     })
