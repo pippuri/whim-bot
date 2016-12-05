@@ -42,7 +42,7 @@ module.exports.respond = (event, callback) => {
         .then(() => transaction.meta(models.Itinerary.tableName, itinerary.id))
         .then(() => Promise.resolve(itinerary));
     })
-    .then(itinerary => itinerary.cancel(transaction.toDbTransaction()))
+    .then(itinerary => itinerary.cancel(transaction))
     .then(itinerary => Trip.cancelWithItinerary(itinerary))
     .then(itineraryInstance => {
       const itinerary = itineraryInstance.toObject();

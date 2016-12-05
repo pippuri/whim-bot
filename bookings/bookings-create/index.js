@@ -68,8 +68,8 @@ module.exports.respond = (event, callback) => {
     .then(unsignedBooking => {
       return transaction.start()
         .then(() => transaction.bind(models.Booking))
-        .then(() => Booking.create(unsignedBooking, event.identityId, transaction.toDbTransaction(), { skipInsert: false }))
-        .then(newBooking => newBooking.pay(transaction.toDbTransaction()))
+        .then(() => Booking.create(unsignedBooking, event.identityId, transaction, { skipInsert: false }))
+        .then(newBooking => newBooking.pay(transaction))
         .then(paidBooking => {
           return transaction.meta(models.Booking.tableName, paidBooking.booking.id)
             .then(() => Promise.resolve(paidBooking));
@@ -84,7 +84,7 @@ module.exports.respond = (event, callback) => {
           const message = `Cancelled reservation for a ${bookingData.leg.mode}`;
 
           // Always commit a negative value as paying means losing
-          return paidBooking.reserve(transaction.toDbTransaction())
+          return paidBooking.reserve(transaction)
             .then(() => transaction.commit(message, event.identityId, -1 * bookingData.fare.amount))
             .then(() => Promise.resolve(paidBooking));
         })

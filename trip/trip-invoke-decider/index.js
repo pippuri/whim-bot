@@ -338,7 +338,7 @@ class Decider {
     // try to activate leg
     return transaction.start()
       .then(() => transaction.bind(models.Leg))
-      .then(() => leg.activate(transaction.toDbTransaction(), { tryReuseBooking: true }))
+      .then(() => leg.activate(transaction, { tryReuseBooking: true }))
       .then(() => {
         // check booking if leg have one
         if (!leg.booking) {

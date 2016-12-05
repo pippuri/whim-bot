@@ -25,13 +25,13 @@ module.exports.respond = function (event, callback) {
     .then(unsignedItinerary => {
       return transaction.start()
         .then(() => transaction.bind(models.Itinerary))
-        .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction.toDbTransaction()))
+        .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction))
         .then(newItinerary => {
           return transaction.meta(models.Itinerary.tableName, newItinerary.id)
             .then(() => Promise.resolve(newItinerary));
         });
     })
-    .then(newItinerary => newItinerary.pay(transaction.toDbTransaction()))
+    .then(newItinerary => newItinerary.pay(transaction))
     // Juha's block of code, reinsert right here in case of emergency http://codepen.io/blackevil245/pen/eBvoBX
     .then(itinerary => TripEngine.startWithItinerary(itinerary))
     .then(itineraryInstance => {

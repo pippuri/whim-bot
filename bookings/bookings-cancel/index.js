@@ -55,7 +55,7 @@ module.exports.respond = (event, callback) => {
         .then(() => transaction.meta(models.Booking.tableName, booking.id))
         .then(() => Promise.resolve(booking));
     })
-    .then(booking => booking.cancel(transaction.toDbTransaction()))
+    .then(booking => booking.cancel(transaction))
     .then(bookingInstance => {
       const booking = bookingInstance.toObject();
       const message = `Cancelled reservation for a ${booking.leg.mode}`;
