@@ -1,8 +1,8 @@
 'use strict';
 
 const Promise = require('bluebird');
-const serviceBus = require('../../../../lib/service-bus');
 const MaaSError = require('../../../../lib/errors/MaaSError.js');
+const HERERoutesProvider = require('../../provider-here-routes/handler.js');
 
 const GEOMETRY_QUERY_MODE = 'TAXI';
 
@@ -87,11 +87,23 @@ function extractDistanceFromHereLeg(leg) {
 
 function getLegGeometryPoints(option) {
   // Call the HERE route provider for a likely driving route
-  return serviceBus.call('MaaS-provider-here-routes', {
-    from: `${option.leg.from.lat},${option.leg.from.lon}`,
-    to: `${option.leg.to.lat},${option.leg.to.lon}`,
-    leaveAt: Date.now(),
-    modes: GEOMETRY_QUERY_MODE,
+  return new Promise((resolve, reject) => {
+    const event = {
+      from: `${option.leg.from.lat},${option.leg.from.lon}`,
+      to: `${option.leg.to.lat},${option.leg.to.lon}`,
+      leaveAt: Date.now(),
+      modes: GEOMETRY_QUERY_MODE,
+    };
+    const context = {
+      done: (err, data) => {
+        if (err !== null) {
+          reject(err);
+        }
+        resolve(data);
+      },
+    };
+
+    HERERoutesProvider.handler(event, context);
   });
 }
 
