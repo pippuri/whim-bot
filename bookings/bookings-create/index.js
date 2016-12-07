@@ -1,13 +1,13 @@
 'use strict';
 
-const Booking = require('../../lib/business-objects/Booking');
 const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
 const signatures = require('../../lib/signatures');
 const utils = require('../../lib/utils');
 
-const Database = models.Database;
+const Transaction = require('../../lib/business-objects/Transaction');
+const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validate event input
@@ -58,35 +58,49 @@ function formatResponse(booking) {
  * @return {Promise -> [undefined,undefined]}
  */
 module.exports.respond = (event, callback) => {
-  let trx;
 
-  return Database.init()
-    .then(() => validateInput(event))
+  const transaction = new Transaction();
+
+  return validateInput(event)
     .then(() => signatures.validateSignatures(event.payload))
     .then(signedBooking => utils.without(signedBooking, ['signature']))
-    .then(unsignedBooking => Booking.startTransaction()
-      .then(transaction => Promise.resolve(trx = transaction))
-      .then(transaction => Booking.create(unsignedBooking, event.identityId, { skipInsert: false, trx })))
-    .then(booking => booking.pay({ trx }))
-    .then(booking => trx.commit()
-      .then(() => {
-        trx = undefined; // prevent possible rollback in error handler from now on
-        return Promise.resolve(booking);
-      }))
-    .then(booking => booking.reserve())
-    .then(booking => formatResponse(booking.toObject()))
-    .then(bookingData => {
-      Database.cleanup()
-        .then(() => callback(null, bookingData));
+    .then(unsignedBooking => models.Database.init().then(() => Promise.resolve(unsignedBooking)))
+    .then(unsignedBooking => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Booking))
+        .then(() => Booking.create(unsignedBooking, event.identityId, transaction, { skipInsert: false }))
+        .then(newBooking => newBooking.pay(transaction))
+        .then(paidBooking => {
+          return transaction.meta(models.Booking.tableName, paidBooking.booking.id)
+            .then(() => Promise.resolve(paidBooking));
+        })
+        .then(paidBooking => {
+          const bookingData = paidBooking.toObject();
+          // Prevent faulty negative point in booking fare as all booking must cost more or equal to 0
+          if (bookingData.fare.amount < 0) {
+            return transaction.rollback()
+              .then(() => Promise.reject(new MaaSError('Faulty new booking, fare is smaller than 0', 500)));
+          }
+          const message = `Cancelled reservation for a ${bookingData.leg.mode}`;
+
+          // Always commit a negative value as paying means losing
+          return paidBooking.reserve(transaction)
+            .then(() => transaction.commit(message, event.identityId, -1 * bookingData.fare.amount))
+            .then(() => Promise.resolve(paidBooking));
+        })
+        .then(booking => formatResponse(booking.toObject()))
+        .then(bookingData => {
+          models.Database.cleanup()
+            .then(() => callback(null, bookingData));
+        });
     })
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      const rollback = trx ? trx.rollback() : Promise.resolve();
-      return rollback
-        .then(() => Database.cleanup())
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

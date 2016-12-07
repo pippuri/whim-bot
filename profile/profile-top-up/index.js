@@ -1,10 +1,11 @@
 'use strict';
 
-const Database = require('../../lib/models/Database');
 const MaaSError = require('../../lib/errors/MaaSError');
+const models = require('../../lib/models');
 const Profile = require('../../lib/business-objects/Profile');
 const Promise = require('bluebird');
 const SubscriptionMgr = require('../../lib/subscription-manager');
+const Transaction = require('../../lib/business-objects/Transaction');
 
 /**
  * Validate the input
@@ -70,7 +71,7 @@ function confirmCharge(identityId, productId, points, limit) {
 /**
  * make the addon product purchase and update profile with new points tally
  */
-function makePurchase(identityId, productId, cost, points) {
+function makePurchase(identityId, transaction, productId, cost, points) {
   let currentBalance;
   return Profile.retrieve(identityId)
   .then(profile => {
@@ -86,7 +87,7 @@ function makePurchase(identityId, productId, cost, points) {
     if (purchase.status === 'paid') {
       // update profile with the points the successful purchase grants
       const newBalance = currentBalance + points;
-      return Profile.update(identityId, { balance: newBalance })
+      return Profile.update(identityId, { balance: newBalance }, transaction)
         .then(profile => Object.assign({}, purchase, { profile: profile }));
     }
     return Promise.reject(new MaaSError(`Purchase failed on ChargeBee: ${purchase}`, 500));
@@ -95,12 +96,25 @@ function makePurchase(identityId, productId, cost, points) {
 
 module.exports.respond = function (event, callback) {
 
-  Database.init()
-    .then(() => parseAndValidateInput(event))
-    .then(parsed => confirmCharge(parsed.identityId, parsed.productId, parsed.points, parsed.limit))
-    .then(confirmed => makePurchase(confirmed.identityId, confirmed.productId, confirmed.cost, confirmed.points))
+  const transaction = new Transaction();
+  let payload;
+
+  return parseAndValidateInput(event)
+    .then(parsed => {
+      payload = parsed;
+      models.Database.init()
+        .then(() => transaction.start())
+        .then(() => transaction.bind(models.Profile))
+        .then(() => transaction.meta(models.Profile.tableName, event.identityId));
+    })
+    .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
+    .then(confirmed => makePurchase(confirmed.identityId, transaction, confirmed.productId, confirmed.cost, confirmed.points))
     .then(response => {
-      Database.cleanup()
+      return transaction.commit(`Topup ${payload.points}p`, event.identityId, payload.points)
+        .then(() => Promise.resolve(response));
+    })
+    .then(response => {
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -108,7 +122,8 @@ module.exports.respond = function (event, callback) {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);

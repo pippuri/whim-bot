@@ -1,11 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Booking = require('../../lib/business-objects/Booking');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
+const Promise = require('bluebird');
+const Transaction  = require('../../lib/business-objects/Transaction');
 const utils = require('../../lib/utils');
-const Database = models.Database;
-const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validate event input
@@ -43,14 +43,29 @@ function formatResponse(booking) {
 
 module.exports.respond = (event, callback) => {
 
-  return Database.init()
-    .then(() => validateInput(event))
+  const transaction = new Transaction();
+
+  return validateInput(event)
+    .then(() => models.Database.init())
     .then(() => Booking.retrieve(event.bookingId))
     .then(booking => booking.validateOwnership(event.identityId))
-    .then(booking => booking.cancel())
-    .then(booking => formatResponse(booking.toObject()))
+    .then(booking => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Booking))
+        .then(() => transaction.meta(models.Booking.tableName, booking.id))
+        .then(() => Promise.resolve(booking));
+    })
+    .then(booking => booking.cancel(transaction))
+    .then(bookingInstance => {
+      const booking = bookingInstance.toObject();
+      const message = `Cancelled reservation for a ${booking.leg.mode}`;
+
+      return transaction.commit(message, event.identityId, booking.fare.amount)
+        .then(() => Promise.resolve(booking));
+    })
+    .then(booking => formatResponse(booking))
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -58,15 +73,15 @@ module.exports.respond = (event, callback) => {
       console.warn(`This event caused error: ${JSON.stringify(event, null, 2)}`);
       console.warn(_error.stack);
 
-      Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
 
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
     });
-
 };

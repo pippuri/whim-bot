@@ -4,9 +4,9 @@ const Promise = require('bluebird');
 const models = require('../../lib/models');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
-const Database = models.Database;
 const Trip = require('../../lib/trip');
 const Itinerary = require('../../lib/business-objects/Itinerary');
+const Transaction  = require('../../lib/business-objects/Transaction');
 
 function validateInput(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
@@ -29,15 +29,31 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = (event, callback) => {
-  return Database.init()
-    .then(() => validateInput(event))
+
+  const transaction = new Transaction();
+
+  return validateInput(event)
+    .then(() => models.Database.init())
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
-    .then(itinerary => itinerary.cancel())
+    .then(itinerary => {
+      return transaction.start()
+        .then(() => transaction.bind(models.Itinerary))
+        .then(() => transaction.meta(models.Itinerary.tableName, itinerary.id))
+        .then(() => Promise.resolve(itinerary));
+    })
+    .then(itinerary => itinerary.cancel(transaction))
     .then(itinerary => Trip.cancelWithItinerary(itinerary))
-    .then(itinerary => formatResponse(itinerary.toObject()))
+    .then(itineraryInstance => {
+      const itinerary = itineraryInstance.toObject();
+      const message = `Cancelled a trip from ${itineraryInstance.fromName()} to ${itineraryInstance.toName()}`;
+      // At this points do not know how many points are actually returned, soooooo
+      return transaction.commit(message, event.identityId, itinerary.fare.points)
+        .then(() => Promise.resolve(itinerary));
+    })
+    .then(itinerary => formatResponse(itinerary))
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -45,7 +61,8 @@ module.exports.respond = (event, callback) => {
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
+      return transaction.rollback()
+        .then(() => models.Database.cleanup())
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
