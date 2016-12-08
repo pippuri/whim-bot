@@ -61,12 +61,12 @@ module.exports.respond = (event, callback) => {
         .then(booking => booking.validateOwnership(event.identityId))
         .then(booking => booking.refresh(transaction))
         .then(booking => {
-          transaction.commit(null, event.identityId);
+          transaction.commit(null);
           return booking;
         })
         .catch(error => {
-          transaction.rollback();
-          return Promise.reject(error);
+          transaction.rollback()
+            .then(() => Promise.reject(error));
         });
       }
 
