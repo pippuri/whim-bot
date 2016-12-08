@@ -8,6 +8,8 @@ const lib = require('../lib/index');
 const errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
+const Transaction = require('../../lib/business-objects/Transaction');
+const TransactionLog = require('../../lib/models/TransactionLog');
 
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
@@ -200,9 +202,29 @@ function smsLogin(phone, code) {
   .then(() => {
     // First try to fetch an existing identity
     return Profile.retrieve(identityId)
+      // There's a profile but no transaction found, create first log entry
+      // to state the beginning user balance
+      .then(profile => {
+        const transaction = new Transaction();
+        return transaction.start()
+          .then(() => transaction.meta('Profile', identityId))
+          .then(() => transaction.bind(TransactionLog).query().where('identityId', identityId))
+          .then(logEntries => {
+            if (logEntries.length === 0) return transaction.commit(`Profile created with ${profile.balance} points`, profile.balance, identityId);
+            // If there exists a log entry already, rollback actions
+            // NOTE For a clean serving, do a total wipe on transaction log.
+            return transaction.rollback();
+          })
+          .catch(() => transaction.rollback());
+      })
+      // No profile found, create one
       .catch(error => {
-        // No profile found
-        return Profile.create(identityId, phone);
+        const transaction = new Transaction();
+        return transaction.start()
+          .then(() => transaction.meta('Profile', identityId))
+          .then(() => Profile.create(identityId, phone, transaction))
+          .then(() => transaction.commit('Profile created with 0 points', 0, identityId))
+          .catch(() => transaction.rollback());
       });
   })
   .then(() => {

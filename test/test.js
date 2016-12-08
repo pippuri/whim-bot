@@ -61,8 +61,12 @@ before(() => {
   return dbUtils.init()
     .then(() => dbUtils.removeSeedData())
     .then(() => dbUtils.insertSeedData())
-    .then(() => dbUtils.clearDBStatistics())
-    .then(() => dbUtils.shutdown());
+    .then(() => dbUtils.clearDBStatistics());
+});
+
+// Remove test entries from DB
+after(() => {
+  return dbUtils.shutdown();
 });
 
 // The actual suite
