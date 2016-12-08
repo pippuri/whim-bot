@@ -1,16 +1,6 @@
 [
   {
     "input": {
-      "name": "Kamppi",
-      "count": 5,
-      "lat": 60.1675800,
-      "lon": 24.9302260,
-      "radius": 500
-    },
-    "pass": true
-  },
-  {
-    "input": {
       "name": "Pohjoiskaari 29",
       "lat": 60.1675800,
       "lon": 24.9302260
