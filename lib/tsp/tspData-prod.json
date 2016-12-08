@@ -48,5 +48,18 @@
       "reserve": "bookings/",
       "query": "bookings/options/"
     }
+  },
+  "Sixt-Whim-car": {
+    "id": "Sixt-Whim-car",
+    "baseUrl": "https://tsp.maas.global/sixt/whim-car/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
+      "query": "bookings/options/"
+    }
   }
 }
