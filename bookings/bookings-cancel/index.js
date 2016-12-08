@@ -47,13 +47,12 @@ module.exports.respond = (event, callback) => {
 
   return validateInput(event)
     .then(() => models.Database.init())
-    .then(() => Booking.retrieve(event.bookingId))
+    .then(() => transaction.start())
+    .then(() => Booking.retrieve(event.bookingId, transaction))
     .then(booking => booking.validateOwnership(event.identityId))
     .then(booking => {
-      return transaction.start()
-        .then(() => transaction.bind(models.Booking))
-        .then(() => transaction.meta(models.Booking.tableName, booking.id))
-        .then(() => Promise.resolve(booking));
+      return transaction.meta(models.Booking.tableName, booking.id)
+        .then(() => booking);
     })
     .then(booking => booking.cancel(transaction))
     .then(bookingInstance => {

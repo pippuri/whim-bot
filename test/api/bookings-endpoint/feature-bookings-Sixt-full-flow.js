@@ -104,6 +104,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
       event = {
         identityId: testIdentityId,
         bookingId: createResponse.booking.id,
+        refresh: 'true',
       };
 
       return runLambda(retrieveLambda, event)

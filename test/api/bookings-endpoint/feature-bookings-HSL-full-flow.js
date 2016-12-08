@@ -1,3 +1,4 @@
+
 'use strict';
 
 const expect = require('chai').expect;
@@ -136,6 +137,7 @@ module.exports = function () {
       event = {
         identityId: testUserIdentity,
         bookingId: createResponse.booking.id,
+        refresh: 'true',
       };
 
       return runLambda(retrieveLambda, event)

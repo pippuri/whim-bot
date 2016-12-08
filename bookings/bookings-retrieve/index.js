@@ -1,11 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Booking = require('../../lib/business-objects/Booking');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
+const Promise = require('bluebird');
+const Transaction = require('../../lib/business-objects/Transaction');
 const utils = require('../../lib/utils');
-const Database = models.Database;
-const Booking = require('../../lib/business-objects/Booking');
 
 /**
  * Validate event input
@@ -46,19 +46,37 @@ function formatResponse(booking) {
 }
 
 module.exports.respond = (event, callback) => {
-  return Database.init()
+
+  return models.Database.init()
     .then(() => validateInput(event))
-    .then(() => Booking.retrieve(event.bookingId))
-    .then(booking => booking.validateOwnership(event.identityId))
-    .then(booking => {
+    .then(() => {
       if (event.refresh && event.refresh === 'true' || event.refresh === true) {
-        return booking.refresh();
+        const transaction = new Transaction();
+
+        // Commit the transaction but skip writing to transaction log
+        // this does not have anything to do with value, but we want to prevent
+        // concurrent writes to bookings.
+        return transaction.start()
+        .then(() => Booking.retrieve(event.bookingId, transaction))
+        .then(booking => booking.validateOwnership(event.identityId))
+        .then(booking => booking.refresh(transaction))
+        .then(booking => {
+          transaction.commit(null);
+          return booking;
+        })
+        .catch(error => {
+          transaction.rollback()
+            .then(() => Promise.reject(error));
+        });
       }
-      return Promise.resolve(booking);
+
+      // No refreshing, no transaction needed
+      return Booking.retrieve(event.bookingId)
+        .then(booking => booking.validateOwnership(event.identityId));
     })
     .then(booking => formatResponse(booking.toObject()))
     .then(response => {
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => callback(null, response));
     })
     .catch(_error => {
@@ -67,7 +85,7 @@ module.exports.respond = (event, callback) => {
       console.warn(_error.stack);
 
       // Uncaught, unexpected error
-      Database.cleanup()
+      models.Database.cleanup()
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
@@ -76,6 +94,5 @@ module.exports.respond = (event, callback) => {
 
           callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
         });
-
     });
 };
