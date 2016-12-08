@@ -77,7 +77,6 @@ function makePurchase(identityId, transaction, productId, cost, points) {
     if (!profile) {
       throw new MaaSError('User not found', 404);
     }
-    console.log(profile);
     // delegate the purchase to subscription manager / charge manager
     return SubscriptionMgr.makePurchase(identityId, productId, cost);
   })
