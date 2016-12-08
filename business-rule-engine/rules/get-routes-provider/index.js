@@ -116,14 +116,18 @@ function _mapModesToRoutesProviders(providers) {
 
   // Collect all the modes
   const modes = [];
-  providers.map(provider => Array.prototype.push.apply(modes, provider.modes));
+
+  // Array.providers.push.apply is a trick to merge the second argument (array)
+  // into the first argument (array) using push. The second array is in effect
+  // expanded as multiple arguments to array,push
+  providers.forEach(provider => Array.prototype.push.apply(modes, provider.modes));
 
   // Set up an empty list for each distinct mode
-  _uniq(modes).map(mode => (ret[mode] = []));
+  _uniq(modes).forEach(mode => (ret[mode] = []));
 
   // Put the provider into each mode it applies to
-  providers.map(provider => {
-    provider.modes.map(mode => (ret[mode].push(provider)));
+  providers.forEach(provider => {
+    provider.modes.forEach(mode => (ret[mode].push(provider)));
   });
 
   return Object.freeze(ret);
