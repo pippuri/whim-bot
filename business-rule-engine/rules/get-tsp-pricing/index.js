@@ -126,7 +126,7 @@ const _processBookingProvider = (profile, query) => bookingProvider => {
  *        and provide customized results to a given user]
  *
  * @param {Object} params - query parameters
- * @paran {Object} profile - a user profile
+ * @param {Object} profile - a user profile
  * @return {Promise} - a promise which resolves to a list of suitable booking provider
  */
 function getOptions(params, profile) {
@@ -142,7 +142,7 @@ function getOptions(params, profile) {
  *        and provide customized results to a given user]
  *
  * @param {Object} paramsList - a list of query parameters
- * @paran {Object} profile - a user profile
+ * @param {Object} profile - a user profile
  * @return {Promise} - a promise which resolves to a list of suitable booking providers
  */
 function getOptionsBatch(paramsList, profile) {
