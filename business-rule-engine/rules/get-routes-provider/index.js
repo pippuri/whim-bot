@@ -73,7 +73,7 @@ const routesProvidersLocationFilter = locations => provider => {
   const geometry = JSON.parse(provider.geometry);
 
   // To be a valid provider, it must be able to cover all the given locations
-  return locations.every(loc => utils.isInside(loc, geometry));
+  return locations.every(loc => utils.isPointInsidePolygon(loc, geometry));
 };
 
 /**
@@ -103,7 +103,7 @@ function getActive() {
  *
  * @return {Promise} - a promise which resolves to a list of database records
  */
-const getActiveCached = utils.memoizePromise(getActive);
+const getActiveCached = utils.memoizeAsync(getActive);
 
 /**
  * Given a list of routes providers, map each possible mode

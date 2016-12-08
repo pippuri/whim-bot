@@ -429,7 +429,7 @@ function _setLegBookingProvider(leg, providers) {
     return leg;
   }
 
-  if (leg.agencyId === providers[0].agencyId && utils.isInside(leg.to, JSON.parse(providers[0].geometry))) {
+  if (leg.agencyId === providers[0].agencyId && utils.isPointInsidePolygon(leg.to, JSON.parse(providers[0].geometry))) {
     leg.agencyData = providers[0];
     return leg;
   }
