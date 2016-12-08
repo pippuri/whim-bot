@@ -19,7 +19,6 @@ module.exports = function () {
 
     before(() => {
       return bus.call('MaaS-business-rule-engine', {
-        identityId: identityId,
         rule: 'get-booking-providers-by-agency-location',
         parameters: event,
       })
@@ -54,7 +53,6 @@ module.exports = function () {
 
     before(() => {
       return bus.call('MaaS-business-rule-engine', {
-        identityId: identityId,
         rule: 'get-booking-providers-by-agency-location',
         parameters: event,
       })
