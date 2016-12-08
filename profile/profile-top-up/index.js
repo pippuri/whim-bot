@@ -72,23 +72,19 @@ function confirmCharge(identityId, productId, points, limit) {
  * make the addon product purchase and update profile with new points tally
  */
 function makePurchase(identityId, transaction, productId, cost, points) {
-  let currentBalance;
   return Profile.retrieve(identityId)
   .then(profile => {
     if (!profile) {
       throw new MaaSError('User not found', 404);
     }
-    currentBalance = (profile.balance ? profile.balance : 0);
-
     // delegate the purchase to subscription manager / charge manager
     return SubscriptionMgr.makePurchase(identityId, productId, cost);
   })
   .then(purchase => {
     if (purchase.status === 'paid') {
       // update profile with the points the successful purchase grants
-      const newBalance = currentBalance + points;
-      return Profile.update(identityId, { balance: newBalance }, transaction)
-        .then(profile => Object.assign({}, purchase, { profile: profile }));
+      return Profile.increaseBalance(identityId, points, transaction)
+        .then(() => Promise.resolve(purchase));
     }
     return Promise.reject(new MaaSError(`Purchase failed on ChargeBee: ${purchase}`, 500));
   });
@@ -109,9 +105,12 @@ module.exports.respond = function (event, callback) {
     })
     .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
     .then(confirmed => makePurchase(confirmed.identityId, transaction, confirmed.productId, confirmed.cost, confirmed.points))
-    .then(response => {
+    .then(purchase => {
       return transaction.commit(`Topup ${payload.points}p`, event.identityId, payload.points)
-        .then(() => Promise.resolve(response));
+        .then(() => Profile.retrieve(event.identityId))
+        .then(profile => {
+          return Object.assign({}, purchase, { profile: profile });
+        });
     })
     .then(response => {
       models.Database.cleanup()
