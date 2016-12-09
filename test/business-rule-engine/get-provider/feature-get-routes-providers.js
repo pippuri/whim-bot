@@ -5,8 +5,6 @@ const expect = require('chai').expect;
 
 module.exports = function () {
 
-  const identityId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000000';
-
   describe('[POSITIVE] get routes provider with Array of modes', () => {
     let response;
     let error;
