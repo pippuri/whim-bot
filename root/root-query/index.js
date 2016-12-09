@@ -14,6 +14,8 @@ function getApiVersion() {
 module.exports.respond = function (event, callback) {
   getApiVersion()
   .then(response => {
+    console.info(response);
+
     callback(null, response);
   })
   .catch(_error => {

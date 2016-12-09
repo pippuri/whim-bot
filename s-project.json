@@ -30,10 +30,14 @@
         "deployed": true,
         "removed": true
       }
+    },
+    "wrapper": {
+      "path": "lib/wrapper/index.js"
     }
   },
   "plugins": [
     "serverless-cors-plugin",
+    "serverless-wrapper-plugin",
     "serverless-webpack-plugin",
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
