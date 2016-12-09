@@ -69,7 +69,7 @@ function _routesProvidersMapEmpty(routesProvidersMap) {
 function _getPrioritiesSorted(routesProvidersList) {
   const ret = [];
 
-  routesProvidersList.map(provider => {
+  routesProvidersList.forEach(provider => {
     // Add the each priority if it does not already exist in the list
     if (ret.indexOf(provider.providerPrio) === -1) {
       ret.push(provider.providerPrio);
@@ -98,11 +98,11 @@ function _getPrioritiesSorted(routesProvidersList) {
 function _groupProvidersByPrioritySorted(routesProvidersMap) {
   const ret = {};
 
-  Object.keys(routesProvidersMap).map(mode => {
+  Object.keys(routesProvidersMap).forEach(mode => {
     const priorities = _getPrioritiesSorted(routesProvidersMap[mode]);
     const groupedProvidersList = [];
 
-    priorities.map(priority => {
+    priorities.forEach(priority => {
       // Collect all the providers with the current priority into its own sub-list
       groupedProvidersList.push(
           routesProvidersMap[mode].filter(
@@ -263,7 +263,7 @@ function _invokeProviders(routesProvidersMap, params) {
       const result = [];
 
       // Merge in all response lists into a single result list
-      Object.keys(response).map(mode => (
+      Object.keys(response).forEach(mode => (
         Array.prototype.push.apply(result, response[mode])
       ));
 
@@ -369,8 +369,8 @@ function _setRouteAgency(route) {
   if (!route.plan.itineraries.every(itinerary => !itinerary.legs.some(leg => !leg.mode))) {
     throw new Error(`This route contains a leg that does not have mode: ${route}`);
   }
-  route.plan.itineraries.map(
-    itinerary => itinerary.legs.map(
+  route.plan.itineraries.forEach(
+    itinerary => itinerary.legs.forEach(
       _setLegAgency(itinerary.__routesProvider)));
 
   return route;
