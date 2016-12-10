@@ -77,9 +77,19 @@ module.exports = (test, provider) => {
         expect(error).to.be.undefined;
       });
 
-
       it('should trigger a valid response after sanification', () => {
         return validator.validate(schema, utils.sanitize(response));
+      });
+
+      it('should have sane time information', () => {
+        response.plan.itineraries.forEach(itinerary => {
+          let prevStartTime = 0;
+          itinerary.legs.forEach(leg => {
+            expect(leg.startTime).to.be.least(prevStartTime);
+            expect(leg.endTime).to.be.least(leg.startTime);
+            prevStartTime = leg.startTime;
+          });
+        });
       });
 
       if (results.modes) {
