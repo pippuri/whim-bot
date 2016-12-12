@@ -81,7 +81,7 @@ module.exports.respond = (event, callback) => {
             return transaction.rollback()
               .then(() => Promise.reject(new MaaSError('Faulty new booking, fare is smaller than 0', 500)));
           }
-          const message = `Cancelled reservation for a ${bookingData.leg.mode}`;
+          const message = `Reserve ticket for a ${bookingData.leg.mode}`;
 
           // Always commit a negative value as paying means losing
           return paidBooking.reserve(transaction)
