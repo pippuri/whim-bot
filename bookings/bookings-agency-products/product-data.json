@@ -1,21 +1,25 @@
 {
     "Sixt-Whim-car": [{
         "name": "Economy",
+        "type": "Sixt-Whim-car-Economy",
         "description": "Good for 2 persons",
         "fare": 372,
         "image": "https://staticfiles.maas.global/product-images/ford-ka-3d-blau-2011.png"
     }, {
         "name": "Midsize",
+        "type": "Sixt-Whim-car-Midsize",
         "description": "Good for family",
         "fare": 620,
         "image": "https://staticfiles.maas.global/product-images/mb-b-klasse-5d-silber-2012.png"
     }, {
         "name": "Fullsize",
+        "type": "Sixt-Whim-car-Fullsize",
         "description": "Good for family and luggage",
         "fare": 868,
         "image": "https://staticfiles.maas.global/product-images/mb-c-klasse-4d-schwarz-2014.png"
     }, {
         "name": "Premium",
+        "type": "Sixt-Whim-car-Premium",
         "description": "Luxury",
         "fare": 1116,
         "image": "https://staticfiles.maas.global/product-images/mb-s-klasse-4d-silber-2013.png"
