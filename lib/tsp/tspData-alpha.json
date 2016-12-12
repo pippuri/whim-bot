@@ -38,6 +38,19 @@
       "query": "bookings/options/"
     }
   },
+  "Sixt-Whim-car": {
+    "id": "Sixt-Whim-car",
+    "baseUrl": "https://tsp.alpha.maas.global/sixt/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "whim-car/",
+      "retrieve": "whim-car/",
+      "cancel": "whim-car/",
+      "query": "whim-car/options/"
+    }
+  },
   "MaaS": {
     "id": "MaaS",
     "baseUrl": "https://tsp.alpha.maas.global/maas/",
@@ -46,19 +59,6 @@
     },
     "endpoints": {
       "reserve": "bookings/",
-      "query": "bookings/options/"
-    }
-  },
-  "Sixt-Whim-car": {
-    "id": "Sixt-Whim-car",
-    "baseUrl": "https://tsp.alpha.maas.global/sixt/whim-car/",
-    "headers": {
-      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
-    },
-    "endpoints": {
-      "reserve": "bookings/",
-      "retrieve": "bookings/",
-      "cancel": "bookings/",
       "query": "bookings/options/"
     }
   }

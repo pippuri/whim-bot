@@ -7,8 +7,7 @@ const productData = require('./product-data.json');
 
 /**
  * Parses and validates the event input
- * Contents: identityId (mandatory), mode, from, to, agencyId (mandatory),
- * startTime, endTime, fromRadius, toRadius.
+ * Contents: identityId (mandatory), agencyId (mandatory).
  *
  * @param {object} event The input event - see the contents above
  * @return {Promise} Object of parsed parameters if success, MaaSError otherwise
