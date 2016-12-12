@@ -58,6 +58,7 @@ function extractTaxiLegFromHereResponse(response) {
 }
 
 function extractEndTimeFromHereLegIntoOption(leg, option) {
+
   if (leg && leg.endTime && option.leg) {
     option.leg.endTime = leg.endTime;
     return;
@@ -91,7 +92,7 @@ function getLegGeometryPoints(option) {
     const event = {
       from: `${option.leg.from.lat},${option.leg.from.lon}`,
       to: `${option.leg.to.lat},${option.leg.to.lon}`,
-      leaveAt: Date.now(),
+      leaveAt: option.leg.startTime ? option.leg.startTime : Date.now(),
       modes: GEOMETRY_QUERY_MODE,
     };
     const context = {
