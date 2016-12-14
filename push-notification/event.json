@@ -1,0 +1,9 @@
+{
+  "identityId": "eu-west-1:53cbf21b-aabc-4f13-bfd9-288a959fed5e",
+  "data": {
+    "message": "Updates to your journey plan",
+    "type": "ObjectChange",
+    "objectType": "Itinerary",
+    "ids": ["003A36F0-5AE3-11E6-BBAB-EB77ABCA12B4"]
+  }
+}
