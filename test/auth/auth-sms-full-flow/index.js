@@ -20,8 +20,9 @@ function _fetchAuthCodeSmsMessage(phone, provider) {
   })
   .then(response => {
     // Just get the most recent one.
-    // There is a potential problem if two or more people
-    // are running the tests simultaneously
+    // There is a potential problem if two or more people are running the tests
+    // simultaneously and happen to be either side of the 30 second time window
+    // in which the auth code is valid
     if (response && response.length > 0) {
       const sortedMessages = response.sort(utils.dateSortCompareDesc('date_sent'));
       return sortedMessages[0];
