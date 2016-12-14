@@ -33,7 +33,14 @@
     },
     "wrapper": {
       "path": "lib/wrapper/index.js"
-    }
+    },
+    "headerfunctions": [
+      {
+        "path": "lib/header-functions/register-metric-alarm.js",
+        "hook": "function-post-deploy",
+        "params": [300, "arn:aws:sns:eu-west-1:756207178743:log-error-alarms"]
+      }
+    ]
   },
   "plugins": [
     "serverless-cors-plugin",
@@ -44,7 +51,8 @@
     "serverless-meta-sync",
     "serverless-plugin-revision",
     "serverless-client-s3",
-    "serverless-slack-plugin"
+    "serverless-slack-plugin",
+    "serverless-header-function"
   ],
   "version": "0.1.0",
   "profile": "serverless-v0.4.2",
