@@ -20,7 +20,20 @@ function sendPushNotification(event) {
       // Remove record with null Value or null push token
       response.Records = response.Records
                             .filter(item => item.Value !== null);
-                            // .filter(item => JSON.parse(item.Value).devicePushToken !== null);
+      // NOTE: The code here is used to make migration easier
+      // Allowing push notification to digest both old and new profile/devices format
+      // Might receive error as we blindly assume all device tokens are iOS
+
+      response.Records = response.Records.map(record => {
+        return {
+          Key: record.Key,
+          Value: JSON.stringify({
+            devicePushToken: record.Value,
+            deviceType: 'iOS',
+            lastSuccess: Date.now(),
+          }),
+        };
+      });
 
       // Device type grouping
       const recordsByType = lib.groupRecordsByType(response.Records);
@@ -69,8 +82,12 @@ function sendPushNotification(event) {
           return Promise.resolve();
         })
         .then(() => {
-          if (succeededTokens.length === failedTokens.length && succeededTokens.length === 0) return Promise.reject(new MaaSError('[Push Notification] None device token exists for push notification'));
-          if (succeededTokens.length === 0) return Promise.reject(new MaaSError('Failed to push notification to all devices'));
+          if (succeededTokens.length === failedTokens.length && succeededTokens.length === 0) {
+            return Promise.reject(new MaaSError('[Push Notification] None device token exists for push notification'));
+          }
+          if (succeededTokens.length === 0) {
+            return Promise.reject(new MaaSError('Failed to push notification to all devices'));
+          }
 
           // If there are failed tokens, remove them from Cognito
           if (failedTokens.length > 0) {
@@ -100,7 +117,7 @@ module.exports.respond = (event, callback) => {
       console.warn('Warning; Response validation failed, but responding with success');
       console.warn('Errors:', error.message);
       console.warn('Response:', JSON.stringify(error.object, null, 2));
-      return Promise.resolve(error.object);
+      return Promise.resolve('Push notification sent to identityId ' + event.identityId);
     })
     .then(response => callback(null, response))
     .catch(_error => {

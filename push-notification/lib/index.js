@@ -16,6 +16,7 @@ const GCM_ARN = process.env.GCM_ARN;
  * @return {Object} Cognito dataset object
  */
 function fetchUserDevices(identityId) {
+
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: identityId,
@@ -28,7 +29,6 @@ function fetchUserDevices(identityId) {
  * @param {Array<Object>} recordSet - Record set listed in the beginning of push-notification lambda
  */
 function groupRecordsByType(recordSet) {
-  console.log(recordSet);
   return {
     iosDevices: recordSet.filter(record => JSON.parse(record.Value).deviceType === 'iOS'),
     androidDevices: recordSet.filter(record => JSON.parse(record.Value).deviceType === 'Android'),
