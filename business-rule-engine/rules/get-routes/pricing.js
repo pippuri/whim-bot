@@ -32,48 +32,59 @@ const MODES_WITHOUT_TICKET = ['WALK', 'BICYCLE', 'TRANSFER', 'WAIT', 'LEG_SWITCH
  */
 function _calculateLegCo2(leg) {
 
-  // The co2 costs are taken from the following source in a hurry.
-  // Better number might be available from other sources or even from the same source.
+  // The co2 costs are taken from multiple sources
+  // https://www.delijn.be/en/overdelijn/organisatie/zorgzaam-ondernemen/milieu/co2-uitstoot-voertuigen.html
   // https://www.gov.uk/government/uploads/system/uploads/attachment_data/file/69314/pb13625-emission-factor-methodology-paper-110905.pdf
+  // https://docs.google.com/spreadsheets/d/1TAMZLvUrMlxAR4RdDOs928-yoU5RxMrDKIb8tXuOKsc/edit?hl=en_GB#gid=0
 
   const co2Costs = {
-    WALK: 0,
-    BICYCLE: 0,
+    WAIT: 0,
+
+    LEG_SWITCH: 0,
+    TRANSFER: 0,
+
+    WALK: 12.2,
+    BICYCLE: 5.3,
     CAR: 180.6,
-    TRAM: 5.0,
-    SUBWAY: 4.0,
-    RAIL: 3.5,
-    BUS: 35.8,
-    FERRY: 19.3,
-    CABLE_CAR: 6.5,
-    GONDOLA: 8.0,
-    FUNICULAR: 7.0,
+    MOTORCYCLE: 84.0, // for 125 - 200 CC
+
+    TRAM: 44.6,
+    SUBWAY: 30.5,
+    RAIL: 53.4,
+    BUS: 147.5,
+    FERRY: 116.1,
+    TRAIN: 28,
+    TAXI: 180.6,
+    AEROPLANE: 67.17,
+
     TRANSIT: null,
+    CABLE_CAR: null,
+    GONDOLA: null,
+    FUNICULAR: null,
     TRAINISH: null,
     BUSISH: null,
-    LEG_SWITCH: 0,
-    TAXI: 130.0,
+
   };
 
-  const transport = leg.mode;
-
-  if (!co2Costs.hasOwnProperty(transport)) {
-    return 0;
-  }
-
-  const cost = co2Costs[transport];
-
-  if (cost === null) {
+  if (!co2Costs.hasOwnProperty(leg.mode)) {
     return null;
   }
 
-  let distance = 0;
-  if (leg.hasOwnProperty('distance') && leg.distance !== undefined) {
-    distance = leg.distance / 1000;
+  const co2GramPerKm = co2Costs[leg.mode];
+
+  if (co2GramPerKm === null) {
+    return null;
   }
 
-  const co2 = distance * cost * 1.2;
-  return Math.floor(co2);
+  let distance = null;
+  if (leg.hasOwnProperty('distance') && leg.distance !== undefined) {
+    distance = leg.distance / 1000;
+    const co2 = distance * co2GramPerKm * 1.2;
+    return Math.ceil(co2);
+  }
+
+  return distance;
+
 }
 
 /**

@@ -36,7 +36,7 @@ function filter(providers, rule) {
   }
 
   // Filter
-  return providers.filter(provider => {
+  const result = providers.filter(provider => {
     if (rule.agencyId && rule.agencyId === provider.agencyId) {
        // OK
     } else if (rule.providerName && rule.providerName === provider.providerName) {
@@ -53,6 +53,7 @@ function filter(providers, rule) {
     }
     return false;
   });
+  return result;
 }
 
 function getActive() {

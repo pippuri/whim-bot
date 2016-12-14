@@ -16,7 +16,16 @@ function getRoutes(identityId, params) {
         });
     })
     .then(routes => {
-      routes.plan.itineraries = filter.decide(routes.plan.itineraries, params.keepUnpurchasable ? params.keepUnpurchasable : true); // Keep unpurchasable itineraries by default
+      const filterOptions = {
+        keepUnpurchasable: true,
+        distanceGapThreshold: 180, // %
+        walkThreshold: 5000, // meter
+        removeIdentical: true,
+      };
+
+      // Keep unpurchasable itineraries by default
+      routes.plan.itineraries = filter.resolve(routes.plan.itineraries, filterOptions);
+
       return routes;
     });
 }
