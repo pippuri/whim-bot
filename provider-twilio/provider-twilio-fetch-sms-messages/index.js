@@ -22,8 +22,7 @@ function getSmsMessages(event) {
   };
   if (event.to) {
     form.To = event.to;
-  }
-  else if (event.from) {
+  } else if (event.from) {
     form.From = event.from;
   }
 
