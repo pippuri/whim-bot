@@ -25,14 +25,22 @@ function sendPushNotification(event) {
       // Allowing push notification to digest both old and new profile/devices format
       // Might receive error as we blindly assume all device tokens are iOS
       response.Records = response.Records.map(record => {
-        return {
-          Key: record.Key,
-          Value: JSON.stringify({
-            devicePushToken: record.Value,
-            deviceType: 'iOS',
-            lastSuccess: Date.now(),
-          }),
-        };
+        try {
+          const devicePushToken = JSON.parse(record.Value).devicePushToken;
+          if (!devicePushToken) throw new Error('Old device format detected');
+          return record;
+        } catch (error) {
+          // Not in the new format, fallback
+          console.warn('[Push notification] Detect old device record format, fallback to auto format');
+          return {
+            Key: record.Key,
+            Value: JSON.stringify({
+              devicePushToken: record.Value,
+              deviceType: 'iOS',
+              lastSuccess: Date.now(),
+            }),
+          };
+        }
       });
 
       // Device type grouping

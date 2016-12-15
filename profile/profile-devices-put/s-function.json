@@ -24,7 +24,7 @@
           "payload": {
             "devicePushToken": "$input.json('$.devicePushToken')",
             "deviceIdentifier": "$input.json('$.deviceIdentifier')",
-            "deviceType": "$input.json('deviceType')"
+            "deviceType": "$input.json('$.deviceType')"
           }
         }
       },
