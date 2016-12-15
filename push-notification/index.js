@@ -20,10 +20,10 @@ function sendPushNotification(event) {
       // Remove record with null Value or null push token
       response.Records = response.Records
                             .filter(item => item.Value !== null);
+
       // NOTE: The code here is used to make migration easier
       // Allowing push notification to digest both old and new profile/devices format
       // Might receive error as we blindly assume all device tokens are iOS
-
       response.Records = response.Records.map(record => {
         return {
           Key: record.Key,

@@ -154,6 +154,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
     // in case of endpoint is disabled, perform re-enabling and try once again
     .catch(error => {
       if (error.name !== 'EndpointDisabled' || !endpointArn) {
+        console.warn(`Error: ${error.message}`);
         return reject(token);
       }
       console.warn(`Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
@@ -165,7 +166,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
       };
       return sns.setEndpointAttributesAsync(params)
         .catch(error => {
-          console.warn(`FAILED to re-enable endpoint for '${endpointArn}'`);
+          console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
           console.warn(error.stack);
           return reject(token);
         })
@@ -177,7 +178,16 @@ function iOSsendPushNotification(event, token, isSandBox) {
           Message: JSON.stringify({
             [APNSKey]: JSON.stringify(apnMessage),
           }),
-        }));
+        }))
+        // Clean up endpointArn from Amazon
+        // and ignore error
+        .then(() => {
+          console.log('[Push Notification] Cleaning endpoint ARN');
+          return sns.deleteEndpoint({
+            EndpointArn: endpointArn,
+          })
+          .catch(error => Promise.resolve());
+        });
     })
     .then(response => {
       console.info(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
@@ -198,10 +208,11 @@ function iOSsendPushNotification(event, token, isSandBox) {
  */
 function androidSendPushNotification(event, token) {
   let endpointArn = '';
+
   const gcmMessage = {
-    GCM: {
+    GCM: JSON.stringify({
       data: Object.assign(event.data, event.type, event.message),
-    },
+    }),
   };
 
   return new Promise((resolve, reject) => {
@@ -210,7 +221,7 @@ function androidSendPushNotification(event, token) {
       PlatformApplicationArn: GCM_ARN,
     })
     .catch(error => {
-      console.warn(`Platform endpoint creation FAILED via 'GCM' for '${token}'`);
+      console.warn(`Platform endpoint creation FAILED via 'GCM' for '${token}: ${error.message}'`);
       console.warn(error.stack);
       return reject(token);
     })
@@ -220,9 +231,7 @@ function androidSendPushNotification(event, token) {
       TargetArn: endpointArn,
       MessageStructure: 'json',
       Subject: event.subject || 'Whim',
-      Message: JSON.stringify({
-        GCM: JSON.stringify(gcmMessage),
-      }),
+      Message: JSON.stringify(gcmMessage),
     }))
     .catch(error => {
       if (error.name !== 'EndpointDisabled' || !endpointArn) {
@@ -237,7 +246,7 @@ function androidSendPushNotification(event, token) {
       };
       return sns.setEndpointAttributesAsync(params)
         .catch(error => {
-          console.warn(`FAILED to re-enable endpoint for '${endpointArn}'`);
+          console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
           console.warn(error.stack);
           return reject(token);
         })
@@ -246,17 +255,24 @@ function androidSendPushNotification(event, token) {
           TargetArn: endpointArn,
           MessageStructure: 'json',
           Subject: event.subject || 'Whim',
-          Message: JSON.stringify({
-            GCM: JSON.stringify(gcmMessage),
-          }),
-        }));
+          Message: JSON.stringify(gcmMessage),
+        }))
+        // Clean up endpointArn from Amazon
+        // and ignore error
+        .then(() => {
+          console.log('[Push Notification] Cleaning endpoint ARN');
+          return sns.deleteEndpoint({
+            EndpointArn: endpointArn,
+          })
+          .catch(error => Promise.resolve());
+        });
     })
     .then(response => {
       console.info(`Push notification has been sent via 'GCM', response: ${JSON.stringify(response)}`);
       return resolve(token);
     })
     .catch(error => {
-      console.warn(`Push notification has been FAILED via 'GCM', response: ${JSON.stringify(error)}`);
+      console.warn(`Push notification has failed via 'GCM', response: ${JSON.stringify(error)}`);
       return reject(token);
     });
   });
