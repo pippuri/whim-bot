@@ -31,20 +31,19 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_changed':
       console.info(`\t${payload.event_type}`);
       return transaction.start()
-        .then(() => transaction.bind(models.Profile))
         .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction,
           activePlan,
+          transaction,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE))
         .then(() => Profile.retrieve(identityId))
-        // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
+          // NOTE DO NOT REMOVE ALL USER BALANCE
           return Profile.update(identityId, { balance: 0 }, transaction)
-            .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}`, identityId, balanceChange))
+            .then(updatedProfile => (updatedProfile.balance - oldProfile.balance))
+            .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}.`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
@@ -58,21 +57,19 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_deleted':
       console.info(`\t${payload.event_type}`);
       return transaction.start()
-        .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction,
           WHIM_DEFAULT,
+          transaction,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE,
           FORCE_SUBSCRIPTION_UPDATE))
         .then(() => Profile.retrieve(identityId))
-        // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
+          // NOTE DO NOT REMOVE ALL USER BALANCE
           return Profile.update(identityId, { balance: 0 }, transaction)
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
+            .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to pay-as-you-go plan; reset point balance.`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
