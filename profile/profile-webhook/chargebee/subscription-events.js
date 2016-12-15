@@ -1,9 +1,11 @@
 'use strict';
 
+const Promise = require('bluebird');
 const models = require('../../../lib/models');
 const Profile = require('../../../lib/business-objects/Profile');
 const Subscription = require('../../../lib/subscription-manager');
 const Transaction = require('../../../lib/business-objects/Transaction');
+const bus = require('../../../lib/service-bus');
 
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 const NO_PROMO_CODE = undefined;
@@ -40,8 +42,11 @@ function handle(payload, key, defaultResponse) {
           SKIP_CHARGEBEE_UPDATE))
         .then(() => Profile.retrieve(identityId))
         .then(oldProfile => {
-          // NOTE DO NOT REMOVE ALL USER BALANCE
-          return Profile.update(identityId, { balance: 0 }, transaction)
+          return bus.call('MaaS-store-single-package', { id: activePlan, type: 'plan' })
+            .then(newPlan => Promise.all([newPlan, oldProfile]));
+        })
+        .spread((newPlan, oldProfile) => {
+          return Profile.update(identityId, { balance: newPlan.plan.pointGrant }, transaction)
             .then(updatedProfile => (updatedProfile.balance - oldProfile.balance))
             .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}.`, identityId, balanceChange))
             .then(() => defaultResponse);

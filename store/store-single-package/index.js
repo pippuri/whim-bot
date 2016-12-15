@@ -15,7 +15,7 @@ function getSingleProduct(event) {
 }
 
 module.exports.respond = function (event, callback) {
-  getSingleProduct(event)
+  return getSingleProduct(event)
     .then(response => {
       if (event.type === 'plan') {
         callback(null, { plan: SubscriptionMgr.parseSingleChargebeePlan(response) });
