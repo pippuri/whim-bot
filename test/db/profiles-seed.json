@@ -254,7 +254,7 @@
   {
     "id": 13391,
     "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
-    "balance": 1000,
+    "balance": 2000,
     "subscription": {
       "planId": "fi-whim-medium",
       "monthlyBalance": 5500,
