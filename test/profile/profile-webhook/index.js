@@ -10,6 +10,7 @@ const LAMBDA = 'MaaS-profile-webhook';
 
 const CHARGEBEE_ID = 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM';
 const DUMMY_ID = 'dummy';
+const WHIM_LIGHT_POINTS_BALANCE = 1000;
 
 
 module.exports = function (identityId) {
@@ -553,6 +554,13 @@ module.exports = function (identityId) {
       expect(pre.subscription.planId).to.be.defined;
       expect(post.subscription.planId).to.be.defined;
       expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+    });
+
+    it('should have updated the balance', () => {
+      expect(pre.balance).to.be.defined;
+      expect(post.balance).to.be.defined;
+      expect(pre.balance).to.not.equal(post.balance);
+      expect(post.balance).to.equal(WHIM_LIGHT_POINTS_BALANCE);
     });
   });
   //}}}

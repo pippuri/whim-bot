@@ -1,9 +1,11 @@
 'use strict';
 
+const Promise = require('bluebird');
 const models = require('../../../lib/models');
 const Profile = require('../../../lib/business-objects/Profile');
 const Subscription = require('../../../lib/subscription-manager');
 const Transaction = require('../../../lib/business-objects/Transaction');
+const bus = require('../../../lib/service-bus');
 
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 const NO_PROMO_CODE = undefined;
@@ -31,20 +33,22 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_changed':
       console.info(`\t${payload.event_type}`);
       return transaction.start()
-        .then(() => transaction.bind(models.Profile))
         .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction,
           activePlan,
+          transaction,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE))
         .then(() => Profile.retrieve(identityId))
-        // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
-          return Profile.update(identityId, { balance: 0 }, transaction)
-            .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}`, identityId, balanceChange))
+          return bus.call('MaaS-store-single-package', { id: activePlan, type: 'plan' })
+            .then(newPlan => Promise.all([newPlan, oldProfile]));
+        })
+        .spread((newPlan, oldProfile) => {
+          return Profile.update(identityId, { balance: newPlan.plan.pointGrant }, transaction)
+            .then(updatedProfile => (updatedProfile.balance - oldProfile.balance))
+            .then(balanceChange => transaction.commit(`Subscription changed from ${oldProfile.subscription.planId} to ${activePlan}.`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
@@ -58,21 +62,19 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_deleted':
       console.info(`\t${payload.event_type}`);
       return transaction.start()
-        .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.meta(models.Profile.tableName, identityId))
         .then(() => Profile.updateSubscription(
           identityId,
-          transaction,
           WHIM_DEFAULT,
+          transaction,
           NO_PROMO_CODE,
           SKIP_CHARGEBEE_UPDATE,
           FORCE_SUBSCRIPTION_UPDATE))
         .then(() => Profile.retrieve(identityId))
-        // NOTE DO NOT REMOVE ALL USER BALANCE
         .then(oldProfile => {
+          // NOTE DO NOT REMOVE ALL USER BALANCE
           return Profile.update(identityId, { balance: 0 }, transaction)
             .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-            .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to Pay-as-you-go subscription plan`, identityId, balanceChange))
+            .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to pay-as-you-go plan; reset point balance.`, identityId, balanceChange))
             .then(() => defaultResponse);
         })
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
