@@ -1,40 +1,23 @@
 'use strict';
 
-const Promise = require('bluebird');
-const MaaSError = require('../../lib/errors/MaaSError.js');
 const Database = require('../../lib/models/Database');
+const MaaSError = require('../../lib/errors/MaaSError.js');
 const Profile = require('../../lib/business-objects/Profile');
+const Promise = require('bluebird');
+const schema = require('maas-schemas/prebuilt/maas-backend/profile/profile-active-plan-put/request.json');
 const Transaction = require('../../lib/business-objects/Transaction');
-
-function validate(event) {
-  if (Object.keys(event).length === 0) {
-    return Promise.reject(new MaaSError('Missing input keys', 400));
-  }
-
-  if (event.identityId === '' || !event.hasOwnProperty('identityId')) {
-    return Promise.reject(new MaaSError('Missing identityId', 400));
-  }
-
-  if (event.planId === '' || !event.hasOwnProperty('planId')) {
-    return Promise.reject(new MaaSError('Missing planId', 400));
-  }
-
-  if (event.promoCode === '' || typeof event.promoCode === 'undefined') {
-    event.promoCode = undefined;
-  }
-
-  if (event.skipUpdate !== '' && typeof event.skipUpdate !== 'undefined') {
-    event.skipUpdate = true;
-  } else {
-    event.skipUpdate = false;
-  }
-
-  return Promise.resolve(event);
-}
+const validator = require('../../lib/validator');
+const ValidationError = require('../../lib/validator/ValidationError');
 
 module.exports.respond = (event, callback) => {
+  const validationOptions = {
+    coerceTypes: true,
+    useDefaults: true,
+    sanitize: true,
+  };
+
   return Database.init()
-    .then(() => validate(event))
+    .then(() => validator.validate(schema, event, validationOptions))
     .then(validated => {
       const identityId = validated.identityId;
       const planId = validated.planId;
@@ -42,16 +25,12 @@ module.exports.respond = (event, callback) => {
       const transaction = new Transaction();
 
       return transaction.start()
-        .then(() => Profile.retrieve(identityId))
-        .then(oldProfile => {
-          return Profile.updateSubscription(identityId, planId, transaction,  promoCode)
-            .then(updatedProfile => {
-              const balanceChange = updatedProfile.balance - oldProfile.balance;
-              const promoMessage = promoCode ? ` (promotion code ${promoCode})` : '';
-              const message = `Update subscription to ${planId}${promoMessage}; change point balance by ${balanceChange} points`;
+        .then(() => Profile.issueSubscriptionChange(identityId, planId, transaction,  promoCode))
+        .then(updatedProfile => {
+          const promoMessage = promoCode ? ` (promotion code ${promoCode})` : '';
+          const message = `Issued subscription change to ${planId}${promoMessage}`;
 
-              return transaction.commit(message, identityId, balanceChange);
-            });
+          return transaction.commit(message, identityId);
         })
         .catch(error => {
           return transaction.rollback()
