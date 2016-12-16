@@ -30,7 +30,7 @@ module.exports.respond = (event, callback) => {
           const promoMessage = promoCode ? ` (promotion code ${promoCode})` : '';
           const message = `Issued subscription change to ${planId}${promoMessage}`;
 
-          return transaction.commit(message, identityId);
+          return transaction.commit(message, identityId, 0);
         })
         .catch(error => {
           return transaction.rollback()
@@ -50,6 +50,11 @@ module.exports.respond = (event, callback) => {
         .then(() => {
           if (_error instanceof MaaSError) {
             callback(_error);
+            return;
+          }
+
+          if (_error instanceof ValidationError) {
+            callback(new MaaSError(_error.message, 400));
             return;
           }
 

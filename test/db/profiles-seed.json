@@ -109,7 +109,7 @@
     "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000005",
     "balance": 13374,
     "subscription": {
-      "planId": "fi-whim-payg",
+      "planId": "fi-whim-medium",
       "monthlyBalance": 1000,
       "agencies": []
     },

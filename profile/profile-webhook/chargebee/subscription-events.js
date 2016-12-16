@@ -1,7 +1,6 @@
 'use strict';
 
 const Promise = require('bluebird');
-const models = require('../../../lib/models');
 const Profile = require('../../../lib/business-objects/Profile');
 const Subscription = require('../../../lib/subscription-manager');
 const Transaction = require('../../../lib/business-objects/Transaction');
@@ -9,45 +8,52 @@ const Transaction = require('../../../lib/business-objects/Transaction');
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 function handle(payload, key, defaultResponse) {
-  console.info('handleSubscriptionEvent');
+  console.info(`handleSubscriptionEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
 
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
-  const activePlan = profile.plan.id;
   const transaction = new Transaction();
+  let activePlan = profile.plan.id;
+  let forceUpdate = false;
+  let message;
 
   switch (payload.event_type) {
     case 'subscription_created':
     case 'subscription_started':
     case 'subscription_activated':
     case 'subscription_reactivated':
-      return Profile.confirmSubscription(identityId, activePlan)
-        .then(oldProfile => defaultResponse);
+      // Reactivate the subscription by just changing to the new plan
+      message = `Subscription activated to ${activePlan}`;
+      forceUpdate = true;
+      break;
     case 'subscription_changed':
-      return transaction.start()
-        .then(() => transaction.meta(models.Profile.tableName, identityId))
-        .then(() => Profile.changeSubscription(identityId, activePlan, transaction))
-        .then(balanceChange => transaction.commit(`Subscription changed to ${activePlan}.`, identityId, balanceChange))
-        .then(() => defaultResponse)
-        .catch(error => transaction.rollback().then(() => Promise.reject(error)));
+      // Change the subscription by changing to the new plan
+      message = `Subscription changed to ${activePlan}`;
+      break;
     case 'subscription_renewed':
-      return Profile.renewSubscription(identityId, activePlan)
-        .then(() => defaultResponse);
+      // Renew the subscription by changing to the new plan
+      message = `Subscription renewed to ${activePlan}`;
+      forceUpdate = true;
+      break;
     case 'subscription_cancelled':
     case 'subscription_deleted':
-      return transaction.start()
-        .then(() => Profile.updateSubscription(identityId, WHIM_DEFAULT, transaction))
-        .then(balanceChange => transaction.commit(`Subscription removed, plan changed to ${WHIM_DEFAULT}; reset point balance.`, identityId, balanceChange))
-        .then(() => defaultResponse)
-        .catch(error => transaction.rollback().then(() => Promise.reject(error)));
+      // Cancel/delete the subscription by setting to the default plan (payg)
+      activePlan = WHIM_DEFAULT;
+      message = `Subscription removed, plan changed to ${WHIM_DEFAULT}; reset point balance.`;
+      forceUpdate = true;
+      break;
     case 'subscription_shipping_address_updated':
+    default:
       console.info(`Unhandled Chargebee callback: ${payload.event_type}`);
       return defaultResponse;
-
-    default:
-      return defaultResponse;
   }
+
+  return transaction.start()
+    .then(() => Profile.changeSubscription(identityId, activePlan, transaction, forceUpdate))
+    .then(response => transaction.commit(message, identityId, response.balanceChange))
+    .then(() => defaultResponse)
+    .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 }
 
 module.exports = {

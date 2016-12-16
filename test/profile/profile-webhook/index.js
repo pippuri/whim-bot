@@ -11,11 +11,13 @@ const LAMBDA = 'MaaS-profile-webhook';
 const CHARGEBEE_ID = 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM';
 const DUMMY_ID = 'dummy';
 const WHIM_LIGHT_POINTS_BALANCE = 1000;
-
+const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 module.exports = function (identityId) {
   function extractCustomerIdentityId(webhookContent) {
-    return webhookContent.content.customer.id;
+    // Replace the webhook content id with the given identityId
+    webhookContent.content.customer.id = identityId;
+    return identityId;
   }
 
   //------------------------------------------------------------------------
@@ -313,10 +315,9 @@ module.exports = function (identityId) {
       expect(pre.firstName).to.equal(post.firstName);
     });
 
-    it('should NOT have updated the plan', () => {
-      expect(pre.subscription.planId).to.be.defined;
+    it('should have updated the plan according to Chargebee', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.equal(post.subscription.planId);
+      expect(post.subscription.planId).to.equal(webhookContent.content.subscription.plan_id);
     });
   });
   //}}}
@@ -392,10 +393,9 @@ module.exports = function (identityId) {
       expect(pre.firstName).to.equal(post.firstName);
     });
 
-    it('should NOT have updated the plan', () => {
-      expect(pre.subscription.planId).to.be.defined;
+    it('should have updated the plan according to Chargebee', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.equal(post.subscription.planId);
+      expect(post.subscription.planId).to.equal(webhookContent.content.subscription.plan_id);
     });
   });
   //}}}
@@ -471,10 +471,9 @@ module.exports = function (identityId) {
       expect(pre.firstName).to.equal(post.firstName);
     });
 
-    it('should NOT have updated the plan', () => {
-      expect(pre.subscription.planId).to.be.defined;
+    it('should have updated the plan according to Chargebee', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.equal(post.subscription.planId);
+      expect(post.subscription.planId).to.equal(webhookContent.content.subscription.plan_id);
     });
   });
   //}}}
@@ -725,10 +724,9 @@ module.exports = function (identityId) {
       expect(post.balance).to.equal(0);
     });
 
-    it('should have updated the subscription plan', () => {
-      expect(pre.subscription.planId).to.be.defined;
+    it('should have updated the plan to pay-as-you-go plan', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+      expect(post.subscription.planId).to.equal(WHIM_DEFAULT);
     });
   });
   //}}}
@@ -809,10 +807,9 @@ module.exports = function (identityId) {
       expect(post.balance).to.equal(5500);
     });
 
-    it('should NOT have updated the subscription plan', () => {
-      expect(pre.subscription.planId).to.be.defined;
+    it('should have updated the plan according to Chargebee', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.equal(post.subscription.planId);
+      expect(post.subscription.planId).to.equal(webhookContent.content.subscription.plan_id);
     });
   });
   //}}}
