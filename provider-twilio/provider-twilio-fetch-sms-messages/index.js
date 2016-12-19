@@ -9,14 +9,6 @@ const TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
  * Handle an imcoming SMS message received at Twilio.
  */
 function getSmsMessages(event) {
-  function pad(number) {
-    if (number < 10) {
-      return '0' + number;
-    }
-    return number;
-  }
-
-  const now = new Date();
   const form = {};
   if (event.to) {
     form.To = event.to;

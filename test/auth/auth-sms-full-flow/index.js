@@ -2,7 +2,6 @@
 
 const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
-const utils = require('../../../lib/utils');
 
 const AUTH_REQUEST_CODE_LAMBDA = 'MaaS-auth-sms-request-code';
 const AUTH_LOGIN_LAMBDA = 'MaaS-auth-sms-login';
