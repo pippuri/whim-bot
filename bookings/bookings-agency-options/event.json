@@ -1,8 +1,9 @@
 {
-  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "identityId": "eu-west-1:21033909-e5de-4fed-a871-8fdeae2352ea",
   "agencyId": "HSL",
   "mode": "BUS",
-  "from": "60.3210549,24.9506771",
-  "to": "60.3210549,24.9506771",
-  "startTime": "1476446400000"
+  "from": "60.169459,24.939264",
+  "to": "60.169559,24.939264",
+  "startTime": 1499882400000,
+  "endTime": 1499886000000
 }

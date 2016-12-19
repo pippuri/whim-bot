@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const utils = require('../../lib/utils');
+const tmp = require('./tmp');
 
 /**
  * Parses and validates the event input
@@ -107,6 +108,13 @@ function getAgencyProductOptions(event) {
         options: [],
         meta: {},
       });
+    }
+
+    /**
+     * NOTE Temporary overriding HSL fare by calling business-rule-engine
+     */
+    if (event.agencyId.toUpperCase() === 'HSL') {
+      return tmp.calculateHSLfare(response, event.identityId);
     }
 
     // If empty response, do not do price conversion
