@@ -5,12 +5,9 @@ const Subscription = require('../../../lib/subscription-manager');
 const Transaction = require('../../../lib/business-objects/Transaction');
 
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
-const NO_PROMO_CODE = undefined;
-const SKIP_CHARGEBEE_UPDATE = true;
-const FORCE_SUBSCRIPTION_UPDATE = true;
 
 function handle(payload, key, defaultResponse) {
-  console.info('handleCustomerEvents');
+  console.info(`handleCustomerEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
 
   const profile = Subscription.formatUser(payload.content);
@@ -21,9 +18,6 @@ function handle(payload, key, defaultResponse) {
   switch (payload.event_type) {
     case 'customer_changed':
     case 'customer_created':
-      console.info(`\t${payload.event_type}`);
-      console.info(payload.content.content);
-
       // Make sure we have at least something
       if (!profile.hasOwnProperty('address')) {
         profile.address = {};
@@ -43,25 +37,11 @@ function handle(payload, key, defaultResponse) {
 
     case 'customer_deleted':
       //[XXX: the customer is reset to payg, but not marked as 'deleted']
-      console.info(`\t${payload.event_type}`);
-      console.info(payload.content.content);
-
       return transaction.start()
-        .then(() => Profile.updateSubscription(
-          identityId,
-          WHIM_DEFAULT,
-          transaction,
-          NO_PROMO_CODE,
-          SKIP_CHARGEBEE_UPDATE,
-          FORCE_SUBSCRIPTION_UPDATE))
-          .then(() => Profile.retrieve(identityId))
-          .then(oldProfile => {
-            return Profile.update(identityId, { balance: 0 }, transaction)
-              .then(updatedProfile => Promise.resolve(updatedProfile.balance - oldProfile.balance))
-              .then(balanceChange => transaction.commit(`Subscription removed, turned back from ${oldProfile.subscription.planId} to pay-as-you-go; reset balance to 0`, identityId, balanceChange))
-              .then(() => defaultResponse);
-          })
-          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
+        .then(() => Profile.changeSubscription(identityId, WHIM_DEFAULT, transaction, true))
+        .then(response => transaction.commit(`Subscription removed, changed to ${WHIM_DEFAULT}; reset balance to 0`, identityId, response.balanceChange))
+        .then(() => defaultResponse)
+        .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 
     default:
       return defaultResponse;
