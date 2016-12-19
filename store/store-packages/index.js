@@ -24,7 +24,7 @@ function formatResponse(input) {
 
   // Parse addons
   for (let j = 0; j < input[1].list.length; j++) {
-    const addonContext = input[1].list[j];
+    const addonContext = input[1].list[j].addon;
     output.addons.push(SubscriptionMgr.parseSingleChargebeeAddon(addonContext));
   }
 

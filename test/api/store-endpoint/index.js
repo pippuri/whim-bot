@@ -22,5 +22,9 @@ describe('Store packages', () => {
 
   it('gets valid packages', () => {
     expect(response).to.be.not.null;
+    expect(response.plans).to.be.defined;
+    expect(response.plans).to.not.be.empty;
+    expect(response.addons).to.be.defined;
+    expect(response.addons).to.not.be.empty;
   });
 });
