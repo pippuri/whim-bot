@@ -16,7 +16,14 @@ describe('store', () => {
   });
 
   it('should find products', () => {
-    expect(response).to.be.not.empty;
+    expect(response).to.not.be.empty;
+    expect(response.length).to.equal(2);
+    expect(response[0]).to.not.be.empty;
+    expect(response[0].list).to.not.be.empty;
+    expect(response[0].list.length).to.be.least(0);
+    expect(response[1]).to.not.be.empty;
+    expect(response[1].list).to.not.be.empty;
+    expect(response[1].list.length).to.be.least(0);
   });
 
   it('should not have errored', () => {
