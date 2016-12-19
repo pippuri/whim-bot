@@ -26,8 +26,10 @@ function _fetchAuthCodeSmsMessage(phone, provider) {
     // simultaneously and happen to be either side of the 30 second time window
     // in which the auth code is valid
     if (response && response.length > 0) {
-      const sortDesc = (a, b) => new Date(b[TWILIO_DATE_SENT_FIELD]).getTime() - new Date(a[TWILIO_DATE_SENT_FIELD]).getTime();
-      const sortedMessages = response.sort(sortDesc);
+      const sortByDateDesc = (a, b) => new Date(b[TWILIO_DATE_SENT_FIELD]).getTime() -
+                                 new Date(a[TWILIO_DATE_SENT_FIELD]).getTime();
+
+      const sortedMessages = response.sort(sortByDateDesc);
       return sortedMessages[0];
     }
     return null;
