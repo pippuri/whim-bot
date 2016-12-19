@@ -27,7 +27,7 @@ function _fetchAuthCodeSmsMessage(phone, provider) {
     // in which the auth code is valid
     if (response && response.length > 0) {
       const sortByDateDesc = (a, b) => new Date(b[TWILIO_DATE_SENT_FIELD]).getTime() -
-                                 new Date(a[TWILIO_DATE_SENT_FIELD]).getTime();
+                                       new Date(a[TWILIO_DATE_SENT_FIELD]).getTime();
 
       const sortedMessages = response.sort(sortByDateDesc);
       return sortedMessages[0];
