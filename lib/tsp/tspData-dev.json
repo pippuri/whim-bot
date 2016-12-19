@@ -45,9 +45,9 @@
       "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
     },
     "endpoints": {
-      "reserve": "whim-car/",
-      "retrieve": "whim-car/",
-      "cancel": "whim-car/",
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
       "query": "whim-car/options/"
     }
   },
