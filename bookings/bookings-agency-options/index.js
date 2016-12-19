@@ -163,6 +163,13 @@ function getAgencyProductOptions(event) {
   });
 }
 
+function signResponse(options) {
+  options.forEach(option => {
+    option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
+  });
+  return options;
+}
+
 /**
  * Formats the response by removing JSON nulls
  *
@@ -182,6 +189,7 @@ module.exports.respond = function (event, callback) {
   return parseAndValidateInput(event)
   .then(parsed => getAgencyProductOptions(parsed))
   .then(response => formatResponse(response))
+  .then(response => signResponse(response))
   .then(response => (callback(null, response)))
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
