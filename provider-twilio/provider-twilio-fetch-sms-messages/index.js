@@ -17,9 +17,7 @@ function getSmsMessages(event) {
   }
 
   const now = new Date();
-  const form = {
-    DateSent: `${now.getUTCFullYear()}-${pad(now.getUTCMonth() + 1)}-${now.getDate()}`,
-  };
+  const form = {};
   if (event.to) {
     form.To = event.to;
   } else if (event.from) {

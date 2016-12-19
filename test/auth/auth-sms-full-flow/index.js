@@ -7,6 +7,8 @@ const utils = require('../../../lib/utils');
 const AUTH_REQUEST_CODE_LAMBDA = 'MaaS-auth-sms-request-code';
 const AUTH_LOGIN_LAMBDA = 'MaaS-auth-sms-login';
 
+const TWILIO_DATE_SENT_FIELD = 'date_sent';
+
 
 function _fetchAuthCodeSmsMessage(phone, provider) {
   if (!provider || provider === 'undefined') {
@@ -24,7 +26,8 @@ function _fetchAuthCodeSmsMessage(phone, provider) {
     // simultaneously and happen to be either side of the 30 second time window
     // in which the auth code is valid
     if (response && response.length > 0) {
-      const sortedMessages = response.sort(utils.dateSortCompareDesc('date_sent'));
+      const sortDesc = (a, b) => new Date(b[TWILIO_DATE_SENT_FIELD]).getTime() - new Date(a[TWILIO_DATE_SENT_FIELD]).getTime();
+      const sortedMessages = response.sort(sortDesc);
       return sortedMessages[0];
     }
     return null;
