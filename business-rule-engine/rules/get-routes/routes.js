@@ -354,10 +354,10 @@ function _mergeProviderResponses(responses, params) {
 function _overrideFromToName(response, params) {
   response.plan.itineraries.forEach(iti => {
     if (iti.legs.length === 0) throw new BusinessRuleError('Itinerary has 0 leg ' + iti, 500, 'get-routes');
-    if (params.fromName) {
+    if (params.fromName && (!iti.legs[0].from.name || iti.legs[0].from.name === 'Origin')) {
       iti.legs[0].from.name = params.fromName;
     }
-    if (params.toName) {
+    if (params.toName && (!iti.legs[iti.legs.length - 1].to.name || iti.legs[iti.legs.length - 1].to.name === 'Destination')) {
       iti.legs[iti.legs.length - 1].to.name = params.toName;
     }
   });
