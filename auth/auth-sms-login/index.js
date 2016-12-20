@@ -223,8 +223,8 @@ module.exports.respond = function (event, callback) {
   return Database.init(true)
     .then(() => smsLogin(`${event.phone}`, `${event.code}`))
     .then(response => {
-      Database.cleanup();
-      callback(null, response);
+      return Database.cleanup()
+        .then(() => callback(null, response));
     })
     .catch(errors.stdErrorWithDbHandler(callback, event));
 };
