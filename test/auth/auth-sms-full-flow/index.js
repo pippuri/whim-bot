@@ -70,25 +70,25 @@ module.exports = function () {
         .then(data => {
           return _fetchAuthCodeSmsMessage(PHONE);
         })
-      .then(sms => {
-        const authCode = _extractAuthCodeFromSms(sms);
-        if (!authCode) {
-          throw new Error('Could not retieve auth code from sms provider');
-        }
-        const event = {
-          phone: PHONE,
-          code: authCode,
-        };
-        return bus.call(AUTH_LOGIN_LAMBDA, event);
-      })
-      .then(data => {
-        response = data;
-        done();
-      })
-      .catch(err => {
-        error = err;
-        done();
-      });
+        .then(sms => {
+          const authCode = _extractAuthCodeFromSms(sms);
+          if (!authCode) {
+            throw new Error('Could not retieve auth code from sms provider');
+          }
+          const event = {
+            phone: PHONE,
+            code: authCode,
+          };
+          return bus.call(AUTH_LOGIN_LAMBDA, event);
+        })
+        .then(data => {
+          response = data;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        });
     });
 
     it('should not raise an error', () => {

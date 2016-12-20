@@ -31,22 +31,22 @@ function getSmsMessages(event) {
 
 module.exports.respond = (event, callback) => {
   getSmsMessages(event)
-  .then(response => callback(null, response))
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
+    .then(response => callback(null, response))
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
-    if (_error.statusCode === 400) {
-      callback(new MaaSError(JSON.parse(_error.response.toString()).message, 400));
-    }
+      if (_error.statusCode === 400) {
+        callback(new MaaSError(JSON.parse(_error.response.toString()).message, 400));
+      }
 
-    // Uncaught, unexpected error
-    if (_error instanceof MaaSError) {
-      callback(_error);
-      return;
-    }
+      // Uncaught, unexpected error
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
 };
