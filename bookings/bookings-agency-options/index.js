@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const utils = require('../../lib/utils');
+const tmp = require('./tmp');
 
 /**
  * Parses and validates the event input
@@ -109,8 +110,15 @@ function getAgencyProductOptions(event) {
       });
     }
 
+    /**
+     * NOTE Temporary overriding HSL fare by calling business-rule-engine
+     */
+    if (event.agencyId.toUpperCase() === 'HSL') {
+      return tmp.calculateHSLfare(response, event.identityId);
+    }
+
     // If empty response, do not do price conversion
-    if (response.options instanceof Array && response.options.length === 0) {
+    if (Array.isArray(response.options) && response.options.length === 0) {
       return response.options;
     }
 
@@ -119,7 +127,7 @@ function getAgencyProductOptions(event) {
 
     // Collect the prices for batch pricing call
     options.forEach(option => {
-      prices.push( { amount: option.cost.amount, currency: option.cost.currency } );
+      prices.push({ amount: option.cost.amount, currency: option.cost.currency });
     });
 
     if (prices.length > 0  && prices[0].currency) {
@@ -132,21 +140,14 @@ function getAgencyProductOptions(event) {
       })
       .then(points => {
         options.forEach((option, index) => {
-          // Inject price
-          const price = points[index];
-          option.fare = {
-            amount: price,
-            currency: 'POINT',
-          };
 
           // Inject agencyId
           option.leg.agencyId = event.agencyId;
 
-          option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
-
+          // Inject price
+          option.fare = { amount: points[index], currency: 'POINT' };
           return option;
         });
-
         return options;
       });
     }
@@ -156,24 +157,30 @@ function getAgencyProductOptions(event) {
 }
 
 /**
+ * Sign each and every response option
+ */
+function signResponse(input) {
+  input.options.forEach(option => {
+    option.signature = signatures.sign(option, process.env.MAAS_SIGNING_SECRET);
+  });
+  return input;
+}
+
+/**
  * Formats the response by removing JSON nulls
  *
  * @param {Array} options The unformatted response object
  * @return {object} A valid MaaS Response nesting the object & meta
  */
 function formatResponse(options) {
-  const trimmed = options.map(utils.sanitize);
-
-  return Promise.resolve({
-    options: trimmed,
-    maas: {},
-  });
+  return Promise.resolve({ options: options.map(utils.sanitize), maas: {} });
 }
 
 module.exports.respond = function (event, callback) {
   return parseAndValidateInput(event)
   .then(parsed => getAgencyProductOptions(parsed))
   .then(response => formatResponse(response))
+  .then(response => signResponse(response))
   .then(response => (callback(null, response)))
   .catch(_error => {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
