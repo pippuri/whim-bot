@@ -4,7 +4,7 @@ const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
 const ValidationError = require('../../lib/validator/ValidationError');
-const BusinessRuleError = require('../../business-rule-engine/BusinessRuleError');
+const BusinessRuleError = require('../../lib/errors/BusinessRuleError.js');
 
 function validateInput(event) {
   if (!event.payload.from) {

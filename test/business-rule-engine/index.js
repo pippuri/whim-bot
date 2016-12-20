@@ -12,13 +12,11 @@ const testGetPointPricingBatch = require('./get-points/feature-get-point-pricing
 const testGetRoutes = require('./get-routes/feature-get-routes');
 const testPlanLevel = require('./get-routes/feature-different-planlevel.js');
 
-// get-booking-provider
-// get-booking-provider-batch
-// get-routes-provider
-// get-routes-provider-batch
-// NOTE get-booking-provider & get-routes-provider basically get batch with 1 request, no test needed
-const testGetBookingProviderBatch = require('./get-provider/feature-get-booking-provider-batch.js');
-const testGetRoutesProviderBatch = require('./get-provider/feature-get-routes-provider-batch.js');
+// get-booking-provider-mode-location
+// get-booking-provider-agencyid-location
+// get-routes-providers-mode-location
+const testGetBookingProviders = require('./get-provider/feature-get-booking-providers.js');
+const testGetRoutesProviders = require('./get-provider/feature-get-routes-providers.js');
 
 // get-point-pricing
 // get-point-pricing-batch
@@ -34,17 +32,17 @@ describe('Business rule engine', function () {
   describe('Rule: get-routes', () => {
     testGetRoutes();
 
-    describe('Rule: engine rules with different planLevel users', () => {
+    describe('Rule: engine bookingProviderRules with different planLevel users', () => {
       testPlanLevel();
     });
   });
 
-  describe('Rule: get-routes-provider-batch', () => {
-    testGetRoutesProviderBatch();
+  describe('Rule: get-routes-providers', () => {
+    testGetRoutesProviders();
   });
 
-  describe('Rule: get-booking-provider-batch', () => {
-    testGetBookingProviderBatch();
+  describe('Rule: get-booking-providers', () => {
+    testGetBookingProviders();
   });
 
   describe('Rule: get-point-pricing', () => {
