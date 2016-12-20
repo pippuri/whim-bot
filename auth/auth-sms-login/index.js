@@ -222,10 +222,9 @@ function smsLogin(phone, code) {
 module.exports.respond = function (event, callback) {
   return Database.init()
     .then(() => smsLogin(`${event.phone}`, `${event.code}`))
-    .then(response => callback(null, response))
-    .catch(errors.stdErrorHandler(callback, event))
-    .lastly(() => {
-      console.info('------------------------');
+    .then(response => {
       Database.cleanup();
-    });
+      callback(null, response);
+    })
+    .catch(errors.stdErrorWithDbHandler(callback, event));
 };
