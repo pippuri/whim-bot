@@ -220,7 +220,7 @@ function smsLogin(phone, code) {
 }
 
 module.exports.respond = function (event, callback) {
-  return Database.init()
+  return Database.init(true)
     .then(() => smsLogin(`${event.phone}`, `${event.code}`))
     .then(response => {
       Database.cleanup();
