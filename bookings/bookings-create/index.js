@@ -91,7 +91,9 @@ module.exports.respond = (event, callback) => {
         .then(booking => formatResponse(booking.toObject()))
         .then(bookingData => {
           models.Database.cleanup()
-            .then(() => callback(null, bookingData));
+            .then(() => {
+              callback(null, bookingData);
+            });
         });
     })
     .catch(_error => {

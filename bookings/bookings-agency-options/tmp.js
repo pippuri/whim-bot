@@ -49,13 +49,17 @@ function calculateHSLfare(tspResponse, identityId) {
     .then(() => Profile.retrieve(identityId))
     .then(profile => {
       const shadowItineraries = tspResponse.options.map(item => {
-        item.leg.agencyId = 'HSL';
-        item.leg.from = fakeLocation(item.meta.HSL.ticketType.name).from;
-        item.leg.to = fakeLocation(item.meta.HSL.ticketType.name).to;
         return {
           startTime: item.leg.startTime,
           endTime: item.leg.endTime,
-          legs: [item.leg],
+          legs: [{
+            startTime: item.leg.startTime,
+            endTime: item.leg.endTime,
+            mode: item.leg.mode,
+            from: fakeLocation(item.meta.HSL.ticketType.name).from,
+            to: fakeLocation(item.meta.HSL.ticketType.name).to,
+            agencyId: 'HSL',
+          }],
         };
       });
       return pricingRule.resolveRoutesPrice(shadowItineraries, profile)
@@ -63,6 +67,7 @@ function calculateHSLfare(tspResponse, identityId) {
 
           // Number of response itineries and input are equal, and position is kept
           responseItineraries.forEach((itinerary, index) => {
+            tspResponse.options[index].leg.agencyId = 'HSL';
             tspResponse.options[index].fare = { amount: itinerary.fare.points, currency: 'POINT' };
           });
           return Promise.resolve(tspResponse.options);
