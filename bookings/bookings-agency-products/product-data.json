@@ -1,27 +1,27 @@
 {
     "Sixt-Whim-car": [{
-        "name": "Economy",
-        "type": "Sixt-Whim-car-Economy",
-        "description": "Good for 2 persons",
-        "fare": 372,
-        "image": "https://staticfiles.maas.global/product-images/ford-ka-3d-blau-2011.png"
+        "name": "Everyday",
+        "type": "Sixt-Whim-car-001",
+        "description": "Small car for everyday life, good for 2 people.",
+        "fare": 950,
+        "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-001.png"
     }, {
-        "name": "Midsize",
-        "type": "Sixt-Whim-car-Midsize",
-        "description": "Good for family",
-        "fare": 620,
-        "image": "https://staticfiles.maas.global/product-images/mb-b-klasse-5d-silber-2012.png"
+        "name": "Everyday Wagon",
+        "type": "Sixt-Whim-car-002",
+        "description": "Family option for everyday life.",
+        "fare": 1100,
+        "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-002.png"
     }, {
-        "name": "Fullsize",
-        "type": "Sixt-Whim-car-Fullsize",
-        "description": "Good for family and luggage",
-        "fare": 868,
-        "image": "https://staticfiles.maas.global/product-images/mb-c-klasse-4d-schwarz-2014.png"
+        "name": "Lifestyle",
+        "type": "Sixt-Whim-car-003",
+        "description": "Lifestyle option with room for 2-5 people.",
+        "fare": 1400,
+        "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-003.png"
     }, {
-        "name": "Premium",
-        "type": "Sixt-Whim-car-Premium",
-        "description": "Luxury",
-        "fare": 1116,
-        "image": "https://staticfiles.maas.global/product-images/mb-s-klasse-4d-silber-2013.png"
+        "name": "Lifestyle Wagon",
+        "type": "Sixt-Whim-car-004",
+        "description": "Lifestyle option for a family and luggage. Automatic transmission.",
+        "fare": 1800,
+        "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-004.png"
     }]
 }
