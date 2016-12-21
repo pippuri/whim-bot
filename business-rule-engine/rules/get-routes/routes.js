@@ -167,7 +167,7 @@ function _executeUntilSuccess(groupedProvidersList, mode, params) {
 
       // If no inspection passed, proceed with the rest of the list
       if (fulfilledInspections.length === 0) {
-        _executeUntilSuccess(tail, mode, params);
+        return _executeUntilSuccess(tail, mode, params);
       }
 
       // If even one of them success, we're happy, return that. NOTE Should we be happy?
