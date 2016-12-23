@@ -3,25 +3,37 @@
         "name": "Everyday",
         "type": "Sixt-Whim-car-001",
         "description": "Small car for everyday life, good for 2 people.",
-        "fare": 950,
+        "cost": {
+          "amount": "47.50",
+          "currency": "EUR"
+        },
         "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-001.png"
     }, {
         "name": "Everyday Wagon",
         "type": "Sixt-Whim-car-002",
         "description": "Family option for everyday life.",
-        "fare": 1100,
+        "cost": {
+          "amount": "55.00",
+          "currency": "EUR"
+        },
         "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-002.png"
     }, {
         "name": "Lifestyle",
         "type": "Sixt-Whim-car-003",
         "description": "Lifestyle option with room for 2-5 people.",
-        "fare": 1400,
+        "cost": {
+          "amount": "70.00",
+          "currency": "EUR"
+        },
         "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-003.png"
     }, {
         "name": "Lifestyle Wagon",
         "type": "Sixt-Whim-car-004",
         "description": "Lifestyle option for a family and luggage. Automatic transmission.",
-        "fare": 1800,
+        "cost": {
+          "amount": "90",
+          "currency": "EUR"
+        },
         "image": "https://staticfiles.maas.global/product-images/Sixt-Whim-car-004.png"
     }]
 }
