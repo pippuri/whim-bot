@@ -43,7 +43,7 @@ function formatResponse(booking) {
 
 module.exports.respond = (event, callback) => {
 
-  const transaction = new Transaction();
+  const transaction = new Transaction(event.identityId);
 
   return validateInput(event)
     .then(() => models.Database.init())
@@ -51,15 +51,12 @@ module.exports.respond = (event, callback) => {
     .then(() => Booking.retrieve(event.bookingId, transaction))
     .then(booking => booking.validateOwnership(event.identityId))
     .then(booking => {
-      return transaction.meta(models.Booking.tableName, booking.id)
-        .then(() => booking);
+      transaction.meta(models.Booking.tableName, booking.id);
+      return booking.cancel(transaction);
     })
-    .then(booking => booking.cancel(transaction))
     .then(bookingInstance => {
       const booking = bookingInstance.toObject();
-      const message = `Cancelled reservation for a ${booking.leg.mode}`;
-
-      return transaction.commit(message, event.identityId, booking.fare.amount)
+      return transaction.commit(`Cancelled reservation for a ${booking.leg.mode}`)
         .then(() => Promise.resolve(booking));
     })
     .then(booking => formatResponse(booking))

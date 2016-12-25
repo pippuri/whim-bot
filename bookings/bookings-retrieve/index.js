@@ -51,7 +51,7 @@ module.exports.respond = (event, callback) => {
     .then(() => validateInput(event))
     .then(() => {
       if (event.refresh && event.refresh === 'true' || event.refresh === true) {
-        const transaction = new Transaction();
+        const transaction = new Transaction(event.identityId);
 
         // Commit the transaction but skip writing to transaction log
         // this does not have anything to do with value, but we want to prevent
@@ -61,11 +61,10 @@ module.exports.respond = (event, callback) => {
         .then(booking => booking.validateOwnership(event.identityId))
         .then(booking => booking.refresh(transaction))
         .then(booking => {
-          transaction.commit(null);
-          return booking;
+          return transaction.commit().then(() => Promise.resolve(booking));
         })
         .catch(error => {
-          transaction.rollback()
+          return transaction.rollback()
             .then(() => Promise.reject(error));
         });
       }

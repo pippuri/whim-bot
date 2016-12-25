@@ -22,15 +22,14 @@ module.exports.respond = (event, callback) => {
       const identityId = validated.identityId;
       const planId = validated.planId;
       const promoCode = validated.promoCode;
-      const transaction = new Transaction();
+      const transaction = new Transaction(identityId);
 
       return transaction.start()
         .then(() => Profile.issueSubscriptionChange(identityId, planId, transaction,  promoCode))
         .then(updatedProfile => {
           const promoMessage = promoCode ? ` (promotion code ${promoCode})` : '';
-          const message = `Issued subscription change to ${planId}${promoMessage}`;
 
-          return transaction.commit(message, identityId, 0);
+          return transaction.commit(`Issued subscription change to ${planId}${promoMessage}`);
         })
         .catch(error => {
           return transaction.rollback()

@@ -1,9 +1,8 @@
 {
-  "identityId": "eu-west-1:149a2cf1-553e-4e74-9a1c-ef5fa9dcbf77",
+  "identityId": "eu-west-1:89d34b9f-56f6-4e4b-a27e-67d6ba61c8d5",
   "payload": {
-    "from": "60.165781,24.845139",
-    "to": "60.18176,24.95494",
-    "leaveAt": 1486109722000
+    "from": "60.1656991,24.9452865",
+    "to": "60.1734411,24.829458"
   },
   "headers": {}
 }

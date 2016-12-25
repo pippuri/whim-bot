@@ -13,7 +13,7 @@ function handle(payload, key, defaultResponse) {
 
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
-  const transaction = new Transaction();
+  const transaction = new Transaction(identityId);
   let activePlan = profile.plan.id;
   let forceUpdate = false;
   let message;
@@ -51,7 +51,7 @@ function handle(payload, key, defaultResponse) {
 
   return transaction.start()
     .then(() => Profile.changeSubscription(identityId, activePlan, transaction, forceUpdate))
-    .then(response => transaction.commit(message, identityId, response.balanceChange))
+    .then(response => transaction.commit(message))
     .then(() => defaultResponse)
     .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 }
