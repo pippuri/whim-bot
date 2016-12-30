@@ -39,6 +39,11 @@
         "path": "lib/header-functions/register-subscription-filter.js",
         "hook": "function-post-deploy",
         "params": ["prod"]
+      },
+      {
+        "path": "lib/header-functions/register-metric-alarm.js",		
+        "hook": "function-post-deploy",		
+        "params": [300, "arn:aws:sns:eu-west-1:756207178743:log-error-alarms"]		
       }
     ]
   },
