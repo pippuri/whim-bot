@@ -4,13 +4,43 @@ const Promise = require('bluebird');
 const bus = require('../../lib/service-bus/index');
 const errors = require('../../lib/errors/index');
 const lib = require('../lib/index');
+const AWS = require('aws-sdk');
+AWS.config.update({ region: 'eu-west-1' });
+const S3 = Promise.promisifyAll(new AWS.S3());
 
-// Try to load the greenlist
-let greenlist;
-try {
-  greenlist = require(process.env.AUTH_GREENLIST_JSON);
+function loadGreenlist() {
+  let stage;
+  switch (process.env.SERVERLESS_STAGE) {
+    case 'alpha':
+    case 'prod':
+      stage = 'dev';
+      break;
+    case 'dev':
+    case 'test':
+    default:
+      stage = 'prod';
+      break;
+  }
+  return S3.getObjectAsync({
+    Bucket: 'maas-serverless',
+    Key: `serverless/MaaS/greenlist/greenlist-${stage}.json`,
+  })
+  .then(result => JSON.parse(new Buffer(result.Body).toString('ascii')));
 }
-catch (err) { /* swallow */ }  // eslint-disable-line brace-style
+
+function checkGreenlist(greenlist, event) {
+  if (!greenlist) {
+    console.info('Not checking against greenlist');
+    return Promise.resolve();
+  }
+
+  console.info('Checking against greenlist for phone number: ', event.phone);
+  if (greenlist.indexOf(event.plainPhone) === -1) {
+    return Promise.reject(new errors.MaaSError('Unauthorized', 401));
+  }
+
+  return Promise.resolve();
+}
 
 /**
  * Request a login verification code by SMS.
@@ -24,16 +54,6 @@ function smsRequestCode(phone, provider) {
   const plainPhone = phone.replace(/[^\d]/g, '');
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new errors.MaaSError('Invalid phone number', 400));
-  }
-
-  // Check against the greenlist if a greenlist has been loaded
-  if (typeof greenlist === typeof undefined) {
-    console.info('Not checking against greenlist');
-  } else {
-    console.info('Checking against greenlist ', process.env.AUTH_GREENLIST_JSON, ' for', plainPhone, 'phone', phone);
-    if (greenlist.indexOf(plainPhone) === -1) {
-      return Promise.reject(new errors.MaaSError('Unauthorized', 401));
-    }
   }
 
   const verificationCode = lib.generate_topt_login_code(plainPhone);
@@ -54,7 +74,9 @@ function smsRequestCode(phone, provider) {
 }
 
 module.exports.respond = function (event, callback) {
-  return Promise.resolve(smsRequestCode(`${event.phone}`, `${event.provider}`))
+  return loadGreenlist()
+    .then(greenlist => checkGreenlist(greenlist, event))
+    .then(smsRequestCode(`${event.phone}`, `${event.provider}`))
     .then(response => {
       callback(null, response);
     })
