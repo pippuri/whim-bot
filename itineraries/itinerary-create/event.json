@@ -1,158 +1,171 @@
 {
-  "identityId":"eu-west-1:00000000-cafe-cafe-cafe-000000000000",
-  "itinerary": {
-    "startTime": 1479127519000,
-    "endTime": 1479136566000,
-    "legs": [
-      {
-        "startTime": 1479127519000,
-        "endTime": 1479127620000,
-        "mode": "WALK",
-        "from": {
-          "name": "Ludviginkatu",
-          "lon": 24.94523,
-          "lat": 60.16578
+  "identityId":"eu-west-1:149a2cf1-553e-4e74-9a1c-ef5fa9dcbf77",
+  "itinerary":
+  {
+        "startTime": 1483362429000,
+        "endTime": 1483364453000,
+        "legs": [
+          {
+            "startTime": 1483362429000,
+            "endTime": 1483362719000,
+            "mode": "WALK",
+            "from": {
+              "name": "Origin",
+              "lon": 24.74277,
+              "lat": 60.146649
+            },
+            "to": {
+              "name": "Nuottaniemi",
+              "lon": 24.742955,
+              "lat": 60.147642
+            },
+            "legGeometry": {
+              "points": "_ibnJkp_vCHILwBLeC@WaBm@}Am@yCs@?`@XjI"
+            },
+            "distance": 383,
+            "fare": {
+              "currency": "POINT",
+              "amount": 0
+            },
+            "product": {
+              "type": null
+            },
+            "signature": "4197ef0faf4d734f0eb0b24986e168ba035eaff3aa0db849bf973e352075be45"
+          },
+          {
+            "startTime": 1483362720000,
+            "endTime": 1483363020000,
+            "mode": "BUS",
+            "from": {
+              "name": "Nuottaniemi",
+              "lon": 24.742955,
+              "lat": 60.147642
+            },
+            "to": {
+              "name": "Piispanaukio",
+              "lon": 24.738584,
+              "lat": 60.162685
+            },
+            "legGeometry": {
+              "points": "erbnJqr_vC?M_@}JUmFCaASkBa@aAmCcC}@y@AA{@u@w@{Ac@mCwA{Ky@p@w@`Ag@z@[f@_AxCEPw@rBmAfDo@zAm@~@Y^q@~@o@z@[b@[d@EFs@~@iAf@kBrBkAz@kCvBURMJm@d@kA|@wBhBo@f@s@d@qAdASVy@l@s@l@QL]V{AnAq@l@cBrAe@^i@b@sB|Ac@^G@e@b@_@Zc@xAQl@UZ[TOLA@"
+            },
+            "route": "31",
+            "routeShortName": "31",
+            "routeLongName": "Friisilänaukio-Jorvi",
+            "agencyId": "HSL",
+            "distance": 2026,
+            "fare": {
+              "currency": "POINT",
+              "amount": 100
+            },
+            "product": {
+              "type": "Seutu"
+            },
+            "signature": "70e7ad0f861334c31bcf29bf2ee1424037768ea05927e8a1b330462ea57f0944"
+          },
+          {
+            "startTime": 1483363020000,
+            "endTime": 1483363159000,
+            "mode": "WALK",
+            "from": {
+              "name": "Piispanaukio",
+              "lon": 24.738584,
+              "lat": 60.162685
+            },
+            "to": {
+              "name": "Piispansilta",
+              "lon": 24.737163,
+              "lat": 60.162971
+            },
+            "legGeometry": {
+              "points": "uoenJyv~uCwA|@e@ZQHE_@h@Y^xCPl@CP@L"
+            },
+            "distance": 190,
+            "fare": {
+              "currency": "POINT",
+              "amount": 0
+            },
+            "product": {
+              "type": null
+            },
+            "signature": "f4db542615250387e117b59ec6071e2918f6fb8716be6416edf08c5ffe290c5f"
+          },
+          {
+            "startTime": 1483363159000,
+            "endTime": 1483363440000,
+            "mode": "WAIT",
+            "fare": {
+              "currency": "POINT",
+              "amount": 0
+            },
+            "product": {
+              "type": null
+            },
+            "signature": "8a76c19d854e0ef431cebed9c5dc332289e234cdb3b4d1f4f3cd74a18889b734"
+          },
+          {
+            "startTime": 1483363440000,
+            "endTime": 1483364280000,
+            "mode": "BUS",
+            "from": {
+              "name": "Piispansilta",
+              "lon": 24.737163,
+              "lat": 60.162971
+            },
+            "to": {
+              "name": "Kamppi, tulo",
+              "lon": 24.93012,
+              "lat": 60.1688
+            },
+            "legGeometry": {
+              "points": "itenJwk~uCg@qDo@kF[wBeAsHcAaIeAyI}@qIk@yHi@gJYeJCcAC{BC}CDgDo@eJB}CBgHu@oIyB{i@YcGi@yHg@mIQeDWiEc@aIc@gJMyBUiIEcAIeEGoDGuHAgFEcI?gH@oNEyRC{EQwJCcGCwGA_HEuFGwEKcGSeFCkAAKC{@Gy@Ca@Em@CgA?cA@a@MMGg@@mH?sCAaDMmFSsBMkBGoBEiFA{DLcHLoFRiNNaKJgEHoCHwBDu@HmADaBNkCBc@@QDi@T}DNqFDm@LoDFwENuBbB{R`AsHtDaUp@qEn@aFb@uD@KPcBh@kF~Hix@jFyh@pAuOPaEDmADeD?iC?kBG}EEkAIaB[_FWsCq@aGKq@mEg_@g@qEm@uFkAaOSwC_@qFgBu[}F_eAUyGKkGCyA@}CDoBHsFJ}BPcDZwDHkAf@iDVyAVqA~@cDt@kBh@eApAmBf@i@XSn@gAEwG?QK}PW{Y_@{IUyHG}@SsCw@cDiAg@uB}@QGsB{@oCsAw@g@gBcGcAaE"
+            },
+            "route": "150K",
+            "routeShortName": "150K",
+            "routeLongName": "Kamppi-Kivenlahti-Saunaniemi",
+            "agencyId": "HSL",
+            "distance": 10994,
+            "fare": {
+              "currency": "POINT",
+              "amount": 0
+            },
+            "product": {
+              "type": null
+            },
+            "signature": "ffb4a8bb466d44a9b63c73594ff04f898d131e7c85fa67c349f0c0a82a95e1e6"
+          },
+          {
+            "startTime": 1483364281000,
+            "endTime": 1483364453000,
+            "mode": "WALK",
+            "from": {
+              "name": "Kamppi, tulo",
+              "lon": 24.93012,
+              "lat": 60.1688
+            },
+            "to": {
+              "name": "Destination",
+              "lon": 24.931075,
+              "lat": 60.167458
+            },
+            "legGeometry": {
+              "points": "_vfnJeddwCCMEMMMHSR[x@gALSFI`@m@TDZL`@PHBTH@KNH@HBDBBB@"
+            },
+            "distance": 203,
+            "fare": {
+              "currency": "POINT",
+              "amount": 0
+            },
+            "product": {
+              "type": null
+            },
+            "signature": "b91934c18063d9ab8f821f9cab1ae442ce42d41af03a2e4e50a411ce09cf88b3"
+          }
+        ],
+        "fare": {
+          "points": 100,
+          "co2": 2317
         },
-        "to": {
-          "name": "Kolmikulma",
-          "lon": 24.94395,
-          "lat": 60.16516
-        },
-        "legGeometry": {
-          "points": "ccfnJsbgwC?T@?ARBtA?p@@d@?Lh@P??^Gh@A@N"
-        },
-        "distance": 135,
-        "signature": "2a41fc3a32270443c9da2ef9343ed69e309a2db9644a2dc2d5f603ac355707af"
-      },
-      {
-        "startTime": 1479127620000,
-        "endTime": 1479128220000,
-        "mode": "TRAM",
-        "from": {
-          "name": "Kolmikulma",
-          "lon": 24.94395,
-          "lat": 60.16516
-        },
-        "to": {
-          "name": "Ooppera",
-          "lon": 24.92659,
-          "lat": 60.18228
-        },
-        "route": "10",
-        "routeShortName": "10",
-        "routeLongName": "Kirurgi - Pikku Huopalahti",
-        "agencyId": "HSL",
-        "legGeometry": {
-          "points": "g_fnJuzfwC@B{Aj@eCJWDe@j@mBzCsAdCeChD??FNi@~@gHzLqBzC??BFkAlBu@jB_@nAe@x@UXuDrDsOrN????oD`EuFdHy@p@sAj@kAn@???BsKfE{GhDa@`@gApB"
-        },
-        "distance": 2181,
-        "signature": "a93726ea10db2f13c0746a1dd4062908e7afd9f2f8a0ea5fc3c3e8224751d4f6"
-      },
-      {
-        "startTime": 1479128220000,
-        "endTime": 1479128292000,
-        "mode": "WALK",
-        "from": {
-          "name": "Ooppera",
-          "lon": 24.92659,
-          "lat": 60.18228
-        },
-        "to": {
-          "name": "Ooppera",
-          "lon": 24.92675,
-          "lat": 60.18216
-        },
-        "legGeometry": {
-          "points": "gjinJencwCC]Wh@BLBF@D@FDJ??r@oAOK"
-        },
-        "distance": 89,
-        "signature": "114f0b013074aaeb366f9d6b984b037dc8c7996e154c2bfdfa3a6a4e300b682a"
-      },
-      {
-        "startTime": 1479128292000,
-        "endTime": 1479128580000,
-        "mode": "TRANSFER",
-        "signature": "b1af8065a45a7f3a4acc9426b10e265b3737070a049b035fbe93a37be307363c"
-      },
-      {
-        "startTime": 1479128580000,
-        "endTime": 1479130920000,
-        "mode": "BUS",
-        "from": {
-          "name": "Ooppera",
-          "lon": 24.92675,
-          "lat": 60.18216
-        },
-        "to": {
-          "name": "Palopolku",
-          "lon": 24.42122,
-          "lat": 60.27475
-        },
-        "route": "280",
-        "routeShortName": "280",
-        "routeLongName": "Helsinki - Turunväylä - Veikkola -",
-        "agencyId": "HSL",
-        "legGeometry": {
-          "points": "miinJeocwC??Yb@eAnBmC|EKP{@`Bi@`Aa@t@e@x@aA`BgClE]j@a@n@i@t@k@x@i@t@W`@aCdDQXcCdCw@|@c@b@mCvCSXyAhA??L`@y@|AkAbDwD~KY`A?zB?fAAt@E~GYdO??Pe@?h@CbC?p@IdMIrNC|DA~@AhACp@G|AUvAUbAuJpZ??pAkAY`AW|@Qn@MZSx@_@jAa@dA{CnIiA~CK\\Ql@S|@Mr@Mp@Kj@Kf@Gp@OrAQxAWhB_@bD]jCm@xEiAQWFIBIDSFc@Y??Dj@i@Tu@T_C`AoB|@kE~@??Fn@{MxF[JeAb@gE|AVdA\\z@b@hAXbAR|@R`B@dBCvCIbCI~DCV?~GHzDPvGn@lMXbG@XP`GJtF?pDI~GCjBK~B]zHg@pGc@fEsMvhAqOrmAYvM{@~J{ApTGdAU~DGrBCr@[bFMpCKrD@fIDpEPzDR`E\\bETrDRfELvH??H?\\pILzCVtKLtUDpED|CZhP`@zRAdC|Ath@D|ABfB?jDD|BBr@BfAH|@LvAR|Ab@tD??FCl@nFVhCf@xFNpCh@jLDzALnID|KAjIWtu@BhI?tDOvBUfESbFYrFEpAC`BBhABfFx@`D??LEtAbLh@~F`@vDj@pER~A|CbQXlBnFh^bBtLjA|IjAbKb@pEZ~Cx@bKZ`FLvBV|ETxE\\bLN~ILrKBzIA|EG~JI|FMnESfFm@tJa@pEq@lHq@tFk@fDuBjKyA|FqDnKyHdRqCnIa@vAuAfFgAtDa@`Bu@zCoA`FcFbUkAxFmA|GoA|IgAzJ{@nGm@`EiAnG{@tEUbAaDnPqGf\\mC~Ma@~B_AhD_BzGY`BD`C??c@VKhAO|Ag@tFg@hFk@pDcA`GwB~KsCzKmC`LqBzIw@bFiAvHGv@e@lESlDIpBUhEElAIzCQ`HYfLs@fOs@|J}@~JiAjKmAfJgApI_@zD]fEy@zLY|Gg@tIm@~Hs@fGu@dF_BlJ_B~GkAtFuA~Iq@vGe@dHa@~H_@jGcA`LcAvHcBxJm@~B_AfEoBvH}@pCcAhDsEnLcDpHqDnHuCfFiDdFaCrCaC~BmCnBgCrBqCpCqCpDkDrFcCvEwBvEyBtFqA|D{ApEyApEyAdF_BfG{@jEq@pDoAlHu@pFcAfJi@xEo@vHu@dKi@nHKdAo@xGqAtMsAfM_AtJ{@xHu@tGgAzHw@dF}DnVgC`NiCvMwApHeA`GkBvL}AzJ_AzGkAfJ{@dHiA|Ju@xGo@bIk@tI]jLGfJKxGU~G_@bGe@`F}@dGs@zDqA`FgClJeCxJmAlGcBrIiAjFoA|EiBdGiAhDiBrEyAdDcCnFmC`FcDfFgDvGiA~CsA~D}@zDcAnEq@hEo@nF{@~IcAfIaA`HwAxIiA|FiBlIsChMkBhJ_ChNsApIi@vBkAdGg@rBc@vAa@jA]t@c@f@q@f@{@^eAd@s@l@]|@Ux@Ib@MrAA`ABnAJbAR`AVp@^|@h@dA~@|A|AvB~@rAd@b@jBlCv@pAbAhBb@`Ab@bAd@zA^pA\\rAZ|A^tBZfBJXHTRVAX?XFTHPo@~EIz@_@`@??JhAKvBWbEOEQLGX?^H^LPyBdVi@vB??FxAcBzQ{BxVs@lHI`B_@P??FzBc@xEi@lDc@zBg@~B}@nCcAtCu@jBa@pAYp@i@j@"
-        },
-        "distance": 32881,
-        "signature": "54f5969291e4924b34cf521eaa484af51d0f759f40a7b6e4cc0dd5b7cbbdf2c6"
-      },
-      {
-        "startTime": 1479130920000,
-        "endTime": 1479132840000,
-        "mode": "TRANSFER",
-        "signature": "c7c23bd76774bb076b05b9580d4243a3cd48fecacc102842d8db3dd28330b6de"
-      },
-      {
-        "startTime": 1479132840000,
-        "endTime": 1479133200000,
-        "mode": "BUS",
-        "from": {
-          "name": "Palopolku",
-          "lon": 24.42122,
-          "lat": 60.27475
-        },
-        "to": {
-          "name": "Perälänjärventie",
-          "lon": 24.44233,
-          "lat": 60.28596
-        },
-        "route": "908",
-        "routeShortName": "908",
-        "routeLongName": "Kirkkonummi - Evitskog - Kylmälä - Veikkola - Kaislampi",
-        "agencyId": "HSL",
-        "legGeometry": {
-          "points": "cl{nJqw`tC_@nB_AjCcBlEsCxHwC~HFQ_@aAQLMX{@dCW`@UHyA?sAXgAf@[?e@a@Sg@m@gBm@qA????y@aAwAu@kBw@e@cAQoAGy@QaAcAmCc@sA[yAy@uCi@aBQ]????Wq@{@sAg@a@a@Iy@Co@?y@Bi@Me@]{@y@a@s@Y_AUeASmBa@}AJcB????PcC|AiL^gBxCuGjAyFz@uE????LiAz@cE`BwLLeEIqDUQ]c@[k@gOuY"
-        },
-        "distance": 2914,
-        "signature": "2a4800cf01e0695659e63c1e6bb5161d9242b1a44c77476373c7877ff9ea61ee"
-      },
-      {
-        "startTime": 1479133200000,
-        "endTime": 1479136566000,
-        "mode": "WALK",
-        "from": {
-          "name": "Perälänjärventie",
-          "lon": 24.44233,
-          "lat": 60.28596
-        },
-        "to": {
-          "name": "Valklammentie",
-          "lon": 24.46223,
-          "lat": 60.31295
-        },
-        "legGeometry": {
-          "points": "gr}nJo{dtC]i@Uk@Q[Kc@CBG?oCfAgBn@AMMD??s@LeB`@y@f@y@p@k@t@u@vA{@rAi@n@u@ZkAX{Af@u@HiAE{@Pg@Ge@MUg@OaAEaAM_@WMc@H_@PUBOUkAwCEG[q@QIY@}@`@_APo@Gi@Qu@q@u@aAq@aB_@}@i@aAi@c@e@Q_C{AmAc@[]O_@a@qAQu@]_AUe@i@y@YQa@M[?g@La@CaAMu@Bg@Li@Pc@NY^_@|@Yp@g@rAW`@[^g@Tq@b@]f@s@vAo@|@y@x@w@j@o@^o@|@g@|@qAdBy@x@{@r@m@^uB`Ay@f@o@b@q@r@}@dAw@~@_A`AiA`BS`@[l@o@r@??q@`@eA?{@Qu@eAkAi@c@Qk@s@k@mB{@oBsAaA_@}AYeBW{BW{BAIGoAO_DE{@EcCDgD?wC??@oA@aJ?iHMgCeBcNa@_Dq@wEkAqIo@wFFoASmDMgDJqBn@kBj@{Az@qC"
-        },
-        "distance": 4499,
-        "signature": "34e65fda123e5ef93db2ba84220e0febfee7afcb3485574a0afd6c81432d1fad"
+        "signature": "93fe003192c66ef287e3a919a37dc396e6514eece5c7508a62a7cc7ef45c554c"
       }
-    ],
-    "fare": {
-      "points": 144,
-      "co2": 1550
-    },
-    "signature": "904f268dec227d91bc112512c45b2244f9a529e143dfbb010d964c18bdcfe38b"
-  }
 }
