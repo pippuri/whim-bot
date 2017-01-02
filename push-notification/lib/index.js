@@ -81,7 +81,7 @@ function removeOldPushTokens(identityId, recordSet, tokens, syncSessionToken) {
  * @param {Array<String>} tokens - tokens to run checks for
  * @param {string} syncSessionToken - last CognitoSync Listing session token
  *
- * @return {Object} response
+ * @return {Promise} response
  */
 function updateWorkingTokens(identityId, recordSet, tokens, syncSessionToken) {
   return cognitoSync.updateRecordsAsync({
@@ -103,7 +103,7 @@ function updateWorkingTokens(identityId, recordSet, tokens, syncSessionToken) {
   })
   .then(() => Promise.resolve('Working tokens updated'))
   .catch(error => {
-    console.warn('[Push notification] Error removing old push tokens: ' + error.message);
+    console.warn('[Push notification] Error removing old push tokens: ' + error.message, '... ignoring');
     return Promise.resolve();
   });
 }

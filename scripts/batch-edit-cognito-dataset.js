@@ -83,7 +83,7 @@ function fetchAllIdentityFromPool() {
     records = records.concat(response.Identities);
     if (response.NextToken) {
       NextToken2 = response.NextToken;
-      fetchAllIdentityFromPool();
+      return fetchAllIdentityFromPool();
     }
 
     return Promise.resolve(records.map(item => item.IdentityId));

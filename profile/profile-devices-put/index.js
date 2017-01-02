@@ -3,19 +3,13 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const MaaSError = require('../../lib/errors/MaaSError');
+const validator = require('../../lib/validator');
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/request.json');
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/response.json');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
 Promise.promisifyAll(cognitoSync);
-
-function validateInput(event) {
-  if (!event.identityId) return Promise.reject(new MaaSError('Missing identityId', 400));
-  if (!event.payload) return Promise.reject(new MaaSError('Missing Payload', 400));
-  if (!event.payload.devicePushToken) return Promise.reject(new MaaSError('devicePushToken missing from payload', 400));
-  if (!event.payload.deviceIdentifier) return Promise.reject(new MaaSError('deviceIdentifier missing from payload', 400));
-  if (!event.payload.deviceType) return Promise.reject(new MaaSError('deviceType missing from payload', 400));
-  return Promise.resolve();
-}
 
 function saveDeviceToken(event) {
 
@@ -67,11 +61,10 @@ function saveDeviceToken(event) {
 }
 
 module.exports.respond = (event, callback) => {
-  return validateInput(event)
+  return validator.validate(requestSchema, event, { coerceTypes: true, useDefaults: true, sanitize: true })
     .then(() => saveDeviceToken(event))
-    .then(response => {
-      callback(null, response);
-    })
+    .then(response => validator.validate(responseSchema, response))
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
