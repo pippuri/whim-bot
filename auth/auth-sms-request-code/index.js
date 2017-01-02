@@ -13,12 +13,12 @@ function loadGreenlist() {
   switch (process.env.SERVERLESS_STAGE) {
     case 'alpha':
     case 'prod':
-      stage = 'dev';
+      stage = 'prod';
       break;
     case 'dev':
     case 'test':
     default:
-      stage = 'prod';
+      stage = 'dev';
       break;
   }
   return S3.getObjectAsync({
