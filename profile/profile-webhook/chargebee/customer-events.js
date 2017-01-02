@@ -13,7 +13,7 @@ function handle(payload, key, defaultResponse) {
   const profile = Subscription.formatUser(payload.content);
   const identityId = profile.identityId;
 
-  const transaction = new Transaction();
+  const transaction = new Transaction(identityId);
 
   switch (payload.event_type) {
     case 'customer_changed':
@@ -39,7 +39,7 @@ function handle(payload, key, defaultResponse) {
       //[XXX: the customer is reset to payg, but not marked as 'deleted']
       return transaction.start()
         .then(() => Profile.changeSubscription(identityId, WHIM_DEFAULT, transaction, true))
-        .then(response => transaction.commit(`Subscription removed, changed to ${WHIM_DEFAULT}; reset balance to 0`, identityId, response.balanceChange))
+        .then(response => transaction.commit(`Subscription removed, changed to ${WHIM_DEFAULT}; reset balance to 0`))
         .then(() => defaultResponse)
         .catch(error => transaction.rollback().then(() => Promise.reject(error)));
 

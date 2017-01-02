@@ -17,7 +17,7 @@ function formatResponse(itinerary) {
 }
 
 module.exports.respond = function (event, callback) {
-  const transaction = new Transaction();
+  const transaction = new Transaction(event.identityId);
 
   return signatures.validateSignatures(event.itinerary)
     .then(signedItinerary => utils.without(signedItinerary, ['signature']))
@@ -27,8 +27,8 @@ module.exports.respond = function (event, callback) {
         .then(() => transaction.bind(models.Itinerary))
         .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction))
         .then(newItinerary => {
-          return transaction.meta(models.Itinerary.tableName, newItinerary.id)
-            .then(() => Promise.resolve(newItinerary));
+          transaction.meta(models.Itinerary.tableName, newItinerary.id);
+          return Promise.resolve(newItinerary);
         });
     })
     .then(newItinerary => newItinerary.pay(transaction))
@@ -44,7 +44,7 @@ module.exports.respond = function (event, callback) {
       }
 
       const message = `Reserved a trip from ${itineraryInstance.fromName()} to ${itineraryInstance.toName()}`;
-      return transaction.commit(message, event.identityId, -1 * itinerary.fare.points)
+      return transaction.commit(message)
         .then(() => Promise.resolve(itinerary));
     })
     .then(itinerary => formatResponse(itinerary))

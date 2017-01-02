@@ -92,21 +92,21 @@ function makePurchase(identityId, transaction, productId, cost, points) {
 
 module.exports.respond = function (event, callback) {
 
-  const transaction = new Transaction();
+  const transaction = new Transaction(event.identityId);
   let payload;
 
   return parseAndValidateInput(event)
     .then(parsed => {
       payload = parsed;
-      models.Database.init()
+      transaction.meta(models.Profile.tableName, event.identityId);
+      return models.Database.init()
         .then(() => transaction.start())
-        .then(() => transaction.bind(models.Profile))
-        .then(() => transaction.meta(models.Profile.tableName, event.identityId));
+        .then(() => transaction.bind(models.Profile));
     })
     .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
     .then(confirmed => makePurchase(confirmed.identityId, transaction, confirmed.productId, confirmed.cost, confirmed.points))
     .then(purchase => {
-      return transaction.commit(`Topup ${payload.points}p`, event.identityId, payload.points)
+      return transaction.commit(`Topup ${payload.points}p`)
         .then(() => Profile.retrieve(event.identityId))
         .then(profile => {
           return Object.assign({}, purchase, { profile: profile });

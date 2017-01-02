@@ -59,7 +59,7 @@ function formatResponse(booking) {
  */
 module.exports.respond = (event, callback) => {
 
-  const transaction = new Transaction();
+  const transaction = new Transaction(event.identityId);
 
   return validateInput(event)
     .then(() => signatures.validateSignatures(event.payload))
@@ -71,8 +71,8 @@ module.exports.respond = (event, callback) => {
         .then(() => Booking.create(unsignedBooking, event.identityId, transaction, { skipInsert: false }))
         .then(newBooking => newBooking.pay(transaction))
         .then(paidBooking => {
-          return transaction.meta(models.Booking.tableName, paidBooking.booking.id)
-            .then(() => Promise.resolve(paidBooking));
+          transaction.meta(models.Booking.tableName, paidBooking.booking.id);
+          return Promise.resolve(paidBooking);
         })
         .then(paidBooking => {
           const bookingData = paidBooking.toObject();
@@ -81,11 +81,8 @@ module.exports.respond = (event, callback) => {
             return transaction.rollback()
               .then(() => Promise.reject(new MaaSError('Faulty new booking, fare is smaller than 0', 500)));
           }
-          const message = `Reserve ticket for a ${bookingData.leg.mode}`;
-
-          // Always commit a negative value as paying means losing
           return paidBooking.reserve(transaction)
-            .then(() => transaction.commit(message, event.identityId, -1 * bookingData.fare.amount))
+            .then(() => transaction.commit(`Reserve ticket for a ${bookingData.leg.mode}`))
             .then(() => Promise.resolve(paidBooking));
         })
         .then(booking => formatResponse(booking.toObject()))

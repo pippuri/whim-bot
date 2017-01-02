@@ -11,7 +11,6 @@ const bookingId = '00000000-dead-dead-eaeae-000000000000';
 const message = 'Testing the transaction';
 const value = 500;
 
-let transaction;
 let logEntry;
 
 before(() => {
@@ -28,11 +27,15 @@ after(() => {
 
 describe('Writes the transaction to the DB', () => {
   it(`starts & commits transaction: ${identityId}, ${message}, ${value}`, () => {
-    transaction = new Transaction(identityId);
+    const transaction = new Transaction(identityId);
     return transaction.start()
-      .then(() => transaction.bind(Booking))
-      .then(() => transaction.meta(Booking.tableName, bookingId))
-      .then(() => transaction.commit(message, identityId, value))
+      .then(() => {
+        transaction.meta(Booking.tableName, bookingId);
+        transaction.setType('balanceChange');
+        transaction.increaseValue(value);
+        return transaction.bind(Booking);
+      })
+      .then(() => transaction.commit(message))
       .then(_logEntry => (logEntry = _logEntry));
   });
 
