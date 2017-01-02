@@ -196,34 +196,49 @@ function smsLogin(phone, code) {
       verificationCode: code,
     });
   })
-  .then(() => {
-    return createUserThing(identityId, plainPhone, isSimulationUser);
-  })
+  .then(() => createUserThing(identityId, plainPhone, isSimulationUser))
   .then(() => {
     // First try to fetch an existing identity
     return Profile.retrieve(identityId)
       // There's a profile but no transaction found, create first log entry
       // to state the beginning user balance
       .then(profile => {
-        const transaction = new Transaction();
+        const transaction = new Transaction(identityId);
+
         return transaction.start()
-          .then(() => transaction.meta('Profile', identityId))
           .then(() => transaction.bind(TransactionLog).query().where('identityId', identityId))
           .then(logEntries => {
-            if (logEntries.length === 0) return transaction.commit(`Profile created with ${profile.balance} points`, profile.balance, identityId);
-            // If there exists a log entry already, rollback actions
-            // NOTE For a clean serving, do a total wipe on transaction log.
+            const transactionValueSum = logEntries.reduce((prev, curr) => prev.value + curr.value, 0);
+            // If sum of all transaction records's value not equal to user profile balance, create a log to synchronize the records with the balance
+            if (transactionValueSum !== profile.balance) {
+              console.warn(`[Auth login] transaction records\'s value sum (${transactionValueSum}) not equal to profile balance (${profile.balance})`);
+              transaction.setType('balanceSync');
+              transaction.type = Transaction.types.BALANCE_SYNC;
+              transaction.increaseValue(profile.balance);
+              transaction.meta('Profile', identityId);
+              if (profile.balance - transactionValueSum > 0) {
+                transaction.increaseValue(profile.balance - transactionValueSum);
+              } else {
+                transaction.decreaseValue(transactionValueSum - profile.balance);
+              }
+              return transaction.commit('Balancing user balance with transaction records');
+            }
             return transaction.rollback();
           })
-          .catch(() => transaction.rollback());
+          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
       })
       // No profile found, create one
       .catch(error => {
-        const transaction = new Transaction();
+        // Profile not exist error code is 404, if not 404, throw forward the error
+        if (error.code !== 404) return Promise.reject(error);
+
+        const transaction = new Transaction(identityId);
+        transaction.meta('Profile', identityId);
+
         return transaction.start()
           .then(() => transaction.meta('Profile', identityId))
           .then(() => Profile.create(identityId, phone, transaction))
-          .then(() => transaction.commit('Profile created with 0 points', 0, identityId))
+          .then(() => transaction.commit('Profile created'))
           .catch(() => transaction.rollback());
       });
   })
