@@ -34,7 +34,7 @@ module.exports = function () {
       expect(response).to.have.property('PUBLIC_TRANSIT');
       expect(response).to.have.property('TAXI');
       expect(response.PUBLIC_TRANSIT).to.be.an('array');
-      expect(response.PUBLIC_TRANSIT.length).to.equal(3);
+      expect(response.PUBLIC_TRANSIT.length).to.be.at.least(2);
       expect(response.TAXI).to.be.an('array');
       expect(response.TAXI.length).to.be.at.least(2);
     });

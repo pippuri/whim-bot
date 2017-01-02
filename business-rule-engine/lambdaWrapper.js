@@ -32,12 +32,6 @@ function wrap(lambdaName, event) {
         return reject(error);
       }
 
-      // Treat empty itineraries list as a faulty response
-      if (response.plan && response.plan.itineraries.length === 0) {
-        console.info(`${lambdaName} return empty response for ${event.modes}`, Date.now() - now);
-        return reject(new Error(`Request to ${lambdaName} returns empty itineraries list`));
-      }
-
       console.info(`${lambdaName} succeeded for ${event.modes}, received ${response.plan.itineraries.length} itineraries, took ${Date.now() - now} millis`);
       return resolve(response);
     });

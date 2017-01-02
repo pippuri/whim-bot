@@ -133,6 +133,15 @@ const _executeProvider = (mode, params) => provider => {
   // run the queries, then validate & sanitize them
   return lambdaWrapper.wrap(provider.providerName, event)
     .then(result => validator.validate(schema, utils.sanitize(result)))
+    .then(result => {
+      // Treat empty itineraries list as a faulty response
+      if (result.plan && result.plan.itineraries.length === 0) {
+        console.warn(`${provider.providerName} return empty response for ${mode}`);
+        return Promise.reject(new Error(`Request to ${provider.providerName} returns empty itineraries list`));
+      }
+
+      return result;
+    })
     .reflect();
 };
 
@@ -164,9 +173,20 @@ function _executeUntilSuccess(groupedProvidersList, mode, params) {
     .then(inspections => {
       // Inspection that succeeded
       const fulfilledInspections = inspections.filter(inspection => inspection.isFulfilled());
+      const rejectedInspections = inspections.filter(inspection => inspection.isRejected());
+      if (rejectedInspections.length > 0) {
+        rejectedInspections.forEach(inspection => {
+          console.warn('Provider failure: ', inspection.reason());
+        });
+      }
 
       // If no inspection passed, proceed with the rest of the list
       if (fulfilledInspections.length === 0) {
+        console.info(`\t\tFalling back (${mode})`);
+        head.forEach(provider => {
+          console.info(`\t\t\t${provider.providerName}`);
+        });
+
         return _executeUntilSuccess(tail, mode, params);
       }
 
