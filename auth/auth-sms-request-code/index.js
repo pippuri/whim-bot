@@ -1,10 +1,11 @@
 'use strict';
 
 const Promise = require('bluebird');
-const bus = require('../../lib/service-bus/index');
-const errors = require('../../lib/errors/index');
-const lib = require('../lib/index');
+const bus = require('../../lib/service-bus');
+const errors = require('../../lib/errors');
+const lib = require('../lib');
 const AWS = require('aws-sdk');
+
 AWS.config.update({ region: 'eu-west-1' });
 const S3 = Promise.promisifyAll(new AWS.S3());
 
@@ -25,17 +26,25 @@ function loadGreenlist() {
     Bucket: 'maas-serverless',
     Key: `serverless/MaaS/greenlist/greenlist-${stage}.json`,
   })
-  .then(result => JSON.parse(new Buffer(result.Body).toString('ascii')));
+  .then(result => Promise.resolve(JSON.parse(new Buffer(result.Body).toString('ascii'))));
 }
 
-function checkGreenlist(greenlist, event) {
+function cleanPhoneNumber(input) {
+  const cleanNumber = input.replace(/[^\d]/g, '');
+  if (!cleanNumber || cleanNumber.length < 4) {
+    throw new errors.MaaSError('Invalid phone number', 400);
+  }
+  return cleanNumber;
+}
+
+function checkGreenlist(greenlist, phone) {
   if (!greenlist) {
     console.info('Not checking against greenlist');
     return Promise.resolve();
   }
 
-  console.info('Checking against greenlist for phone number: ', event.phone);
-  if (greenlist.indexOf(event.plainPhone) === -1) {
+  console.info('Checking against greenlist for phone number: ', phone);
+  if (greenlist.indexOf(phone) === -1) {
     return Promise.reject(new errors.MaaSError('Unauthorized', 401));
   }
 
@@ -50,33 +59,27 @@ function smsRequestCode(phone, provider) {
     provider = 'twilio';
   }
 
-  // Clean up phone number to only contain digits
-  const plainPhone = phone.replace(/[^\d]/g, '');
-  if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new errors.MaaSError('Invalid phone number', 400));
-  }
-
-  const verificationCode = lib.generate_topt_login_code(plainPhone);
+  const verificationCode = lib.generate_topt_login_code(phone);
   const verificationLink = lib.generate_login_link(phone, verificationCode);
 
-  console.info('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', plainPhone);
-  const functionName = 'MaaS-provider-' + provider + '-send-sms';
-  return bus.call(functionName, {
+  console.info('Sending SMS verification code', verificationCode, 'to', phone, 'with link', verificationLink, 'plainphone', phone);
+
+  return bus.call(`MaaS-provider-${provider}-send-sms`, {
     phone: phone,
     message: lib.generate_sms_message(verificationCode, verificationLink),
   })
   .then(response => {
-    return Promise.resolve({
+    return {
       message: 'Verification code sent to ' + phone,
       response: response.Payload,
-    });
+    };
   });
 }
 
 module.exports.respond = function (event, callback) {
   return loadGreenlist()
-    .then(greenlist => checkGreenlist(greenlist, event))
-    .then(smsRequestCode(`${event.phone}`, `${event.provider}`))
+    .then(greenlist => checkGreenlist(greenlist, cleanPhoneNumber(event.phone)))
+    .then(response => smsRequestCode(cleanPhoneNumber(event.phone), event.provider))
     .then(response => {
       callback(null, response);
     })
