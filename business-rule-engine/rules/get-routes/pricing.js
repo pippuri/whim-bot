@@ -333,7 +333,7 @@ function annotateLegFare(itinerary, cheapestCombo) {
   itinerary.legs.forEach(leg => {
     // Safe defaults to fare - we assume this leg is not priced and no product type info
     leg.fare = { currency: 'POINT', amount: null };
-    leg.product = { type: null };
+    leg.product = {};
 
     if (!leg.agencyId && ['WALK', 'WAIT', 'BICYCLE', 'TRANSFER', 'LEG_SWITCH'].some(mode => mode === leg.mode)) {
       // A mode that does not need to be purchased
@@ -350,8 +350,8 @@ function annotateLegFare(itinerary, cheapestCombo) {
 
       if (index !== -1) {
         leg.fare.amount = combo[index].cost;
-        // insert product type if available
-        leg.product.type = combo[index].ticketName || null;
+        // insert product type
+        leg.product.type = combo[index].ticketName;
         combo.splice(index, 1);
       }
     }
