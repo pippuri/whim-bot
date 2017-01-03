@@ -14,9 +14,7 @@ const testPlanLevel = require('./get-routes/feature-different-planlevel.js');
 
 // get-booking-provider-mode-location
 // get-booking-provider-agencyid-location
-// get-routes-providers-mode-location
 const testGetBookingProviders = require('./get-provider/feature-get-booking-providers.js');
-const testGetRoutesProviders = require('./get-provider/feature-get-routes-providers.js');
 
 // get-point-pricing
 // get-point-pricing-batch
@@ -35,10 +33,6 @@ describe('Business rule engine', function () {
     describe('Rule: engine bookingProviderRules with different planLevel users', () => {
       testPlanLevel();
     });
-  });
-
-  describe('Rule: get-routes-providers', () => {
-    testGetRoutesProviders();
   });
 
   describe('Rule: get-booking-providers', () => {
