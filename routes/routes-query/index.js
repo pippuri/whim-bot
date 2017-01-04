@@ -1,11 +1,10 @@
 'use strict';
 
-const Errors = require('../../lib/errors/index')
+const Errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/index').Database;
 const routesEngine = require('./lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
-const ValidationError = require('../../lib/validator/ValidationError');
 
 function validateInput(payload) {
   if (!payload.from) {
@@ -119,5 +118,6 @@ module.exports.respond = function (event, callback) {
     .then(response => filterPastRoutes(event.payload.leaveAt, response))
     .then(response => signResponse(response))
     .then(response => callback(null, response))
-    .catch(Errors.stdErrorWithDbHandler(callback, event));
+    .catch(Errors.stdErrorHandler(callback, event))
+    .finally(() => Database.cleanup());
 };

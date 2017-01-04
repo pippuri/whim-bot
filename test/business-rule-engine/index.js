@@ -8,10 +8,6 @@ const testUnknownRequest = require('./error-unknown-request');
 const testGetPointPricing = require('./get-points/feature-get-point-pricing');
 const testGetPointPricingBatch = require('./get-points/feature-get-point-pricing-batch');
 
-// get-routes
-const testGetRoutes = require('./get-routes/feature-get-routes');
-const testPlanLevel = require('./get-routes/feature-different-planlevel.js');
-
 // get-booking-provider-mode-location
 // get-booking-provider-agencyid-location
 const testGetBookingProviders = require('./get-provider/feature-get-booking-providers.js');
@@ -25,14 +21,6 @@ describe('Business rule engine', function () {
 
   describe('Unknown request', () => {
     testUnknownRequest();
-  });
-
-  describe('Rule: get-routes', () => {
-    testGetRoutes();
-
-    describe('Rule: engine bookingProviderRules with different planLevel users', () => {
-      testPlanLevel();
-    });
   });
 
   describe('Rule: get-booking-providers', () => {

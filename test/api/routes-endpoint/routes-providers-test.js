@@ -1,6 +1,7 @@
 'use strict';
 
-const bus = require('../../../lib/service-bus');
+const Database = require('../../../lib/models/Database');
+const routesProviders = require('../../../routes/routes-query/lib/routes-providers');
 const expect = require('chai').expect;
 
 module.exports = function () {
@@ -12,16 +13,18 @@ module.exports = function () {
     const params = ['TAXI', 'PUBLIC_TRANSIT', 'BICYCLE', 'WALK'];
 
     before(() => {
-      return bus.call('MaaS-business-rule-engine', {
-        rule: 'get-routes-providers-by-modes',
-        parameters: params,
-      })
-      .then(res => {
-        response = res;
-      })
-      .catch(err => {
-        error = err;
-      });
+      return Database.init()
+        .then(() => routesProviders.getRoutesProvidersByModesList(params))
+        .then(res => {
+          response = res;
+
+          return Database.cleanup();
+        })
+        .catch(err => {
+          error = err;
+
+          return Database.cleanup();
+        });
     });
 
     it('should not return any error', () => {
