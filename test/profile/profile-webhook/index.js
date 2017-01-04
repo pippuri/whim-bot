@@ -815,6 +815,156 @@ module.exports = function (identityId) {
   //}}}
 
   //------------------------------------------------------------------------
+  // Card Added {{{
+  describe('profile-webhook-card-added', () => {
+    const webhookContent = testEvents.positive.card_added;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(done => {
+      Database.init()
+        .then(_ => {
+          // 1. Fetch the profile from the database
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          pre = profile;
+          pre.zipCode = '00100';
+
+          // 2. Apply the webhook
+          return bus.call(LAMBDA, event);
+        })
+        .then(data => {
+          response = data;
+
+          // 3. Re-fetch the profile from the database for comparison
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          post = profile;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        })
+        .finally(() => {
+          Database.cleanup();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should have updated the zipcode', () => {
+      expect(pre.zipCode).to.be.defined;
+      expect(post.zipCode).to.be.defined;
+      expect(pre.zipCode).to.not.equal(post.zipCode);
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Card Changed {{{
+  describe('profile-webhook-card-updated', () => {
+    const webhookContent = testEvents.positive.card_updated;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(done => {
+      Database.init()
+        .then(_ => {
+          // 1. Fetch the profile from the database
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          pre = profile;
+          pre.zipCode = '00100';
+
+          // 2. Apply the webhook
+          return bus.call(LAMBDA, event);
+        })
+        .then(data => {
+          response = data;
+
+          // 3. Re-fetch the profile from the database for comparison
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(profile => {
+          post = profile;
+          done();
+        })
+        .catch(err => {
+          error = err;
+          done();
+        })
+        .finally(() => {
+          Database.cleanup();
+        });
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should have updated the zipcode', () => {
+      expect(pre.zipCode).to.be.defined;
+      expect(post.zipCode).to.be.defined;
+      expect(pre.zipCode).to.not.equal(post.zipCode);
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
   // Unknown event {{{
   describe('profile-webhook-unknown-event', () => {
     const event = {

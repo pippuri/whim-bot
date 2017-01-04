@@ -29,7 +29,6 @@ function handleEvent(payload, key, defaultResponse) {
     case 'card_expired':
     case 'card_expiry_reminder':
     case 'card_updated':
-      // Currently ignored
       return cardEvents.handle(payload, key, defaultResponse);
     case 'credit_note_created':
     case 'credit_note_deleted':
