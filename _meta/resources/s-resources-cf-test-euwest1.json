@@ -34,23 +34,9 @@
             {
               "Effect": "Allow",
               "Action": [
-                "*"
+                "iam:PassRole"
               ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-profile-test"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "*"
-              ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-test"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "*"
-              ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-scheduled-functions-test"
+              "Resource": "*"
             },
             {
               "Effect": "Allow",
@@ -101,6 +87,28 @@
                 "iot:UpdateThingShadow",
                 "iot:GetThingShadow",
                 "iot:DeleteThingShadow"
+              ],
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "swf:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "sns:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
               ],
               "Resource": "*"
             }
@@ -166,83 +174,6 @@
             "Ref": "IamRoleCustomAuthorizer"
           }
         ]
-      }
-    },
-    "DynamoUserProfile": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "identityId",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "identityId",
-            "KeyType": "HASH"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-user-profile-test"
-      }
-    },
-    "DynamoUserTransactionHistory": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "identityId",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "transactionId",
-            "AttributeType": "N"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "identityId",
-            "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "transactionId",
-            "KeyType": "RANGE"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-user-transaction-history-test"
-      }
-    },
-    "DynamoScheduledFunctions": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Delete",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "functionId",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "functionId",
-            "KeyType": "HASH"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-scheduled-functions-test"
       }
     }
   },

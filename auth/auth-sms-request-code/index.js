@@ -24,7 +24,7 @@ function loadGreenlist() {
   }
   return S3.getObjectAsync({
     Bucket: 'maas-serverless',
-    Key: `serverless/MaaS/greenlist/greenlist-${stage}.json`,
+    Key: `serverless/MaaS/greenlists/greenlist-${stage}.json`,
   })
   .then(result => Promise.resolve(JSON.parse(new Buffer(result.Body).toString('ascii'))));
 }

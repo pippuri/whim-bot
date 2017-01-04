@@ -44,6 +44,9 @@ _meta/variables/s-variables-test.json
 _meta/variables/s-variables-alpha.json
 _serverless_handler.js
 
+# Greenlists
+_meta/greenlists
+
 #VIM STUFF
 *.swp
 
