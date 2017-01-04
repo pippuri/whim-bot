@@ -82,6 +82,28 @@
                 "iot:DeleteThingShadow"
               ],
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "swf:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "sns:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
+              ],
+              "Resource": "*"
             }
           ]
         },

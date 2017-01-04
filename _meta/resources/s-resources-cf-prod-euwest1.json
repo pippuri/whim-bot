@@ -27,31 +27,10 @@
     "IamPolicyLambda": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "dev-MaaS-lambda",
+        "PolicyName": "prod-MaaS-lambda",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
-            {
-              "Effect": "Allow",
-              "Action": [
-                "*"
-              ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-profile-prod"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "*"
-              ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-travel-log-prod"
-            },
-            {
-              "Effect": "Allow",
-              "Action": [
-                "*"
-              ],
-              "Resource": "arn:aws:dynamodb:eu-west-1:*:table/MaaS-user-transaction-history-prod"
-            },
             {
               "Effect": "Allow",
               "Action": [
@@ -103,6 +82,28 @@
                 "iot:DeleteThingShadow"
               ],
               "Resource": "*"
+            },
+            {
+              "Action": [
+                "swf:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": [
+                "sns:*"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "s3:Get*",
+                "s3:List*"
+              ],
+              "Resource": "*"
             }
           ]
         },
@@ -139,7 +140,7 @@
     "IamPolicyCustomAuthorizer": {
       "Type": "AWS::IAM::Policy",
       "Properties": {
-        "PolicyName": "dev-MaaS-customauthorizer",
+        "PolicyName": "prod-MaaS-customauthorizer",
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -167,91 +168,6 @@
           }
         ]
       }
-    },
-    "DynamoUserProfile": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "identityId",
-            "AttributeType": "S"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "identityId",
-            "KeyType": "HASH"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-user-profile-prod"
-      }
-    },
-    "DynamoUserRouteHistory": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "identityId",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "timeEpoch",
-            "AttributeType": "N"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "identityId",
-            "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "timeEpoch",
-            "KeyType": "RANGE"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-user-travel-log-prod"
-      }
-    },
-    "DynamoUserTransactionHistory": {
-      "Type": "AWS::DynamoDB::Table",
-      "DeletionPolicy": "Retain",
-      "Properties": {
-        "AttributeDefinitions": [
-          {
-            "AttributeName": "identityId",
-            "AttributeType": "S"
-          },
-          {
-            "AttributeName": "transactionId",
-            "AttributeType": "N"
-          }
-        ],
-        "KeySchema": [
-          {
-            "AttributeName": "identityId",
-            "KeyType": "HASH"
-          },
-          {
-            "AttributeName": "transactionId",
-            "KeyType": "RANGE"
-          }
-        ],
-        "ProvisionedThroughput": {
-          "ReadCapacityUnits": 5,
-          "WriteCapacityUnits": 5
-        },
-        "TableName": "MaaS-user-transaction-history-prod"
-      }
     }
   },
   "Outputs": {
@@ -262,6 +178,42 @@
           "IamRoleLambda",
           "Arn"
         ]
+      }
+    }
+  },
+  "Mappings": {
+    "RegionMap": {
+      "us-east-1": {
+        "S3hostedzoneID": "Z3AQBSTGFYJSTF",
+        "websiteendpoint": "s3-website-us-east-1.amazonaws.com"
+      },
+      "us-west-1": {
+        "S3hostedzoneID": "Z2F56UZL2M1ACD",
+        "websiteendpoint": "s3-website-us-west-1.amazonaws.com"
+      },
+      "us-west-2": {
+        "S3hostedzoneID": "Z3BJ6K6RIION7M",
+        "websiteendpoint": "s3-website-us-west-2.amazonaws.com"
+      },
+      "eu-west-1": {
+        "S3hostedzoneID": "Z1BKCTXD74EZPE",
+        "websiteendpoint": "s3-website-eu-west-1.amazonaws.com"
+      },
+      "ap-southeast-1": {
+        "S3hostedzoneID": "Z3O0J2DXBE1FTB",
+        "websiteendpoint": "s3-website-ap-southeast-1.amazonaws.com"
+      },
+      "ap-southeast-2": {
+        "S3hostedzoneID": "Z1WCIGYICN2BYD",
+        "websiteendpoint": "s3-website-ap-southeast-2.amazonaws.com"
+      },
+      "ap-northeast-1": {
+        "S3hostedzoneID": "Z2M4EHUR26P7ZW",
+        "websiteendpoint": "s3-website-ap-northeast-1.amazonaws.com"
+      },
+      "sa-east-1": {
+        "S3hostedzoneID": "Z31GFT0UA1I2HV",
+        "websiteendpoint": "s3-website-sa-east-1.amazonaws.com"
       }
     }
   }
