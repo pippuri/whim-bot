@@ -1,6 +1,6 @@
 {
   "region": "eu-west-1",
   "resourcesStackName": "MaaS-test-r",
-  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/MaaS-test-r-IamRoleLambda-CHJ2EFEFN4YM",
+  "iamRoleArnLambda": "arn:aws:iam::756207178743:role/MaaS-test-r-IamRoleLambda-1LKRC7KTJMS17",
   "apiGatewayApi": "MaaS"
 }
