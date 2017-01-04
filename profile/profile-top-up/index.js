@@ -100,8 +100,7 @@ module.exports.respond = function (event, callback) {
       payload = parsed;
       transaction.meta(models.Profile.tableName, event.identityId);
       return models.Database.init()
-        .then(() => transaction.start())
-        .then(() => transaction.bind(models.Profile));
+        .then(() => transaction.start());
     })
     .then(() => confirmCharge(event.identityId, payload.productId, payload.points, payload.limit))
     .then(confirmed => makePurchase(confirmed.identityId, transaction, confirmed.productId, confirmed.cost, confirmed.points))

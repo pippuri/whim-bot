@@ -39,7 +39,6 @@ module.exports.respond = (event, callback) => {
     .then(itinerary => {
       transaction.meta(models.Itinerary.tableName, itinerary.id);
       return transaction.start()
-        .then(() => transaction.bind(models.Itinerary))
         .then(() => Promise.resolve(itinerary));
     })
     .then(itinerary => itinerary.cancel(transaction))
