@@ -6,11 +6,12 @@ const productData = require('./product-data.json');
 const Promise = require('bluebird');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/response.json');
+const utils = require('../../lib/utils');
 const validator = require('../../lib/validator');
 const ValidationError = require('../../lib/validator/ValidationError');
 
 function getAgencyProductOptions(event) {
-  let products = productData[event.agencyId];
+  const products = utils.cloneDeep(productData[event.agencyId]);
 
   if (!products) {
     return Promise.reject(new MaaSError(`No product data for given agencyId '${event.agencyId}'`, 400));
@@ -19,7 +20,6 @@ function getAgencyProductOptions(event) {
   // Concert EUR costs to point fares.
 
   const prices = [];
-
   products.forEach(product => {
     prices.push({ amount: product.cost.amount, currency: product.cost.currency });
   });
@@ -32,13 +32,12 @@ function getAgencyProductOptions(event) {
     },
   })
   .then(points => {
-    products = products.map((product, index) => {
+    products.map((product, index) => {
       // inject price into products and remove cost
       // TODO: change to right format after client migrated!
       product.fare = points[index];
       //option.fare = { amount: points[index], currency: 'POINT' };
       delete product.cost;
-      return product;
     });
     return Promise.resolve({
       agencyId: event.agencyId,
