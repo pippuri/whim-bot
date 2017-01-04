@@ -10,6 +10,7 @@ const identityId = 'eu-west-1:00000000-dead-dead-eaea-000000000000';
 const bookingId = '00000000-dead-dead-eaeae-000000000000';
 const message = 'Testing the transaction';
 const value = 500;
+const type = Transaction.types.BALANCE_CHANGE;
 
 let logEntry;
 
@@ -31,7 +32,6 @@ describe('Writes the transaction to the DB', () => {
     return transaction.start()
       .then(() => {
         transaction.meta(Booking.tableName, bookingId);
-        transaction.setType('balanceChange');
         transaction.increaseValue(value);
         return transaction.bind(Booking);
       })
@@ -44,6 +44,7 @@ describe('Writes the transaction to the DB', () => {
     expect(logEntry.identityId).to.equal(identityId);
     expect(logEntry.message).to.equal(message);
     expect(logEntry.value).to.equal(value);
+    expect(logEntry.type).to.equal(type);
   });
 
   it('writes the values to the database', () => {
@@ -52,6 +53,7 @@ describe('Writes the transaction to the DB', () => {
         expect(entry.id).to.exist;
         expect(entry.created).to.exist;
         expect(entry.identityId).to.equal(identityId);
+        expect(entry.type).to.equal(type);
         expect(entry.message).to.equal(message);
         expect(entry.value).to.equal(value);
         expect(entry.meta).to.have.property('Booking');
