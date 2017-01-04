@@ -219,9 +219,13 @@ module.exports = function (input, results) {
 
     it('Creates the itinerary, legs as PAID', () => {
       expect(createdItinerary.state).to.equal('PAID');
-      // Check each bookable leg is actually booked
+      // Check each bookable leg is actually booked & there is product type when leg has fare greater than zero
       createdItinerary.legs.forEach(leg => {
         expect(leg.state).to.equal('PAID');
+        if (leg.fare.amount !== null && leg.fare.amount > 0) {
+          expect(leg.product.type).to.exist;
+          expect(leg.product.type).not.to.be.null;
+        }
       });
 
       skip = false;
