@@ -31,7 +31,6 @@ describe('Writes the transaction to the DB', () => {
     return transaction.start()
       .then(() => {
         transaction.meta(Booking.tableName, bookingId);
-        transaction.type = Transaction.types.BALANCE_CHANGE;
         transaction.increaseValue(value);
         return transaction.bind(Booking);
       })
