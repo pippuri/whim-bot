@@ -355,6 +355,17 @@ application. Both can be deployed by running:
 npm run deploy-docs
 ```
 
+### Deploying beta login greenlists to S3
+
+MaaS SMS request code functionality reads greenlists from a S3 bucket. New numbers can be added to the bucket by modifying  greenlists at _meta/greenlist/greenlist-{stage}.json.
+
+They can be downloaded from and uploaded to S3 as follows:
+
+```
+npm run sync:greenlist:dev # downloads greenlist to _meta/greenlists
+npm run sync:greenlist:dev # uploads greenlist to S3 maas-serverless/serverless/MaaS/greenlist
+```
+
 ## Working with Linked NPM Modules
 
 You may need to work with changes to maas-schemas or request-promise-lite
