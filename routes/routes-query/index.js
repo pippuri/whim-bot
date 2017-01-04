@@ -117,7 +117,9 @@ module.exports.respond = function (event, callback) {
     .then(query => routesEngine.getRoutes(event.identityId, query))
     .then(response => filterPastRoutes(event.payload.leaveAt, response))
     .then(response => signResponse(response))
-    .then(response => callback(null, response))
-    .catch(Errors.stdErrorHandler(callback, event))
-    .finally(() => Database.cleanup());
+    .then(response => {
+      Database.cleanup()
+        .then(() => callback(null, response));
+    })
+    .catch(Errors.stdErrorWithDbHandler(callback, event));
 };
