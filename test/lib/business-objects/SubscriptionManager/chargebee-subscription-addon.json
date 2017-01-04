@@ -1,0 +1,7 @@
+{
+  "id": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "customer_id": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "addons": [
+    { "id": "fi-whim-top-up", "quantity": 100 }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "identityId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "firstName": "Joe",
+  "lastName": "MaaS",
+  "address": "Ludviginkatu 6",
+  "zipCode": "00100",
+  "countryCode": "fi",
+  "phone": "+358505454202",
+  "email": "tech@maas.fi",
+  "paymentMethod": {
+    "type": "stripe",
+    "token": "asdfasdsdfsdasdas"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "plan": {
+    "id": "fi-whim-medium"
+  },
+  "addons": [
+    {
+      "id": "fi-hsl-seutu",
+      "quantity": 1
+    }
+  ],
+  "coupons": [
+    {
+      "id": "WHIM100EUR"
+    }
+  ]
+}

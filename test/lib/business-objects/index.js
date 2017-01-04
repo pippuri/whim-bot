@@ -8,4 +8,6 @@ describe('business-objects', () => {
   describe('Transaction', () => {
     require('./Transaction.js');
   });
+
+  require('./SubscriptionManager');
 });

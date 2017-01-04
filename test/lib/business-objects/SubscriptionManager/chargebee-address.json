@@ -1,0 +1,9 @@
+{
+  "first_name": "John",
+  "last_name": "Doe",
+  "phone": "+35850123456",
+  "email": "john.doe@maas.fi",
+  "city": "Helsinki",
+  "zip": "00100",
+  "country": "fi"
+}
