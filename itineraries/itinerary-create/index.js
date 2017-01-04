@@ -24,7 +24,6 @@ module.exports.respond = function (event, callback) {
     .then(unsignedItinerary => models.Database.init().then(() => Promise.resolve(unsignedItinerary)))
     .then(unsignedItinerary => {
       return transaction.start()
-        .then(() => transaction.bind(models.Itinerary))
         .then(() => Itinerary.create(unsignedItinerary, event.identityId, transaction))
         .then(newItinerary => {
           transaction.meta(models.Itinerary.tableName, newItinerary.id);

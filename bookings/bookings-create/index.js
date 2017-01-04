@@ -67,7 +67,6 @@ module.exports.respond = (event, callback) => {
     .then(unsignedBooking => models.Database.init().then(() => Promise.resolve(unsignedBooking)))
     .then(unsignedBooking => {
       return transaction.start()
-        .then(() => transaction.bind(models.Booking))
         .then(() => Booking.create(unsignedBooking, event.identityId, transaction, { skipInsert: false }))
         .then(newBooking => newBooking.pay(transaction))
         .then(paidBooking => {

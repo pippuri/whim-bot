@@ -33,9 +33,8 @@ describe('Writes the transaction to the DB', () => {
       .then(() => {
         transaction.meta(Booking.tableName, bookingId);
         transaction.increaseValue(value);
-        return transaction.bind(Booking);
+        return transaction.commit(message);
       })
-      .then(() => transaction.commit(message))
       .then(_logEntry => (logEntry = _logEntry));
   });
 

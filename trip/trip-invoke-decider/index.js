@@ -326,10 +326,9 @@ class Decider {
       return Promise.resolve();
     }
 
-    const transaction = new Transaction();
+    const transaction = new Transaction(this.flow.trip.identityId);
     // try to activate leg
     return transaction.start()
-      .then(() => transaction.bind(models.Leg))
       .then(() => leg.activate(transaction, { tryReuseBooking: true }))
       .then(() => {
         // check booking if leg have one
