@@ -278,7 +278,7 @@ module.exports = options => {
 
     it('should return an error', () => {
       expect(error).to.not.be.undefined;
-      expect(error.message).to.equal('500: get-routes: Could not retrieve any routes provider');
+      expect(error.getMessageTrace()).to.include('500: get-routes: Could not retrieve any routes provider');
       expect(response).to.be.undefined;
     });
   });
