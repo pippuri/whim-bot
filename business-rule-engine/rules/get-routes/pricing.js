@@ -331,7 +331,7 @@ function annotateLegFare(itinerary, cheapestCombo) {
   // Append its cost to the first leg, then remove that ticket so that the next
   // leg that uses the same ticket will have 0 point cost
   itinerary.legs.forEach(leg => {
-    // Safe defaults to fare - we assume this leg is not priced and no product type info
+    // Safe defaults to fare - we assume this leg is not priced and no product info
     leg.fare = { currency: 'POINT', amount: null };
     leg.product = {};
 
