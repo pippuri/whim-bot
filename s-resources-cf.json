@@ -156,8 +156,7 @@
               "Action": [
                 "logs:CreateLogGroup",
                 "logs:CreateLogStream",
-                "logs:PutLogEvents",
-                "logs:putSubscriptionFilter"
+                "logs:PutLogEvents"
               ],
               "Resource": "*"
             },

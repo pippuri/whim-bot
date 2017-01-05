@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const zlib = require('zlib');
 
@@ -8,13 +7,10 @@ const SLACK_TOKEN = 'xoxb-55270714182-UY7cMnTgSTucKTnnzOvW4Gcl';
 const SLACK_BASEURL = 'https://slack.com/api';
 
 function extractRequestId(log) {
-  console.log(log.message.split('\t')[1]);
   return log.message.split('\t')[1];
 }
 
 function extractData(log) {
-  console.log(Object.keys(log));
-  console.log(log.message.split('\t')[2]);
   return log.message.split('\t')[2];
 }
 
