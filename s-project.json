@@ -38,7 +38,7 @@
       {
         "path": "lib/header-functions/register-subscription-filter.js",
         "hook": "function-post-deploy",
-        "params": ["prod", "WARN -dev"]
+        "params": ["dev", "WARN -dev"]
       }
     ]
   },
