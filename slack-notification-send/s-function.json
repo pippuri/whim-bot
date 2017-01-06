@@ -1,0 +1,19 @@
+{
+  "name": "slack-notification-send",
+  "runtime": "nodejs4.3",
+  "description": "Send notification to MaaS slack channel",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 15,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {},
+  "endpoints": [],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}
