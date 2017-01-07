@@ -56,9 +56,6 @@ describe('fromChargebeeSubscription', () => {
 
     expect(validator.validateSync(newSubscriptionSchema, maasSubscription)).to.be.an.object;
 
-    expect(maasSubscription.id).to.equal(userId);
-    expect(maasSubscription.customerId).to.equal(customerId);
-
     expect(maasSubscription.plan.id).to.equal(cbnewSubscription.plan_id);
     expect(maasSubscription.addons[1].id).to.equal(cbnewSubscription.addons[1].id);
     expect(maasSubscription.coupons[0].id).to.equal(cbnewSubscription.coupons[0].coupon_id);

@@ -12,9 +12,11 @@ const updatedCustomer = require('./maas-contact-full.json');
 const subscription = require('./maas-subscription-new.json');
 const addonSubscription = require('./maas-subscription-addon.json');
 
-const fullSubscriptionSchema = subscriptionSchema.definitions.fullSubscription;
-const fullContactSchema = contactSchema.definitions.fullContact;
-
+const newSubscriptionSchema = subscriptionSchema.definitions.newSubscription;
+const subscriptionResponseSchema = subscriptionSchema.definitions.subscriptionResponse;
+const newContactSchema = contactSchema.definitions.newContact;
+const updateContactSchema = contactSchema.definitions.contactUpdate;
+const contactResponseSchema = contactSchema.definitions.contactResponse;
 
 describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
 
@@ -30,6 +32,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
   let estimateSubscriptionUpdateResponse;
   let retrieveSubscriptionsResponse;
   let updateSubscriptionResponse;
+  let deleteSubscriptionResponse;
   let deleteCustomerResponse;
 
   const customerId = newCustomer.identityId;
@@ -57,13 +60,12 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
 
   after(() => {
     if (error) {
-      console.log(`Trying to rollback the changes by deleting '${customerId}'`);
-      /*return SubscriptionManager.deleteCustomer(customerId)
+      console.log('Something failed, rolling back customer creation.');
+      return SubscriptionManager.deleteCustomer(customerId)
         .then(
           () => console.log('Rollback succeeded'),
           err => console.error(`Rollback failed: ${err.toString()}`)
-        )
-        .catch('');*/
+        );
     }
 
     return Promise.resolve();
@@ -76,15 +78,33 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(listSubscriptionOptionsResponse.length).to.be.at.least(1);
+
+        listSubscriptionOptionsResponse.map(option => {
+          expect(validator.validateSync(newSubscriptionSchema, option)).to.exist;
+        });
       });
+  });
+
+  it('Contains Medium package that costs 249 with HSL Helsinki', () => {
+    const pkg = listSubscriptionOptionsResponse.find(opt => {
+      return opt.name === 'Medium';
+    });
+    expect(pkg).to.exist;
+
+    const hslHelsinki = pkg.addons.find(addon => addon.id === 'fi-hsl-helsinki');
+    expect(hslHelsinki).to.exist;
+
+    // Note: This works because of hack: 249 + null = 249;
+    const totals = pkg.plan.price.amount + hslHelsinki.unitPrice.amount;
+    expect(totals).to.equal(249);
   });
 
   it('Creates a new customer with no payment method', () => {
     // Fetch the customer - create if it does not exist
-    return SubscriptionManager.retrieveCustomer(newCustomer.identityId)
+    return SubscriptionManager.retrieveCustomer(customerId)
       .catch(error => {
-        console.warn('Customer `${customer.identityId}` already exists.');
+        console.warn(`Customer '${newCustomer.identityId}' already exists.`);
         return SubscriptionManager.createCustomer(newCustomer);
       })
       .then(
@@ -92,7 +112,10 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          contactResponseSchema,
+          createCustomerResponse
+        )).to.exist;
       });
   });
 
@@ -103,7 +126,10 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          contactResponseSchema,
+          retrieveCustomerResponse
+        )).to.exist;
       });
   });
 
@@ -114,18 +140,34 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          contactResponseSchema,
+          updateCustomerResponse
+        )).to.exist;
       });
   });
 
-  it('Creates a new subscription', () => {
-    return SubscriptionManager.createSubscription(subscription, customerId, userId)
+  it('Creates a new Medium subscription with Helsinki regional', () => {
+    const pkg = listSubscriptionOptionsResponse.find(opt => {
+      return opt.name === 'Medium';
+    });
+    expect(pkg).to.exist;
+    const subs = {
+      plan: pkg.plan,
+      addons: [{ id: 'fi-hsl-helsinki', quantity: 1 }],
+      coupons: pkg.coupons,
+    };
+
+    return SubscriptionManager.createSubscription(subs, customerId, userId)
       .then(
         res => Promise.resolve(createSubscriptionResponse = res),
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          subscriptionResponseSchema,
+          createSubscriptionResponse
+        )).to.exist;
       });
   });
 
@@ -136,51 +178,84 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(retrieveSubscriptionsResponse.length).to.equal(1);
+
+        retrieveSubscriptionsResponse.forEach(subscription => {
+          expect(validator.validateSync(
+            subscriptionResponseSchema,
+            subscription
+          )).to.exist;
+        });
       });
   });
 
-  it('Retrieves the subscriptions by customer', () => {
-    return SubscriptionManager.retrieveSubscriptionsByCustomerId(customerId)
+  it('Retrieves the user subscription', () => {
+    return SubscriptionManager.retrieveSubscriptionByUserId(userId)
       .then(
         res => Promise.resolve(retrieveSubscriptionResponse = res),
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          subscriptionResponseSchema,
+          retrieveSubscriptionResponse
+        )).to.exist;
       });
   });
 
   it('Estimates the subscription upgrade price', () => {
-    return SubscriptionManager.estimateSubscriptionUpdate(addonSubscription, userId, false, false)
+    return SubscriptionManager.estimateSubscriptionUpdate(addonSubscription, customerId, userId, true, false)
       .then(
         res => Promise.resolve(estimateSubscriptionUpdateResponse = res),
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          pricingSchema,
+          estimateSubscriptionUpdateResponse
+        )).to.exist;
       });
   });
 
   it('Updates the subscription', () => {
-    return SubscriptionManager.updateSubscription(addonSubscription, customerId, userId, false, false)
+    return SubscriptionManager.updateSubscription(addonSubscription, customerId, userId, true, false)
       .then(
         res => Promise.resolve(updateSubscriptionResponse = res),
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          subscriptionResponseSchema,
+          updateSubscriptionResponse
+        )).to.exist;
+      });
+  });
+
+  it('Deletes the user subscription', () => {
+    return SubscriptionManager.deleteSubscription(userId)
+      .then(
+        res => Promise.resolve(deleteSubscriptionResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionResponseSchema,
+          deleteSubscriptionResponse
+        )).to.exist;
       });
   });
 
   it('Deletes the customer', () => {
-    return SubscriptionManager.deleteCustomer(newCustomer.identityId)
+    return SubscriptionManager.deleteCustomer(customerId)
       .then(
         res => Promise.resolve(deleteCustomerResponse = res),
         err => Promise.reject(error = err)
       )
       .then(() => {
-        // TODO Assertions
+        expect(validator.validateSync(
+          contactResponseSchema,
+          deleteCustomerResponse
+        )).to.exist;
       });
   });
 });
