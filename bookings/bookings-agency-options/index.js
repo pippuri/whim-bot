@@ -1,12 +1,12 @@
 'use strict';
 
-const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
+const Pricing = require('../../lib/business-objects/Pricing');
 const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
+const tmp = require('./tmp');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
 const utils = require('../../lib/utils');
-const tmp = require('./tmp');
 
 /**
  * Parses and validates the event input
@@ -16,7 +16,6 @@ const tmp = require('./tmp');
  * @param {object} event The input event - see the contents above
  * @return {Promise} Object of parsed parameters if success, MaaSError otherwise
  */
-
 function parseAndValidateInput(event) {
   const identityId = event.identityId;
   const mode = (utils.isEmptyValue(event.mode)) ? undefined : event.mode;
@@ -122,37 +121,18 @@ function getAgencyProductOptions(event) {
       return response.options;
     }
 
-    const prices = [];
-    const options = response.options;
-
-    // Collect the prices for batch pricing call
-    options.forEach(option => {
-      prices.push({ amount: option.cost.amount, currency: option.cost.currency });
-    });
-
-    if (prices.length > 0  && prices[0].currency) {
-      return bus.call('MaaS-business-rule-engine', {
-        identityId: event.identityId,
-        rule: 'get-point-pricing-batch',
-        parameters: {
-          prices: prices,
-        },
-      })
-      .then(points => {
-        options.forEach((option, index) => {
-
-          // Inject agencyId
-          option.leg.agencyId = event.agencyId;
-
-          // Inject price
-          option.fare = { amount: points[index], currency: 'POINT' };
-          return option;
+    // Convert euros to points; annotate agency id.
+    return Promise.map(response.options, option => {
+      const cost = option.cost;
+      return Pricing.convertCostToPoints(cost.amount, cost.currency)
+        .then(points => {
+          const annotated = utils.cloneDeep(option);
+          delete annotated.cost;
+          annotated.leg.agencyId = event.agencyId;
+          annotated.fare = { amount: points, currency: 'POINT' };
+          return annotated;
         });
-        return options;
-      });
-    }
-
-    return Promise.reject(new MaaSError('Incorrect tsp price or currency format ', 500));
+    });
   });
 }
 

@@ -11,8 +11,11 @@ const BusinessRuleError = require('../lib/errors/BusinessRuleError.js');
 // Rules
 const getBookingProviderRules = require('./rules/get-booking-provider');
 const getTspPricingRule = require('./rules/get-tsp-pricing');
+<<<<<<< 604fef24dbeee3b432c73bf9fe1b3008bc147c53
 const getRoutePricingRule = require('./rules/get-route-pricing');
 const getPointsRules = require('./rules/get-points');
+=======
+>>>>>>> Replace old pricing api with a stub new one; remove Chargebee dependency
 
 function runRule(event) {
   // Switch for non DB connection related bookingProviderRules and those that do
@@ -50,10 +53,6 @@ function runRule(event) {
               return Promise.reject(error);
             });
         });
-    case 'get-point-pricing':
-      return getPointsRules.getPointPricing(event.identityId, event.parameters);
-    case 'get-point-pricing-batch':
-      return getPointsRules.getPointBatch(event.identityId, event.parameters);
     default:
       return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
   }

@@ -9,5 +9,10 @@ describe('business-objects', () => {
     require('./Transaction.js');
   });
 
+
+  describe('Pricing', () => {
+    require('./Pricing.js');
+  });
+
   require('./SubscriptionManager');
 });
