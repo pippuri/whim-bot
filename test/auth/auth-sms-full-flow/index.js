@@ -3,6 +3,9 @@
 const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
 
+const Database = require('../../../lib/models/Database');
+const Profile = require('../../../lib/business-objects/Profile');
+
 const AUTH_REQUEST_CODE_LAMBDA = 'MaaS-auth-sms-request-code';
 const AUTH_LOGIN_LAMBDA = 'MaaS-auth-sms-login';
 
@@ -55,30 +58,73 @@ function _extractAuthCodeFromSms(sms) {
 module.exports = function () {
 
   describe('auth-sms-full-flow', function () { //eslint-disable-line
-    this.timeout(10000);
-    const PHONE = '+3584573975566';
+    this.timeout(30000);
+    const PHONE = '3584573975566';
 
     let error;
-    let response;
+    let response1;
+    let response2;
 
     before(() => {
-      return bus.call(AUTH_REQUEST_CODE_LAMBDA, { phone: PHONE })
-        .then(data => {
-          return _fetchAuthCodeSmsMessage(PHONE);
-        })
+      const event = {
+        phone: PHONE,
+      };
+
+      return Database.init()
+        // [LOGIN 1] Request a login code via SMS
+        .then(() => bus.call(AUTH_REQUEST_CODE_LAMBDA, event))
+        .then(() => _fetchAuthCodeSmsMessage(PHONE))
         .then(sms => {
+          // Extract the login code from the SMS
           const authCode = _extractAuthCodeFromSms(sms);
           if (!authCode) {
             throw new Error('Could not retieve auth code from sms provider');
           }
+
+          // Log in with the code
           const event = {
             phone: PHONE,
             code: authCode,
           };
           return bus.call(AUTH_LOGIN_LAMBDA, event);
         })
-        .then(data => (response = data))
-        .catch(err => (error = err));
+        .then(data => {
+          response1 = data;
+
+          // [LOGIN 2] Request a login code via SMS
+          return bus.call(AUTH_REQUEST_CODE_LAMBDA, event);
+        })
+        .then(() => _fetchAuthCodeSmsMessage(PHONE))
+        .then(sms => {
+          // Extract the login code from the SMS
+          const authCode = _extractAuthCodeFromSms(sms);
+          if (!authCode) {
+            throw new Error('Could not retieve auth code from sms provider');
+          }
+
+          // Log in with the code
+          const event = {
+            phone: PHONE,
+            code: authCode,
+          };
+          return bus.call(AUTH_LOGIN_LAMBDA, event);
+        })
+        .then(data => {
+          response2 = data;
+
+          return data;
+        })
+        .then(data => {
+          // Delete this profile so that it's a "clean slate" for next time the test is run
+          return Profile.deletePermanently(data.cognito_id);
+        })
+        .then(() => {
+          return Database.cleanup();
+        })
+        .catch(err => {
+          error = err;
+          return Database.cleanup();
+        });
     });
 
     it('should not raise an error', () => {
@@ -91,12 +137,17 @@ module.exports = function () {
     });
 
     it('should not return empty', () => {
-      expect(response).to.be.defined;
-      expect(response).to.have.property('id_token');
-      expect(response).to.have.property('cognito_token');
-      expect(response).to.have.property('zendesk_token');
-      expect(response.id_token).to.not.be.empty;
-    });
+      // [LOGIN 1]
+      expect(response1).to.have.property('id_token');
+      expect(response1).to.have.property('cognito_token');
+      expect(response1).to.have.property('zendesk_token');
+      expect(response1.id_token).to.not.be.empty;
 
+      // [LOGIN 2]
+      expect(response2).to.have.property('id_token');
+      expect(response2).to.have.property('cognito_token');
+      expect(response2).to.have.property('zendesk_token');
+      expect(response2.id_token).to.not.be.empty;
+    });
   });
 };
