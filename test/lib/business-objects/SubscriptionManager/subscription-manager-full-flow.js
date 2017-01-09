@@ -5,6 +5,7 @@ const expect = require('chai').expect;
 const pricingSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/pricing.json');
 const SubscriptionManager = require('../../../../lib/business-objects/SubscriptionManager');
 const subscriptionSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscription.json');
+const subscriptionOptionSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptionOption.json');
 const validator = require('../../../../lib/validator');
 
 const newCustomer = require('./maas-contact-new.json');
@@ -78,7 +79,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         expect(listSubscriptionOptionsResponse.length).to.be.at.least(1);
 
         listSubscriptionOptionsResponse.map(option => {
-          expect(validator.validateSync(newSubscriptionSchema, option)).to.exist;
+          expect(validator.validateSync(subscriptionOptionSchema, option)).to.exist;
         });
       });
   });

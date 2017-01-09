@@ -5,6 +5,7 @@ const expect = require('chai').expect;
 const pricingSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/pricing.json');
 const SubscriptionManager = require('../../../../lib/business-objects/SubscriptionManager');
 const subscriptionSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscription.json');
+
 const validator = require('../../../../lib/validator');
 
 const newSubscriptionSchema = subscriptionSchema.definitions.newSubscription;

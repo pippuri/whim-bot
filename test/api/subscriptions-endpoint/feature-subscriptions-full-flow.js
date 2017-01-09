@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const subscriptionsEstimateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-estimate/response.json');
 const subscriptionsOptionsSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-options/response.json');
+const subscriptionsRetrieveSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-retrieve/response.json');
 const subscriptionsUpdateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-update/response.json');
 const validator = require('../../../lib/validator');
 
@@ -17,13 +18,27 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   let listSubscriptionOptionsResponse;
   let estimateSubscriptionUpdateResponse;
   let updateSubscriptionResponse;
+  let retrieveSubscriptionResponse;
 
   const customerId = 'eu-west-1:00000000-dead-dead-eaea-000000000000';
   const userId = customerId;
 
   before(() => {
     console.info('Creating test customer & subscription');
-    const testCustomer = { identityId: customerId, phone: '+358123456' };
+    const testCustomer = {
+      identityId: customerId,
+      phone: '+358123456',
+      city: 'Helsinki',
+      zipCode: '00100',
+      countryCode: 'FI',
+      paymentMethod: {
+        type: 'card',
+        number: '4012888888881881',
+        expiryMonth: 10,
+        expiryYear: 2022,
+        cvv: '999',
+      },
+    };
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
     return SubscriptionManager.retrieveCustomer(customerId)
@@ -35,7 +50,11 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
           userId
         ));
       })
-      .catch(err => (error = err));
+      .catch(err => {
+        error = err;
+        console.warn('Error in creating the subscription, skipping the test');
+        console.warn(error.toString());
+      });
   });
 
   // Before each test we check if a previous test has errored. If so, skip
@@ -87,7 +106,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       });
   });
 
-  it('Contains Medium package that costs 249 with HSL Helsinki', () => {
+  it('Contains Medium package costing 100 with HSL Helsinki on discount', () => {
     const pkg = listSubscriptionOptionsResponse.options.find(opt => {
       return opt.name === 'Medium';
     });
@@ -96,12 +115,12 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     const hslHelsinki = pkg.addons.find(addon => addon.id === 'fi-hsl-helsinki');
     expect(hslHelsinki).to.exist;
 
-    // Note: This works because of hack: 249 + null = 249;
+    // Note: This works because of hack: 100 + null = 100;
     const totals = pkg.plan.price.amount + hslHelsinki.unitPrice.amount;
-    expect(totals).to.equal(249);
+    expect(totals).to.equal(100);
   });
 
-  it('Estimates the fi-medium price with HSL add-on', () => {
+  it('Estimates the price of Medium plan with HSL Helsinki add-on', () => {
     const event = {
       customerId: customerId,
       userId: userId,
@@ -124,14 +143,18 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       });
   });
 
-  it('Updates the subscription', () => {
+  it('Replaces the subscription to Medium plan with HSL Helsinki add-on', () => {
     const event = {
       customerId: customerId,
       userId: userId,
-      payload: estimateSubscriptionUpdateResponse.estimate,
+      payload: {
+        plan: { id: 'fi-whim-medium' },
+        addons: [{ id: 'fi-hsl-helsinki', quantity: 1 }],
+      },
+      replace: true,
     };
 
-    bus.call('MaaS-subscriptions-update', event)
+    return bus.call('MaaS-subscriptions-update', event)
       .then(
         res => Promise.resolve(updateSubscriptionResponse = res),
         err => Promise.reject(error = err)
@@ -142,5 +165,34 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
           updateSubscriptionResponse
         )).to.exist;
       });
+  });
+
+  it('Retrieves the subscription', () => {
+    const event = {
+      customerId: customerId,
+      userId: userId,
+    };
+
+    return bus.call('MaaS-subscriptions-retrieve', event)
+      .then(
+        res => Promise.resolve(retrieveSubscriptionResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionsRetrieveSchema,
+          retrieveSubscriptionResponse
+        )).to.exist;
+      });
+  });
+
+  it('Should match the updated plan and add-ons', () => {
+    const retSubs = retrieveSubscriptionResponse.subscription;
+    const upSubs = updateSubscriptionResponse.subscription;
+
+    expect(retSubs.plan.id).to.equal(upSubs.plan.id);
+    upSubs.addons.forEach(addon => {
+      expect(retSubs.addons.find(a => a.id === addon.id)).to.exist;
+    });
   });
 });
