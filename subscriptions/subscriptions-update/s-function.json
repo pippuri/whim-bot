@@ -1,0 +1,63 @@
+{
+  "name": "subscriptions-update",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 20,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {},
+  "endpoints": [
+    {
+      "path": "subscriptions/{userId}",
+      "method": "PUT",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": true,
+      "requestParameters": {
+        "integration.request.path.userId": "method.request.path.userId"
+      },
+      "requestTemplates": {
+        "application/json": {
+          "customerId": "$context.authorizer.principalId",
+          "userId": "$input.params('userId')",
+          "replace": "$input.params('replace')",
+          "payload": "$input.json('$')"
+        }
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400"
+        },
+        "^403.*": {
+          "statusCode": "403"
+        },
+        "^401.*": {
+          "statusCode": "401"
+        },
+        "^404.*": {
+          "statusCode": "404"
+        },
+        "^\\d{3}.*": {
+          "statusCode": "500"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

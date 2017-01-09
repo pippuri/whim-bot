@@ -1,0 +1,15 @@
+{
+  "customerId": "eu-west-1:91732dd4-20c7-46e2-9072-d505d7860565",
+  "userId": "eu-west-1:91732dd4-20c7-46e2-9072-d505d7860565",
+  "payload": {
+    "plan": {
+      "id": "fi-whim-premium"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ]
+  }
+}

@@ -9,13 +9,10 @@ const validator = require('../../../../lib/validator');
 
 const newCustomer = require('./maas-contact-new.json');
 const updatedCustomer = require('./maas-contact-full.json');
-const subscription = require('./maas-subscription-new.json');
 const addonSubscription = require('./maas-subscription-addon.json');
 
 const newSubscriptionSchema = subscriptionSchema.definitions.newSubscription;
 const subscriptionResponseSchema = subscriptionSchema.definitions.subscriptionResponse;
-const newContactSchema = contactSchema.definitions.newContact;
-const updateContactSchema = contactSchema.definitions.contactUpdate;
 const contactResponseSchema = contactSchema.definitions.contactResponse;
 
 describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
