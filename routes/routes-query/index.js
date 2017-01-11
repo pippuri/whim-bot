@@ -3,8 +3,10 @@
 const Errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/index').Database;
 const routesEngine = require('./lib/index');
+const filter = require('./lib/filter');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
+
 
 function validateInput(payload) {
   if (!payload.from) {
@@ -59,38 +61,6 @@ function signResponse(response) {
   return response;
 }
 
-/**
- * Filter out the past routes
- * TODO Support past route but made it unpurchasable?
- * @param leaveAt {String}
- * @param response {Object}
- * @return response {Object} filtered response
- */
-function filterPastRoutes(leaveAt, response) {
-
-  if (!leaveAt) {
-    return response;
-  }
-
-  const filtered = response.plan.itineraries.filter(itinerary => {
-    const waitingTimes = itinerary.legs.map(leg => {
-      const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
-      return waitingTime;
-    });
-    const shortest = Math.min.apply(null, waitingTimes);
-    const inMinutes = ((shortest / 1000) / 60);
-    const margin = 1;
-    if (inMinutes < -margin) {
-      return false;
-    }
-
-    return true;
-  });
-
-  response.plan.itineraries = filtered;
-  return response;
-}
-
 function _constructQuery(payload) {
   // If not leaveAt, search for routes starting 2 mins from now
   if (!payload.leaveAt && !payload.arriveBy) {
@@ -115,7 +85,7 @@ module.exports.respond = function (event, callback) {
     .then(() => validateInput(event.payload))
     .then(() => _constructQuery(event.payload))
     .then(query => routesEngine.getRoutes(event.identityId, query))
-    .then(response => filterPastRoutes(event.payload.leaveAt, response))
+    .then(response => filter.filterPastRoutes(event.payload.leaveAt, response))
     .then(response => signResponse(response))
     .then(response => {
       Database.cleanup()
