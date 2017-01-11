@@ -58,4 +58,19 @@ describe('Writes the transaction to the DB', () => {
         expect(entry.meta).to.have.property('Booking');
       });
   });
+
+  it('cannot be updated', () => {
+    return TransactionLog.query()
+      .patch({ value: value + 100 })
+      .where('id', '=', logEntry.id)
+      .then(() => TransactionLog.query().findById(logEntry.id))
+      .then(entry => {
+        expect(entry.id).to.exist;
+        expect(entry.created).to.exist;
+        expect(entry.identityId).to.equal(identityId);
+        expect(entry.message).to.equal(message);
+        expect(entry.value).to.equal(value);
+        expect(entry.meta).to.have.property('Booking');
+      });
+  });
 });
