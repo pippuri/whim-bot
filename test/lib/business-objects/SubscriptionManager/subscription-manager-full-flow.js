@@ -12,7 +12,6 @@ const newCustomer = require('./maas-contact-new.json');
 const updatedCustomer = require('./maas-contact-full.json');
 const addonSubscription = require('./maas-subscription-addon.json');
 
-const newSubscriptionSchema = subscriptionSchema.definitions.newSubscription;
 const subscriptionResponseSchema = subscriptionSchema.definitions.subscriptionResponse;
 const contactResponseSchema = contactSchema.definitions.contactResponse;
 
@@ -84,7 +83,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
       });
   });
 
-  it('Contains Medium package that costs 249 with HSL Helsinki', () => {
+  it('Contains Medium package that costs 100€ with HSL Helsinki & discounts', () => {
     const pkg = listSubscriptionOptionsResponse.find(opt => {
       return opt.name === 'Medium';
     });
@@ -93,9 +92,8 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
     const hslHelsinki = pkg.addons.find(addon => addon.id === 'fi-hsl-helsinki');
     expect(hslHelsinki).to.exist;
 
-    // Note: This works because of hack: 249 + null = 249;
     const totals = pkg.plan.price.amount + hslHelsinki.unitPrice.amount;
-    expect(totals).to.equal(249);
+    expect(totals).to.equal(100);
   });
 
   it('Creates a new customer with no payment method', () => {

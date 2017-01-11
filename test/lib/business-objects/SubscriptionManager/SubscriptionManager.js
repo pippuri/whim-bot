@@ -109,11 +109,9 @@ describe('fromChargebeeEstimate', () => {
   it('Converts to valid pricing object from a Chargebee estimate', () => {
     const pricing = SubscriptionManager.fromChargebeeEstimate(cbEstimate);
     const lineItemTotal = pricing.lineItems.reduce((sum, i) => sum + i.quantity * i.unitPrice.amount, 0);
-    const discountTotal = pricing.discounts.reduce((sum, d) => sum + d.discount.amount, 0);
-    const total = lineItemTotal - discountTotal;
 
     expect(validator.validate(pricingSchema, pricing)).to.be.an.object;
-    expect(total).to.equal(pricing.total.amount);
+    expect(lineItemTotal).to.equal(pricing.total.amount);
   });
 });
 
