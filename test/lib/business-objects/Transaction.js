@@ -62,15 +62,11 @@ describe('Writes the transaction to the DB', () => {
 
   describe('TransactionLog cannot be updated', () => {
     let error;
-    let response;
 
     before(() => {
       return TransactionLog.query()
         .patch({ value: value + 100 })
         .where('id', '=', logEntry.id)
-        .then(numUpdated => {
-          response = numUpdated;
-        })
         .catch(err => {
           error = err;
         });
