@@ -11,7 +11,7 @@ exports.up = function (knex) {
       RETURNS trigger AS
       $$
         BEGIN
-          RETURN OLD;
+          RAISE EXCEPTION '% cannot be updated', TG_TABLE_NAME;
         END;
       $$ LANGUAGE plpgsql;
     `)
