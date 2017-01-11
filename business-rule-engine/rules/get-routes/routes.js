@@ -15,7 +15,7 @@ const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
 
 const DEFAULT_MODES = 'PUBLIC_TRANSIT,TAXI,WALK';
-
+const PROVIDER_REQUEST_TIMEOUT_MS = 5000;
 
 /*
  * In the following code the following terms are used:
@@ -132,6 +132,7 @@ const _executeProvider = (mode, params) => provider => {
 
   // run the queries, then validate & sanitize them
   return lambdaWrapper.wrap(provider.providerName, event)
+    .timeout(PROVIDER_REQUEST_TIMEOUT_MS, `Provider ${provider.providerName} timed out after ${PROVIDER_REQUEST_TIMEOUT_MS}ms`)
     .then(result => validator.validate(schema, utils.sanitize(result)))
     .then(result => {
       // Treat empty itineraries list as a faulty response
