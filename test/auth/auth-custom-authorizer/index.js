@@ -66,9 +66,23 @@ describe('auth-custom-authorizer', () => {
       );
   });
 
-  it('Returns \'Unauthorized\' on invalid identityId', () => {
+  it('Returns \'Unauthorized\' on invalid identityId in jwt token', () => {
+    const token = jwt.sign({ id: 'gibberish' }, secret);
     const invalidIdentityEvent = Object.assign({}, validEvent, {
-      authorizationToken: 'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6ImRzZmRzIiwiaWF0IjoxNDg0MTYzMjkyfQ.6-bK3Hhgs20rQMfRXlgAWxc4lvOgOkekr5fC53uxLvs',
+      authorizationToken: `Bearer ${token}`,
+    });
+
+    return runLambda(lambda, invalidIdentityEvent)
+      .then(
+        response => (expect(response).to.not.exist),
+        error => (expect(error.message).to.equal('Unauthorized'))
+      );
+  });
+
+  it('Returns \'Unauthorized\' on missing identityId in jwt token', () => {
+    const token = jwt.sign({ id: undefined }, secret);
+    const invalidIdentityEvent = Object.assign({}, validEvent, {
+      authorizationToken: `Bearer ${token}`,
     });
 
     return runLambda(lambda, invalidIdentityEvent)
