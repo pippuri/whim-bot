@@ -20,19 +20,19 @@ function validateInput(event) {
   }
 
   if (event.payload.modes && !event.payload.modes.match(/^[\w\S]+[^,\s]$/g)) {
-    return Promise.reject(new MaaSError('Input modes must satisfy this regex ' + new RegExp(/^[\w\S]+[^,\s]$/g).toString(), 400));
+    return Promise.reject(new MaaSError('Input modes must satisfy this regex ' + /^[\w\S]+[^,\s]$/.toString(), 400));
   }
 
   if (event.payload.modes && event.payload.modes.split(',').length > 1) {
     return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none', 400));
   }
 
-  if (event.payload.fromName && !event.payload.modes.match(/[\w\d\s]/g)) {
-    return Promise.reject(new MaaSError('Origin name supports only words, digits and spaces', 400));
+  if (event.payload.fromName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(event.payload.fromName)) {
+    return Promise.reject(new MaaSError('Origin name must satisfy this regex ' + /^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.toString(), 400));
   }
 
-  if (event.payload.toName && !event.payload.modes.match(/[\w\d\s]/g)) {
-    return Promise.reject(new MaaSError('Destination name supports only words, digits and spaces', 400));
+  if (event.payload.toName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(event.payload.toName)) {
+    return Promise.reject(new MaaSError('Destination name must satisfy this regex ' + /^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.toString(), 400));
   }
 
   return Promise.resolve();
