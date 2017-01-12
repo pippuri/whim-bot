@@ -42,7 +42,7 @@ function formatMessage(message) {
     On stage    : ${formattedErrorLog.split(':')[0].replace('WARN', '')}
     Timestamp   : ${(new Date(message.logEvents[0].timestamp) || Date.now()).toISOString()}
     Request ID  : ${extractRequestId(eventLog)}
-    Event log   : ${formattedEventLog.split(' WARN :')[1].replace(/\s/g, '').replace(/\n/g, '')}
+    Event log   : ${formattedEventLog.split(' WARN :')[1].replace(/\n/g, '')}
     Error log   : ${formattedErrorLog.split(' WARN :')[1]}`;
 
   return title + trippleTick + errorTraces + trippleTick;
