@@ -27,11 +27,11 @@ function validateInput(event) {
     return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none', 400));
   }
 
-  if (event.payload.fromName && !event.payload.modes.match(/[\w\d\s]/g)) {
+  if (event.payload.fromName && event.payload.fromName.match(/[^\w\d\s]/g)) {
     return Promise.reject(new MaaSError('Origin name supports only words, digits and spaces', 400));
   }
 
-  if (event.payload.toName && !event.payload.modes.match(/[\w\d\s]/g)) {
+  if (event.payload.toName && event.payload.toName.match(/[^\w\d\s]/g)) {
     return Promise.reject(new MaaSError('Destination name supports only words, digits and spaces', 400));
   }
 

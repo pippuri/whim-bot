@@ -410,4 +410,54 @@ module.exports = options => {
       expect(valopilkkuTaxiRouteTaxiLegs[0].to.name).to.not.be.empty;
     });
   });
+
+  describe('Replace Origin/Destination names with ones given via API', () => {
+
+    const event = {
+      identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
+      payload: {
+        from: '60.1684126,24.9316739', // SC5 Office
+        to: '60.170779,24.7721584', // Gallows Bird Pub
+        // Monday one week forward around five
+        leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(),
+        fromName: 'newFromName',
+        toName: 'newToName',
+      },
+      headers: {},
+    };
+
+    let error;
+    let response;
+
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
+        .then(res => {
+          response = res;
+        })
+        .catch(err => {
+          error = err;
+        });
+    });
+
+    it('should succeed without errors', () => {
+      expect(error).to.be.undefined;
+    });
+
+    it('should trigger a valid response', () => {
+      return validator.validate(schema, response);
+    });
+
+    it('response should have route', () => {
+      expect(response.plan.itineraries).to.not.be.empty;
+    });
+
+    it('response should not include \'Origin\' or \'Destination\'', () => {
+      const found = response.plan.itineraries.filter(itinerary => {
+        return (itinerary.legs.filter(leg => {
+          return (leg.from && leg.from.name === 'Origin' || leg.to && leg.to.name === 'Destination');
+        }).length > 0);
+      });
+      expect(found.length).to.be.empty;
+    });
+  });
 };
