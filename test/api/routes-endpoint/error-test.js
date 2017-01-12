@@ -215,7 +215,7 @@ module.exports = () => {
     });
 
     it('should provide the expected error message', () => {
-      expect(error.message).to.equal('400: Origin name supports only words, digits and spaces');
+      expect(error.message).to.include('400: Origin name must satisfy this regex');
     });
 
     it('should not return a response', () => {
@@ -231,7 +231,7 @@ module.exports = () => {
         to: '60.170779,24.7721584', // Gallows Bird Pub
         // Monday one week forward around five
         leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(),
-        toName: '````waaaass\\',
+        toName: 'waaaass???',
       },
       headers: {},
     };
@@ -259,7 +259,7 @@ module.exports = () => {
     });
 
     it('should provide the expected error message', () => {
-      expect(error.message).to.equal('400: Destination name supports only words, digits and spaces');
+      expect(error.message).to.include('400: Destination name must satisfy this regex');
     });
 
     it('should not return a response', () => {

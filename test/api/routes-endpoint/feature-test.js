@@ -420,8 +420,8 @@ module.exports = options => {
         to: '60.170779,24.7721584', // Gallows Bird Pub
         // Monday one week forward around five
         leaveAt: '' + moment().tz('Europe/Helsinki').day(8).hour(17).valueOf(),
-        fromName: 'newFromName',
-        toName: 'newToName',
+        fromName: 'Ylä-Anttilan Katu 12',
+        toName: 'Helsinki-Vantaa Airport (HEL)',
       },
       headers: {},
     };
