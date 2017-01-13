@@ -1,7 +1,9 @@
 {
-  "from": "60.165781,24.845139",
-  "to": "60.18176,24.95494",
+  "from": "60.1828182,24.9172386",
+  "fromName": "Humalistonkatu 17",
+  "to": "60.1681956,24.9315358",
+  "toName": "Urho Kekkosen katu 3",
+  "startTime": "1484316160420",
   "leaveAt": 1487402400000,
   "modes": "TAXI"
 }
-

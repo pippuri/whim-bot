@@ -19,7 +19,9 @@
       "apiKeyRequired": true,
       "requestParameters": {
         "integration.request.querystring.from": "method.request.querystring.from",
+        "integration.request.querystring.fromName": "method.request.querystring.fromName",
         "integration.request.querystring.to": "method.request.querystring.to",
+        "integration.request.querystring.toName": "method.request.querystring.toName",
         "integration.request.querystring.leaveAt": "method.request.querystring.leaveAt",
         "integration.request.querystring.arriveBy": "method.request.querystring.arriveBy"
       },
@@ -29,12 +31,12 @@
           "headers": {},
           "payload": {
             "from": "$input.params('from')",
+            "fromName": "$input.params('fromName')",
             "to": "$input.params('to')",
+            "toName": "$input.params('toName')",
             "leaveAt": "$input.params('leaveAt')",
             "arriveBy": "$input.params('arriveBy')",
-            "modes": "$input.params('modes')",
-            "fromName": "$input.params('fromName')",
-            "toName": "$input.params('toName')"
+            "modes": "$input.params('modes')"
           }
         }
       },

@@ -29,13 +29,17 @@ function parseAndValidateInput(event) {
   }
 
   const from = (utils.isEmptyValue(event.from)) ? undefined : event.from.split(',').map(parseFloat);
+  const fromName = utils.isEmptyValue(event.fromName) ? undefined : event.fromName;
   const to = (utils.isEmptyValue(event.to)) ? undefined : event.to.split(',').map(parseFloat);
+  const toName = utils.isEmptyValue(event.toName) ? undefined : event.toName;
   const startTime = (utils.isEmptyValue(event.leaveAt)) ? Date.now() + 5000 : parseInt(event.leaveAt, 10);
 
   const ret = {
     mode: DEFAULT_MODE,
     from: from,
+    fromName: fromName,
     to: to,
+    toName: toName,
     startTime: startTime,
   };
 
@@ -44,9 +48,7 @@ function parseAndValidateInput(event) {
 
 function getValopilkkuRoutes(event) {
   return TSPFactory.createFromAgencyId('Valopilkku')
-  .then(tsp => {
-    return tsp.query(event);
-  })
+  .then(tsp => tsp.query(event))
   .then(response => {
     if (response.errorMessage) {
       return Promise.reject(new MaaSError(response.errorMessage), 500);
@@ -59,9 +61,7 @@ function getValopilkkuRoutes(event) {
 module.exports.respond = function (event, callback) {
   return parseAndValidateInput(event)
     .then(result => getValopilkkuRoutes(result))
-    .then(response => {
-      callback(null, response);
-    })
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));

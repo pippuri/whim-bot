@@ -92,6 +92,25 @@ module.exports = (test, provider) => {
         });
       });
 
+      if (results.fromName) {
+        // TODO Disabled until we explicitly support modes in providers
+        it('should start with leg having a name equaling result fromName', () => {
+          response.plan.itineraries.forEach(itinerary => {
+            expect(itinerary.legs[0].from.name).to.equal(results.fromName);
+          });
+        });
+      }
+
+      if (results.toName) {
+        // TODO Disabled until we explicitly support modes in providers
+        it('should end with leg having a name equaling result toName', () => {
+          response.plan.itineraries.forEach(itinerary => {
+            const legs = itinerary.legs;
+            expect(legs[legs.length - 1].to.name).to.equal(results.toName);
+          });
+        });
+      }
+
       if (results.modes) {
         // TODO Disabled until we explicitly support modes in providers
         it('should only contain legs with the given modes', () => {
