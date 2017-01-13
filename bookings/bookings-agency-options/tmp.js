@@ -11,7 +11,7 @@
 
 const Profile = require('../../lib/business-objects/Profile');
 const models = require('../../lib/models');
-const pricingRule = require('../../business-rule-engine/rules/get-routes/pricing');
+const pricingRule = require('../../business-rule-engine/rules/get-route-pricing');
 
 /**
  * Fake leg location based on ticket name

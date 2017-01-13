@@ -10,9 +10,8 @@ const BusinessRuleError = require('../lib/errors/BusinessRuleError.js');
 
 // Rules
 const getBookingProviderRules = require('./rules/get-booking-provider');
-const getRoutesProviderRules = require('./rules/get-routes-provider');
-const getRoutesRules = require('./rules/get-routes');
 const getTspPricingRule = require('./rules/get-tsp-pricing');
+const getRoutePricingRule = require('./rules/get-route-pricing');
 const getPointsRules = require('./rules/get-points');
 
 function runRule(event) {
@@ -20,10 +19,9 @@ function runRule(event) {
   switch (event.rule) {
     case 'get-booking-providers-by-agency-location':
     case 'get-booking-providers-by-mode-location':
-    case 'get-routes-providers-by-modes':
-    case 'get-routes':
     case 'get-tsp-pricing':
     case 'get-tsp-pricing-batch':
+    case 'get-route-pricing':
       return Database.init()
         .then(() => {
           switch (event.rule) {
@@ -31,16 +29,15 @@ function runRule(event) {
               return getBookingProviderRules.getBookingProvidersByAgencyAndLocation(event.parameters);
             case 'get-booking-providers-by-mode-location':
               return getBookingProviderRules.getBookingProvidersByModeAndLocation(event.parameters);
-            case 'get-routes-providers-by-modes':
-              return getRoutesProviderRules.getRoutesProvidersByModesList(event.parameters);
-            case 'get-routes':
-              return getRoutesRules.getRoutes(event.identityId, event.parameters);
             case 'get-tsp-pricing': // used to get contract rates from TSP
               return Profile.retrieve(event.identityId)
                 .then(profile => getTspPricingRule.getOptions(event.parameters, profile));
             case 'get-tsp-pricing-batch': // used to get contract rates from TSP
               return Profile.retrieve(event.identityId)
                 .then(profile => getTspPricingRule.getOptionsBatch(event.parameters, profile));
+            case 'get-route-pricing':
+              return Profile.retrieve(event.identityId)
+                .then(profile => getRoutePricingRule.resolveRoutesPrice(event.parameters, profile));
             default:
               return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
           }

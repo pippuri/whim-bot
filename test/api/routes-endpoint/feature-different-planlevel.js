@@ -37,10 +37,9 @@ module.exports = function () {
           leaveAt: `${leaveAt.valueOf()}`,
         };
 
-        return bus.call('MaaS-business-rule-engine', {
+        return bus.call('MaaS-routes-query', {
           identityId: profile.identityId,
-          rule: 'get-routes',
-          parameters: params,
+          payload: params,
         })
         .then(
           res => (responses[index] = res),

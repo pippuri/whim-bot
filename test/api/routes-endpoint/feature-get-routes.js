@@ -20,10 +20,9 @@ module.exports = function () {
     let response;
 
     before(() => {
-      return bus.call('MaaS-business-rule-engine', {
+      return bus.call('MaaS-routes-query', {
         identityId: identityId,
-        rule: 'get-routes',
-        parameters: event,
+        payload: event,
       })
       .then(_engineResponse => {
         response = _engineResponse;
@@ -131,10 +130,9 @@ module.exports = function () {
     let response;
 
     before(() => {
-      return bus.call('MaaS-business-rule-engine', {
+      return bus.call('MaaS-routes-query', {
         identityId: identityId,
-        rule: 'get-routes',
-        parameters: event,
+        payload: event,
       })
       .then(_engineResponse => {
         response = _engineResponse;

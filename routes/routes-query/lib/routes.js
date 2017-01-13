@@ -1,13 +1,13 @@
 'use strict';
 
-const routesProviderRules = require('../get-routes-provider');
+const routesProviders = require('./routes-providers');
 const Promise = require('bluebird');
 const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
 const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 const validator = require('../../../lib/validator');
 
-const lambdaWrapper = require('../../lambdaWrapper');
+const lambdaWrapper = require('./lambdaWrapper');
 
 const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 
@@ -229,22 +229,22 @@ function _resolveRoutesProviders(params) {
   const modesList = modes.split(',');
 
   // Get the routes providers which can service our modes
-  return routesProviderRules.getRoutesProvidersByModesList(modesList)
+  return routesProviders.getRoutesProvidersByModesList(modesList)
     .then(routesProvidersMap => {
 
       // Filter the routes providers by capability to leave only those providers
       // that can handles the given search parameters
       const capableRoutesProvidersMap =
-        routesProviderRules.filterRoutesProviders(
+        routesProviders.filterRoutesProviders(
                 routesProvidersMap,
-                routesProviderRules.routesProvidersCapabilityFilter(params));
+                routesProviders.routesProvidersCapabilityFilter(params));
 
       // Further filter the routes providers by location to leave only those providers
       // that can provide routes for the 'from' and 'to' coordiantes.
       const result =
-        routesProviderRules.filterRoutesProviders(
+        routesProviders.filterRoutesProviders(
                 capableRoutesProvidersMap,
-                routesProviderRules.routesProvidersLocationFilter(locations));
+                routesProviders.routesProvidersLocationFilter(locations));
 
       // Check that we have at least one routes provider to work with
       if (_routesProvidersMapEmpty(result)) {

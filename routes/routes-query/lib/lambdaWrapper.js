@@ -4,11 +4,11 @@
 // Reason: Lambda call through bus are costly.
 const Promise = require('bluebird');
 
-const digitransitRoutes = require('../routes/providers/provider-digitransit-routes');
-const hereRoutes = require('../routes/providers/provider-here-routes');
-const tripgoRoutes = require('../routes/providers/provider-tripgo-routes');
-const valopilkkuRoutes = require('../routes/providers/provider-valopilkku-routes');
-const storeSinglePackage = require('../store/store-single-package');
+const digitransitRoutes = require('../../providers/provider-digitransit-routes');
+const hereRoutes = require('../../providers/provider-here-routes');
+const tripgoRoutes = require('../../providers/provider-tripgo-routes');
+const valopilkkuRoutes = require('../../providers/provider-valopilkku-routes');
+const storeSinglePackage = require('../../../store/store-single-package');
 
 const mapping = {
   'MaaS-provider-digitransit-routes': digitransitRoutes,

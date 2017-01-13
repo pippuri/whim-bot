@@ -104,9 +104,42 @@ function resolve(itineraries, options) {
   return itineraries;
 }
 
+/**
+ * Filter out the past routes
+ * TODO Support past route but made it unpurchasable?
+ * @param leaveAt {String}
+ * @param response {Object}
+ * @return response {Object} filtered response
+ */
+function filterPastRoutes(leaveAt, response) {
+
+  if (!leaveAt) {
+    return response;
+  }
+
+  const filtered = response.plan.itineraries.filter(itinerary => {
+    const waitingTimes = itinerary.legs.map(leg => {
+      const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
+      return waitingTime;
+    });
+    const shortest = Math.min.apply(null, waitingTimes);
+    const inMinutes = ((shortest / 1000) / 60);
+    const margin = 1;
+    if (inMinutes < -margin) {
+      return false;
+    }
+
+    return true;
+  });
+
+  response.plan.itineraries = filtered;
+  return response;
+}
+
 module.exports = {
   filterOutUnpurchasableItineraries,
   filterUnsensibleItineraries,
   filterLongWalkingItineraries,
+  filterPastRoutes,
   resolve,
 };

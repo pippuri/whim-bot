@@ -1,37 +1,39 @@
 'use strict';
 
-const bus = require('../../lib/service-bus');
+const Errors = require('../../lib/errors/index');
+const Database = require('../../lib/models/index').Database;
+const routesEngine = require('./lib/index');
+const filter = require('./lib/filter');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
-const ValidationError = require('../../lib/validator/ValidationError');
-const BusinessRuleError = require('../../lib/errors/BusinessRuleError.js');
 
-function validateInput(event) {
-  if (!event.payload.from) {
+
+function validateInput(payload) {
+  if (!payload.from) {
     return Promise.reject(new MaaSError('Missing "from" input', 400));
   }
 
-  if (!event.payload.to) {
+  if (!payload.to) {
     return Promise.reject(new MaaSError('Missing "to" input', 400));
   }
 
-  if (event.payload.leaveAt && event.payload.arriveBy) {
+  if (payload.leaveAt && payload.arriveBy) {
     return Promise.reject(new MaaSError('Support only leaveAt or arriveBy, not both', 400));
   }
 
-  if (event.payload.modes && !event.payload.modes.match(/^[\w\S]+[^,\s]$/g)) {
+  if (payload.modes && !payload.modes.match(/^[\w\S]+[^,\s]$/g)) {
     return Promise.reject(new MaaSError('Input modes must satisfy this regex ' + /^[\w\S]+[^,\s]$/.toString(), 400));
   }
 
-  if (event.payload.modes && event.payload.modes.split(',').length > 1) {
+  if (payload.modes && payload.modes.split(',').length > 1) {
     return Promise.reject(new MaaSError('Routes query currently support either 1 input modes or none', 400));
   }
 
-  if (event.payload.fromName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(event.payload.fromName)) {
+  if (payload.fromName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(payload.fromName)) {
     return Promise.reject(new MaaSError('Origin name must satisfy this regex ' + /^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.toString(), 400));
   }
 
-  if (event.payload.toName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(event.payload.toName)) {
+  if (payload.toName && !/^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.test(payload.toName)) {
     return Promise.reject(new MaaSError('Destination name must satisfy this regex ' + /^([A-ö\d]+[\-/,\.\(\)\s]*)+$/.toString(), 400));
   }
 
@@ -59,45 +61,13 @@ function signResponse(response) {
   return response;
 }
 
-/**
- * Filter out the past routes
- * TODO Support past route but made it unpurchasable?
- * @param leaveAt {String}
- * @param response {Object}
- * @return response {Object} filtered response
- */
-function filterPastRoutes(leaveAt, response) {
-
-  if (!leaveAt) {
-    return response;
-  }
-
-  const filtered = response.plan.itineraries.filter(itinerary => {
-    const waitingTimes = itinerary.legs.map(leg => {
-      const waitingTime = (leg.startTime - parseInt(leaveAt, 10));
-      return waitingTime;
-    });
-    const shortest = Math.min.apply(null, waitingTimes);
-    const inMinutes = ((shortest / 1000) / 60);
-    const margin = 1;
-    if (inMinutes < -margin) {
-      return false;
-    }
-
-    return true;
-  });
-
-  response.plan.itineraries = filtered;
-  return response;
-}
-
-function getRoutes(identityId, payload) {
+function _constructQuery(payload) {
   // If not leaveAt, search for routes starting 2 mins from now
   if (!payload.leaveAt && !payload.arriveBy) {
     payload.leaveAt = Date.now() + 2 * 60 * 1000;
   }
 
-  const event = {
+  const query = {
     from: payload.from,
     to: payload.to,
     leaveAt: payload.leaveAt,
@@ -107,38 +77,19 @@ function getRoutes(identityId, payload) {
     toName: payload.toName,
   };
 
-  return bus.call('MaaS-business-rule-engine', {
-    identityId: identityId,
-    rule: 'get-routes',
-    parameters: event,
-  })
-  .then(response => filterPastRoutes(payload.leaveAt, response))
-  .then(response => signResponse(response));
+  return query;
 }
 
 module.exports.respond = function (event, callback) {
-  return validateInput(event)
-    .then(() => getRoutes(event.identityId, event.payload))
-    .then(response => callback(null, response))
-    .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
-
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      if (_error instanceof BusinessRuleError) {
-        callback(_error);
-        return;
-      }
-
-      if (_error instanceof ValidationError) {
-        callback(new MaaSError(_error.message, 400));
-        return;
-      }
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    });
+  return Database.init()
+    .then(() => validateInput(event.payload))
+    .then(() => _constructQuery(event.payload))
+    .then(query => routesEngine.getRoutes(event.identityId, query))
+    .then(response => filter.filterPastRoutes(event.payload.leaveAt, response))
+    .then(response => signResponse(response))
+    .then(response => {
+      Database.cleanup()
+        .then(() => callback(null, response));
+    })
+    .catch(Errors.stdErrorWithDbHandler(callback, event));
 };
