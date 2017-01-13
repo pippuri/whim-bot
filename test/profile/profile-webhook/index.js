@@ -36,8 +36,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -55,14 +55,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -109,9 +107,9 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
+    before(() => {
+      return Database.init()
+        .then(() => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
         })
@@ -128,14 +126,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -182,8 +178,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -201,14 +197,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -260,8 +254,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -279,14 +273,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -316,6 +308,8 @@ module.exports = function (identityId) {
     });
 
     it('should have updated the plan according to Chargebee', () => {
+      console.log('Pre', JSON.stringify(pre));
+      console.log('Post', JSON.stringify(post));
       expect(post.subscription.planId).to.be.defined;
       expect(post.subscription.planId).to.equal(webhookContent.content.subscription.plan_id);
     });
@@ -338,8 +332,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -357,14 +351,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -416,8 +408,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -435,14 +427,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -494,9 +484,9 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
+    before(() => {
+      return Database.init()
+        .then(() => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
         })
@@ -513,14 +503,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -580,8 +568,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -599,14 +587,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -664,8 +650,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -683,14 +669,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -747,8 +731,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -766,14 +750,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -830,8 +812,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -851,14 +833,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -881,10 +861,10 @@ module.exports = function (identityId) {
       expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
-    it('should have updated the zipcode', () => {
+    it('should NOT have updated the zipcode', () => {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
-      expect(pre.zipCode).to.not.equal(post.zipCode);
+      expect(pre.zipCode).to.equal(post.zipCode);
     });
   });
   //}}}
@@ -905,8 +885,8 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(_ => {
           // 1. Fetch the profile from the database
           return ProfileDAO.query().findById(testIdentityId);
@@ -926,14 +906,12 @@ module.exports = function (identityId) {
         })
         .then(profile => {
           post = profile;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         })
         .finally(() => {
-          Database.cleanup();
+          return Database.cleanup();
         });
     });
 
@@ -956,10 +934,10 @@ module.exports = function (identityId) {
       expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
-    it('should have updated the zipcode', () => {
+    it('should NOT have updated the zipcode', () => {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
-      expect(pre.zipCode).to.not.equal(post.zipCode);
+      expect(pre.zipCode).to.equal(post.zipCode);
     });
   });
   //}}}
@@ -979,15 +957,13 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
+    before(() => {
+      return bus.call(LAMBDA, event)
         .then(data => {
           response = data;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         });
     });
 
@@ -1025,15 +1001,13 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
+    before(() => {
+      return bus.call(LAMBDA, event)
         .then(data => {
           response = data;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         });
     });
 
@@ -1071,15 +1045,13 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
+    before(() => {
+      return bus.call(LAMBDA, event)
         .then(data => {
           response = data;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         });
     });
 
@@ -1122,15 +1094,13 @@ module.exports = function (identityId) {
       let response = null;
       let error = null;
 
-      before(done => {
-        bus.call(LAMBDA, event)
+      before(() => {
+        return bus.call(LAMBDA, event)
           .then(data => {
             response = data;
-            done();
           })
           .catch(err => {
             error = err;
-            done();
           });
       });
 

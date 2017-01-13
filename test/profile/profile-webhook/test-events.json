@@ -21,6 +21,10 @@
               "taxability": "taxable",
               "object": "customer",
               "billing_address": {
+                  "first_name": "Tester89.23887712880969",
+                  "last_name": "User",
+                  "email": "me@maas.fi",
+                  "phone": "+358555666",
                   "country": "FI",
                   "zip": "00110",
                   "object": "billing_address"
