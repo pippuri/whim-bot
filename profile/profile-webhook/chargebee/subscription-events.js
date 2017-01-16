@@ -11,9 +11,9 @@ function handle(payload, key, defaultResponse) {
 
   const cbSubs = payload.content.subscription;
   let subs = SubscriptionManager.fromChargebeeSubscription(cbSubs);
-  const invoicedChanges = (payload.content.invoice) ?
-    SubscriptionManager.fromChargebeeEstimate(payload.content.invoice).lineItems :
-    [];
+  const invoice = payload.content.invoice;
+  const invoicedChanges = (invoice) ?
+    SubscriptionManager.fromChargebeeEstimate(invoice).lineItems : [];
   const identityId = cbSubs.id;
   let message;
   let user;
@@ -37,7 +37,7 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_cancelled':
     case 'subscription_deleted':
       // Cancel/delete the subscription by setting to the default plan (payg)
-      message = 'Subscription removed, plan changed to default; reset point balance.';
+      message = 'Subscription cancelled, plan changed to default; reset point balance.';
       subs = SubscriptionManager.DEFAULT_SUBSCRIPTION;
       break;
     case 'subscription_shipping_address_updated':

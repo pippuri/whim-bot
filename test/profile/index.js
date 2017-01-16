@@ -61,5 +61,5 @@ describe('profile tools', () => {
   require('./profile-manage/index.js')(testUserIdentity);
   require('./profile-card-get/index.js')(testUserIdentity);
   require('./profile-webhook/index.js')(testUserIdentity);
-  require('./profile-buy-points/index.js')(testUserIdentity);
+  require('./profile-buy-points/index.js')();
 });
