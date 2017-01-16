@@ -69,7 +69,9 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
   });
 
   it('Lists the available subscription options', () => {
-    return SubscriptionManager.findSubscriptionOptions(updatedCustomer)
+    const location = { lat: 60.1675, lon: 24.9311 }; // Kamppi
+
+    return SubscriptionManager.findSubscriptionOptions(location)
       .then(
         res => Promise.resolve(listSubscriptionOptionsResponse = res),
         err => Promise.reject(error = err)

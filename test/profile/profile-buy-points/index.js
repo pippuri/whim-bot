@@ -1,10 +1,11 @@
 'use strict';
 
-const wrap = require('lambda-wrapper').wrap;
-const expect = require('chai').expect;
-const lambda = require('../../../profile/profile-top-up/handler.js');
 const Database = require('../../../lib/models/Database');
+const expect = require('chai').expect;
+const bus = require('../../../lib/service-bus');
+const MaaSError = require('../../../lib/errors/MaaSError');
 const Profile = require('../../../lib/business-objects/Profile');
+const wrap = require('lambda-wrapper').wrap;
 
 module.exports = function (identityId) {
 
@@ -21,14 +22,15 @@ module.exports = function (identityId) {
     let error;
 
     before(done => {
-      wrap(lambda).run(event, (err, data) => {
-        error = err;
-        done();
-      });
+      return bus.call('MaaS-profile-top-up', event)
+        .then(
+          result => result,
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
-      expect(error).to.be.instanceof(Error);
+      expect(error).to.be.instanceof(MaaSError);
       expect(error.code).to.equal(403);
     });
   });

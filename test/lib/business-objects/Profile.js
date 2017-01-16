@@ -1,7 +1,6 @@
 'use strict';
 
 const expect = require('chai').expect;
-const samplePlan = require('./chargebee-fi-whim-light.json');
 const Profile = require('../../../lib/business-objects/Profile');
 
 describe('Profile', () => {
@@ -9,6 +8,11 @@ describe('Profile', () => {
   const testUserPhone = '+358417556933';
 
   describe('_toSubscription', () => {
+    const samplePlan = {
+      plan: { id: 'fi-whim-light' },
+      addons: ['fi-whim-hsl-helsinki'],
+    };
+
     it('Converts features to agencyIds', () => {
       const converted = Profile._toSubscription(samplePlan);
       expect(converted.agencies).to.include('HSL');

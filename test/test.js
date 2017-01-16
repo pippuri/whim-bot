@@ -46,8 +46,8 @@ function loadEnvironment() {
 }
 
 loadEnvironment();
-//console.info = () => {};
-//console.warn = () => {};
+console.info = () => {};
+console.warn = () => {};
 
 // Test flag
 process.env.IS_TEST_ENVIRONMENT = 'TRUE';

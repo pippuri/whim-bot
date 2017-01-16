@@ -486,30 +486,23 @@ module.exports = function (identityId) {
 
     before(() => {
       return Database.init()
-        .then(() => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-        })
-        .catch(err => {
-          error = err;
-        })
-        .finally(() => {
-          return Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
