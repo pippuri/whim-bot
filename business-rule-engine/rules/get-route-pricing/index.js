@@ -432,7 +432,9 @@ function _setLegBookingProvider(leg, providers) {
     return leg;
   }
 
-  if (leg.agencyId === providers[0].agencyId && utils.isPointInsidePolygon(leg.to, JSON.parse(providers[0].geometry))) {
+  if (leg.agencyId === providers[0].agencyId
+      && utils.isPointInsidePolygon(leg.to, JSON.parse(providers[0].geometry))
+      && utils.isPointInsidePolygon(leg.from, JSON.parse(providers[0].geometry))) {
     leg.agencyData = providers[0];
     return leg;
   }
@@ -466,21 +468,28 @@ function _calculateCost(itineraries, profile) {
   itineraries.forEach(itinerary => {
     itinerary.legs.forEach(leg => {
       // If the leg has an agency for a bookable leg, add it to our query
-      const agencyId = leg.agencyId;
-      if (agencyId && !bookingAgencies[agencyId] && !MODES_WITHOUT_TICKET.some(mode => mode === leg.mode)) {
+      if (leg.agencyId && !MODES_WITHOUT_TICKET.some(mode => mode === leg.mode)) {
         const query = {
-          agencyId: agencyId,
+          agencyId: leg.agencyId,
           from: leg.from,
           to: leg.to,
         };
-        bookingAgencies[agencyId] = query;
+        if (!bookingAgencies[leg.agencyId]) {
+          bookingAgencies[leg.agencyId] = [query];
+        } else {
+          bookingAgencies[leg.agencyId].push(query);
+        }
       }
     });
   });
 
-  return getTspPricingRules.getOptionsBatch(_values(bookingAgencies), profile)
+  // Queries constructed by above codes might result in duplication
+  const uniqueQueries = _uniqWith(_flatten(_values(bookingAgencies)), _isEqual);
+
+  return getTspPricingRules.getOptionsBatch(uniqueQueries, profile)
     .then(providers => {
-      providers = _flatten(providers);
+      // Uniq provider only
+      providers = _uniqWith(providers, _isEqual);
       // Filter null responses (e.g. no provider found)
       const filteredProviders = providers.filter(provider => provider !== null);
       itineraries.forEach(itinerary => {

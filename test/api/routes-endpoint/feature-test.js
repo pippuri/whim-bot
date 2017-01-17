@@ -119,7 +119,7 @@ module.exports = options => {
 
   });
 
-  describe.skip('request for a route to Rovaniemi', () => {
+  describe('request for a route to Rovaniemi', () => {
 
     const event = {
       identityId: 'eu-west-1:00000000-cafe-cafe-cafe-000000000000',
@@ -150,7 +150,7 @@ module.exports = options => {
     });
 
     it('should succeed without errors', () => {
-      expect(error).to.be.null;
+      expect(error).to.be.undefined;
     });
 
     it('should trigger a valid response', () => {
