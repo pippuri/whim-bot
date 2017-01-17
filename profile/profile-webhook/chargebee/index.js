@@ -106,7 +106,6 @@ function handlePayload(payload, key, defaultResponse) {
   return Database.init()
     .then(db => handleEvent(payload, key, defaultResponse))
     .lastly(() => {
-      console.info('------------------------');
       Database.cleanup();
     });
 }

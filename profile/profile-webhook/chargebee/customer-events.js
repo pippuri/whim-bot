@@ -7,7 +7,7 @@ const Transaction = require('../../../lib/business-objects/Transaction');
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 function handle(payload, key, defaultResponse) {
-  console.info(`handleCustomerEvent ${payload.event_type}`);
+  console.info(`[Webhook][Chargebee] handleCustomerEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
 
   const profile = Subscription.formatUser(payload.content);
