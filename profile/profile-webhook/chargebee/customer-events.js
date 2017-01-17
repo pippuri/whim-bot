@@ -23,9 +23,9 @@ function handle(payload, key) {
         firstName: custo.firstName,
         lastName: custo.lastName,
         email: custo.email,
-        country: custo.country,
+        country: custo.countryCode,
         city: custo.city,
-        zipCode: custo.zip,
+        zipCode: custo.zipCode,
       });
     case 'customer_deleted':
       return xa.start()
