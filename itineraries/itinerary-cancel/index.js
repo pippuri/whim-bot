@@ -10,7 +10,7 @@ const Transaction  = require('../../lib/business-objects/Transaction');
 
 function validateInput(event) {
   if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaaSError('Missing identityId input', 401));
+    return Promise.reject(new MaaSError('Missing identityId input', 400));
   }
 
   // TODO Stricter itineraryId validation
