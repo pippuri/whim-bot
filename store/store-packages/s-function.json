@@ -34,12 +34,6 @@
             "method.response.header.Access-Control-Allow-Origin": "'*'"
           }
         },
-        "^401.*": {
-          "statusCode": "401",
-          "responseParameters": {
-            "method.response.header.Access-Control-Allow-Origin": "'*'"
-          }
-        },
         "^404.*": {
           "statusCode": "404",
           "responseParameters": {
@@ -79,9 +73,6 @@
           },
           "400": {
             "description": "Invalid Input"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
