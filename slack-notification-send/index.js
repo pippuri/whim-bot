@@ -33,12 +33,17 @@ function formatMessage(message) {
   const title = '===== *Received new error* =====\n';
   const errorLog = message.logEvents.filter(item => item.message.match(/(Caught an error)/g))[0];
   const eventLog = message.logEvents.filter(item => item.message.match(/(This event caused error:)/g))[0];
+
+  const formattedErrorLog = extractData(errorLog);
+  const formattedEventLog = extractData(eventLog).replace('This event caused error:', '');
+
   const errorTraces = `
     Happened in : ${message.logGroup}
+    On stage    : ${formattedErrorLog.split(':')[0].replace('WARN', '')}
     Timestamp   : ${(new Date(message.logEvents[0].timestamp) || Date.now()).toISOString()}
     Request ID  : ${extractRequestId(eventLog)}
-    Event log   : ${extractData(eventLog).replace('This event caused error:', '').replace(/\s/g, '')}
-    Error log   : ${extractData(errorLog)}`;
+    Event log   : ${formattedEventLog.split(' WARN :')[1].replace(/\n/g, '')}
+    Error log   : ${formattedErrorLog.split(' WARN :')[1]}`;
 
   return title + trippleTick + errorTraces + trippleTick;
 }
@@ -60,6 +65,7 @@ function sendMessage(log) {
 }
 
 module.exports.respond = function (event, callback) {
+  console.log(event);
   return readMessage(event.awslogs.data)
     .then(log => sendMessage(log))
     .then(response => callback(null, response))
