@@ -9,28 +9,25 @@ const LAMBDA = 'MaaS-auth-sms-login';
 
 module.exports = function () {
 
-  describe.skip('auth-sms-login', () => {
+  describe('auth-sms-login', () => {
     const PHONE = '+358417556933';
-    const PLAIN_PHONE = '358417556933';
 
     let error;
     let response;
 
-    before(done => {
+    before(() => {
 
       const event = {
         phone: PHONE,
-        code: lib.generate_topt_login_code(PLAIN_PHONE),
+        code: lib.generate_topt_login_code(PHONE),
       };
 
-      bus.call(LAMBDA, event)
+      return bus.call(LAMBDA, event)
         .then(data => {
           response = data;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         });
     });
 
@@ -44,6 +41,7 @@ module.exports = function () {
     });
 
     it('should not return empty', () => {
+      console.log(response);
       expect(response).to.have.property('id_token');
       expect(response).to.have.property('cognito_token');
       expect(response).to.have.property('zendesk_token');
@@ -58,20 +56,18 @@ module.exports = function () {
     let error;
     let response;
 
-    before(done => {
+    before(() => {
       const event = {
         phone: PHONE,
         code: BAD_CODE,
       };
 
-      bus.call(LAMBDA, event)
+      return bus.call(LAMBDA, event)
         .then(data => {
           response = data;
-          done();
         })
         .catch(err => {
           error = err;
-          done();
         });
     });
 

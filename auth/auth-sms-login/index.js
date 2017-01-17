@@ -168,6 +168,8 @@ function smsLogin(phone, code) {
 
   // Sanitize phone number, remove NaN
   const plainPhone = phone.replace(/[^\d]/g, '');
+  const sanitizedPhone = phone.replace(/[^\d\+]/g, '');
+
   if (!plainPhone || plainPhone.length < 4) {
     return Promise.reject(new errors.MaaSError('Invalid phone number', 401));
   }
@@ -177,8 +179,8 @@ function smsLogin(phone, code) {
   const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
 
   // Bale out if we can't verify the provided code
-  console.info('Verifying SMS code', code, 'for', phone, 'plainphone', plainPhone);
-  if (!lib.verify_topt_login_code(isSimulationUser, plainPhone, code)) {
+  console.info('Verifying SMS code ', code, ' from ', sanitizedPhone);
+  if (!lib.verify_topt_login_code(isSimulationUser, sanitizedPhone, code)) {
     return Promise.reject(new errors.MaaSError('Unauthorized', 401));
   }
 

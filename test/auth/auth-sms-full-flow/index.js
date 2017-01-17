@@ -36,7 +36,7 @@ function _fetchAuthCodeSmsMessage(phone, provider) {
 }
 
 function _extractAuthCodeFromSms(sms) {
-  const CODE_RE = /\s(\d+)/;
+  const CODE_RE = /(\d+)/;
   /*
      Your Whim code is 0292122. You can also tap the link below. Start Whimming! https://test.maas.global/login?phone=358469389773&code=0292122
   */
@@ -56,17 +56,13 @@ module.exports = function () {
 
   describe('auth-sms-full-flow', function () { //eslint-disable-line
     this.timeout(10000);
-    const PHONE = '3584573975566';
+    const PHONE = '+3584573975566';
 
     let error;
     let response;
 
-    before(done => {
-      const event = {
-        phone: PHONE,
-      };
-
-      bus.call(AUTH_REQUEST_CODE_LAMBDA, event)
+    before(() => {
+      return bus.call(AUTH_REQUEST_CODE_LAMBDA, { phone: PHONE })
         .then(data => {
           return _fetchAuthCodeSmsMessage(PHONE);
         })
@@ -81,14 +77,8 @@ module.exports = function () {
           };
           return bus.call(AUTH_LOGIN_LAMBDA, event);
         })
-        .then(data => {
-          response = data;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        });
+        .then(data => (response = data))
+        .catch(err => (error = err));
     });
 
     it('should not raise an error', () => {
@@ -101,6 +91,7 @@ module.exports = function () {
     });
 
     it('should not return empty', () => {
+      expect(response).to.be.defined;
       expect(response).to.have.property('id_token');
       expect(response).to.have.property('cognito_token');
       expect(response).to.have.property('zendesk_token');

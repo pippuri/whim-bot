@@ -29,11 +29,18 @@ function loadGreenlist() {
   .then(result => Promise.resolve(JSON.parse(new Buffer(result.Body).toString('ascii'))));
 }
 
-function cleanPhoneNumber(input) {
-  const cleanNumber = input.replace(/[^\d]/g, '');
-  if (!cleanNumber || cleanNumber.length < 4) {
+function sanitizePhoneNumber(input) {
+  // Remove anything that is neither digit nor plus(+) sign
+  let cleanNumber = input.replace(/[^\d]/g, '');
+
+  // Add back the plus(+) sign to the beginning of the number
+  cleanNumber = '+' + cleanNumber;
+
+  // Validate the phone number
+  if (!cleanNumber.match(/^\+(?:\d){6,14}\d$/g)) {
     throw new errors.MaaSError('Invalid phone number', 400);
   }
+
   return cleanNumber;
 }
 
@@ -44,7 +51,7 @@ function checkGreenlist(greenlist, phone) {
   }
 
   console.info('Checking against greenlist for phone number: ', phone);
-  if (greenlist.indexOf(phone) === -1) {
+  if (greenlist.indexOf(phone.replace('+', '')) === -1) {
     return Promise.reject(new errors.MaaSError('Unauthorized', 401));
   }
 
@@ -77,11 +84,23 @@ function smsRequestCode(phone, provider) {
 }
 
 module.exports.respond = function (event, callback) {
+  const sanitizedNumber = sanitizePhoneNumber(event.phone);
   return loadGreenlist()
-    .then(greenlist => checkGreenlist(greenlist, cleanPhoneNumber(event.phone)))
-    .then(response => smsRequestCode(cleanPhoneNumber(event.phone), event.provider))
+    .then(greenlist => checkGreenlist(greenlist, sanitizedNumber.replace(/[^\d]/g, '')))
+    .then(() => smsRequestCode(sanitizedNumber, event.provider))
     .then(response => {
       callback(null, response);
     })
-    .catch(errors.stdErrorHandler(callback, event));
+    .catch(_error => {
+      console.log(_error);
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      if (_error instanceof errors.MaaSError) {
+        callback(_error);
+      }
+
+      callback(new errors.MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
 };
