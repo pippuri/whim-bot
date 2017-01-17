@@ -1,5 +1,6 @@
 'use strict';
 
+const Promise = require('bluebird');
 const Booking = require('../../../lib/models/Booking');
 const Database = require('../../../lib/models/Database');
 const expect = require('chai').expect;
@@ -57,5 +58,23 @@ describe('Writes the transaction to the DB', () => {
         expect(entry.value).to.equal(value);
         expect(entry.meta).to.have.property('Booking');
       });
+  });
+
+  describe('TransactionLog cannot be updated', () => {
+    let error;
+
+    before(() => {
+      return TransactionLog.query()
+        .patch({ value: value + 100 })
+        .where('id', '=', logEntry.id)
+        .catch(err => {
+          error = err;
+        });
+    });
+
+    it('cannot be updated', () => {
+      expect(error).to.not.be.undefined;
+    });
+
   });
 });
