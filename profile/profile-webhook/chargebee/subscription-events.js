@@ -47,9 +47,9 @@ function handle(payload, key, defaultResponse) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        country: user.country,
+        country: user.countryCode,
         city: user.city,
-        zipCode: user.zip,
+        zipCode: user.zipCode,
       });
     default:
       console.info(`[Webhook][Chargebee] Unhandled Chargebee callback: ${payload.event_type}`);
