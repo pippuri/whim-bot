@@ -171,7 +171,7 @@ function smsLogin(phone, code) {
   const sanitizedPhone = phone.replace(/[^\d\+]/g, '');
 
   if (!plainPhone || plainPhone.length < 4) {
-    return Promise.reject(new errors.MaaSError('Invalid phone number', 401));
+    return Promise.reject(new errors.MaaSError('Invalid phone number', 400));
   }
 
   // Support simulated users in dev environment using phone prefix +292

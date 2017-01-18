@@ -22,7 +22,7 @@ function parseAndValidateInput(event) {
   const validStates = stateMachine.getAllStates('Itinerary');
 
   if (typeof identityId === 'undefined' || identityId === '') {
-    return Promise.reject(new MaaSError('Missing identityId input', 401));
+    return Promise.reject(new MaaSError('Missing identityId input', 400));
   }
 
   if (startTime !== null && startTime <= 0) {

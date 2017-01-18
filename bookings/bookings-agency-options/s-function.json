@@ -43,13 +43,10 @@
         "^403.*": {
           "statusCode": "403"
         },
-        "^401.*": {
-          "statusCode": "401"
-        },
         "^404.*": {
           "statusCode": "404"
         },
-        "^500.*": {
+        "^\\d{3}.*": {
           "statusCode": "500"
         },
         "default": {
@@ -122,9 +119,6 @@
           },
           "400": {
             "description": "Invalid input"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }
