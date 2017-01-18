@@ -12,7 +12,7 @@ const AUTH_DEFAULT_LOGIN_CODE = '292';
 
 function generate_login_link(phone, code) {
   return process.env.WWW_BASE_URL +
-         '/login?phone=' +
+         '/?phone=' +
          encodeURIComponent(phone) +
          '&code=' +
          encodeURIComponent(code);
