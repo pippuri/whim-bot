@@ -42,7 +42,9 @@ function handle(payload, key, defaultResponse) {
       break;
     case 'subscription_shipping_address_updated':
       // Return early, because we do not change subscription - we change the profile
-      user = SubscriptionManager.fromChargebeeAddress(cbSubs.shipping_address, identityId);
+      // Note: We have disabled shipping address updates to user profile,
+      // because we don't yet make a distinction between the user & profile.
+      /*user = SubscriptionManager.fromChargebeeAddress(cbSubs.shipping_address, identityId);
       return Profile.update(identityId, {
         firstName: user.firstName,
         lastName: user.lastName,
@@ -50,7 +52,8 @@ function handle(payload, key, defaultResponse) {
         country: user.countryCode,
         city: user.city,
         zipCode: user.zipCode,
-      });
+      });*/
+      return Promise.resolve();
     default:
       console.info(`[Webhook][Chargebee] Unhandled Chargebee callback: ${payload.event_type}`);
       return Promise.resolve();
