@@ -13,6 +13,7 @@ function mapCountryToCode(country) {
   switch (country) {
     case 'Finland':
     case 'Suomi':
+    case 'FI':
       return 'FI';
     default:
       throw new MaaSError('Unsupported country (expecting Finland)', 400);
