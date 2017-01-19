@@ -55,11 +55,3 @@ _meta/greenlists
 swagger/swagger-maas-api-json/maas-api.json
 
 .vscode/launch.json
-
-# MaaS-ticket decrypted scriptlets
-tickets/tickets-create/keys/prod-latest.js
-tickets/tickets-create/keys/prod-transitional.js
-tickets/tickets-create/keys/alpha-latest.js
-tickets/tickets-create/keys/alpha-transitional.js
-tickets/tickets-create/keys/test-latest.js
-tickets/tickets-create/keys/test-transitional.js

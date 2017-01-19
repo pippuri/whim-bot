@@ -30,7 +30,7 @@ before_script:
 - echo '{}' > _meta/variables/s-variables-test.json && sls meta sync -s test -f >/dev/null
 
 script:
-- npm run build:test
+- npm run build:docs
 - npm test
 
 after_success:
