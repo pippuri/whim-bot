@@ -5,7 +5,7 @@ const Subscription = require('../../../lib/subscription-manager');
 
 
 function handle(payload, key, defaultResponse) {
-  console.info(`handleCardEvent ${payload.event_type}`);
+  console.info(`[Webhook][Chargebee] handleCardEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
 
   const profile = Subscription.formatUser(payload.content);

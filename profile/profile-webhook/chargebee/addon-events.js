@@ -2,7 +2,7 @@
 
 
 function handle(payload, key, defaultResponse) {
-  console.info('[Webhook][Chargebee] handleTransactionEvents (IGNORED)');
+  console.info('[Webhook][Chargebee] handleAddonEvents (IGNORED)');
   console.info(JSON.stringify(payload));
   return defaultResponse;
 }

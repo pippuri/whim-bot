@@ -2835,6 +2835,345 @@
       }},
       "event_type": "transaction_updated",
       "webhook_status": "not_configured"
+    },
+    "addon_created": {
+        "id": "ev_HtZEwJqQ6gr8vl2TU",
+        "occurred_at": 1482936194,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"addon": {
+            "id": "fi-hsl-seutu",
+            "name": "fi-hsl-seutu",
+            "invoice_name": "HSL Seutu Add-on",
+            "description": "HSL Seutu Add-on for testing",
+            "type": "on_off",
+            "charge_type": "recurring",
+            "price": 10000,
+            "period": 1,
+            "period_unit": "month",
+            "status": "active",
+            "enabled_in_portal": true,
+            "updated_at": 1482936193,
+            "resource_version": 1482936193997,
+            "object": "addon",
+            "currency_code": "EUR",
+            "taxable": true
+        }},
+        "event_type": "addon_created",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "addon_deleted": {
+        "id": "ev_Hr55113Q6gucKD2YI",
+        "occurred_at": 1482937021,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"addon": {
+            "id": "fi-whim-medium",
+            "name": "Medium",
+            "invoice_name": "Medium",
+            "type": "on_off",
+            "charge_type": "recurring",
+            "price": 0,
+            "period": 1,
+            "period_unit": "month",
+            "status": "deleted",
+            "enabled_in_portal": true,
+            "updated_at": 1482937008,
+            "resource_version": 1482937008465,
+            "object": "addon",
+            "currency_code": "EUR",
+            "taxable": true
+        }},
+        "event_type": "addon_deleted",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "addon_updated": {
+        "id": "ev_HtZEwTsQ5pwJASEbT",
+        "occurred_at": 1482154279,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"addon": {
+            "id": "fi-whim-points-purchase-payg",
+            "name": "PAYG Top-Up",
+            "invoice_name": "PAYG Top-Up",
+            "type": "quantity",
+            "charge_type": "non_recurring",
+            "price": 5,
+            "period_unit": "not_applicable",
+            "unit": "point",
+            "status": "active",
+            "enabled_in_portal": true,
+            "updated_at": 1482154279,
+            "resource_version": 1482154279180,
+            "object": "addon",
+            "currency_code": "EUR",
+            "taxable": true
+        }},
+        "event_type": "addon_updated",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "coupon_created": {
+        "id": "ev_HtZEwPcQ6gtmkD20",
+        "occurred_at": 1482936823,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"coupon": {
+            "id": "FI-HSL-50\u20ac-OFF",
+            "name": "fi-hsl-50\u20ac-off",
+            "invoice_name": "50\u20ac discount for the first add-on",
+            "discount_type": "fixed_amount",
+            "discount_amount": 5000,
+            "duration_type": "forever",
+            "status": "active",
+            "apply_discount_on": "not_applicable",
+            "apply_on": "invoice_amount",
+            "plan_constraint": "not_applicable",
+            "addon_constraint": "not_applicable",
+            "created_at": 1482936823,
+            "updated_at": 1482936823,
+            "resource_version": 1482936823697,
+            "object": "coupon",
+            "redemptions": 0,
+            "currency_code": "EUR"
+        }},
+        "event_type": "coupon_created",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "coupon_deleted": {
+        "id": "ev_3Nl8KY2Q42MJAfo",
+        "occurred_at": 1341142326,
+        "source": "api",
+        "user": "full_access_key_v1",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"coupon": {
+            "id": "offer",
+            "name": "Offer",
+            "discount_type": "fixed_amount",
+            "discount_amount": 10,
+            "duration_type": "forever",
+            "status": "deleted",
+            "apply_discount_on": "not_applicable",
+            "apply_on": "each_specified_item",
+            "plan_constraint": "none",
+            "addon_constraint": "none",
+            "created_at": 1341142325,
+            "updated_at": 1341142325,
+            "resource_version": 1341142325000,
+            "object": "coupon",
+            "redemptions": 0,
+            "currency_code": "USD"
+        }},
+        "event_type": "coupon_deleted",
+        "webhook_status": "not_configured"
+    },
+    "coupon_updated": {
+        "id": "ev_1sjs9l6Q5YlfZ9AxM",
+        "occurred_at": 1481900545,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"coupon": {
+            "id": "WHIM100EUR",
+            "name": "Whim 100 EUR Offer",
+            "invoice_name": "Whim Launch Promo - 100 EUR",
+            "discount_type": "fixed_amount",
+            "discount_amount": 14900,
+            "duration_type": "limited_period",
+            "duration_month": 3,
+            "valid_till": 1514678366,
+            "status": "active",
+            "apply_discount_on": "not_applicable",
+            "apply_on": "each_specified_item",
+            "plan_constraint": "specific",
+            "addon_constraint": "none",
+            "created_at": 1476178507,
+            "updated_at": 1481900545,
+            "resource_version": 1481900545944,
+            "object": "coupon",
+            "redemptions": 17,
+            "currency_code": "EUR",
+            "plan_ids": ["fi-whim-medium"]
+        }},
+        "event_type": "coupon_updated",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "plan_created": {
+        "id": "ev_HtZEwLrQ5SNP6OBg9",
+        "occurred_at": 1481806104,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"plan": {
+            "id": "-·-\u20af-·-\u20b9",
+            "name": "· \u20af · \u20b9",
+            "description": "Test plan",
+            "price": 0,
+            "period": 1,
+            "period_unit": "month",
+            "charge_model": "flat_fee",
+            "free_quantity": 0,
+            "status": "active",
+            "enabled_in_hosted_pages": true,
+            "enabled_in_portal": true,
+            "updated_at": 1481806104,
+            "resource_version": 1481806104784,
+            "object": "plan",
+            "taxable": true,
+            "currency_code": "EUR"
+        }},
+        "event_type": "plan_created",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "plan_deleted": {
+        "id": "ev_1sjs9d3Q5SNSywxH5",
+        "occurred_at": 1481806119,
+        "source": "admin_console",
+        "user": "maasfinland@gmail.com",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"plan": {
+            "id": "-·-\u20af-·-\u20b9",
+            "name": "· \u20af · \u20b9",
+            "description": "Test plan",
+            "price": 0,
+            "period": 1,
+            "period_unit": "month",
+            "charge_model": "flat_fee",
+            "free_quantity": 0,
+            "status": "deleted",
+            "enabled_in_hosted_pages": true,
+            "enabled_in_portal": true,
+            "updated_at": 1481806104,
+            "resource_version": 1481806104784,
+            "object": "plan",
+            "taxable": true,
+            "currency_code": "EUR"
+        }},
+        "event_type": "plan_deleted",
+        "webhook_status": "not_configured",
+        "webhooks": [
+            {
+                "id": "whv2_HtZEwVlPzoOex91qvL",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            },
+            {
+                "id": "whv2_HtZEwV6Q2dJmZe5os",
+                "webhook_status": "succeeded",
+                "object": "webhook"
+            }
+        ]
+    },
+    "plan_updated": {
+        "id": "ev_3Nl8KY2Q42MJ4pf",
+        "occurred_at": 1341142325,
+        "source": "api",
+        "user": "full_access_key_v1",
+        "object": "event",
+        "api_version": "v2",
+        "content": {"plan": {
+            "id": "package",
+            "name": "Package",
+            "price": 1000,
+            "period": 1,
+            "period_unit": "month",
+            "charge_model": "per_unit",
+            "free_quantity": 0,
+            "status": "active",
+            "enabled_in_hosted_pages": true,
+            "enabled_in_portal": true,
+            "updated_at": 1341142325,
+            "resource_version": 1341142325000,
+            "object": "plan",
+            "invoice_notes": "This is a Pakage plan",
+            "taxable": true,
+            "currency_code": "USD"
+        }},
+        "event_type": "plan_updated",
+        "webhook_status": "not_configured"
     }
   },
   "badly_formed": {

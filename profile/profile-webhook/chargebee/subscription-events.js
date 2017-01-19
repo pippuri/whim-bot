@@ -8,7 +8,7 @@ const Transaction = require('../../../lib/business-objects/Transaction');
 const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
 
 function handle(payload, key, defaultResponse) {
-  console.info(`handleSubscriptionEvent ${payload.event_type}`);
+  console.info(`[Webhook][Chargebee] handleSubscriptionEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
 
   const profile = Subscription.formatUser(payload.content);
@@ -45,7 +45,7 @@ function handle(payload, key, defaultResponse) {
       break;
     case 'subscription_shipping_address_updated':
     default:
-      console.info(`Unhandled Chargebee callback: ${payload.event_type}`);
+      console.info(`[Webhook][Chargebee] Unhandled Chargebee callback: ${payload.event_type}`);
       return defaultResponse;
   }
 

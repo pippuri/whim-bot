@@ -3,11 +3,14 @@
 const Database = require('../../../lib/models/Database');
 
 const errors = require('../../../lib/errors/index');
+const addonEvents = require('./addon-events.js');
 const cardEvents = require('./card-events.js');
 const creditNoteEvents = require('./credit-note-events.js');
+const couponEvents = require('./coupon-events.js');
 const customerEvents = require('./customer-events.js');
 const invoiceEvents = require('./invoice-events.js');
 const paymentEvents = require('./payment-events.js');
+const planEvents = require('./plan-events.js');
 const subscriptionEvents = require('./subscription-events.js');
 const transactionEvents = require('./transaction-events.js');
 
@@ -24,6 +27,10 @@ function handleUnknownEvent(payload, key, defaultResponse) {
 
 function handleEvent(payload, key, defaultResponse) {
   switch (payload.event_type) {
+    case 'addon_created':
+    case 'addon_deleted':
+    case 'addon_updated':
+      return addonEvents.handle(payload, key, defaultResponse);
     case 'card_added':
     case 'card_deleted':
     case 'card_expired':
@@ -35,6 +42,11 @@ function handleEvent(payload, key, defaultResponse) {
     case 'credit_note_updated':
       // Currently ignored
       return creditNoteEvents.handle(payload, key, defaultResponse);
+    case 'coupon_created':
+    case 'coupon_deleted':
+    case 'coupon_updated':
+      // Currently ignored
+      return couponEvents.handle(payload, key, defaultResponse);
     case 'customer_changed':
     case 'customer_created':
     case 'customer_deleted':
@@ -52,6 +64,11 @@ function handleEvent(payload, key, defaultResponse) {
     case 'refund_initiated':
       // Currently ignored
       return paymentEvents.handle(payload, key, defaultResponse);
+    case 'plan_created':
+    case 'plan_deleted':
+    case 'plan_updated':
+      // Currently ignored
+      return planEvents.handle(payload, key, defaultResponse);
     case 'subscription_activated':
     case 'subscription_cancellation_reminder':
     case 'subscription_cancellation_scheduled':
@@ -89,7 +106,6 @@ function handlePayload(payload, key, defaultResponse) {
   return Database.init()
     .then(db => handleEvent(payload, key, defaultResponse))
     .lastly(() => {
-      console.info('------------------------');
       Database.cleanup();
     });
 }
