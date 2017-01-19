@@ -29,7 +29,7 @@ function handleEvent(payload, key) {
     case 'addon_created':
     case 'addon_deleted':
     case 'addon_updated':
-      return addonEvents.handle(payload, key, defaultResponse);
+      return addonEvents.handle(payload, key);
     case 'card_added':
     case 'card_deleted':
     case 'card_expired':
