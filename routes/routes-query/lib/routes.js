@@ -6,6 +6,7 @@ const polylineEncoder = require('polyline-extended');
 const utils = require('../../../lib/utils');
 const schema = require('maas-schemas/prebuilt/maas-backend/routes/routes-query/response.json');
 const validator = require('../../../lib/validator');
+const MaaSError = require('../../../lib/errors/MaaSError');
 
 const lambdaWrapper = require('./lambdaWrapper');
 
@@ -138,7 +139,7 @@ const _executeProvider = (mode, params) => provider => {
       // Treat empty itineraries list as a faulty response
       if (result.plan && result.plan.itineraries.length === 0) {
         console.warn(`${provider.providerName} return empty response for ${mode}`);
-        return Promise.reject(new Error(`Request to ${provider.providerName} returns empty itineraries list`));
+        return Promise.reject(new MaaSError(`Request to ${provider.providerName} returns empty itineraries list`, 404));
       }
 
       return result;
@@ -204,10 +205,10 @@ function _executeUntilSuccess(groupedProvidersList, mode, params) {
  */
 function _resolveRoutesProviders(params) {
   if (!params.from) {
-    throw new BusinessRuleError('Missing "from" input', 500, 'get-routes');
+    throw new BusinessRuleError('Missing "from" input', 400, 'get-routes');
   }
   if (!params.to) {
-    throw new BusinessRuleError('Missing "to" input', 500, 'get-routes');
+    throw new BusinessRuleError('Missing "to" input', 400, 'get-routes');
   }
 
   // 'From' and 'to' coordinates
@@ -248,8 +249,7 @@ function _resolveRoutesProviders(params) {
 
       // Check that we have at least one routes provider to work with
       if (_routesProvidersMapEmpty(result)) {
-        throw new BusinessRuleError(
-            'Could not retrieve any routes provider', 500, 'get-routes');
+        throw new BusinessRuleError('Could not retrieve any routes provider', 404, 'get-routes');
       }
 
       return Promise.resolve(result);
@@ -388,7 +388,7 @@ function _setRouteAgency(route) {
   }
 
   if (!route.plan.itineraries.every(itinerary => !itinerary.legs.some(leg => !leg.mode))) {
-    throw new Error(`This route contains a leg that does not have mode: ${route}`);
+    throw new MaaSError(`This route contains a leg that does not have mode: ${route}`, 500);
   }
   route.plan.itineraries.forEach(
     itinerary => itinerary.legs.forEach(
@@ -462,7 +462,26 @@ function getRoutes(params) {
     .then(response => _overrideFromToName(response, params))
     .then(route => _setRouteAgency(route))
     .then(route => _calculateLegsDistance(route))
-    .then(route => _sortRoute(route, params.sortBy || 'endTime'));
+    .then(route => _sortRoute(route, params.sortBy || 'endTime'))
+    .catch((BusinessRuleError, e => {
+      // If 404 is returned from BusinessRuleError, meaning no route could be fetch
+      if (!e.code === 404) {
+        return Promise.reject(e);
+      }
+
+      return Promise.resolve({
+        plan: {
+          from: {
+            lat: params.from.split(',').map(parseFloat)[0],
+            lon: params.from.split(',').map(parseFloat)[1],
+          },
+          itineraries: [],
+        },
+        debug: {
+          error: JSON.stringify(e),
+        },
+      });
+    }));
 }
 
 module.exports = {

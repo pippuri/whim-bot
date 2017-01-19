@@ -9,6 +9,7 @@ const hereRoutes = require('../../providers/provider-here-routes');
 const tripgoRoutes = require('../../providers/provider-tripgo-routes');
 const valopilkkuRoutes = require('../../providers/provider-valopilkku-routes');
 const storeSinglePackage = require('../../../store/store-single-package');
+const MaaSError = require('../../../lib/errors/MaaSError');
 
 const mapping = {
   'MaaS-provider-digitransit-routes': digitransitRoutes,
@@ -22,7 +23,7 @@ function wrap(lambdaName, event) {
   const now = Date.now();
 
   if (!mapping[lambdaName]) {
-    return Promise.reject(new Error(`No mapping found for ${lambdaName}`));
+    return Promise.reject(new MaaSError(`No mapping found for ${lambdaName}`, 500));
   }
 
   return new Promise((resolve, reject) => {
