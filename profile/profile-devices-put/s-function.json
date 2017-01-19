@@ -19,7 +19,14 @@
       "apiKeyRequired": true,
       "requestParameters": {},
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":{\"devicePushToken\":$input.json('$.devicePushToken'), \"deviceIdentifier\": $input.json('$.deviceIdentifier')}}"
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "payload": {
+            "devicePushToken": "$input.json('$.devicePushToken')",
+            "deviceIdentifier": "$input.json('$.deviceIdentifier')",
+            "deviceType": "$input.json('$.deviceType')"
+          }
+        }
       },
       "responses": {
         "^400.*": {

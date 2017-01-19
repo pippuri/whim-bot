@@ -13,7 +13,7 @@ const bus = require('../../lib/service-bus');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/response.json');
 
-const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
+const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification';
 
 function parseAndValidateInput(event) {
   return validator.validate(requestSchema, event);

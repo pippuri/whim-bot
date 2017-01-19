@@ -1,7 +1,8 @@
 {
-  "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000000",
+  "identityId": "eu-west-1:53cbf21b-aabc-4f13-bfd9-288a959fed5e",
   "payload": {
-    "devicePushToken": "d6185efe 1e20cf57 263cb47e 8b4f2d11 e3db2c19 5d2ae1dd 4ee57a77 992d3711",
-    "deviceIdentifier": "rn8n80c4n80340cm0we90m8wem9"
+    "devicePushToken": "71736309084ECED917897207CCE17A658A7DE1E15CF5B59C3EA2E91E5E33527E",
+    "deviceIdentifier": "3DBE82ED-085E-4FDE-B96C-9A060BFEAC9F",
+    "deviceType": "iOS"
   }
 }

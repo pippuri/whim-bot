@@ -1,5 +1,5 @@
 {
-  "name": "push-notification-apple",
+  "name": "push-notification",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,

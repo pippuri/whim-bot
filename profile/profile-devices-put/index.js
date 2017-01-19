@@ -3,6 +3,9 @@
 const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const MaaSError = require('../../lib/errors/MaaSError');
+const validator = require('../../lib/validator');
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/request.json');
+const responseSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/response.json');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
@@ -10,88 +13,68 @@ Promise.promisifyAll(cognitoSync);
 
 function saveDeviceToken(event) {
 
-  let syncSessionToken;
-  const patches = [];
-
-  if (!event.hasOwnProperty('identityId') || event.identityId === '') {
-    return Promise.reject(new MaaSError('Missing identityId', 400));
-  }
-
-  if (!event.hasOwnProperty('payload')) {
-    return Promise.reject(new MaaSError('Missing Payload', 400));
-  }
-
-  if (!event.payload.hasOwnProperty('devicePushToken') || event.payload.devicePushToken === '') {
-    return Promise.reject(new MaaSError('devicePushToken missing from payload', 400));
-  }
-
-  if (!event.payload.hasOwnProperty('deviceIdentifier')) {
-    return Promise.reject(new MaaSError('deviceIdentifier missing from payload', 400));
-  }
-
   return cognitoSync.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: event.identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
   })
   .then(response => {
-    syncSessionToken = response.SyncSessionToken;
-    const oldRecords = {};
-    response.Records.map(record => {
-      oldRecords[record.Key] = record;
+    const syncSessionToken = response.SyncSessionToken;
+
+    // Old records
+    const oldRecords = response.Records.map(record => {
+      const tmp = {};
+      tmp[record.Key] = record;
+      return tmp;
     });
 
-    const device = {};
-    device[event.payload.deviceIdentifier] = event.payload.devicePushToken.replace(/\s/g, '');
+    // Input device updates
+    const devices = {};
+    devices[event.payload.deviceIdentifier] = {
+      devicePushToken: event.payload.devicePushToken.replace(/\s/g, ''),
+      deviceType: event.payload.deviceType,
+    };
 
-    Object.keys(device).map(key => {
-      const oldRecord = oldRecords[key];
+    // check if old device data exists to get the previous sync count
+    const oldRecord = oldRecords.find(record => record.Key === event.payload.deviceIdentifier);
 
-      const newValue = typeof device[key] === 'object' ? JSON.stringify(device[key]) : '' + device[key];
-
-      // Check if changed
-      if (!oldRecord || newValue !== oldRecord.Key) {
-        patches.push({
-          Op: 'replace',
-          Key: key,
-          Value: newValue,
-          SyncCount: oldRecord ? oldRecord.SyncCount : 0,
-        });
-      }
-
-    });
-
-    if (patches.length > 0) {
-      return cognitoSync.updateRecordsAsync({
-        IdentityPoolId: process.env.COGNITO_POOL_ID,
-        IdentityId: event.identityId,
-        DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
-        SyncSessionToken: syncSessionToken,
-        RecordPatches: patches,
-      });
+    // If old push token === new push token, skip update
+    if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === JSON.parse(oldRecord.Value).devicePushToken) {
+      return Promise.resolve('Input device push token unchanged, skip update');
     }
 
-    return Promise.resolve('Device existed, nothing changed');
-
+    return cognitoSync.updateRecordsAsync({
+      IdentityPoolId: process.env.COGNITO_POOL_ID,
+      IdentityId: event.identityId,
+      DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
+      SyncSessionToken: syncSessionToken,
+      RecordPatches: [
+        {
+          Op: 'replace',
+          Key: event.payload.deviceIdentifier,
+          Value: JSON.stringify(devices[event.payload.deviceIdentifier]),
+          SyncCount: oldRecord ? oldRecord.SyncCount : 0,
+        },
+      ],
+    });
   });
-
 }
 
 module.exports.respond = (event, callback) => {
-  saveDeviceToken(event)
-  .then(response => {
-    callback(null, response);
-  })
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
+  return validator.validate(requestSchema, event, { coerceTypes: true, useDefaults: true, sanitize: true })
+    .then(() => saveDeviceToken(event))
+    .then(response => validator.validate(responseSchema, response))
+    .then(response => callback(null, response))
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
 
-    if (_error instanceof MaaSError) {
-      callback(_error);
-      return;
-    }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+    });
 };

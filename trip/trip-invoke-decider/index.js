@@ -14,7 +14,7 @@ const Transaction = require('../../lib/business-objects/Transaction');
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
 
-const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification-apple';
+const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification';
 
 /**
  * Decider object owns flow and decision. When run with decide(), Decider
@@ -373,14 +373,13 @@ class Decider {
     const notifData = {
       identityId: this.flow.trip.identityId,
       badge: 0,
-      type,
-      data,
+      data: Object.assign(data, { type }),
     };
     if (typeof message !== 'undefined') {
-      notifData.message = message;
+      notifData.data.message = message;
     }
     if (typeof severity !== 'undefined') {
-      notifData.severity = severity;
+      notifData.data.severity = severity;
     }
 
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
