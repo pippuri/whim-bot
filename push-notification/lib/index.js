@@ -157,7 +157,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
         console.warn(`Error: ${error.message}`);
         return reject(token);
       }
-      console.warn(`Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
+      console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
       const params = {
         Attributes: {
           Enabled: 'true',
@@ -182,19 +182,19 @@ function iOSsendPushNotification(event, token, isSandBox) {
         // Clean up endpointArn from Amazon
         // and ignore error
         .then(() => {
-          console.log('[Push Notification] Cleaning endpoint ARN');
+          console.log(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
           return sns.deleteEndpoint({
             EndpointArn: endpointArn,
           })
-          .catch(error => Promise.resolve());
+          .catch(error => Promise.resolve(error));
         });
     })
     .then(response => {
-      console.info(`Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
+      console.info(`[Push Notification] Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       return resolve(token);
     })
     .catch(error => {
-      console.warn(`Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
+      console.warn(`[Push Notification] Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
       return reject(token);
     });
   });
@@ -237,7 +237,7 @@ function androidSendPushNotification(event, token) {
       if (error.name !== 'EndpointDisabled' || !endpointArn) {
         return reject(token);
       }
-      console.warn(`Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
+      console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
       const params = {
         Attributes: {
           Enabled: 'true',
@@ -260,19 +260,19 @@ function androidSendPushNotification(event, token) {
         // Clean up endpointArn from Amazon
         // and ignore error
         .then(() => {
-          console.log('[Push Notification] Cleaning endpoint ARN');
+          console.log(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
           return sns.deleteEndpoint({
             EndpointArn: endpointArn,
           })
-          .catch(error => Promise.resolve());
+          .catch(error => Promise.resolve(error));
         });
     })
     .then(response => {
-      console.info(`Push notification has been sent via 'GCM', response: ${JSON.stringify(response)}`);
+      console.info(`[Push Notification] Push notification has been sent via 'GCM', response: ${JSON.stringify(response)}`);
       return resolve(token);
     })
     .catch(error => {
-      console.warn(`Push notification has failed via 'GCM', response: ${JSON.stringify(error)}`);
+      console.warn(`[Push Notification] Push notification has failed via 'GCM', response: ${JSON.stringify(error)}`);
       return reject(token);
     });
   });

@@ -83,7 +83,7 @@ function sendPushNotification(event) {
             console.info('[Push Notification] Push notification succeeded to ' + inspection.value());
             succeededTokens.push(inspection.value());
           } else {
-            console.warn('[Push Notification] Push notfication error, ignoring');
+            console.warn(`[Push Notification] Push notfication to ${inspection.reason()} receive error, ignoring`);
             // Failed inspection will return the failed token
             failedTokens.push(inspection.reason());
           }
@@ -122,9 +122,9 @@ module.exports.respond = (event, callback) => {
     .then(validated => sendPushNotification(validated))
     .then(response => validator.validate(responseSchema, response))
     .catch(ValidationError, error => {
-      console.warn('Warning; Response validation failed, but responding with success');
-      console.warn('Errors:', error.message);
-      console.warn('Response:', JSON.stringify(error.object, null, 2));
+      console.warn('[Push Notification] Warning; Response validation failed, but responding with success');
+      console.warn('[Push Notification] Errors:', error.message);
+      console.warn('[Push Notification] Response:', JSON.stringify(error.object, null, 2));
       return Promise.resolve('Push notification sent to identityId ' + event.identityId);
     })
     .then(response => callback(null, response))
