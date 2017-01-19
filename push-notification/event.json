@@ -1,9 +1,11 @@
 {
   "identityId": "eu-west-1:53cbf21b-aabc-4f13-bfd9-288a959fed5e",
-  "data": {
-    "message": "Updates to your journey plan",
-    "type": "ObjectChange",
-    "objectType": "Itinerary",
-    "ids": ["003A36F0-5AE3-11E6-BBAB-EB77ABCA12B4"]
-  }
-}
+   "badge": 0,
+    "type": "TripActivate",
+   "message": "Your trip to Kilonrinne, 02610, Espoo, Finland is about to start - leave for the bus now",
+   "data": {
+     "ids": [      "31ad1a00-de40-11e6-ace4-79073a01de43"    ],
+       "objectType": "Itinerary",
+        "message": "Your trip to Kilonrinne, 02610, Espoo, Finland is about to start - leave for the bus now"
+         }
+       }

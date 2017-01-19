@@ -373,13 +373,15 @@ class Decider {
     const notifData = {
       identityId: this.flow.trip.identityId,
       badge: 0,
-      data: Object.assign(data, { type }),
+      type,
+      message,
+      data,
     };
     if (typeof message !== 'undefined') {
-      notifData.data.message = message;
+      notifData.message = message;
     }
     if (typeof severity !== 'undefined') {
-      notifData.data.severity = severity;
+      notifData.severity = severity;
     }
 
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
