@@ -209,11 +209,10 @@ function smsLogin(phone, code) {
         return transaction.start()
           .then(() => transaction.bind(TransactionLog).query().where('identityId', identityId))
           .then(logEntries => {
-            const transactionValueSum = logEntries.reduce((prev, curr) => prev.value + curr.value, 0);
+            const transactionValueSum = logEntries.reduce((prev, curr) => prev + curr.value, 0);
             // If sum of all transaction records's value not equal to user profile balance, create a log to synchronize the records with the balance
             if (transactionValueSum !== profile.balance) {
               console.warn(`[Auth login] transaction records\'s value sum (${transactionValueSum}) not equal to profile balance (${profile.balance})`);
-              transaction.setType('balanceSync');
               transaction.type = Transaction.types.BALANCE_SYNC;
               transaction.increaseValue(profile.balance);
               transaction.meta('Profile', identityId);
