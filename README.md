@@ -126,9 +126,7 @@ However, the Swagger documentation needs to be built and MaaS-Ticket keys need
 to be decrypted:
 
 ```
-npm run build:dev           # builds everything with dev stage parameters
 npm run build:docs          # builds the documentation only
-npm run build:keys -- dev   # decrypts the keys, passing 'dev' as a parameter
 npm run test                # Runs the tests
 ```
 

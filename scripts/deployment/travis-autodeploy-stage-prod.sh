@@ -23,7 +23,6 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       SERVERLESS_STAGE=prod knex migrate:latest;
 
       # Trigger build & deploy
-      npm run build:prod;
       npm run deploy-prod:all;
 
       echo "Finished running autodeployment to prod stage script ..."
