@@ -7,9 +7,9 @@ const lib = require('../../../auth/lib');
 module.exports = function () {
 
   describe('auth-lib', () => {
-    const PHONE1 = '358417556933';
-    const PHONE2 = '358417556933';
-    const PHONE3 = '292123456789';
+    const PHONE1 = '+358417556933';
+    const PHONE2 = '+358417556933';
+    const PHONE3 = '+292123456789';
     const TIME_OVERRIDE = 1476444134822;
     const SECRET_OVERRIDE = new Buffer('RB6BmHp8NsAC87JpsxSaB512jXlC9rlncrA+wwi4u/Of7d1b8Rq9/w==', 'base64');
     const KNOWN_CODE1 = '0971530';

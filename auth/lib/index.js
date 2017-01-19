@@ -105,7 +105,7 @@ function verify_topt_login_code(isSimulationUser, plainPhone, code) {
   }
 
   // FIXME test account code (given to Apple)
-  if (plainPhone === '358417556933' && code === '2503870') {
+  if (plainPhone === '+358417556933' && code === '2503870') {
     return true;
   }
 
