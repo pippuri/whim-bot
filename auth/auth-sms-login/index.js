@@ -4,6 +4,7 @@ const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const jwt = require('jsonwebtoken');
 const lib = require('../lib/index');
+const MaaSError = require('../../lib/errors/MaaSError');
 
 const errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/Database');
@@ -176,7 +177,7 @@ function smsLogin(phone, code) {
 
   // Support simulated users in dev environment using phone prefix +292
   // (which is an unused international code)
-  const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^292/);
+  const isSimulationUser = process.env.SERVERLESS_STAGE === 'dev' && plainPhone.match(/^\+292/);
 
   // Bale out if we can't verify the provided code
   console.info('Verifying SMS code ', code, ' from ', sanitizedPhone);
@@ -228,5 +229,19 @@ module.exports.respond = function (event, callback) {
       return Database.cleanup()
         .then(() => callback(null, response));
     })
-    .catch(errors.stdErrorWithDbHandler(callback, event));
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      return Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError) {
+            callback(_error);
+            return;
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
+    });
 };
