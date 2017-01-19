@@ -57,8 +57,8 @@ describe('profile tools', () => {
     process.env.RPL_DEFAULTS = '{}';
   });
 
-  require('./profile-card-update/index.js')(testUserIdentity);
+  require('./profile-payment-put/index.js')(testUserIdentity);
+  require('./profile-payment-get/index.js')(testUserIdentity);
   require('./profile-manage/index.js')(testUserIdentity);
-  require('./profile-card-get/index.js')(testUserIdentity);
   require('./profile-webhook/index.js')(testUserIdentity);
 });
