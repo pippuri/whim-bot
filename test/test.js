@@ -59,9 +59,14 @@ process.env.USE_MOCK_LAMBDA = 'TRUE';
 before(() => {
   console.log('Preparing Database for tests');
   return dbUtils.init()
-    .then(() => dbUtils.removeSeedData())
-    .then(() => dbUtils.insertSeedData())
-    .then(() => dbUtils.clearDBStatistics())
+    .then(() => dbUtils.removeSeedProfileData())
+    .then(() => dbUtils.insertSeedProfileData())
+    .then(() => dbUtils.clearDBStatistics());
+});
+
+// Remove transaction log entries from DB
+after(() => {
+  return dbUtils.removeTestTransactionLog()
     .then(() => dbUtils.shutdown());
 });
 

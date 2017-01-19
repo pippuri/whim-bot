@@ -3,16 +3,21 @@
 const Database = require('../../lib/models').Database;
 const profilesData = require('./profiles-seed.json');
 
-const removeSeedDataQuery =
-  'DELETE FROM "Profile" where "id" BETWEEN 13370 and 13399';
-const resetStatsQuery =
-  `
-  SELECT pg_stat_reset();
-  `;
-const insertSeedDataQuery =
+const removeSeedProfileQuery = 'DELETE FROM "Profile" WHERE "id" BETWEEN 13370 and 13399';
+
+const resetStatsQuery = 'SELECT pg_stat_reset();';
+
+const insertSeedProfileQuery =
   `
     INSERT INTO "Profile"
     SELECT * FROM json_populate_recordset(NULL::"Profile", '${JSON.stringify(profilesData)}')
+  `;
+
+const removeTempTransactionLogQuery =
+  `
+    DELETE FROM "TransactionLog"
+    WHERE "identityId"
+    IN (SELECT "identityId" FROM "Profile" WHERE "id" BETWEEN 13370 and 13399)
   `;
 
 function init() {
@@ -29,8 +34,9 @@ function shutdown() {
 
 module.exports = {
   clearDBStatistics: () => Database.knex.raw(resetStatsQuery),
-  removeSeedData: () => Database.knex.raw(removeSeedDataQuery),
-  insertSeedData: () => Database.knex.raw(insertSeedDataQuery),
+  removeSeedProfileData: () => Database.knex.raw(removeSeedProfileQuery),
+  insertSeedProfileData: () => Database.knex.raw(insertSeedProfileQuery),
+  removeTestTransactionLog: () => Database.knex.raw(removeTempTransactionLogQuery),
   init,
   shutdown,
 };
