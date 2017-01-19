@@ -262,24 +262,24 @@ module.exports = options => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
-    it('should return an error', () => {
-      expect(error).to.not.be.undefined;
-      expect(error.getMessageTrace()).to.include('500: get-routes: Could not retrieve any routes provider');
-      expect(response).to.be.undefined;
+    it('should not return an error', () => {
+      expect(error).to.be.undefined;
+    });
+
+    it('should return empty routes', () => {
+      expect(response).to.be.defined;
+      expect(response).to.have.property('plan');
+      expect(response.plan.itineraries).to.have.length(0);
     });
   });
 

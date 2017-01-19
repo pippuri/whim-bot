@@ -1,10 +1,10 @@
 'use strict';
 
-const Errors = require('../../lib/errors/index');
 const Database = require('../../lib/models/index').Database;
 const routesEngine = require('./lib/index');
 const filter = require('./lib/filter');
 const MaaSError = require('../../lib/errors/MaaSError');
+const BusinessRuleError = require('../../lib/errors/BusinessRuleError');
 const signatures = require('../../lib/signatures');
 
 
@@ -91,5 +91,23 @@ module.exports.respond = function (event, callback) {
       Database.cleanup()
         .then(() => callback(null, response));
     })
-    .catch(Errors.stdErrorWithDbHandler(callback, event));
+    .catch(_error => {
+      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn(_error.stack);
+
+      Database.cleanup()
+        .then(() => {
+          if (_error instanceof MaaSError || _error instanceof BusinessRuleError) {
+            callback(_error);
+            return;
+          }
+
+          if (_error instanceof BusinessRuleError) {
+            callback(new MaaSError(_error));
+          }
+
+          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
+        });
+    });
 };
