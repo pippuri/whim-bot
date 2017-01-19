@@ -1,8 +1,0 @@
-{
-  "identityId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
-  "payload": {
-    "amount": 100,
-    "currency": "EUR",
-    "price": 5
-  }
-}
