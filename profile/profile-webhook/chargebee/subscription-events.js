@@ -10,11 +10,11 @@ function handle(payload, key, defaultResponse) {
   console.info(JSON.stringify(payload));
 
   const cbSubs = payload.content.subscription;
-  let subs = SubscriptionManager.fromChargebeeSubscription(cbSubs);
+  const identityId = cbSubs.id;
   const invoice = payload.content.invoice;
   const invoicedChanges = (invoice) ?
     SubscriptionManager.fromChargebeeEstimate(invoice).lineItems : [];
-  const identityId = cbSubs.id;
+  let subs = SubscriptionManager.fromChargebeeSubscription(cbSubs);
   let message;
   let resetBalance = true;
   //let user;
@@ -30,8 +30,11 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_changed':
       // Change the subscription by changing to the new plan
       message = `Subscription changed to ${JSON.stringify(subs)}`;
-      // Only reset the balance in case the plan has changed
-      resetBalance = !!invoicedChanges.find(i => i.type === 'plan');
+      // Reset the balance only in case the subscription change included
+      // a payment of a plan (e.g. an upgrade happened)
+      if (!invoicedChanges.some(i => i.type === 'plan')) {
+        resetBalance = false;
+      }
       break;
     case 'subscription_renewed':
       // Renew the subscription by changing to the new plan

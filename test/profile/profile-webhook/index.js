@@ -11,7 +11,7 @@ const LAMBDA = 'MaaS-profile-webhook';
 const CHARGEBEE_ID = 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM';
 const DUMMY_ID = 'dummy';
 const WHIM_DEFAULT_PLAN = 'fi-whim-payg';
-const WHIM_LIGHT_POINTS_BALANCE = 1000;
+const WHIM_MEDIUM_POINTS_BALANCE = 5500;
 
 module.exports = function () {
   function extractCustomerIdentityId(webhookContent) {
@@ -490,11 +490,84 @@ module.exports = function () {
       expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
     });
 
-    it('should have updated the balance', () => {
+    it('should have resetted the balance', () => {
       expect(pre.balance).to.be.defined;
       expect(post.balance).to.be.defined;
       expect(pre.balance).to.not.equal(post.balance);
-      expect(post.balance).to.equal(WHIM_LIGHT_POINTS_BALANCE);
+      expect(post.balance).to.equal(WHIM_MEDIUM_POINTS_BALANCE);
+    });
+  });
+
+  describe('profile-webhook-subscription-changed-no-reset', () => {
+    const webhookContent = testEvents.positive.subscription_changed_no_reset;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
+        .then(profile => {
+          pre = profile;
+          return bus.call(LAMBDA, event);
+        })
+        // 3. Re-fetch the profile from the database for comparison
+        .then(data => {
+          response = data;
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the first name', () => {
+      expect(pre.firstName).to.be.defined;
+      expect(post.firstName).to.be.defined;
+      expect(pre.firstName).to.equal(post.firstName);
+    });
+
+    it('should have updated the subscription plan', () => {
+      expect(pre.subscription.planId).to.be.defined;
+      expect(post.subscription.planId).to.be.defined;
+      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+    });
+
+    it('should NOT have updated the balance', () => {
+      expect(pre.balance).to.be.defined;
+      expect(post.balance).to.be.defined;
+      expect(pre.balance).to.equal(post.balance);
     });
   });
   //}}}

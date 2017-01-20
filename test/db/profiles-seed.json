@@ -254,10 +254,10 @@
   {
     "id": 13391,
     "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
-    "balance": 2000,
+    "balance": 0,
     "subscription": {
-      "planId": "fi-whim-medium",
-      "monthlyBalance": 5500,
+      "planId": "fi-whim-payg",
+      "monthlyBalance": 0,
       "agencies": []
     },
     "favoriteLocations": {},
