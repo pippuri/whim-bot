@@ -1,9 +1,9 @@
 'use strict';
 
 const bus = require('../../../lib/service-bus');
-const Database = require('../../../lib/models/Database');
+//const Database = require('../../../lib/models/Database');
 const expect = require('chai').expect;
-const Profile = require('../../../lib/business-objects/Profile');
+//const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const subscriptionsEstimateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-estimate/response.json');
 const subscriptionsOptionsSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-options/response.json');
@@ -42,7 +42,8 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     };
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
-    return Database.init()
+    //return Database.init()
+    Promise.resolve()
       .then(() => SubscriptionManager.retrieveCustomer(customerId))
       .catch(error => {
         return SubscriptionManager.createCustomer(testCustomer)
@@ -85,8 +86,8 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       .then(
         () => console.info('Rollback succeeded'),
         err => console.error(`Rollback failed: ${err.toString()}`)
-      )
-      .then(() => Database.cleanup());
+      );
+      //.then(() => Database.cleanup());
   });
 
   it('Lists the available subscription options', () => {
@@ -200,7 +201,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   });
 
   it('Tops-up balance with 500p', () => {
-    const points = 500;
+    //const points = 500;
     const event = {
       customerId: customerId,
       userId: userId,

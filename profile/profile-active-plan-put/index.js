@@ -2,7 +2,6 @@
 
 const Database = require('../../lib/models/Database');
 const MaaSError = require('../../lib/errors/MaaSError.js');
-const Profile = require('../../lib/business-objects/Profile');
 const schema = require('maas-schemas/prebuilt/maas-backend/profile/profile-active-plan-put/request.json');
 const SubscriptionManager = require('../../lib/business-objects/SubscriptionManager');
 const Transaction = require('../../lib/business-objects/Transaction');
