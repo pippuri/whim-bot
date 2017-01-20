@@ -1,8 +1,8 @@
 'use strict';
 
 const del = require('del');
+const shell = require('gulp-shell');
 const eslint = require('gulp-eslint');
-const execFile = require('child_process').execFile;
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
 const gutil = require('gulp-util');
@@ -57,12 +57,7 @@ gulp.task('copy:json-schemas', () => {
     .pipe(gulp.dest('www/apidocs.maas.global/api/maas-backend/'));
 });
 
-gulp.task('check-vars', () => {
-  return execFile('./scripts/check-env-vars.sh', (err, stdout, stderr) => {
-    gutil.log(stdout);
-    gutil.log(err);
-  });
-});
+gulp.task('check-vars', [], shell.task('./scripts/check-env-vars.sh'));
 
 gulp.task('pre-mocha', () => {
   return gulp.src(jsFiles)
