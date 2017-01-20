@@ -16,7 +16,8 @@ function handle(payload, key, defaultResponse) {
     SubscriptionManager.fromChargebeeEstimate(invoice).lineItems : [];
   const identityId = cbSubs.id;
   let message;
-  let user;
+  let resetBalance = true;
+  //let user;
 
   switch (payload.event_type) {
     case 'subscription_created':
@@ -29,6 +30,8 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_changed':
       // Change the subscription by changing to the new plan
       message = `Subscription changed to ${JSON.stringify(subs)}`;
+      // Only reset the balance in case the plan has changed
+      resetBalance = !!invoicedChanges.find(i => i.type === 'plan');
       break;
     case 'subscription_renewed':
       // Renew the subscription by changing to the new plan
@@ -59,36 +62,13 @@ function handle(payload, key, defaultResponse) {
       return Promise.resolve();
   }
 
-  // Find the delta from invoice line items. If invoiced items are
-  // non-recurring, they are not shown in the subscription object. For now, only
-  // handle top-up as one such special case, e.g. balance change.
-  // Also determine whether or not to change balance from the invoiced plan
-  // (plan changes reset balance).
+  // Note: non-recurring items are not displayed in subscription changes
+  // (they can be found from invoice line items, though). For now, the
+  // non-recurring items are handled in API endpoints (e.g. subscription-update)
   const xa = new Transaction(identityId);
-  const topup = invoicedChanges.find(i => i.id === SubscriptionManager.TOPUP_ID);
-  // FIXME there is not always an invoice for plan change (e.g. case renewed);
-  // for now we have no way to determine whether or not reset the balance
-  const resetBalance = true; // !!invoicedChanges.find(i => i.type === 'plan');
-
   return xa.start()
-    .then(() => {
-      const promises = [];
-      if (topup) {
-        message = `Top-up balance by ${JSON.stringify(topup.quantity)} points`;
-        promises.push(Profile.increaseBalance(identityId, topup.quantity, xa));
-      }
-      // If topup was the only change, no need to update the subscription
-      if (!topup || (topup && invoicedChanges.length !== 1)) {
-        promises.push(Profile.changeSubscription(identityId, subs, xa, resetBalance));
-      } else {
-        console.info('Skipping subscription update, no invoicable changes found.');
-      }
-
-      return Promise.all(promises);
-    })
-    .then(response => {
-      return xa.commit(message);
-    })
+    .then(() => Profile.changeSubscription(identityId, subs, xa, resetBalance))
+    .then(response => xa.commit(message))
     .catch(error => xa.rollback().then(() => Promise.reject(error)));
 }
 

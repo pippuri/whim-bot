@@ -1,8 +1,9 @@
 'use strict';
 
 const bus = require('../../../lib/service-bus');
+const Database = require('../../../lib/models/Database');
 const expect = require('chai').expect;
-const Promise = require('bluebird');
+const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const subscriptionsEstimateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-estimate/response.json');
 const subscriptionsOptionsSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-options/response.json');
@@ -20,7 +21,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   let updateSubscriptionResponse;
   let retrieveSubscriptionResponse;
 
-  const customerId = 'eu-west-1:00000000-dead-dead-eaea-000000000000';
+  const customerId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000027';
   const userId = customerId;
 
   before(() => {
@@ -41,7 +42,8 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     };
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
-    return SubscriptionManager.retrieveCustomer(customerId)
+    return Database.init()
+      .then(() => SubscriptionManager.retrieveCustomer(customerId))
       .catch(error => {
         return SubscriptionManager.createCustomer(testCustomer)
         .then(() => SubscriptionManager.createSubscription(
@@ -83,7 +85,8 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       .then(
         () => console.info('Rollback succeeded'),
         err => console.error(`Rollback failed: ${err.toString()}`)
-      );
+      )
+      .then(() => Database.cleanup());
   });
 
   it('Lists the available subscription options', () => {
@@ -194,5 +197,40 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     upSubs.addons.forEach(addon => {
       expect(retSubs.addons.find(a => a.id === addon.id)).to.exist;
     });
+  });
+
+  it('Tops-up balance with 500p', () => {
+    const points = 500;
+    const event = {
+      customerId: customerId,
+      userId: userId,
+      payload: {
+        addons: [{ id: 'fi-whim-top-up', quantity: 500 }],
+      },
+      replace: false,
+    };
+
+    // Note: This might magically fail if some of the web hooks trigger
+    // the same time. Therefore they are disabled by default
+    // let oldBalance;
+    return Promise.resolve()
+      /*.then(() => Profile.retrieve(userId, ['balance']))
+      .then(profile => (oldBalance = profile.balance))*/
+      .then(() => bus.call('MaaS-subscriptions-update', event))
+      .then(
+        res => Promise.resolve(updateSubscriptionResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionsUpdateSchema,
+          updateSubscriptionResponse
+        )).to.exist;
+      });
+      /*.then(() => Profile.retrieve(userId, ['balance']))
+      .then(profile => {
+        const newBalance = profile.balance;
+        expect(newBalance - oldBalance).to.equal(points);
+      });*/
   });
 });

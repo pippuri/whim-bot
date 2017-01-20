@@ -313,5 +313,21 @@
     "profileImageUrl": null,
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
+  },
+  {
+    "id": 13397,
+    "identityId": "eu-west-1:00000000-cafe-cafe-cafe-000000000027",
+    "balance": 0,
+    "favoriteLocations": {},
+    "phone": "+35850123456789",
+    "email": "john3.doe@maas.fi",
+    "firstName": "SubscriptionManager",
+    "lastName": "Used for subscription-manager-full-flow",
+    "city": "Helsinki",
+    "country": "Finland",
+    "zipCode": "00100",
+    "profileImageUrl": null,
+    "created": "2016-10-13T14:01:10.611552+00:00",
+    "modified": null
   }
 ]
