@@ -73,7 +73,8 @@ function updateUserData(event) {
     return Promise.reject(new MaaSError('Missing payment method', 400));
   }
 
-  // Note: Chargebee webhook will update customer data
+  // Note: Chargebee webhook (handled by SubscriptionManager) will eventually
+  // update the customer data - hence we do not update it separately here.
   return SubscriptionManager.updateCustomer(customer);
 }
 
