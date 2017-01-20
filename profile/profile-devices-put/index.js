@@ -23,11 +23,8 @@ function saveDeviceToken(event) {
 
     // Old records
     const oldRecords = response.Records.map(record => {
-      const tmp = {};
-      tmp[record.Key] = record;
-      return tmp;
+      return record;
     });
-
     // Input device updates
     const devices = {};
     devices[event.payload.deviceIdentifier] = {
@@ -38,9 +35,18 @@ function saveDeviceToken(event) {
     // check if old device data exists to get the previous sync count
     const oldRecord = oldRecords.find(record => record.Key === event.payload.deviceIdentifier);
 
-    // If old push token === new push token, skip update
-    if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === JSON.parse(oldRecord.Value).devicePushToken) {
-      return Promise.resolve('Input device push token unchanged, skip update');
+    try {
+      const devicePushToken = JSON.parse(oldRecord.Value).devicePushToken;
+      if (!devicePushToken) throw new Error('Old device format detected');
+      if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === JSON.parse(oldRecord.Value).devicePushToken) {
+        return Promise.resolve('Input device push token unchanged, skip update');
+      }
+    } catch (error) {
+      // Not in the new format, fallback
+      console.warn('[Push notification] Detect old device record format, fallback to auto format');
+      if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === oldRecord.devicePushToken) {
+        console.info('Input device push token unchanged, update format only');
+      }
     }
 
     return cognitoSync.updateRecordsAsync({
@@ -63,7 +69,15 @@ function saveDeviceToken(event) {
 module.exports.respond = (event, callback) => {
   return validator.validate(requestSchema, event, { coerceTypes: true, useDefaults: true, sanitize: true })
     .then(() => saveDeviceToken(event))
-    .then(response => validator.validate(responseSchema, response))
+    .then(response => {
+      return validator.validate(responseSchema, response)
+        .catch(error => {
+          console.warn('[Push Notification] Warning; Response validation failed, but responding with success');
+          console.warn('[Push Notification] Errors:', error.message);
+          console.warn('[Push Notification] Response:', JSON.stringify(error.object, null, 2));
+          return Promise.resolve(response);
+        });
+    })
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
