@@ -1,14 +1,14 @@
 'use strict';
 
-const Promise = require('bluebird');
-const objection = require('objection');
+const bus = require('../../lib/service-bus');
+const BookingModel = require('../../lib/models/Booking');
 const MaaSError = require('../../lib/errors/MaaSError');
-const models = require('../../lib/models/');
+const Database = require('../../lib/models/Database');
+const stateMachine = require('../../lib/states').StateMachine;
+const objection = require('objection');
 const utils = require('../../lib/utils/');
-const stateMachine =  require('../../lib/states').StateMachine;
 const validator = require('../../lib/validator');
 const ValidationError = require('../../lib/validator/ValidationError');
-const bus = require('../../lib/service-bus');
 
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/webhooks-bookings-update/response.json');
@@ -31,12 +31,16 @@ function parseAndValidateInput(event) {
  */
 function webhookCallback(agencyId, tspId, payload) {
   let trx;
+  let model;
 
-  return objection.transaction.start(models.Booking)
+  return objection.transaction.start(BookingModel)
     .then(transaction => {
       trx = transaction;
-
-      return models.Booking.bindTransaction(trx)
+      return BookingModel.bindTransaction(trx);
+    })
+    .then(_model => {
+      model = _model;
+      return model
         .query()
         .whereRaw('leg ->> \'agencyId\' = ?', [agencyId])
         .andWhere('tspId', tspId)
@@ -58,7 +62,7 @@ function webhookCallback(agencyId, tspId, payload) {
         return Promise.reject(new MaaSError(message, 403));
       }
 
-      return models.Booking.bindTransaction(trx)
+      return model
         .query()
         .patchAndFetchById(booking.id, {
           cost: utils.merge(booking.cost, payload.cost),
@@ -127,7 +131,7 @@ module.exports.respond = (event, callback) => {
   let identityId;
   let bookingId;
 
-  return models.Database.init()
+  return Database.init()
     .then(() => parseAndValidateInput(event))
     .then(parsed => webhookCallback(parsed.agencyId, parsed.payload.tspId, parsed.payload))
     .then(updatedBooking => {
@@ -144,29 +148,26 @@ module.exports.respond = (event, callback) => {
         sendPushNotification(identityId, 'ObjectChange', payload),
       ]);
     })
-    .spread(
-      (response, pushResponse) => {
-        return models.Database.cleanup()
-        .then(() => callback(null, response));
-      })
+    .then(
+      responses => Database.cleanup().then(() => responses[0]),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      models.Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          if (_error instanceof ValidationError) {
-            callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
-            return;
-          }
+      if (_error instanceof ValidationError) {
+        callback(new MaaSError(`Validation failed: ${_error.message}`, 400));
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

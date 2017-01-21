@@ -48,7 +48,6 @@ const params = { TableName: script.dynamo };
 function scanDynamoDB(query) {
 
   documentClient.scan(query, (err, data) => {
-
     if (err) {
       console.dir(err);
       return;
@@ -87,26 +86,21 @@ function scanDynamoDB(query) {
         return Profile.query()
           .insert(data.Items);
       })
+      .then(
+        response => Database.cleanup().then(() => response),
+        error => Database.cleanup().then(() => Promise.reject(error))
+      )
       .then(() => {
-        return Database.cleanup()
-          .then( _ => {
-            console.log(`Successfully dump Dynamo data from ${script.dynamo} table to Postgre ${script.postgre} table!`);
-            return Promise.resolve();
-          });
+        console.log(`Successfully dumped Dynamo data from ${script.dynamo} table to Postgres ${script.postgre} table!`);
       })
       .catch(_error => {
         console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
         console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
         console.warn(_error.stack);
 
-        return Database.cleanup()
-          .then( _ => {
-            console.log('Failed to Dump data to Postgre!');
-            return Promise.reject(_error);
-          });
+        console.log('Failed to Dump data to Postgre!');
       });
   });
-
 }
 
 scanDynamoDB(params);

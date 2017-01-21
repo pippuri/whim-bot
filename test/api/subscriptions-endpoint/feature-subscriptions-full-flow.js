@@ -43,9 +43,10 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
     //return Database.init()
-    Promise.resolve()
+    return Promise.resolve()
       .then(() => SubscriptionManager.retrieveCustomer(customerId))
       .catch(error => {
+        console.log('SubscriptionManager customer not found, creating new.');
         return SubscriptionManager.createCustomer(testCustomer)
         .then(() => SubscriptionManager.createSubscription(
           testSubscription,
@@ -55,7 +56,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       })
       .catch(err => {
         error = err;
-        console.warn('Error in creating the subscription, skipping the test');
+        console.warn('Error in creating the subscription, skipping the test.');
         console.warn(error.toString());
       });
   });

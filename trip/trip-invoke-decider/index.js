@@ -1,15 +1,15 @@
 'use strict';
 
-const Promise = require('bluebird');
-const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
-const Trip = require('../../lib/trip/Trip');
-const Decision = require('../../lib/trip/Decision');
-const bus = require('../../lib/service-bus');
-const MaaSError = require('../../lib/errors/MaaSError.js');
 const AWS = require('aws-sdk');
+const bus = require('../../lib/service-bus');
+const Database = require('../../lib/models/Database');
+const Decision = require('../../lib/trip/Decision');
 const Itinerary = require('../../lib/business-objects/Itinerary');
-const models = require('../../lib/models');
+const MaaSError = require('../../lib/errors/MaaSError.js');
+const Promise = require('bluebird');
 const Transaction = require('../../lib/business-objects/Transaction');
+const Trip = require('../../lib/trip/Trip');
+const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
 Promise.promisifyAll(swfClient);
@@ -395,7 +395,6 @@ class Decider {
         return Promise.resolve();
       });
   }
-
 }
 
 module.exports.respond = function (event, callback) {
@@ -411,27 +410,23 @@ module.exports.respond = function (event, callback) {
     return callback(new MaaSError(err.message || err, 400));
   }
 
-  return models.Database.init()
+  return Database.init()
     .then(() => decider.decide())
-    .then(response => {
-      models.Database.cleanup()
-        .then(() => callback(null, response));
-    })
+    .then(
+      response => Database.cleanup().then(() => response),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      // Uncaught, unexpected error
-      models.Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
-
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

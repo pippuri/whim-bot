@@ -61,12 +61,14 @@ before(() => {
   return dbUtils.init()
     .then(() => dbUtils.removeSeedProfileData())
     .then(() => dbUtils.insertSeedProfileData())
-    .then(() => dbUtils.clearDBStatistics());
+    .then(() => dbUtils.clearDBStatistics())
+    .then(() => dbUtils.shutdown());
 });
 
 // Remove transaction log entries from DB
 after(() => {
-  return dbUtils.removeTestTransactionLog()
+  return dbUtils.init()
+    .then(() => dbUtils.removeTestTransactionLog())
     .then(() => dbUtils.shutdown());
 });
 

@@ -19,14 +19,19 @@ function handle(payload, key) {
   switch (payload.event_type) {
     case 'customer_changed':
     case 'customer_created':
-      return Profile.update(identityId, {
+      return xa.start()
+      .then(() => Profile.update(identityId, {
         firstName: custo.firstName,
         lastName: custo.lastName,
         email: custo.email,
         country: custo.countryCode,
         city: custo.city,
         zipCode: custo.zipCode,
-      });
+      }, xa))
+      .then(
+        () => xa.commit(),
+        error => xa.rollback().then(error => Promise.reject(error))
+      );
     case 'customer_deleted':
       return xa.start()
         .then(() => Profile.changeSubscription(identityId,
