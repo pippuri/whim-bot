@@ -1,5 +1,5 @@
 {
-  "name": "profile-top-up",
+  "name": "subscriptions-retrieve",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
@@ -11,15 +11,20 @@
   "custom": {},
   "endpoints": [
     {
-      "path": "profile/top-up",
-      "method": "POST",
+      "path": "subscriptions/{userId}",
+      "method": "GET",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": true,
-      "requestParameters": {},
+      "requestParameters": {
+        "integration.request.path.userId": "method.request.path.userId"
+      },
       "requestTemplates": {
-        "application/json": "{\"identityId\":\"$context.authorizer.principalId\",\"payload\":$input.json('$')}"
+        "application/json": {
+          "customerId": "$context.authorizer.principalId",
+          "userId": "$input.params('userId')"
+        }
       },
       "responses": {
         "^400.*": {
@@ -42,28 +47,6 @@
           "responseModels": {},
           "responseTemplates": {
             "application/json": ""
-          }
-        }
-      },
-      "swaggerExport": {
-        "summary": "Add points to users profile account",
-        "description": "",
-        "security": [
-          {
-            "Bearer": []
-          }
-        ],
-        "parameter": [],
-        "responses": {
-          "200": {
-            "application/json": {},
-            "description": "Success"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "401": {
-            "description": "Unauthorized"
           }
         }
       }

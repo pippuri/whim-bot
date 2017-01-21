@@ -1,8 +1,8 @@
 'use strict';
 
-const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError');
 const productData = require('./product-data.json');
+const Pricing = require('../../lib/business-objects/Pricing');
 const Promise = require('bluebird');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/response.json');
@@ -17,34 +17,23 @@ function getAgencyProductOptions(event) {
     return Promise.reject(new MaaSError(`No product data for given agencyId '${event.agencyId}'`, 400));
   }
 
-  // Concert EUR costs to point fares.
-
-  const prices = [];
-  products.forEach(product => {
-    prices.push({ amount: product.cost.amount, currency: product.cost.currency });
-  });
-
-  return bus.call('MaaS-business-rule-engine', {
-    identityId: event.identityId,
-    rule: 'get-point-pricing-batch',
-    parameters: {
-      prices: prices,
-    },
+  // Convert euros to points; annotate agency id.
+  return Promise.map(products, product => {
+    const cost = product.cost;
+    return Pricing.convertCostToPoints(parseFloat(cost.amount), cost.currency)
+      .then(points => {
+        const annotated = utils.cloneDeep(product);
+        delete annotated.cost;
+        annotated.fare = { amount: points, currency: 'POINT' };
+        return annotated;
+      });
   })
-  .then(points => {
-    products.map((product, index) => {
-      // inject price into products and remove cost
-      // TODO: change to right format after client migrated!
-      product.fare = points[index];
-      //option.fare = { amount: points[index], currency: 'POINT' };
-      delete product.cost;
-    });
-    return Promise.resolve({
+  .then(products => {
+    return {
       agencyId: event.agencyId,
       products,
-    });
+    };
   });
-
 }
 
 module.exports.respond = function (event, callback) {

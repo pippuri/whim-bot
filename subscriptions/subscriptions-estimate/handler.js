@@ -1,9 +1,9 @@
 'use strict';
 
-// Require logic
-const lib = require('./index');
+// Require Logic
+const lib = require('./index.js');
 
-// Lamba handler
+// Lambda Handler
 module.exports.handler = function (event, context) {
 
   lib.respond(event, (error, response) => {

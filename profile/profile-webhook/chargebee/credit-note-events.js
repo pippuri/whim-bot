@@ -1,10 +1,10 @@
 'use strict';
 
 
-function handle(payload, key, defaultResponse) {
+function handle(payload, key) {
   console.info('[Webhook][Chargebee] handleCreditNoteEvent (IGNORED)');
   console.info(JSON.stringify(payload));
-  return defaultResponse;
+  return Promise.resolve();
 }
 
 module.exports = {

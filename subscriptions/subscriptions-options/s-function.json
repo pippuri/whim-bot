@@ -1,0 +1,133 @@
+{
+  "name": "subscriptions-options",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 60,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {},
+  "endpoints": [
+    {
+      "path": "subscriptions/options",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": true,
+      "requestParameters": {
+        "integration.request.querystring.lat": "method.request.querystring.lat",
+        "integration.request.querystring.lon": "method.request.querystring.lon"
+      },
+      "requestTemplates": {
+        "application/json": {
+          "identityId": "$context.authorizer.principalId",
+          "payload": {
+            "lat": "$input.params('lat')",
+            "lon": "$input.params('lon')"
+          }
+        }
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400"
+        },
+        "^403.*": {
+          "statusCode": "403"
+        },
+        "^401.*": {
+          "statusCode": "401"
+        },
+        "^404.*": {
+          "statusCode": "404"
+        },
+        "^500.*": {
+          "statusCode": "500"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      },
+      "swaggerExport": {
+        "summary": "Retrieve agency available options",
+        "description": "Retrieve all agency available options for transportation",
+        "security": [
+          {
+            "Bearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "agencyId",
+            "in": "path",
+            "description": "ID of the requested agency",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "mode",
+            "in": "query",
+            "description": "Mode of transport",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "from",
+            "in": "query",
+            "description": "Starting location.",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "to",
+            "in": "query",
+            "description": "Destination location",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "startTime",
+            "in": "query",
+            "description": "Starting time of the requested trip",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "endTime",
+            "in": "query",
+            "description": "Ending time of the requested trip",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "application/json": {},
+            "description": "Success",
+            "schema": {
+              "$ref": "maas-backend/bookings/bookings-agency-options/response.json"
+            }
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "401": {
+            "description": "Unauthorized"
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

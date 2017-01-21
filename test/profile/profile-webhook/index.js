@@ -1,23 +1,21 @@
 'use strict';
 
-const Database = require('../../../lib/models/Database');
-const ProfileDAO = require('../../../lib/models/Profile');
-const errors = require('../../../lib/errors/index');
 const bus = require('../../../lib/service-bus/index');
+const Database = require('../../../lib/models/Database');
+const errors = require('../../../lib/errors/index');
 const expect = require('chai').expect;
+const ProfileDAO = require('../../../lib/models/Profile');
 const testEvents = require('./test-events.json');
-const LAMBDA = 'MaaS-profile-webhook';
 
+const LAMBDA = 'MaaS-profile-webhook';
 const CHARGEBEE_ID = 'KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM';
 const DUMMY_ID = 'dummy';
-const WHIM_LIGHT_POINTS_BALANCE = 1000;
-const WHIM_DEFAULT = process.env.DEFAULT_WHIM_PLAN;
+const WHIM_DEFAULT_PLAN = 'fi-whim-payg';
+const WHIM_MEDIUM_POINTS_BALANCE = 5500;
 
-module.exports = function (identityId) {
+module.exports = function () {
   function extractCustomerIdentityId(webhookContent) {
-    // Replace the webhook content id with the given identityId
-    webhookContent.content.customer.id = identityId;
-    return identityId;
+    return webhookContent.content.customer.id;
   }
 
   //------------------------------------------------------------------------
@@ -36,34 +34,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -109,34 +98,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -182,34 +162,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -260,34 +231,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -338,34 +300,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -416,34 +369,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -494,34 +438,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -555,11 +490,84 @@ module.exports = function (identityId) {
       expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
     });
 
-    it('should have updated the balance', () => {
+    it('should have resetted the balance', () => {
       expect(pre.balance).to.be.defined;
       expect(post.balance).to.be.defined;
       expect(pre.balance).to.not.equal(post.balance);
-      expect(post.balance).to.equal(WHIM_LIGHT_POINTS_BALANCE);
+      expect(post.balance).to.equal(WHIM_MEDIUM_POINTS_BALANCE);
+    });
+  });
+
+  describe('profile-webhook-subscription-changed-no-reset', () => {
+    const webhookContent = testEvents.positive.subscription_changed_no_reset;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
+        .then(profile => {
+          pre = profile;
+          return bus.call(LAMBDA, event);
+        })
+        // 3. Re-fetch the profile from the database for comparison
+        .then(data => {
+          response = data;
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the first name', () => {
+      expect(pre.firstName).to.be.defined;
+      expect(post.firstName).to.be.defined;
+      expect(pre.firstName).to.equal(post.firstName);
+    });
+
+    it('should have updated the subscription plan', () => {
+      expect(pre.subscription.planId).to.be.defined;
+      expect(post.subscription.planId).to.be.defined;
+      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+    });
+
+    it('should NOT have updated the balance', () => {
+      expect(pre.balance).to.be.defined;
+      expect(post.balance).to.be.defined;
+      expect(pre.balance).to.equal(post.balance);
     });
   });
   //}}}
@@ -580,34 +588,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -664,34 +663,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -726,7 +716,7 @@ module.exports = function (identityId) {
 
     it('should have updated the plan to pay-as-you-go plan', () => {
       expect(post.subscription.planId).to.be.defined;
-      expect(post.subscription.planId).to.equal(WHIM_DEFAULT);
+      expect(post.subscription.planId).to.equal(WHIM_DEFAULT_PLAN);
     });
   });
   //}}}
@@ -747,34 +737,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -830,36 +811,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          pre.zipCode = '00100';
-
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -881,10 +851,10 @@ module.exports = function (identityId) {
       expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
-    it('should have updated the zipcode', () => {
+    it('should NOT have updated the zipcode', () => {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
-      expect(pre.zipCode).to.not.equal(post.zipCode);
+      expect(pre.zipCode).to.equal(post.zipCode);
     });
   });
   //}}}
@@ -905,36 +875,25 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      Database.init()
-        .then(_ => {
-          // 1. Fetch the profile from the database
-          return ProfileDAO.query().findById(testIdentityId);
-        })
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
         .then(profile => {
           pre = profile;
-          pre.zipCode = '00100';
-
-          // 2. Apply the webhook
           return bus.call(LAMBDA, event);
         })
+        // 3. Re-fetch the profile from the database for comparison
         .then(data => {
           response = data;
-
-          // 3. Re-fetch the profile from the database for comparison
           return ProfileDAO.query().findById(testIdentityId);
         })
-        .then(profile => {
-          post = profile;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -956,10 +915,10 @@ module.exports = function (identityId) {
       expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
-    it('should have updated the zipcode', () => {
+    it('should NOT have updated the zipcode', () => {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
-      expect(pre.zipCode).to.not.equal(post.zipCode);
+      expect(pre.zipCode).to.equal(post.zipCode);
     });
   });
   //}}}
@@ -979,16 +938,12 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
-        .then(data => {
-          response = data;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        });
+    before(() => {
+      return bus.call(LAMBDA, event)
+        .then(
+          data => (response = data),
+          err => (error = err)
+        );
     });
 
     it('should not raise an error', () => {
@@ -1025,16 +980,12 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
-        .then(data => {
-          response = data;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        });
+    before(() => {
+      return bus.call(LAMBDA, event)
+        .then(
+          data => (response = data),
+          err => (error = err)
+        );
     });
 
     it('should not raise an error', () => {
@@ -1071,16 +1022,12 @@ module.exports = function (identityId) {
     let response = null;
     let error = null;
 
-    before(done => {
-      bus.call(LAMBDA, event)
-        .then(data => {
-          response = data;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        });
+    before(() => {
+      return bus.call(LAMBDA, event)
+        .then(
+          data => (response = data),
+          err => (error = err)
+        );
     });
 
     it('should not raise an error', () => {
@@ -1122,16 +1069,12 @@ module.exports = function (identityId) {
       let response = null;
       let error = null;
 
-      before(done => {
-        bus.call(LAMBDA, event)
-          .then(data => {
-            response = data;
-            done();
-          })
-          .catch(err => {
-            error = err;
-            done();
-          });
+      before(() => {
+        return bus.call(LAMBDA, event)
+          .then(
+            data => (response = data),
+            err => (error = err)
+          );
       });
 
       it('should not raise an error', () => {

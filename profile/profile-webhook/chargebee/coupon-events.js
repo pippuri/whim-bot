@@ -1,10 +1,9 @@
 'use strict';
 
 
-function handle(payload, key, defaultResponse) {
+function handle(payload, key) {
   console.info('[Webhook][Chargebee] handleCouponEvents (IGNORED)');
   console.info(JSON.stringify(payload));
-  return defaultResponse;
 }
 
 module.exports = {

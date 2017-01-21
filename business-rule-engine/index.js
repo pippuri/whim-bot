@@ -12,7 +12,6 @@ const BusinessRuleError = require('../lib/errors/BusinessRuleError.js');
 const getBookingProviderRules = require('./rules/get-booking-provider');
 const getTspPricingRule = require('./rules/get-tsp-pricing');
 const getRoutePricingRule = require('./rules/get-route-pricing');
-const getPointsRules = require('./rules/get-points');
 
 function runRule(event) {
   // Switch for non DB connection related bookingProviderRules and those that do
@@ -50,10 +49,6 @@ function runRule(event) {
               return Promise.reject(error);
             });
         });
-    case 'get-point-pricing':
-      return getPointsRules.getPointPricing(event.identityId, event.parameters);
-    case 'get-point-pricing-batch':
-      return getPointsRules.getPointBatch(event.identityId, event.parameters);
     default:
       return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
   }
@@ -63,7 +58,6 @@ function runRule(event) {
  * Export respond to Handler
  */
 module.exports.respond = (event, callback) => {
-  console.info(event);
   return validator.validate(schema, event)
     .then(() => runRule(event))
     .then(response => callback(null, response))

@@ -10,8 +10,8 @@ module.exports = {
     return (key === VALID_ID);
   },
 
-  handlePayload(payload, key, defaultResponse) {
+  handlePayload(payload, key) {
     console.info(payload, key);
-    return defaultResponse;
+    return Promise.resolve();
   },
 };

@@ -1,8 +1,24 @@
 'use strict';
 
 const Promise = require('bluebird');
-const Subscription = require('../../lib/subscription-manager');
+const SubscriptionManager = require('../../lib/business-objects/SubscriptionManager');
 const MaaSError = require('../../lib/errors/MaaSError');
+
+/**
+ * Migratory function to map country name to country code
+ *
+ * FIXME Fix client to send the country code
+ */
+function mapCountryToCode(country) {
+  switch (country) {
+    case 'Finland':
+    case 'Suomi':
+    case 'FI':
+      return 'FI';
+    default:
+      throw new MaaSError('Unsupported country (expecting Finland)', 400);
+  }
+}
 
 function updateUserData(event) {
   const identityId = event.identityId;
@@ -19,18 +35,47 @@ function updateUserData(event) {
   if (typeof identityId !== 'string') {
     return Promise.reject(new MaaSError('Invalid or missing identityId', 400));
   }
-  return Subscription.updateUser(identityId, payload)
-    .then( _ => Subscription.updateUserCreditCard(identityId, payload) )
-    .catch(error => {
-      console.warn('Caught an error:', JSON.stringify(error));
-      console.warn(`Input: identityId='${identityId}', payload='${JSON.stringify(payload)}'`);
-      console.warn(error.stack);
 
-      const statusCode = error.statusCode ? error.statusCode : 500;
-      const message = (error.response) ? error.response.toString() : error.message;
+  // FIXME Currently client sends the full country (Finland), we need code (FI)
+  let countryCode;
+  try {
+    countryCode = mapCountryToCode(payload.country);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 
-      return Promise.reject(new MaaSError(`Error with payment: ${message}`, statusCode));
-    });
+  const customer = {
+    identityId: event.identityId,
+    firstName: payload.firstName,
+    lastName: payload.lastName,
+    phone: payload.phone,
+    zipCode: payload.zip,
+    countryCode: countryCode,
+    city: payload.city,
+  };
+
+  if (payload.card) {
+    console.warn('Warning: Using card as a payment method - for tests only');
+    // Credit card (should be only used for testing)
+    customer.paymentMethod = {
+      type: 'card',
+      number: payload.card.number,
+      cvv: payload.card.cvv,
+      expiryMonth: Number.parseInt(payload.card.expiryMonth, 10),
+      expiryYear: Number.parseInt(payload.card.expiryYear, 10),
+    };
+  } else if (payload.token) {
+    customer.paymentMethod = {
+      type: 'stripe',
+      token: payload.token,
+    };
+  } else {
+    return Promise.reject(new MaaSError('Missing payment method', 400));
+  }
+
+  // Note: Chargebee webhook (handled by SubscriptionManager) will eventually
+  // update the customer data - hence we do not update it separately here.
+  return SubscriptionManager.updateCustomer(customer);
 }
 
 function wrapToEnvelope(resp, event) {

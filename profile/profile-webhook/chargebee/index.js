@@ -14,61 +14,60 @@ const planEvents = require('./plan-events.js');
 const subscriptionEvents = require('./subscription-events.js');
 const transactionEvents = require('./transaction-events.js');
 
-
 const VALID_KEYS = {
   KaGBVLzUEZjaR2F9YgoRdHyJ6IhqjGM: 'chargebee',
   XYlgoTjdyNgjcCdLUgbfPDIP7oyVEho: 'chargebee-live',
 };
 
-function handleUnknownEvent(payload, key, defaultResponse) {
+function handleUnknownEvent(payload, key) {
   console.warn('Unhandled webhook event', payload.event_type);
   throw new errors.MaaSError('Unhandled webhook event', 400);
 }
 
-function handleEvent(payload, key, defaultResponse) {
+function handleEvent(payload, key) {
   switch (payload.event_type) {
     case 'addon_created':
     case 'addon_deleted':
     case 'addon_updated':
-      return addonEvents.handle(payload, key, defaultResponse);
+      return addonEvents.handle(payload, key);
     case 'card_added':
     case 'card_deleted':
     case 'card_expired':
     case 'card_expiry_reminder':
     case 'card_updated':
-      return cardEvents.handle(payload, key, defaultResponse);
+      return cardEvents.handle(payload, key);
     case 'credit_note_created':
     case 'credit_note_deleted':
     case 'credit_note_updated':
       // Currently ignored
-      return creditNoteEvents.handle(payload, key, defaultResponse);
+      return creditNoteEvents.handle(payload, key);
     case 'coupon_created':
     case 'coupon_deleted':
     case 'coupon_updated':
       // Currently ignored
-      return couponEvents.handle(payload, key, defaultResponse);
+      return couponEvents.handle(payload, key);
     case 'customer_changed':
     case 'customer_created':
     case 'customer_deleted':
-      return customerEvents.handle(payload, key, defaultResponse);
+      return customerEvents.handle(payload, key);
     case 'pending_invoice_created':
     case 'invoice_deleted':
     case 'invoice_generated':
     case 'invoice_updated':
       // Currently ignored
-      return invoiceEvents.handle(payload, key, defaultResponse);
+      return invoiceEvents.handle(payload, key);
     case 'payment_failed':
     case 'payment_initiated':
     case 'payment_refunded':
     case 'payment_succeeded':
     case 'refund_initiated':
       // Currently ignored
-      return paymentEvents.handle(payload, key, defaultResponse);
+      return paymentEvents.handle(payload, key);
     case 'plan_created':
     case 'plan_deleted':
     case 'plan_updated':
       // Currently ignored
-      return planEvents.handle(payload, key, defaultResponse);
+      return planEvents.handle(payload, key);
     case 'subscription_activated':
     case 'subscription_cancellation_reminder':
     case 'subscription_cancellation_scheduled':
@@ -83,14 +82,14 @@ function handleEvent(payload, key, defaultResponse) {
     case 'subscription_shipping_address_updated':
     case 'subscription_started':
     case 'subscription_trial_end_reminder':
-      return subscriptionEvents.handle(payload, key, defaultResponse);
+      return subscriptionEvents.handle(payload, key);
     case 'transaction_created':
     case 'transaction_deleted':
     case 'transaction_updated':
       // Currently ignored
-      return transactionEvents.handle(payload, key, defaultResponse);
+      return transactionEvents.handle(payload, key);
     default:
-      return handleUnknownEvent(payload, key, defaultResponse);
+      return handleUnknownEvent(payload, key);
   }
 }
 
@@ -98,20 +97,17 @@ function matches(key) {
   return VALID_KEYS.hasOwnProperty(key);
 }
 
-function handlePayload(payload, key, defaultResponse) {
+function handlePayload(payload, key) {
   if (!payload.hasOwnProperty('event_type')) {
     return Promise.reject(new errors.MaaSError('event type missing', 400));
   }
 
   return Database.init()
-    .then(db => handleEvent(payload, key, defaultResponse))
-    .lastly(() => {
-      Database.cleanup();
-    });
+    .then(db => handleEvent(payload, key))
+    .finally(() => Database.cleanup());
 }
 
 module.exports = {
   matches,
   handlePayload,
 };
-

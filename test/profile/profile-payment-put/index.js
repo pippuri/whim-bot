@@ -6,7 +6,7 @@ const lambda = require('../../../profile/profile-payment-put/handler.js');
 
 module.exports = function (identityId) {
 
-  describe('profile-card-update', () => {
+  describe('profile-payment-put', () => {
     const event = {
       identityId: identityId,
       payload: {
@@ -20,9 +20,9 @@ module.exports = function (identityId) {
         country: 'FI',
         card: {
           number: '4242424242424242',
-          cvv: 100,
-          expiryMonth: '10',
-          expiryYear: '2017',
+          cvv: '100',
+          expiryMonth: 12,
+          expiryYear: 2018,
         },
       },
     };
@@ -49,7 +49,7 @@ module.exports = function (identityId) {
     });
 
     it('should not return empty', () => {
-      expect(response).to.have.deep.property('profile.card');
+      expect(response).to.have.deep.property('profile.paymentMethod');
       expect(response).to.have.deep.property('profile.identityId');
       expect(response).to.have.deep.property('profile.firstName');
       expect(response).to.have.deep.property('profile.lastName');

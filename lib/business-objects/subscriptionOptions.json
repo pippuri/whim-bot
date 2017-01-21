@@ -1,0 +1,87 @@
+[
+  {
+    "name": "Pay as you go",
+    "description": "Pay as you go - nothing included",
+    "points": 0,
+    "plan": {
+      "id": "fi-whim-payg"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-helsinki",
+        "quantity": 1
+      },
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ],
+    "availability": {
+      "todo": "todo"
+    }
+  },
+  {
+    "name": "Light",
+    "description": "Light package with 1000p included",
+    "points": 1000,
+    "plan": {
+      "id": "fi-whim-light"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-helsinki",
+        "quantity": 1
+      },
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ],
+    "availability": {
+      "todo": "todo"
+    }
+  },
+  {
+    "name": "Medium",
+    "description": "Medium package with 5500p included, campaign price",
+    "points": 5500,
+    "plan": {
+      "id": "fi-whim-medium"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-helsinki",
+        "quantity": 1
+      },
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ],
+    "coupons": [{ "id": "WHIM100EUR" }],
+    "availability": {
+      "todo": "todo"
+    }
+  },
+  {
+    "name": "Premium",
+    "description": "Premium package with 8000p included",
+    "points": 8000,
+    "plan": {
+      "id": "fi-whim-premium"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-helsinki",
+        "quantity": 1
+      },
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ],
+    "availability": {
+      "todo": "todo"
+    }
+  }
+]

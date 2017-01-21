@@ -1,0 +1,15 @@
+{
+  "customerId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "userId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "payload": {
+    "plan": {
+      "id": "fi-whim-premium"
+    },
+    "addons": [
+      {
+        "id": "fi-hsl-seutu",
+        "quantity": 1
+      }
+    ]
+  }
+}

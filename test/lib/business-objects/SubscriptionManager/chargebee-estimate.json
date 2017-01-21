@@ -1,0 +1,133 @@
+{
+  "estimate": {
+    "created_at": 1483280419,
+    "object": "estimate",
+    "subscription_estimate": {
+        "id": "eu-west-1:91732dd4-20c7-46e2-9072-d505d7860565",
+        "status": "active",
+        "next_billing_at": 1484579749,
+        "object": "subscription_estimate",
+        "currency_code": "EUR",
+        "shipping_address": {
+            "first_name": "Lauri",
+            "last_name": "Svan",
+            "email": "lauri.svan@gmail.com",
+            "phone": "+358505454202",
+            "country": "FI",
+            "zip": "00200",
+            "validation_status": "not_validated",
+            "object": "shipping_address"
+        }
+    },
+    "next_invoice_estimate": {
+        "recurring": true,
+        "price_type": "tax_inclusive",
+        "sub_total": 39900,
+        "total": 34900,
+        "credits_applied": 0,
+        "amount_paid": 0,
+        "amount_due": 34900,
+        "object": "invoice_estimate",
+        "line_items": [
+            {
+                "id": "li_IG5ryraQ749Tkg7Th",
+                "date_from": 1484579749,
+                "date_to": 1487258149,
+                "unit_amount": 24900,
+                "quantity": 1,
+                "is_taxed": true,
+                "tax_amount": 1980,
+                "tax_rate": 10.0,
+                "object": "line_item",
+                "amount": 24900,
+                "description": "Medium Subscription",
+                "entity_type": "plan",
+                "entity_id": "fi-whim-medium",
+                "discount_amount": 3120,
+                "item_level_discount_amount": 0
+            },
+            {
+                "id": "li_IG5ryraQ749Tkr7Ti",
+                "date_from": 1484579749,
+                "date_to": 1487258149,
+                "unit_amount": 5000,
+                "quantity": 1,
+                "is_taxed": true,
+                "tax_amount": 398,
+                "tax_rate": 10.0,
+                "object": "line_item",
+                "amount": 5000,
+                "description": "HSL Helsinki Add-on",
+                "entity_type": "addon",
+                "entity_id": "fi-hsl-helsinki",
+                "discount_amount": 627,
+                "item_level_discount_amount": 0
+            },
+            {
+                "id": "li_IG5ryraQ749Tl37Tj",
+                "date_from": 1484579749,
+                "date_to": 1487258149,
+                "unit_amount": 10000,
+                "quantity": 1,
+                "is_taxed": true,
+                "tax_amount": 795,
+                "tax_rate": 10.0,
+                "object": "line_item",
+                "amount": 10000,
+                "description": "HSL Seutu Add-on",
+                "entity_type": "addon",
+                "entity_id": "fi-hsl-seutu",
+                "discount_amount": 1253,
+                "item_level_discount_amount": 0
+            }
+        ],
+        "discounts": [{
+            "object": "discount",
+            "entity_type": "document_level_coupon",
+            "description": "50\u20ac discount for one of the HSL add-ons",
+            "amount": 5000,
+            "entity_id": "FI-HSL-50\u20ac-OFF"
+        }],
+        "taxes": [{
+            "object": "tax",
+            "name": "VAT",
+            "description": "VAT @ 10 %",
+            "amount": 3173
+        }],
+        "line_item_taxes": [
+            {
+                "tax_name": "VAT",
+                "tax_rate": 10.0,
+                "tax_juris_type": "country",
+                "tax_juris_name": "Finland",
+                "tax_juris_code": "FI",
+                "object": "line_item_tax",
+                "line_item_id": "li_IG5ryraQ749Tkg7Th",
+                "tax_amount": 1980
+            },
+            {
+                "tax_name": "VAT",
+                "tax_rate": 10.0,
+                "tax_juris_type": "country",
+                "tax_juris_name": "Finland",
+                "tax_juris_code": "FI",
+                "object": "line_item_tax",
+                "line_item_id": "li_IG5ryraQ749Tkr7Ti",
+                "tax_amount": 398
+            },
+            {
+                "tax_name": "VAT",
+                "tax_rate": 10.0,
+                "tax_juris_type": "country",
+                "tax_juris_name": "Finland",
+                "tax_juris_code": "FI",
+                "object": "line_item_tax",
+                "line_item_id": "li_IG5ryraQ749Tl37Tj",
+                "tax_amount": 795
+            }
+        ],
+        "currency_code": "EUR"
+    },
+    "credit_note_estimates": []
+  }
+}
