@@ -46,7 +46,7 @@ class Decider {
 
     // check did we understand the flow situation
     if (!this.flow.event && !this.flow.task) {
-      console.error('[Decider] ERROR: lost flow event & task -- aborting');
+      console.warn('[Decider] ERROR: lost flow event & task -- aborting');
       this.decision.abortFlow('Decider: lost flow event & task -- aborting');
       return Promise.resolve();
     }
@@ -106,10 +106,10 @@ class Decider {
           // handle  errors
           .catch(err => {
             if (err instanceof MaaSError && err.status === 404) {
-              console.error(`[Decider] Itinerary ${this.flow.trip.referenceId} not found from DB, aborting flow`);
+              console.warn(`[Decider] Itinerary ${this.flow.trip.referenceId} not found from DB, aborting flow`);
               this.decision.abortFlow(`Itinerary ${this.flow.trip.referenceId} not found from DB`);
             }
-            console.error('[Decider] ERROR while starting the trip, err:', err.stack || err);
+            console.warn('[Decider] ERROR while starting the trip, err:', err.stack || err);
             return this._sendPushNotification('ObjectChange', { ids: [this.flow.trip.referenceId], objectType: 'Itinerary' });
           });
 
@@ -128,7 +128,7 @@ class Decider {
           })
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] ERROR while activating trip -- ignoring, err:', err.stack || err);
+            console.warn('[Decider] ERROR while activating trip -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -145,7 +145,7 @@ class Decider {
           .then(itinerary => this._processLegs(itinerary))
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] ERROR while checking itinerary -- ignoring, err:', err.stack || err);
+            console.warn('[Decider] ERROR while checking itinerary -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -167,7 +167,7 @@ class Decider {
           })
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] error while checking leg -- ignoring, err:', err.stack || err);
+            console.warn('[Decider] error while checking leg -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -180,7 +180,7 @@ class Decider {
           .then(itinerary => this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }))
           // handle unexpected errors
           .catch(err => {
-            console.error('[Decider] error while closing trip -- ignoring, err:', err.stack || err);
+            console.warn('[Decider] error while closing trip -- ignoring, err:', err.stack || err);
             return Promise.resolve();
           });
 
@@ -214,8 +214,8 @@ class Decider {
         return Promise.resolve({ workFlowId: this.flow.id });
       })
       .catch(err => {
-        console.error(`[Decider] responding decision for workflowId FAILED '${this.flow.id}'`, err);
-        console.error(`decisionTaskCompletedParams: ${JSON.stringify(this.decision.decisionTaskCompletedParams, null, 2)}`);
+        console.warn(`[Decider] responding decision for workflowId FAILED '${this.flow.id}'`, err);
+        console.warn(`decisionTaskCompletedParams: ${JSON.stringify(this.decision.decisionTaskCompletedParams, null, 2)}`);
         return Promise.reject(err);
       });
   }
@@ -255,7 +255,7 @@ class Decider {
     })
     .each(inspection => {
       if (!inspection.isFulfilled()) {
-        console.error('[Decider] Error: Failed check/act for a leg: ', inspection.reason());
+        console.warn('[Decider] Error: Failed check/act for a leg: ', inspection.reason());
         hasErrors = true;
       }
     })
@@ -357,8 +357,8 @@ class Decider {
         return Promise.resolve();
       })
       .catch(err => {
-        console.error('[Decider] Could not check leg!', err);
-        console.error(err.stack);
+        console.warn('[Decider] Could not check leg!', err);
+        console.warn(err.stack);
         return transaction.rollback()
           .then(() => Promise.reject(`error while checking leg '${leg.id}', err: ${err}`));
       });
@@ -389,7 +389,7 @@ class Decider {
         console.info(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
       })
       .catch(err => {
-        console.error(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
+        console.warn(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
       })
       .finally(() => {
         return Promise.resolve();

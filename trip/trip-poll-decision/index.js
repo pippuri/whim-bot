@@ -69,14 +69,14 @@ function pollForDecisionTasks(params) {
             console.info(`pollForDecisionTask() decider handled workflowId '${result.workFlowId}'`);
           })
           .catch(err => {
-            console.error('pollForDecisionTask() decider FAILED; ', err);
+            console.warn('pollForDecisionTask() decider FAILED; ', err);
           });
 
         return nextPoll();
 
       })
       .catch(err => {
-        console.error('pollForDecisionTask() polling or decision error', err);
+        console.warn('pollForDecisionTask() polling or decision error', err);
         return Promise.reject(err);
       });
   }

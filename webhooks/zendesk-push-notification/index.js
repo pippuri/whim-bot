@@ -85,15 +85,13 @@ function forwardPushNotification(event) {
 
   let successCount = 0;
   let failureCount = 0;
-  return Promise.all(platformEndpointList.map(promise => {
-    return promise.reflect();
-  }))
+  return Promise.all(platformEndpointList.map(promise => promise.reflect()))
   .each(inspection => {
     if (inspection.isFulfilled()) {
       console.info(inspection.value());
       successCount++;
     } else {
-      console.error('Push notfication error, ignoring:', inspection.reason());
+      console.warn(`Push notification error, ignoring: ${inspection.reason()}`);
       failureCount++;
     }
   })
