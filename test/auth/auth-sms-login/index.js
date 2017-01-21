@@ -41,7 +41,6 @@ module.exports = function () {
     });
 
     it('should not return empty', () => {
-      console.log(response);
       expect(response).to.have.property('id_token');
       expect(response).to.have.property('cognito_token');
       expect(response).to.have.property('zendesk_token');

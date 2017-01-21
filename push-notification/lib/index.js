@@ -182,7 +182,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
         // Clean up endpointArn from Amazon
         // and ignore error
         .then(() => {
-          console.log(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
+          console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
           return sns.deleteEndpoint({
             EndpointArn: endpointArn,
           })
@@ -260,7 +260,7 @@ function androidSendPushNotification(event, token) {
         // Clean up endpointArn from Amazon
         // and ignore error
         .then(() => {
-          console.log(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
+          console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
           return sns.deleteEndpoint({
             EndpointArn: endpointArn,
           })
