@@ -106,7 +106,7 @@ function sendPushNotification(event) {
 
           // If there are succeeded tokens, update their lastSuccess on Cognito
           if (succeededTokens.length > 0) {
-            console.log('[Push Notification] Updating working tokens');
+            console.info('[Push Notification] Updating working tokens');
             return lib.updateWorkingTokens(event.identityId, response.Records, succeededTokens, syncSessionToken)
               .then(() => Promise.resolve());
           }

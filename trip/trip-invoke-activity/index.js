@@ -32,12 +32,12 @@ function runActivityTask(event) {
   // TODO: set right stage within the call!
   return bus.call(flow.task.serviceName, flow.task.event)
     .then(result => {
-      console.error('Lambda invoke success, result', result);
+      console.warn('Lambda invoke success, result', result);
       response.result = result;
       return Promise.resolve(response);
     })
     .catch(err => {
-      console.error('Lambda invoke fail');
+      console.warn('Lambda invoke fail');
       return Promise.reject(err);
     });
 
