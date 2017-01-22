@@ -73,14 +73,10 @@ function calculateHSLfare(tspResponse, identityId) {
           return Promise.resolve(tspResponse.options);
         });
     })
-    .then(response => {
-      return models.Database.cleanup()
-        .then(() => Promise.resolve(response));
-    })
-    .catch(error => {
-      return models.Database.cleanup()
-        .then(() => Promise.reject(error));
-    });
+    .then(
+      response => models.Database.cleanup().then(() => response),
+      error => models.Database.cleanup().then(() => Promise.reject(error))
+    );
 }
 module.exports = {
   calculateHSLfare,

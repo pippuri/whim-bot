@@ -17,9 +17,6 @@ const Profile = require('../../../lib/business-objects/Profile');
 const Database = models.Database;
 
 module.exports = function (optionsLambda) {
-
-  before(() => Database.init());
-
   function runLambda(lambda, event) {
     return new Promise((resolve, reject) => {
       wrap(lambda).run(event, (error, response) => {
@@ -28,7 +25,7 @@ module.exports = function (optionsLambda) {
     });
   }
 
-  describe('create a MaaS Ticket booking for a day', function () {
+  describe('create a MaaS Ticket booking for a day', function () { //eslint-disable-line
     const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000007';
 
     let optionsResponse;
@@ -56,15 +53,11 @@ module.exports = function (optionsLambda) {
     });
 
     before(() => {
-      if (error) {
-        this.skip();
-      }
-
       // fetch user data to get account starting balance
-      return Profile.retrieve(testUserIdentity)
+      return Database.init()
+        .then(() => Profile.retrieve(testUserIdentity))
         .then(profile => (startingBalance = profile.balance));
     });
-
 
     it(`Lists the MaaS ticket options at '${moment(startTime).format('DD.MM.YYYY, HH:mm:ss Z')}'`, () => {
       event = {

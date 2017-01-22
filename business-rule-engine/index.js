@@ -41,14 +41,10 @@ function runRule(event) {
               return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
           }
         })
-        .then(response =>  Database.cleanup().then(() => Promise.resolve(response)))
-        .catch(error => {
-          return Database.cleanup()
-            .catch(_error => (error = _error))
-            .then(() => {
-              return Promise.reject(error);
-            });
-        });
+        .then(
+          response => Database.cleanup().then(() => response),
+          error => Database.cleanup().then(() => Promise.reject(error))
+        );
     default:
       return Promise.reject(new MaaSError('Unsupported rule ' + event.rule, 400));
   }

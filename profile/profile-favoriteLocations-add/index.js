@@ -1,9 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
-const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
+const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
+const Transaction = require('../../lib/business-objects/Transaction');
+const utils = require('../../lib/utils');
 
 function validateInput(event) {
 
@@ -18,27 +19,43 @@ function validateInput(event) {
   return Promise.resolve();
 }
 
+function formatResponse(profile) {
+  return {
+    profile: utils.sanitize(profile),
+    debug: {},
+  };
+}
+
 module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => validateInput(event))
-    .then(() => Profile.addFavoriteLocation(event.identityId, event.payload))
-    .then(profile => {
-      Database.cleanup()
-        .then(() => callback(null, profile));
+    .then(() => {
+      const identityId = event.identityId;
+      const transaction = new Transaction(identityId);
+      const location = event.payload;
+
+      return transaction.start()
+        .then(() => Profile.addFavoriteLocation(identityId, location, transaction))
+        .then(
+          results => transaction.commit().then(() => results),
+          error => transaction.rollback().then(() => Promise.reject(error))
+        );
     })
+    .then(
+      profile => Database.cleanup().then(() => formatResponse(profile)),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

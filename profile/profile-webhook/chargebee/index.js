@@ -104,7 +104,10 @@ function handlePayload(payload, key) {
 
   return Database.init()
     .then(db => handleEvent(payload, key))
-    .finally(() => Database.cleanup());
+    .then(
+      profile => Database.cleanup(),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    );
 }
 
 module.exports = {

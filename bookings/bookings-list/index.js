@@ -59,10 +59,10 @@ function parseAndValidateInput(event) {
 function formatResponse(bookings) {
   const trimmed = bookings.map(booking => utils.sanitize(booking.toObject()));
 
-  return Promise.resolve({
+  return {
     bookings: trimmed,
     maas: {},
-  });
+  };
 }
 
 module.exports.respond = (event, callback) => {
@@ -72,25 +72,21 @@ module.exports.respond = (event, callback) => {
     parseAndValidateInput(event),
   ])
     .spread((knex, parsed) => Booking.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
-    .then(bookings => formatResponse(bookings))
-    .then(response => {
-      Database.cleanup()
-        .then(() => callback(null, response));
-    })
+    .then(
+      bookings => Database.cleanup().then(() => formatResponse(bookings)),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      // Uncaught, unexpected error
-      Database.cleanup()
-      .then(() => {
-        if (_error instanceof MaaSError) {
-          callback(_error);
-          return;
-        }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-        callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-      });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

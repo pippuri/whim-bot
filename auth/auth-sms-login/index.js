@@ -1,16 +1,16 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
+const Database = require('../../lib/models/Database');
+const errors = require('../../lib/errors/index');
 const jwt = require('jsonwebtoken');
 const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
-
-const errors = require('../../lib/errors/index');
-const Database = require('../../lib/models/Database');
 const Profile = require('../../lib/business-objects/Profile');
+//const ProfileModel = require('../../lib/models/Profile');
+const Promise = require('bluebird');
 const Transaction = require('../../lib/business-objects/Transaction');
-const TransactionLog = require('../../lib/models/TransactionLog');
+//const TransactionLog = require('../../lib/models/TransactionLog');
 
 const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
@@ -78,7 +78,6 @@ function updateCognitoProfile(identityId, profile) {
           SyncCount: oldRecord ? oldRecord.SyncCount : 0,
         });
       }
-
     });
 
     if (patches.length > 0) {
@@ -163,6 +162,42 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
 }
 
 /**
+ * Synchronises transaction log with a profile balance.
+ */
+/*function syncTransactionLog(profile) {
+  const identityId = profile.identityId;
+  const transaction = new Transaction(identityId);
+
+  return transaction.start()
+    .then(() => transaction.bind(TransactionLog)
+      .query()
+      .where('identityId', identityId)
+    )
+    .then(logEntries => {
+      const transactionValueSum = logEntries.reduce((prev, curr) => prev + curr.value, 0);
+
+      // If the sum of all transaction record values does not equal the user
+      // profile balance, create a log entry to synchronize the records.
+      if (transactionValueSum !== profile.balance) {
+        console.warn(`[Auth login] transaction records values sum (${transactionValueSum}) does not equal to profile balance (${profile.balance})`);
+        transaction.type = Transaction.types.BALANCE_SYNC;
+        transaction.meta(ProfileModel.tableName, identityId);
+
+        const delta = profile.balance - transactionValueSum;
+        if (delta > 0) {
+          transaction.increaseValue(delta);
+        } else {
+          transaction.decreaseValue(-delta);
+        }
+
+        return transaction.commit('Balancing user balance with transaction records');
+      }
+      return transaction.rollback();
+    })
+    .catch(error => transaction.rollback().then(() => Promise.reject(error)));
+}*/
+
+/**
  * Login using a verification code sent by SMS.
  */
 function smsLogin(phone, code) {
@@ -203,43 +238,22 @@ function smsLogin(phone, code) {
     return Profile.retrieve(identityId)
       // There's a profile but no transaction found, create first log entry
       // to state the beginning user balance
-      .then(profile => {
-        const transaction = new Transaction(identityId);
-
-        return transaction.start()
-          .then(() => transaction.bind(TransactionLog).query().where('identityId', identityId))
-          .then(logEntries => {
-            const transactionValueSum = logEntries.reduce((prev, curr) => prev + curr.value, 0);
-            // If sum of all transaction records's value not equal to user profile balance, create a log to synchronize the records with the balance
-            if (transactionValueSum !== profile.balance) {
-              console.warn(`[Auth login] transaction records\'s value sum (${transactionValueSum}) not equal to profile balance (${profile.balance})`);
-              transaction.type = Transaction.types.BALANCE_SYNC;
-              transaction.increaseValue(profile.balance);
-              transaction.meta('Profile', identityId);
-              if (profile.balance - transactionValueSum > 0) {
-                transaction.increaseValue(profile.balance - transactionValueSum);
-              } else {
-                transaction.decreaseValue(transactionValueSum - profile.balance);
-              }
-              return transaction.commit('Balancing user balance with transaction records');
-            }
-            return transaction.rollback();
-          })
-          .catch(error => transaction.rollback().then(() => Promise.reject(error)));
-      })
+      // FIXME Syncing operation removed because it is heavy & biases logs
+      //.then(profile => syncTransactionLog(profile))
       // No profile found, create one
       .catch(error => {
         // Profile not exist error code is 404, if not 404, throw forward the error
-        if (error.code !== 404) return Promise.reject(error);
+        if (error.code !== 404) {
+          return Promise.reject(error);
+        }
 
         const transaction = new Transaction(identityId);
-        transaction.meta('Profile', identityId);
-
         return transaction.start()
-          .then(() => transaction.meta('Profile', identityId))
           .then(() => Profile.create(identityId, phone, transaction))
-          .then(() => transaction.commit('Profile created'))
-          .catch(() => transaction.rollback());
+          .then(
+            profile => transaction.commit('Profile created'),
+            error => transaction.rollback().then(() => Promise.reject(error))
+          );
       });
   })
   .then(() => {
@@ -261,23 +275,21 @@ function smsLogin(phone, code) {
 module.exports.respond = function (event, callback) {
   return Database.init()
     .then(() => smsLogin(`${event.phone}`, `${event.code}`))
-    .then(response => {
-      return Database.cleanup()
-        .then(() => callback(null, response));
-    })
+    .then(
+      response => Database.cleanup().then(() => response),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      return Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

@@ -141,11 +141,7 @@ module.exports = function (agencyOptionsLambda, createLambda, cancelLambda, retr
           const id = createResponse.booking.id;
           return models.Booking.query().delete().where( 'id', id);
         })
-        .then(() => Database.cleanup())
-        .catch(err => {
-          error = err;
-          return Promise.reject(err);
-        });
+        .then(() => Database.cleanup());
     });
   });
 };

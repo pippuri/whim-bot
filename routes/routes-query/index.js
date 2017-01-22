@@ -86,28 +86,25 @@ module.exports.respond = function (event, callback) {
     .then(() => _constructQuery(event.payload))
     .then(query => routesEngine.getRoutes(event.identityId, query))
     .then(response => filter.filterPastRoutes(event.payload.leaveAt, response))
-    .then(response => signResponse(response))
-    .then(response => {
-      Database.cleanup()
-        .then(() => callback(null, response));
-    })
+    .then(
+      response => Database.cleanup().then(() => signResponse(response)),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError || _error instanceof BusinessRuleError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          if (_error instanceof BusinessRuleError) {
-            callback(new MaaSError(_error));
-          }
+      if (_error instanceof BusinessRuleError) {
+        callback(new MaaSError(_error.message, _error.code));
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };

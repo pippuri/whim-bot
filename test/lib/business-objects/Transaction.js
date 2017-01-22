@@ -20,7 +20,6 @@ before(() => {
 });
 
 after(() => {
-
   const promise = Promise.resolve();
 
   return promise.then(() => TransactionLog.query().deleteById(logEntry.id))

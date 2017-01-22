@@ -1,11 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
+const Database = require('../../lib/models/Database');
+const Itinerary = require('../../lib/business-objects/Itinerary');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
-const models = require('../../lib/models');
-const Database = models.Database;
-const Itinerary = require('../../lib/business-objects/Itinerary');
 
 /**
  * Validates the input event to have identityId and itineraryId
@@ -26,10 +24,10 @@ function validateInput(event) {
 }
 
 function formatResponse(itinerary) {
-  return Promise.resolve({
+  return {
     itinerary: utils.sanitize(itinerary),
     maas: {},
-  });
+  };
 }
 
 module.exports.respond = (event, callback) => {
@@ -38,28 +36,21 @@ module.exports.respond = (event, callback) => {
     .then(() => validateInput(event))
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
-    .then(itinerary => formatResponse(itinerary.toObject()))
-    .then(response => {
-      Database.cleanup()
-        .then(() => callback(null, response));
-    })
+    .then(
+      itinerary => Database.cleanup().then(() => formatResponse(itinerary.toObject())),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      // Uncaught, unexpected error
-      Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
-
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
-
-
 };

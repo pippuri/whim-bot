@@ -1,9 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
-const MaaSError = require('../../lib/errors/MaaSError');
 const Database = require('../../lib/models/Database');
+const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
+const Transaction = require('../../lib/business-objects/Transaction');
+const utils = require('../../lib/utils');
 
 const EDITABLE_FIELDS = ['email', 'firstName', 'lastName', 'city', 'country',
 'zipCode', 'profileImageUrl'];
@@ -30,16 +31,11 @@ function validateInput(event) {
   return Promise.resolve();
 }
 
-function updateUserData(event) {
-  return Profile.update(event.identityId, event.payload)
-    .then(profile => {
-      return {
-        profile: profile,
-        debug: {
-          query: event,
-        },
-      };
-    });
+function formatResponse(profile) {
+  return {
+    profile: utils.sanitize(profile),
+    debug: {},
+  };
 }
 
 /**
@@ -48,24 +44,32 @@ function updateUserData(event) {
 module.exports.respond = (event, callback) => {
   return Database.init()
     .then(() => validateInput(event))
-    .then(() => updateUserData(event))
-    .then(profile => {
-      Database.cleanup()
-        .then(() => callback(null, profile));
+    .then(() => {
+      const identityId = event.identityId;
+      const transaction = new Transaction(identityId);
+
+      return transaction.start()
+        .then(() => Profile.update(identityId, event.payload, transaction))
+        .then(
+          results => transaction.commit().then(() => results),
+          error => transaction.rollback().then(() => Promise.reject(error))
+        );
     })
+    .then(
+      profile => Database.cleanup().then(() => formatResponse(profile)),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
+    .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
-      Database.cleanup()
-        .then(() => {
-          if (_error instanceof MaaSError) {
-            callback(_error);
-            return;
-          }
+      if (_error instanceof MaaSError) {
+        callback(_error);
+        return;
+      }
 
-          callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-        });
+      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
 };
