@@ -59,7 +59,7 @@ module.exports = function () {
 
   describe('auth-sms-full-flow', function () { //eslint-disable-line
     this.timeout(30000);
-    const PHONE = '3584573975566';
+    const PHONE = '+3584573975566';
 
     let error;
     let response1;
