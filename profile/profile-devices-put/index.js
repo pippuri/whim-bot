@@ -7,7 +7,6 @@ const validator = require('../../lib/validator');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/request.json');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
-
 Promise.promisifyAll(cognitoSync);
 
 function saveDeviceToken(event) {
@@ -17,42 +16,54 @@ function saveDeviceToken(event) {
     IdentityId: event.identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
   })
-  .then(response => {
-    const syncSessionToken = response.SyncSessionToken;
-
-    // Check if old device data exists to get the previous sync count
-    const oldRecord = response.Records.find(record => record.Key === event.payload.deviceIdentifier);
-
-    // Input device updates
-    const devices = {};
-    devices[event.payload.deviceIdentifier] = {
-      devicePushToken: event.payload.devicePushToken.replace(/\s/g, ''),
-      deviceType: event.payload.deviceType,
+  .then(records => {
+    const syncSessionToken = records.SyncSessionToken;
+    const newRecord = {
+      Key: event.payload.deviceIdentifier,
+      Value: {
+        devicePushToken: event.payload.devicePushToken.replace(/\s/g, ''),
+        deviceType: event.payload.deviceType,
+      },
     };
 
-    // Try to parse the new format
-    // then compare old and new tokens
-    try {
-      // Should the record in old format, either 1 of the following 2 lines should throw Error.
-      const devicePushToken = JSON.parse(oldRecord.Value).devicePushToken;
-      if (!devicePushToken) throw new Error('Old device not having device push token');
+    // Check if old device data exists to get the previous sync count
+    const oldRecord = records.Records.find(record => record.Key === newRecord.Key);
+    let tokenChanged = false;
 
-      // Check if token is unchanged, skip update
-      if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === JSON.parse(oldRecord.Value).devicePushToken) {
-        return Promise.resolve('Input device push token unchanged, skip update');
+    // Try to parse the new format; then compare old and new tokens
+    try {
+      // Fail in case of no record found
+      if (!oldRecord) {
+        throw new Error(`No record for the device ${newRecord.Key} exists.`);
       }
-    // Should any error happens, it should be because of the old format
+
+      const oldRecordNewFormat = {
+        Key: oldRecord.Key,
+        Value: JSON.parse(oldRecord.Value),
+      };
+
+      const oldToken = oldRecordNewFormat.Value.devicePushToken;
+      if (!oldToken || oldToken !== newRecord.Value.devicePushToken) {
+        tokenChanged = true;
+      }
     } catch (error) {
-      console.info(error);
-      // Not in the new format, fallback
-      console.info('Detect old device record format, fallback to auto format');
-      if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === oldRecord.devicePushToken) {
-        console.info('Input device push token unchanged, update format only');
-      } else {
-        console.info('Updating both token and format');
-      }
+      // Should any error happen, it should be because of the old format or
+      // missing record for this device -> create a record
+      console.info(`Force-refreshing a device token ${newRecord.Key}, reason: ${error.message}`);
+
+      tokenChanged = true;
     }
 
+    // Create the response we can serve
+    const device = Object.assign({ deviceIdentifier: newRecord.Key }, newRecord.Value);
+
+    // Check if synchronization to new token if needed - if not, return;
+    if (!tokenChanged) {
+      console.info('Token not changed, skipping update.');
+      return Promise.resolve(device);
+    }
+
+    console.info('Token changed, updating Cognito devices.');
     return cognitoSync.updateRecordsAsync({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
       IdentityId: event.identityId,
@@ -61,19 +72,27 @@ function saveDeviceToken(event) {
       RecordPatches: [
         {
           Op: 'replace',
-          Key: event.payload.deviceIdentifier,
-          Value: JSON.stringify(devices[event.payload.deviceIdentifier]),
+          Key: newRecord.Key,
+          Value: JSON.stringify(newRecord.Value),
           SyncCount: oldRecord ? oldRecord.SyncCount : 0,
         },
       ],
-    });
+    })
+    .then(() => device);
   });
+}
+
+function formatResponse(device) {
+  return {
+    device: device,
+    debug: {},
+  };
 }
 
 module.exports.respond = (event, callback) => {
   return validator.validate(requestSchema, event, { coerceTypes: true, useDefaults: true, sanitize: true })
     .then(() => saveDeviceToken(event))
-    .then(response => callback(null, response))
+    .then(device => callback(null, formatResponse(device)))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
