@@ -17,14 +17,6 @@ module.exports = {
     loaders: [
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.ts$|\.md$|\.jst$|\.def$/, loader: 'ignore-loader' },
-      {
-        test: /\.js$/,
-        exclude: /(node_modules)/,
-        loader: 'babel',
-        query: {
-          presets: ['es2015', 'es2016', 'es2017', 'stage-0'],
-        },
-      },
     ],
   },
   plugins: [
