@@ -24,7 +24,9 @@ function getAgencyProductOptions(event) {
       .then(points => {
         const annotated = utils.cloneDeep(product);
         delete annotated.cost;
-        annotated.fare = { amount: points, currency: 'POINT' };
+        // TODO: change to right format after client migrated!
+        //annotated.fare = { amount: points, currency: 'POINT' };
+        annotated.fare = points;
         return annotated;
       });
   })
