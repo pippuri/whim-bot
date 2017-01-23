@@ -46,6 +46,19 @@ function loadEnvironment() {
 }
 
 loadEnvironment();
+
+const originalConsole = { log: console.log };
+
+console.log = function () {
+  let args = Array.from(arguments);
+  args = args.filter(item => {
+    if (item !== null && typeof item !== 'undefined') {
+      return !item.toString().includes('WARNING: This variable is not defined:');
+    }
+    return true;
+  });
+  originalConsole.log.apply(null, args);
+};
 console.info = () => {};
 console.warn = () => {};
 
