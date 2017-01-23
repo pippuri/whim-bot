@@ -5,7 +5,6 @@ const AWS = require('aws-sdk');
 const MaaSError = require('../../lib/errors/MaaSError');
 const validator = require('../../lib/validator');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/request.json');
-const responseSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/response.json');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 
@@ -21,10 +20,9 @@ function saveDeviceToken(event) {
   .then(response => {
     const syncSessionToken = response.SyncSessionToken;
 
-    // Old records
-    const oldRecords = response.Records.map(record => {
-      return record;
-    });
+    // Check if old device data exists to get the previous sync count
+    const oldRecord = response.Records.find(record => record.Key === event.payload.deviceIdentifier);
+
     // Input device updates
     const devices = {};
     devices[event.payload.deviceIdentifier] = {
@@ -32,20 +30,26 @@ function saveDeviceToken(event) {
       deviceType: event.payload.deviceType,
     };
 
-    // check if old device data exists to get the previous sync count
-    const oldRecord = oldRecords.find(record => record.Key === event.payload.deviceIdentifier);
-
+    // Try to parse the new format
+    // then compare old and new tokens
     try {
+      // Should the record in old format, either 1 of the following 2 lines should throw Error.
       const devicePushToken = JSON.parse(oldRecord.Value).devicePushToken;
-      if (!devicePushToken) throw new Error('Old device format detected');
+      if (!devicePushToken) throw new Error('Old device not having device push token');
+
+      // Check if token is unchanged, skip update
       if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === JSON.parse(oldRecord.Value).devicePushToken) {
         return Promise.resolve('Input device push token unchanged, skip update');
       }
+    // Should any error happens, it should be because of the old format
     } catch (error) {
+      console.info(error);
       // Not in the new format, fallback
-      console.warn('[Push notification] Detect old device record format, fallback to auto format');
+      console.info('Detect old device record format, fallback to auto format');
       if (oldRecord && devices[event.payload.deviceIdentifier].devicePushToken === oldRecord.devicePushToken) {
         console.info('Input device push token unchanged, update format only');
+      } else {
+        console.info('Updating both token and format');
       }
     }
 
@@ -69,15 +73,6 @@ function saveDeviceToken(event) {
 module.exports.respond = (event, callback) => {
   return validator.validate(requestSchema, event, { coerceTypes: true, useDefaults: true, sanitize: true })
     .then(() => saveDeviceToken(event))
-    .then(response => {
-      return validator.validate(responseSchema, response)
-        .catch(error => {
-          console.warn('[Push Notification] Warning; Response validation failed, but responding with success');
-          console.warn('[Push Notification] Errors:', error.message);
-          console.warn('[Push Notification] Response:', JSON.stringify(error.object, null, 2));
-          return Promise.resolve(response);
-        });
-    })
     .then(response => callback(null, response))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
