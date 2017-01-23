@@ -52,7 +52,8 @@
     "serverless-plugin-revision",
     "serverless-client-s3",
     "serverless-slack-plugin",
-    "serverless-header-function"
+    "serverless-header-function",
+    "serverless-repl-plugin"
   ],
   "version": "0.1.0",
   "profile": "serverless-v0.4.2",

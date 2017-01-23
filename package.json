@@ -108,6 +108,7 @@
     "serverless-slack-plugin": "https://github.com/blackevil245/serverless-slack-plugin",
     "serverless-webpack-plugin": "^0.4.5",
     "serverless-wrapper-plugin": "https://github.com/maasglobal/serverless-wrapper-plugin",
+    "serverless-repl-plugin": "https://github.com/maasglobal/serverless-repl-plugin",
     "sinon": "^1.17.5",
     "swagger-schema-official": "^2.0.0-bab6bed",
     "swagger-ui": "^2.2.5",
