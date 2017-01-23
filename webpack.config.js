@@ -1,7 +1,6 @@
 'use strict';
 
 const webpack = require('webpack');
-const CompressionPlugin = require('compression-webpack-plugin');
 
 module.exports = {
   target: 'node',
@@ -58,13 +57,6 @@ module.exports = {
     //   },
     //   test: /\.js$/i,
     //   exclude: [/\.min\.js$/gi], // skip pre-minified libs
-    // }),
-
-    new CompressionPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: /\.js$|\.json$/,
-      minRatio: 0,
-    }),
+    // })
   ],
 };

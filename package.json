@@ -75,7 +75,6 @@
     "aws-sdk": "^2.6.7",
     "chai": "^3.5.0",
     "commander": "^2.9.0",
-    "compression-webpack-plugin": "^0.3.2",
     "del": "^2.2.2",
     "eslint": "^2.13.1",
     "eslint-config-airbnb": "^9.0.1",
