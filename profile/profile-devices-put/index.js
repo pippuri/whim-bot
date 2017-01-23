@@ -37,8 +37,6 @@ function saveDeviceToken(event) {
         throw new Error(`No record for the device ${newRecord.Key} exists.`);
       }
 
-      // Should the record be in old format, either 1 of the following 2 lines
-      // should throw an Error.
       const oldRecordNewFormat = {
         Key: oldRecord.Key,
         Value: JSON.parse(oldRecord.Value),
