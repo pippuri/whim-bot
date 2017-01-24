@@ -3,6 +3,7 @@
     "name": "Pay as you go",
     "description": "Pay as you go - nothing included",
     "points": 0,
+    "image": "https://staticfiles.maas.global/package-images/Package_PayG.png",
     "plan": {
       "id": "fi-whim-payg"
     },
@@ -24,6 +25,7 @@
     "name": "Light",
     "description": "Light package with 1000p included",
     "points": 1000,
+    "image": "https://staticfiles.maas.global/package-images/Package_Light.png",
     "plan": {
       "id": "fi-whim-light"
     },
@@ -45,6 +47,7 @@
     "name": "Medium",
     "description": "Medium package with 5500p included, campaign price",
     "points": 5500,
+    "image": "https://staticfiles.maas.global/package-images/Package_Medium.png",
     "plan": {
       "id": "fi-whim-medium"
     },
@@ -67,6 +70,7 @@
     "name": "Premium",
     "description": "Premium package with 8000p included",
     "points": 8000,
+    "image": "https://staticfiles.maas.global/package-images/Package_Premium.png",
     "plan": {
       "id": "fi-whim-premium"
     },
