@@ -860,6 +860,15 @@ module.exports = function () {
       expect(pre.zipCode).to.equal(post.zipCode);
     });
 
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.status).to.be.defined;
+    });
+
     it('paymentMethod.status should be updated to `valid`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
@@ -929,6 +938,15 @@ module.exports = function () {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
       expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.status).to.be.defined;
     });
 
     it('paymentMethod.status should be updated to `valid`', () => {
@@ -1002,6 +1020,15 @@ module.exports = function () {
       expect(pre.zipCode).to.equal(post.zipCode);
     });
 
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.status).to.be.defined;
+    });
+
     it('paymentMethod.status should be updated to `valid`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
@@ -1073,6 +1100,15 @@ module.exports = function () {
       expect(pre.zipCode).to.equal(post.zipCode);
     });
 
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.status).to.be.defined;
+    });
+
     it('paymentMethod.status should be updated to `invalid`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
@@ -1142,6 +1178,15 @@ module.exports = function () {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
       expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.status).to.be.defined;
     });
 
     it('paymentMethod.status should be updated to `invalid`', () => {
