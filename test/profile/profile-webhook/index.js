@@ -993,7 +993,6 @@ module.exports = function () {
     });
 
     it('the response should NOT contain an error', () => {
-console.log('KONK0', response);
       expect(response).to.not.include.key(errors.errorMessageFieldName);
     });
 
