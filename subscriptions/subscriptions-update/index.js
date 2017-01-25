@@ -90,7 +90,7 @@ module.exports.respond = function (event, callback) {
           true,
           replace
         ))
-        .catch(error => xa.rollback().then(Promise.reject(error)))
+        .catch(error => xa.rollback().then(() => Promise.reject(error)))
         .then(updated => {
           // Special case: Check if we had any top-up points that would need to
           // be updated immediately. They don't show up in updated subscription.
