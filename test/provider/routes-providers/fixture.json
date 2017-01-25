@@ -80,6 +80,29 @@
       }
     },
     {
+      "name": "Taxi route from Humalistonkatu 17 to Urho Kekkosen katu 3",
+      "input": {
+        "modes": "TAXI",
+        "from": "60.1828182,24.9172386",
+        "fromName": "Humalistonkatu 17",
+        "to": "60.1681956,24.9315358",
+        "toName": "Urho Kekkosen katu 3",
+        "startTime": "1484316160420",
+        "leaveAt": 1475406000000
+      },
+      "results": {
+        "pass": true,
+        "modes": "WAIT,WALK,TAXI"
+      },
+      "resultsModifiers": {
+        "Valopilkku": {
+          "fromName": "Humalistonkatu 17",
+          "toName": "Urho Kekkosen katu 3"
+        }
+      }
+
+    },
+    {
       "name": "Ludviginkatu 10 to Hervanta",
       "input": {
         "from": "60.16745770000001,24.931074800000033",

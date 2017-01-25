@@ -20,7 +20,9 @@ function parseAndValidateInput(event) {
   const identityId = event.identityId;
   const mode = (utils.isEmptyValue(event.mode)) ? undefined : event.mode;
   const from = (utils.isEmptyValue(event.from)) ? undefined : event.from.split(',').map(parseFloat);
+  const fromName = (utils.isEmptyValue(event.fromName)) ? undefined : event.fromName;
   const to = (utils.isEmptyValue(event.to)) ? undefined : event.to.split(',').map(parseFloat);
+  const toName = (utils.isEmptyValue(event.toName)) ? undefined : event.toName;
   const agencyId = (utils.isEmptyValue(event.agencyId)) ? undefined : event.agencyId;
   const startTime = (utils.isEmptyValue(event.startTime)) ? undefined : parseInt(event.startTime, 10);
   const endTime = (utils.isEmptyValue(event.endTime)) ? undefined : parseInt(event.endTime, 10);
@@ -75,7 +77,9 @@ function parseAndValidateInput(event) {
     agencyId,
     mode,
     from,
+    fromName,
     to,
+    toName,
     fromRadius,
     toRadius,
     startTime,
@@ -89,7 +93,9 @@ function getAgencyProductOptions(event) {
     return tsp.query({
       mode: event.mode,
       from: event.from,
+      fromName: event.fromName,
       to: event.to,
+      toName: event.toName,
       startTime: event.startTime,
       endTime: event.endTime,
       fromRadius: event.fromRadius,
