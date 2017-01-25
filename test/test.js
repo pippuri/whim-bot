@@ -5,7 +5,7 @@ const dbUtils = require('./db');
 
 function loadEnvironment() {
   // The stages we can run tests against in priority order - always fallback to dev
-  const stages = ['local', 'dev', 'test'];
+  const stages = ['dev', 'test'];
   const dataCenter = 'euwest1';
 
   // Check the stage from the existence of meta sync file
