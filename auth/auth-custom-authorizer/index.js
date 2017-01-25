@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 
 // arn:aws:execute-api:<regionId>:<accountId>:<apiId>/<stage>/<method>/<resourcePath>
 // First capture group denotes the real resource, e.g. PUT/tracking/user-location
-const arnRE = /^(arn:aws:execute-api:[\w\-]+:\d{12}:[\w]+\/[\w]+\/)([\w\-\s\/]+)+$/;
+const arnRE = /^(arn:aws:execute-api:[\w\-]+:\d{12}:[\w]+\/[\w]+\/)([\S/]+)+$/;
 const identityIdRE = /^[aepus]{2}-[\w]{4}-\d:[a-f\d]{8}(-[a-f\d]{4}){3}-[a-f\d]{12}$/;
 const authRE = /^Bearer ([^\s]+)$/;
 

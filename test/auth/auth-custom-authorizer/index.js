@@ -26,6 +26,12 @@ const validResponse = {
     ],
   },
 };
+const complexARNEvent = {
+  type: 'TOKEN',
+  authorizationToken: auth,
+  methodArn: 'arn:aws:execute-api:eu-west-1:756207178743:ddupr31jie/dev/PUT/subscriptions/eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95',
+};
+
 
 // Lambda runner that replaces service-bus. We need to have our own wrapper,
 // so that we can reject with a non-error
@@ -44,7 +50,6 @@ function runLambda(lambda, event) {
     lambda.handler(event, context);
   });
 }
-
 
 describe('auth-custom-authorizer', () => {
   it('Returns a valid policy on valid token', () => {
@@ -102,6 +107,13 @@ describe('auth-custom-authorizer', () => {
         response => (expect(response).to.not.exist),
         error => (expect(error.message).to.equal('Unauthorized'))
       );
+  });
+
+  it('Returns a valid policy on a complex ARN', () => {
+    return runLambda(lambda, complexARNEvent)
+      .then(response => {
+        expect(response).to.deep.equal(validResponse);
+      });
   });
 
   it('Returns \'Unauthorized\' on empty event', () => {
