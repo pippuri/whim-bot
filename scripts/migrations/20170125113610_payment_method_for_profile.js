@@ -6,7 +6,7 @@ exports.up = function (knex) {
     .table('Profile', table => {
       table.jsonb('paymentMethod')
            .notNullable()
-           .defaultsTo(knex.raw(`'{}'::JSONB`));
+           .defaultsTo(knex.raw('\'{}\'::JSONB'));
     });
 };
 
