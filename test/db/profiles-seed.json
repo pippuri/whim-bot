@@ -17,6 +17,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -38,6 +39,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -59,6 +61,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -80,6 +83,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -101,6 +105,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -122,6 +127,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -143,6 +149,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -164,6 +171,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -185,6 +193,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -206,6 +215,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -227,6 +237,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -248,6 +259,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -269,6 +281,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -290,6 +303,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -311,6 +325,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   },
@@ -327,6 +342,7 @@
     "country": "Finland",
     "zipCode": "00100",
     "profileImageUrl": null,
+    "paymentMethod": {},
     "created": "2016-10-13T14:01:10.611552+00:00",
     "modified": null
   }

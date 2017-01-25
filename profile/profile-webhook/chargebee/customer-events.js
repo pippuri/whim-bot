@@ -12,7 +12,7 @@ function handle(payload, key) {
   const customer = content.customer;
   const identityId = customer.id;
   const address = customer.billing_address || {};
-  const method = customer.paymentMethod || {};
+  const method = customer.payment_method || {};
   const custo = SubscriptionManager.fromChargebeeAddress(address, identityId, method);
   const xa = new Transaction(identityId);
 

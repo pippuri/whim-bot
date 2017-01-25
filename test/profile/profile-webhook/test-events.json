@@ -1207,9 +1207,7 @@
           "webhook_status": "succeeded",
           "object": "webhook"
       }]
-    }
-  },
-  "default": {
+    },
     "card_deleted": {
       "id": "ev_IG5ryk8PzdApr0nvP",
       "occurred_at": 1476468852,
@@ -1257,7 +1255,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "KyVqlqPh8DXQV1",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
               "first_name": "Benjamin",
               "last_name": "Ross",
               "email": "Benjamin@test.com",
@@ -1279,7 +1277,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "KyVqlqPh8DXQV1",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000022",
               "status": "expired",
               "gateway": "chargebee",
               "iin": "411111",
@@ -1302,7 +1300,7 @@
       "api_version": "v2",
       "content": {
           "customer": {
-              "id": "KyVqlqPh8DXQV1",
+              "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000021",
               "first_name": "Benjamin",
               "last_name": "Ross",
               "email": "Benjamin@test.com",
@@ -1324,7 +1322,7 @@
               "excess_payments": 0
           },
           "card": {
-              "customer_id": "KyVqlqPh8DXQV1",
+              "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000021",
               "status": "expiring",
               "gateway": "chargebee",
               "iin": "411111",
@@ -1338,7 +1336,9 @@
       },
       "event_type": "card_expiry_reminder",
       "webhook_status": "not_configured"
-    },
+    }
+  },
+  "default": {
     "credit_note_created": {
       "id": "ev_2rprAVcpPsLePX3bZ1",
       "occurred_at": 1469796996,
