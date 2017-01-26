@@ -32,7 +32,7 @@ module.exports.respond = function (event, callback) {
     .then(_parsed => (parsed = _parsed))
     .then(() => validatePermissions(parsed.customerId, parsed.userId))
     .then(() => {
-      const subscription = parsed.payload;
+      const subscription = SubscriptionManager.fromSubscriptionOption(parsed.payload);
       const customerId = parsed.customerId;
       const userId = parsed.userId;
       const replace = parsed.replace;
