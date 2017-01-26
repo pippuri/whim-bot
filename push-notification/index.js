@@ -131,7 +131,7 @@ module.exports.respond = (event, callback) => {
     .then(() => validator.validate(requestSchema, event))
     .catch(ValidationError, error => Promise.reject(new MaaSError(`Input validation error: ${error.message}`, 400)))
     .then(validated => sendPushNotification(validated))
-    .then(response => callback(null, response))
+    .then(response => callback(null, 'Push notification finished'))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
