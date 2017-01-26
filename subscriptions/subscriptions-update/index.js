@@ -62,25 +62,6 @@ function validateLogicConflicts(subscription, replace) {
   return Promise.resolve(subscription);
 }
 
-/**
- * Converts the input from subscription option format to subscription format
- *
- * @param {object} - option Subscription option (event payload)
- * @return {object} subscription that is parsed from the option
- */
-function parseSubscriptionFromOption(option) {
-  const subscription = {
-    addons: (option.addons || []).map(a => ({ id: a.id, quantity: a.quantity })),
-    coupons: (option.coupons || []).map(c => ({ id: c.id })),
-  };
-
-  if (typeof option.plan === 'object') {
-    subscription.plan =  { id: option.plan.id };
-  }
-
-  return subscription;
-}
-
 module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
@@ -93,7 +74,10 @@ module.exports.respond = function (event, callback) {
     .then(() => validator.validate(schema, event, validationOptions))
     .then(_validated => (validated = _validated))
     .then(() => validatePermissions(validated.customerId, validated.userId))
-    .then(() => validateLogicConflicts(parseSubscriptionFromOption(validated.payload, validated.replace)))
+    .then(() => {
+      const subs = SubscriptionManager.fromSubscriptionOption(validated.payload);
+      return validateLogicConflicts(subs, validated.replace);
+    })
     .then(subscription => {
       const customerId = validated.customerId;
       const userId = validated.userId;
