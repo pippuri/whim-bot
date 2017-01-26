@@ -23,7 +23,7 @@
       "requestTemplates": {
         "application/json": {
           "customerId": "$context.authorizer.principalId",
-          "userId": "$input.params('userId')",  
+          "userId": "$input.params('userId')",
           "replace": "$input.params('replace')",
           "payload": "$input.json('$')"
         }
@@ -34,9 +34,6 @@
         },
         "^403.*": {
           "statusCode": "403"
-        },
-        "^401.*": {
-          "statusCode": "401"
         },
         "^404.*": {
           "statusCode": "404"
