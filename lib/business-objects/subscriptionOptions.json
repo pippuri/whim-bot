@@ -5,14 +5,6 @@
       "id": "fi-whim-payg"
     },
     "addons": [
-      {
-        "id": "fi-hsl-helsinki",
-        "quantity": 1
-      },
-      {
-        "id": "fi-hsl-seutu",
-        "quantity": 1
-      }
     ],
     "meta":{
       "name": "Pay per ride",
@@ -30,14 +22,6 @@
       "id": "fi-whim-light"
     },
     "addons": [
-      {
-        "id": "fi-hsl-helsinki",
-        "quantity": 1
-      },
-      {
-        "id": "fi-hsl-seutu",
-        "quantity": 1
-      }
     ],
     "meta": {
       "name": "Light",
@@ -55,14 +39,6 @@
       "id": "fi-whim-medium"
     },
     "addons": [
-      {
-        "id": "fi-hsl-helsinki",
-        "quantity": 1
-      },
-      {
-        "id": "fi-hsl-seutu",
-        "quantity": 1
-      }
     ],
     "coupons": [{ "id": "WHIM100EUR" }],
     "meta": {
@@ -81,14 +57,6 @@
       "id": "fi-whim-premium"
     },
     "addons": [
-      {
-        "id": "fi-hsl-helsinki",
-        "quantity": 1
-      },
-      {
-        "id": "fi-hsl-seutu",
-        "quantity": 1
-      }
     ],
     "meta": {
       "name": "Premium",
