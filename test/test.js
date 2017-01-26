@@ -78,13 +78,6 @@ before(() => {
     .then(() => dbUtils.shutdown());
 });
 
-// Remove transaction log entries from DB
-after(() => {
-  return dbUtils.init()
-    .then(() => dbUtils.removeTestTransactionLog())
-    .then(() => dbUtils.shutdown());
-});
-
 // The actual suite
 require('./lib');
 require('./auth');
@@ -95,3 +88,13 @@ require('./api');
 
 // Tests for DB performance of the past operations
 require('./db/test-statistics');
+
+// Somehow mocha fails silently if we do these in after hook
+// See https://github.com/sindresorhus/gulp-mocha/issues/129
+describe('DB Shutdown', () => {
+  it('Shuts down properly', () => {
+    return dbUtils.init()
+      .then(() => dbUtils.removeTestTransactionLog())
+      .then(() => dbUtils.shutdown());
+  });
+});
