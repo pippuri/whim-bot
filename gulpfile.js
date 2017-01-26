@@ -1,7 +1,6 @@
 'use strict';
 
 const del = require('del');
-const shell = require('gulp-shell');
 const eslint = require('gulp-eslint');
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
@@ -57,8 +56,6 @@ gulp.task('copy:json-schemas', () => {
     .pipe(gulp.dest('www/apidocs.maas.global/api/maas-backend/'));
 });
 
-gulp.task('check-vars', [], shell.task('./scripts/check-env-vars.sh'));
-
 gulp.task('pre-mocha', () => {
   return gulp.src(jsFiles)
     .pipe(istanbul())
@@ -75,7 +72,7 @@ gulp.task('mocha', ['pre-mocha'], () => {
 });
 
 gulp.task('validate', ['jsonclint', 'jsonlint', 'eslint']);
-gulp.task('test', gulpSequence('check-vars', 'validate', 'mocha'));
+gulp.task('test', gulpSequence('validate', 'mocha'));
 gulp.task('build:swagger', gulpSequence('clean:swagger', ['copy:swagger-ui', 'copy:json-schemas']));
 
 gulp.task('default');
