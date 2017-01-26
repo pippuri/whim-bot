@@ -4,9 +4,8 @@ const del = require('del');
 const eslint = require('gulp-eslint');
 const gmocha = require('gulp-mocha');
 const gulpSequence = require('gulp-sequence');
-const gutil = require('gulp-util');
 const gulp = require('gulp');
-const istanbul = require('gulp-istanbul');
+//const istanbul = require('gulp-istanbul');
 const jsonlint = require('gulp-jsonlint');
 const jsonclint = require('gulp-json-lint');
 
@@ -56,19 +55,19 @@ gulp.task('copy:json-schemas', () => {
     .pipe(gulp.dest('www/apidocs.maas.global/api/maas-backend/'));
 });
 
-gulp.task('pre-mocha', () => {
+/*gulp.task('pre-mocha', () => {
   return gulp.src(jsFiles)
     .pipe(istanbul())
     .pipe(istanbul.hookRequire());
-});
+});*/
 
-gulp.task('mocha', ['pre-mocha'], () => {
+gulp.task('mocha'/*, ['pre-mocha']*/, () => {
   return gulp.src('test/test.js', { read: false })
-    .pipe(gmocha({ timeout: 20000 }))
-    .pipe(istanbul.writeReports())
-    .on('error', gutil.log);
+    .pipe(gmocha({ timeout: 20000 }));
+    //.on('error', gutil.log);
+    //.pipe(istanbul.writeReports())
     // Skip thresholds until we have more coverage
-    //.pipe(istanbul.enforceThresholds({ thresholds: { global: 90 } }))
+    //.pipe(istanbul.enforceThresholds({ thresholds: { global: 50 } }));
 });
 
 gulp.task('validate', ['jsonclint', 'jsonlint', 'eslint']);
