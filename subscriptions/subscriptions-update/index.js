@@ -109,6 +109,7 @@ module.exports.respond = function (event, callback) {
             .then(() => updated);
         });
     })
+    .then(subscription => SubscriptionManager.annotateSubscription(subscription))
     .then(subs => ({ subscription: subs, debug: { event: event } }))
     .then(results => callback(null, utils.sanitize(results)))
     .catch(_error => {
