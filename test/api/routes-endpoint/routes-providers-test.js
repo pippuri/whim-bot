@@ -40,7 +40,7 @@ module.exports = function () {
       expect(response.PUBLIC_TRANSIT).to.be.an('array');
       expect(response.PUBLIC_TRANSIT.length).to.be.at.least(2);
       expect(response.TAXI).to.be.an('array');
-      expect(response.TAXI.length).to.be.at.least(2);
+      expect(response.TAXI.length).to.be.at.least(1);
     });
   });
 };
