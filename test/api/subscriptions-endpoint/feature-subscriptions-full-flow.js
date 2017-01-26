@@ -113,7 +113,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
 
   it('Contains Medium package costing 100 with HSL Helsinki on discount', () => {
     const pkg = listSubscriptionOptionsResponse.options.find(opt => {
-      return opt.name === 'Medium';
+      return opt.meta.name === 'Medium';
     });
     expect(pkg).to.exist;
 

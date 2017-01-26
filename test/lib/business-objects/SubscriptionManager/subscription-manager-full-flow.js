@@ -87,7 +87,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
 
   it('Contains Medium package that costs 100€ with HSL Helsinki & discounts', () => {
     const pkg = listSubscriptionOptionsResponse.find(opt => {
-      return opt.name === 'Medium';
+      return opt.meta.name === 'Medium';
     });
     expect(pkg).to.exist;
 
@@ -147,7 +147,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
 
   it('Creates a new Medium subscription with Helsinki regional', () => {
     const pkg = listSubscriptionOptionsResponse.find(opt => {
-      return opt.name === 'Medium';
+      return opt.meta.name === 'Medium';
     });
     expect(pkg).to.exist;
     const subs = {
