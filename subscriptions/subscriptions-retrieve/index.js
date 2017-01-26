@@ -31,7 +31,8 @@ module.exports.respond = function (event, callback) {
     .then(() => validatePermissions(parsed.customerId, parsed.userId))
     .then(() => {
       const userId = parsed.userId;
-      return SubscriptionManager.retrieveSubscriptionByUserId(userId);
+      return SubscriptionManager.retrieveSubscriptionByUserId(userId)
+        .then(subscription => SubscriptionManager.annotateSubscription(subscription));
     })
     .then(subs => ({ subscription: subs, debug: { event: event } }))
     .then(results => callback(null, utils.sanitize(results)))
