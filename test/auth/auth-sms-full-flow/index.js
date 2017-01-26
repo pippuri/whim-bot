@@ -5,6 +5,7 @@ const expect = require('chai').expect;
 
 const Database = require('../../../lib/models/Database');
 const Profile = require('../../../lib/business-objects/Profile');
+const Transaction = require('../../../lib/business-objects/Transaction');
 
 const AUTH_REQUEST_CODE_LAMBDA = 'MaaS-auth-sms-request-code';
 const AUTH_LOGIN_LAMBDA = 'MaaS-auth-sms-login';
@@ -58,7 +59,7 @@ function _extractAuthCodeFromSms(sms) {
 module.exports = function () {
 
   describe('auth-sms-full-flow', function () { //eslint-disable-line
-    this.timeout(30000);
+    this.timeout(40000);
     const PHONE = '+3584573975566';
 
     let error;
@@ -115,8 +116,12 @@ module.exports = function () {
           return data;
         })
         .then(data => {
+          const transaction = new Transaction(data.cognito_id);
+
           // Delete this profile so that it's a "clean slate" for next time the test is run
-          return Profile.deletePermanently(data.cognito_id);
+          return transaction.start()
+            .then(() => Profile.delete(data.cognito_id, transaction))
+            .then(() => transaction.commit());
         })
         .then(() => {
           return Database.cleanup();
