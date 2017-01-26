@@ -2,14 +2,41 @@
   "customerId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
   "userId": "eu-west-1:00000000-dead-dead-eaea-000000000000",
   "payload": {
+    "points": 8000,
     "plan": {
-      "id": "fi-whim-premium"
+        "id": "fi-whim-premium",
+        "price": {
+            "amount": 317,
+            "taxes": 28.82,
+            "currency": "EUR"
+        }
     },
     "addons": [
-      {
-        "id": "fi-hsl-seutu",
-        "quantity": 1
-      }
-    ]
+        {
+            "id": "fi-hsl-helsinki",
+            "quantity": 1,
+            "unitPrice": {
+                "amount": 0,
+                "taxes": 0,
+                "currency": "EUR"
+            }
+        },
+        {
+            "id": "fi-hsl-seutu",
+            "quantity": 1,
+            "unitPrice": {
+                "amount": 100,
+                "taxes": 9.09,
+                "currency": "EUR"
+            }
+        }
+    ],
+    "meta": {
+        "name": "Premium",
+        "synopsis": "Frequent transport user, such as a business traveller",
+        "description": "The Premium travel package includes 9000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
+        "image": "https://staticfiles.maas.global/package-images/Package_Premium.png"
+    },
+    "discounts": []
   }
 }

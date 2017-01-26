@@ -34,17 +34,17 @@ function validatePermissions(customerId, userId) {
  * check the current user subscription and that the addons fit the
  * addons available in subscription options.
  *
- * @param {object} event - The subscription event to validate
+ * @param {object} subscription - The subscription to validate
+ * @param {boolean} replace - Whether or not we should replace the entire subscription
  * @return {Promise<object|ValidationError>} the validated subscription
  */
-function validateLogicConflicts(event) {
-  const subscription = event.payload;
+function validateLogicConflicts(subscription, replace) {
   const addons = subscription.addons || [];
   const topupId = SubscriptionManager.TOPUP_ID;
   const containsTopUp = subscription.addons.some(addon => addon.id === topupId);
 
   // Top-ups cannot replace the other add-ons
-  if (containsTopUp && event.replace) {
+  if (containsTopUp && replace === true) {
     const message = 'Top-up cannot replace the other purchases';
     return Promise.reject(ValidationError.fromValue('.', subscription, message,
       subscription));
@@ -62,24 +62,42 @@ function validateLogicConflicts(event) {
   return Promise.resolve(subscription);
 }
 
+/**
+ * Converts the input from subscription option format to subscription format
+ *
+ * @param {object} - option Subscription option (event payload)
+ * @return {object} subscription that is parsed from the option
+ */
+function parseSubscriptionFromOption(option) {
+  const subscription = {
+    addons: (option.addons || []).map(a => ({ id: a.id, quantity: a.quantity })),
+    coupons: (option.coupons || []).map(c => ({ id: c.id })),
+  };
+
+  if (typeof option.plan === 'object') {
+    subscription.plan =  { id: option.plan.id };
+  }
+
+  return subscription;
+}
+
 module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
     useDefaults: true,
     sanitize: true,
   };
-  let parsed;
+  let validated;
 
-  return validator.validate(schema, event, validationOptions)
-    .then(_parsed => (parsed = _parsed))
-    .then(() => validatePermissions(parsed.customerId, parsed.userId))
-    .then(() => validateLogicConflicts(parsed))
-    .then(() => Database.init())
-    .then(() => {
-      const subscription = parsed.payload;
-      const customerId = parsed.customerId;
-      const userId = parsed.userId;
-      const replace = parsed.replace;
+  return Database.init()
+    .then(() => validator.validate(schema, event, validationOptions))
+    .then(_validated => (validated = _validated))
+    .then(() => validatePermissions(validated.customerId, validated.userId))
+    .then(() => validateLogicConflicts(parseSubscriptionFromOption(validated.payload, validated.replace)))
+    .then(subscription => {
+      const customerId = validated.customerId;
+      const userId = validated.userId;
+      const replace = validated.replace;
 
       const xa = new Transaction(userId);
       return xa.start()
@@ -111,6 +129,10 @@ module.exports.respond = function (event, callback) {
     })
     .then(subscription => SubscriptionManager.annotateSubscription(subscription))
     .then(subs => ({ subscription: subs, debug: { event: event } }))
+    .then(
+      results => Database.cleanup().then(() => results),
+      error => Database.cleanup().then(() => Promise.reject(error))
+    )
     .then(results => callback(null, utils.sanitize(results)))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
@@ -128,10 +150,5 @@ module.exports.respond = function (event, callback) {
       }
 
       callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    })
-    // Always cleanup database in the end
-    .then(
-      () => Database.cleanup(),
-      () => Database.cleanup()
-    );
+    });
 };
