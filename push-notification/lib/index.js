@@ -4,10 +4,12 @@ const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const sns = new AWS.SNS({ region: process.env.AWS_REGION });
+
 Promise.promisifyAll(sns);
 Promise.promisifyAll(cognitoSync);
 
 const APNS_ARN = process.env.APNS_ARN;
+const APNS_ARN_SANDBOX = process.env.APNS_ARN_SANDBOX;
 const GCM_ARN = process.env.GCM_ARN;
 
 /**
@@ -47,10 +49,11 @@ function groupRecordsByType(recordSet) {
  * @return {Object} response
  */
 function removeOldPushTokens(identityId, recordSet, tokens, syncSessionToken) {
-  const oldTokens = tokens.filter(token => {
-    const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
-    return JSON.parse(record.Value).lastSuccess && Date.now() - JSON.parse(record.Value).lastSuccess > 7 * 60 * 60 * 1000;
-  });
+  const oldTokens = tokens
+    .filter(token => {
+      const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
+      return JSON.parse(record.Value).lastSuccess && Date.now() - JSON.parse(record.Value).lastSuccess > 7 * 60 * 60 * 1000;
+    });
 
   return cognitoSync.updateRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
@@ -62,7 +65,7 @@ function removeOldPushTokens(identityId, recordSet, tokens, syncSessionToken) {
       return {
         Op: 'remove',
         Key: record.Key,
-        SyncCount: record ? record.SyncCount : 0,
+        SyncCount: record.SyncCount,
       };
     }),
   })
@@ -97,13 +100,13 @@ function updateWorkingTokens(identityId, recordSet, tokens, syncSessionToken) {
         Op: 'replace',
         Key: record.Key,
         Value: JSON.stringify(value),
-        SyncCount: record ? record.SyncCount : 0,
+        SyncCount: record.SyncCount,
       };
     }),
   })
   .then(() => Promise.resolve('Working tokens updated'))
   .catch(error => {
-    console.warn('[Push notification] Error removing old push tokens: ' + error.message, '... ignoring');
+    console.warn('[Push notification] Error updating working push tokens: ' + error.message, '... ignoring');
     return Promise.resolve();
   });
 }
@@ -122,81 +125,79 @@ function iOSsendPushNotification(event, token, isSandBox) {
   // structure for APNS
   const apnMessage = {
     aps: {
-      alert: event.data.message,
-      badge: event.data.badge,
-      sound: event.data.sound || 'default',
-      severity: event.data.severity || 'information',
-      type: event.data.type,
+      alert: event.message,
+      badge: event.badge,
+      sound: event.sound || 'default',
+      severity: event.severity || 'Information',
+      type: event.type,
       data: event.data,
     },
   };
 
-  return new Promise((resolve, reject) => {
-    sns.createPlatformEndpointAsync({
-      Token: token,
-      PlatformApplicationArn: APNS_ARN,
-    })
-    .catch(error => {
-      console.warn(`Platform endpoint creation FAILED via '${APNSKey}' for '${token}'`);
-      console.warn(error.stack);
-      return reject(token);
-    })
-    .then(response => (endpointArn = response.EndpointArn))
-    // we have end-point, try to publish to that specific endpoint
-    .then(() => sns.publishAsync({
-      TargetArn: endpointArn,
-      MessageStructure: 'json',
-      Subject: event.subject || 'Whim',
-      Message: JSON.stringify({
-        [APNSKey]: JSON.stringify(apnMessage),
-      }),
-    }))
-    // in case of endpoint is disabled, perform re-enabling and try once again
-    .catch(error => {
-      if (error.name !== 'EndpointDisabled' || !endpointArn) {
-        console.warn(`Error: ${error.message}`);
-        return reject(token);
-      }
-      console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
-      const params = {
-        Attributes: {
-          Enabled: 'true',
-        },
-        EndpointArn: endpointArn,
-      };
-      return sns.setEndpointAttributesAsync(params)
-        .catch(error => {
-          console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
-          console.warn(error.stack);
-          return reject(token);
+  return sns.createPlatformEndpointAsync({
+    Token: token,
+    PlatformApplicationArn: isSandBox === true ? APNS_ARN_SANDBOX : APNS_ARN,
+  })
+  .catch(error => {
+    console.warn(`Platform endpoint creation FAILED via '${APNSKey}' for '${token}'`);
+    console.warn(error.stack);
+    return Promise.reject(token);
+  })
+  .then(response => (endpointArn = response.EndpointArn))
+  // we have end-point, try to publish to that specific endpoint
+  .then(() => sns.publishAsync({
+    TargetArn: endpointArn,
+    MessageStructure: 'json',
+    Subject: event.subject || 'Whim',
+    Message: JSON.stringify({
+      [APNSKey]: JSON.stringify(apnMessage),
+    }),
+  }))
+  // in case of endpoint is disabled, perform re-enabling and try once again
+  .catch(error => {
+    if (error.name !== 'EndpointDisabled' || !endpointArn) {
+      console.warn(`Error: ${error.message}`);
+      return Promise.reject(token);
+    }
+    console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
+    const params = {
+      Attributes: {
+        Enabled: 'true',
+      },
+      EndpointArn: endpointArn,
+    };
+    return sns.setEndpointAttributesAsync(params)
+      .catch(error => {
+        console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
+        console.warn(error.stack);
+        return Promise.reject(token);
+      })
+      // and try to send one more time
+      .then(response => sns.publishAsync({
+        TargetArn: endpointArn,
+        MessageStructure: 'json',
+        Subject: event.subject || 'Whim',
+        Message: JSON.stringify({
+          [APNSKey]: JSON.stringify(apnMessage),
+        }),
+      }))
+      // Clean up endpointArn from Amazon
+      // and ignore error
+      .then(() => {
+        console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
+        return sns.deleteEndpointAsync({
+          EndpointArn: endpointArn,
         })
-        // and try to send one more time
-        .then(response => sns.publishAsync({
-          TargetArn: endpointArn,
-          MessageStructure: 'json',
-          Subject: event.subject || 'Whim',
-          Message: JSON.stringify({
-            [APNSKey]: JSON.stringify(apnMessage),
-          }),
-        }))
-        // Clean up endpointArn from Amazon
-        // and ignore error
-        .then(() => {
-          console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
-          return sns.deleteEndpoint({
-            EndpointArn: endpointArn,
-          })
-          .catch(error => Promise.resolve(error));
-        });
-    })
-    .then(response => {
-      console.info(`[Push Notification] Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
-      return resolve(token);
-    })
-    .catch(error => {
-      console.warn(`[Push Notification] Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
-      return reject(token);
-    });
+        .catch(error => Promise.resolve(error));
+      });
+  })
+  .then(response => {
+    console.info(`[Push Notification] Push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
+    return Promise.resolve(token);
+  })
+  .catch(error => {
+    console.warn(`[Push Notification] Push notification has been FAILED via '${APNSKey}', response: ${JSON.stringify(error)}`);
+    return Promise.reject(token);
   });
 }
 
@@ -215,66 +216,64 @@ function androidSendPushNotification(event, token) {
     }),
   };
 
-  return new Promise((resolve, reject) => {
-    sns.createPlatformEndpointAsync({
-      Token: token,
-      PlatformApplicationArn: GCM_ARN,
-    })
-    .catch(error => {
-      console.warn(`Platform endpoint creation FAILED via 'GCM' for '${token}: ${error.message}'`);
-      console.warn(error.stack);
-      return reject(token);
-    })
-    .then(response => (endpointArn = response.EndpointArn))
-    // we have end-point, try to publish to that specific endpoint
-    .then(() => sns.publishAsync({
-      TargetArn: endpointArn,
-      MessageStructure: 'json',
-      Subject: event.subject || 'Whim',
-      Message: JSON.stringify(gcmMessage),
-    }))
-    .catch(error => {
-      if (error.name !== 'EndpointDisabled' || !endpointArn) {
-        return reject(token);
-      }
-      console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
-      const params = {
-        Attributes: {
-          Enabled: 'true',
-        },
-        EndpointArn: endpointArn,
-      };
-      return sns.setEndpointAttributesAsync(params)
-        .catch(error => {
-          console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
-          console.warn(error.stack);
-          return reject(token);
+  return sns.createPlatformEndpointAsync({
+    Token: token,
+    PlatformApplicationArn: GCM_ARN,
+  })
+  .catch(error => {
+    console.warn(`Platform endpoint creation FAILED via 'GCM' for '${token}: ${error.message}'`);
+    console.warn(error.stack);
+    return Promise.reject(token);
+  })
+  .then(response => (endpointArn = response.EndpointArn))
+  // we have end-point, try to publish to that specific endpoint
+  .then(() => sns.publishAsync({
+    TargetArn: endpointArn,
+    MessageStructure: 'json',
+    Subject: event.subject || 'Whim',
+    Message: JSON.stringify(gcmMessage),
+  }))
+  .catch(error => {
+    if (error.name !== 'EndpointDisabled' || !endpointArn) {
+      return Promise.reject(token);
+    }
+    console.warn(`[Push Notification] Endpoint disabled for '${endpointArn}', trying re-enable and send again...`);
+    const params = {
+      Attributes: {
+        Enabled: 'true',
+      },
+      EndpointArn: endpointArn,
+    };
+    return sns.setEndpointAttributesAsync(params)
+      .catch(error => {
+        console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
+        console.warn(error.stack);
+        return Promise.reject(token);
+      })
+      // and try to send one more time
+      .then(response => sns.publishAsync({
+        TargetArn: endpointArn,
+        MessageStructure: 'json',
+        Subject: event.subject || 'Whim',
+        Message: JSON.stringify(gcmMessage),
+      }))
+      // Clean up endpointArn from Amazon
+      // and ignore error
+      .then(() => {
+        console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
+        return sns.deleteEndpointAsync({
+          EndpointArn: endpointArn,
         })
-        // and try to send one more time
-        .then(response => sns.publishAsync({
-          TargetArn: endpointArn,
-          MessageStructure: 'json',
-          Subject: event.subject || 'Whim',
-          Message: JSON.stringify(gcmMessage),
-        }))
-        // Clean up endpointArn from Amazon
-        // and ignore error
-        .then(() => {
-          console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
-          return sns.deleteEndpoint({
-            EndpointArn: endpointArn,
-          })
-          .catch(error => Promise.resolve(error));
-        });
-    })
-    .then(response => {
-      console.info(`[Push Notification] Push notification has been sent via 'GCM', response: ${JSON.stringify(response)}`);
-      return resolve(token);
-    })
-    .catch(error => {
-      console.warn(`[Push Notification] Push notification has failed via 'GCM', response: ${JSON.stringify(error)}`);
-      return reject(token);
-    });
+        .catch(error => Promise.resolve(error));
+      });
+  })
+  .then(response => {
+    console.info(`[Push Notification] Push notification has been sent via 'GCM', response: ${JSON.stringify(response)}`);
+    return Promise.resolve(token);
+  })
+  .catch(error => {
+    console.warn(`[Push Notification] Push notification has failed via 'GCM', response: ${JSON.stringify(error)}`);
+    return Promise.reject(token);
   });
 }
 

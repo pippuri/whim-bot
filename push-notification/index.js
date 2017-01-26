@@ -4,9 +4,10 @@ const Promise = require('bluebird');
 const lib = require('./lib');
 const validator = require('../lib/validator');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/request.json');
-const responseSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/response.json');
 const MaaSError = require('../lib/errors/MaaSError');
 const ValidationError = require('../lib/validator/ValidationError');
+const _uniqWith = require('lodash/uniqWith');
+const _isEqual = require('lodash/isEqual');
 
 function sendPushNotification(event) {
   const failedTokens = [];
@@ -18,8 +19,7 @@ function sendPushNotification(event) {
       syncSessionToken = response.SyncSessionToken;
 
       // Remove record with null Value or null push token
-      response.Records = response.Records
-                            .filter(item => item.Value !== null);
+      response.Records = response.Records.filter(item => item.Value !== null);
 
       // NOTE: The code here is used to make migration easier
       // Allowing push notification to digest both old and new profile/devices format
@@ -39,6 +39,7 @@ function sendPushNotification(event) {
               deviceType: 'iOS',
               lastSuccess: Date.now(),
             }),
+            SyncCount: record.SyncCount,
           };
         }
       });
@@ -59,9 +60,8 @@ function sendPushNotification(event) {
               // the device push token has been created for sandbox or production certificate)
               if (process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test') {
                 queue.push(lib.iOSsendPushNotification(event, token, true));
-              } else {
-                queue.push(lib.iOSsendPushNotification(event, token));
               }
+              queue.push(lib.iOSsendPushNotification(event, token));
             });
             break;
           case 'androidDevices':
@@ -97,20 +97,31 @@ function sendPushNotification(event) {
             return Promise.reject(new MaaSError('Failed to push notification to all devices'));
           }
 
+          const promises = [];
+
           // If there are failed tokens, remove them from Cognito
           if (failedTokens.length > 0) {
-            console.info('[Push Notification] Trying to remove old push tokens');
-            return lib.removeOldPushTokens(event.identityId, response.Records, failedTokens, syncSessionToken)
-              .then(() => Promise.resolve(`Failed to push notification to ${failedTokens.length} device(s)`));
+            console.info(`[Push Notification] Trying to remove ${failedTokens.length} old push tokens`);
+            promises.push(new Promise((resolve, reject) => {
+              // Send non-duplication recordset to removal function
+              lib.removeOldPushTokens(event.identityId, response.Records, _uniqWith(failedTokens, _isEqual), syncSessionToken)
+                .then(res => resolve(res))
+                .catch(error => reject(error));
+            }));
           }
 
           // If there are succeeded tokens, update their lastSuccess on Cognito
           if (succeededTokens.length > 0) {
-            console.info('[Push Notification] Updating working tokens');
-            return lib.updateWorkingTokens(event.identityId, response.Records, succeededTokens, syncSessionToken)
-              .then(() => Promise.resolve());
+            console.info(`[Push Notification] Updating ${succeededTokens.length} working tokens`);
+            // Send non-duplication recordset to updating function
+            promises.push(new Promise((resolve, reject) => {
+              lib.updateWorkingTokens(event.identityId, response.Records, _uniqWith(succeededTokens, _isEqual), syncSessionToken)
+                .then(res => resolve(res))
+                .catch(error => reject(error));
+            }));
           }
-          return Promise.resolve('Push notification succeeded for all tokens');
+
+          return Promise.all(promises);
         });
     });
 }
@@ -120,14 +131,7 @@ module.exports.respond = (event, callback) => {
     .then(() => validator.validate(requestSchema, event))
     .catch(ValidationError, error => Promise.reject(new MaaSError(`Input validation error: ${error.message}`, 400)))
     .then(validated => sendPushNotification(validated))
-    .then(response => validator.validate(responseSchema, response))
-    .catch(ValidationError, error => {
-      console.warn('[Push Notification] Warning; Response validation failed, but responding with success');
-      console.warn('[Push Notification] Errors:', error.message);
-      console.warn('[Push Notification] Response:', JSON.stringify(error.object, null, 2));
-      return Promise.resolve('Push notification sent to identityId ' + event.identityId);
-    })
-    .then(response => callback(null, response))
+    .then(response => callback(null, 'Push notification finished'))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
