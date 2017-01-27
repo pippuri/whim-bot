@@ -46,7 +46,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
     return Promise.resolve()
       .then(() => SubscriptionManager.retrieveCustomer(customerId))
       .catch(error => {
-        console.log('SubscriptionManager customer not found, creating new.');
+        console.info('SubscriptionManager customer not found, creating new.');
         return SubscriptionManager.createCustomer(testCustomer)
         .then(() => SubscriptionManager.createSubscription(
           testSubscription,
