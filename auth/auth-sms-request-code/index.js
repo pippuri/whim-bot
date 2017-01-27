@@ -50,6 +50,16 @@ function checkGreenlist(greenlist, phone) {
     return Promise.resolve();
   }
 
+  const regexes = greenlist.filter(i => i.startsWith('/'));
+  if (regexes.length > 0) {
+    console.info('Checking against greenlist regexes: ', phone);
+    const matches = regexes.some(re => phone.replace('+', '').match(re));
+    if (matches.length > 0) {
+      console.info('Matched against greenlist regex(es): ', phone, matches);
+      return Promise.resolve();
+    }
+  }
+
   console.info('Checking against greenlist for phone number: ', phone);
   if (greenlist.indexOf(phone.replace('+', '')) === -1) {
     return Promise.reject(new errors.MaaSError('Unauthorized', 401));
