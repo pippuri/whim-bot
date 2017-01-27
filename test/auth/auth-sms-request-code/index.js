@@ -116,7 +116,7 @@ module.exports = function () {
   });
 
   describe('auth-sms-request-code non-greenlisted number fails', () => {
-    const PHONE = '+358465727141';
+    const PHONE = '+61465727141';
 
     let error;
     let response;
