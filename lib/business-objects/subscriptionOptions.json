@@ -10,7 +10,7 @@
       "name": "Pay per ride",
       "synopsis": "Try out whim before you buy subscription",
       "description": "Explore Whim and pay for journeys individually",
-      "image": "https://staticfiles.maas.global/package-images/Package_PayG.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-payperride.png"
     },
     "availability": {
       "todo": "todo"
@@ -27,7 +27,7 @@
       "name": "Light",
       "synopsis": "Starter package for occasional use",
       "description": "The Light travel package includes unlimited public transport and 1000 Whim points. You choose how to use your whims, top-up is also possible, whenever you need!",
-      "image": "https://staticfiles.maas.global/package-images/Package_Light.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-light.png"
     },
     "availability": {
       "todo": "todo"
@@ -45,7 +45,7 @@
       "name": "Medium",
       "synopsis": "A package that fully caters for the needs of an urban consumer",
       "description": "The Medium travel package includes unlimited public transport and 5500 points to use for taxi rides, rental cars and Whim Car booking.",
-      "image": "https://staticfiles.maas.global/package-images/Package_Medium.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-medium.png"
     },
     "availability": {
       "todo": "todo"
@@ -62,7 +62,7 @@
       "name": "Premium",
       "synopsis": "Frequent transport user, such as a business traveller",
       "description": "The Premium travel package includes 9000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
-      "image": "https://staticfiles.maas.global/package-images/Package_Premium.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-premium.png"
     },
     "availability": {
       "todo": "todo"
