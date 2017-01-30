@@ -127,6 +127,7 @@ function sendPushNotification(event) {
 }
 
 module.exports.respond = (event, callback) => {
+  console.info(`Sending push notification to user ${event.identityId} with event ${event}`);
   return Promise.resolve()
     .then(() => validator.validate(requestSchema, event))
     .catch(ValidationError, error => Promise.reject(new MaaSError(`Input validation error: ${error.message}`, 400)))
