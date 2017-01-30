@@ -864,16 +864,24 @@ module.exports = function () {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
       expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
       expect(post.paymentMethod.maskedNumber).to.be.defined;
       expect(post.paymentMethod.expiry).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
     });
 
-    it('paymentMethod.status should be updated to `valid`', () => {
+    it('paymentMethod.valid should be updated to `true`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
-      expect(post.paymentMethod.status).to.equal('valid');
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
     });
   });
   //}}}
@@ -944,16 +952,24 @@ module.exports = function () {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
       expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
       expect(post.paymentMethod.maskedNumber).to.be.defined;
       expect(post.paymentMethod.expiry).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
     });
 
-    it('paymentMethod.status should be updated to `valid`', () => {
+    it('paymentMethod.valid should be updated to `true`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
-      expect(post.paymentMethod.status).to.equal('valid');
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
     });
   });
   //}}}
@@ -1024,16 +1040,24 @@ module.exports = function () {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
       expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
       expect(post.paymentMethod.maskedNumber).to.be.defined;
       expect(post.paymentMethod.expiry).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
     });
 
-    it('paymentMethod.status should be updated to `valid`', () => {
+    it('paymentMethod.valid should be updated to `valid`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
-      expect(post.paymentMethod.status).to.equal('valid');
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
     });
   });
   //}}}
@@ -1104,16 +1128,24 @@ module.exports = function () {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
       expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
       expect(post.paymentMethod.maskedNumber).to.be.defined;
       expect(post.paymentMethod.expiry).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
     });
 
-    it('paymentMethod.status should be updated to `invalid`', () => {
+    it('paymentMethod.valid should be updated to `false`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
-      expect(post.paymentMethod.status).to.equal('invalid');
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(false);
+    });
+
+    it('paymentMethod.issuer should be empty', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal(null);
     });
   });
   //}}}
@@ -1184,16 +1216,24 @@ module.exports = function () {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
       expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
       expect(post.paymentMethod.maskedNumber).to.be.defined;
       expect(post.paymentMethod.expiry).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
     });
 
-    it('paymentMethod.status should be updated to `invalid`', () => {
+    it('paymentMethod.valid should be updated to `false`', () => {
       expect(pre.paymentMethod).to.be.defined;
       expect(post.paymentMethod).to.be.defined;
-      expect(post.paymentMethod.status).to.be.defined;
-      expect(post.paymentMethod.status).to.equal('invalid');
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(false);
+    });
+
+    it('paymentMethod.issuer should be empty', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal(null);
     });
   });
   //}}}
