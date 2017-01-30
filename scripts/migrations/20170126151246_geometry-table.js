@@ -7,7 +7,7 @@ exports.up = function (knex, Promise) {
     .then(() => knex.schema.createTable('Geometry', table => {
       table.uuid('id').primary().defaultTo(knex.raw('uuid_generate_v4()'));
       table.specificType('regions', 'varchar(30)[]').notNullable().defaultTo('{}'); // Mostly serve as a description
-      table.specificType('the_geom', 'geometry').notNullable();
+      table.specificType('geometry', 'geometry').notNullable();
       table.timestamp('created').notNullable().defaultTo(knex.fn.now());
       table.timestamp('modified').defaultTo(knex.fn.now());
     })
@@ -30,7 +30,7 @@ exports.up = function (knex, Promise) {
 };
 
 exports.down = function (knex, Promise) {
-  return knex.raw('DROP TRIGGER IF EXISTS "trig_update_modified_timestamp" ON "Leg"')
+  return knex.raw('DROP TRIGGER IF EXISTS "trig_update_modified_timestamp" ON "Geometry"')
     .then(() => knex.schema.dropTableIfExists('Geometry'))
     .then(() => knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp"'));
 };
