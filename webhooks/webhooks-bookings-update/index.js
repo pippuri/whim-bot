@@ -154,9 +154,17 @@ module.exports.respond = (event, callback) => {
     )
     .then(response => callback(null, response))
     .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
+
+      // Different warning logs if stage === dev || test so slack channel won't be flushed with logs
+      if (process.env.SERVERLESS_STAGE === 'dev' || process.env.SERVERLESS_STAGE === 'test') {
+        console.info(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+        console.info('This event caused error: ' + JSON.stringify(event, null, 2));
+        console.info(_error.stack);
+      } else {
+        console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+        console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+        console.warn(_error.stack);
+      }
 
       if (_error instanceof MaaSError) {
         callback(_error);
