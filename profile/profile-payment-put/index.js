@@ -48,6 +48,7 @@ function updateUserData(event) {
     identityId: event.identityId,
     firstName: payload.firstName,
     lastName: payload.lastName,
+    email: payload.email,
     phone: payload.phone,
     zipCode: payload.zip,
     countryCode: countryCode,
