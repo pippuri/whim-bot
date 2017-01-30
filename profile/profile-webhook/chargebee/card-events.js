@@ -16,8 +16,8 @@ function handle(payload, key) {
   const card = content.card || {};
   const xa = new Transaction(identityId);
 
-  // card_added, card_updated and card_expiry_reminder will result in a status of PAYMENT_METHOD_STATUS_VALID
-  // card_expired and card_deleted will result in a status of PAYMENT_METHOD_STATUS_INVALID
+  // card_added, card_updated and card_expiry_reminder will result in a valid flag of `true`
+  // card_expired and card_deleted will result in a valid flag of `false`
   const paymentMethod =
     SubscriptionManager.fromChargebeePaymentMethod(method, card);
   return xa.start()
