@@ -1,0 +1,58 @@
+{
+  "name": "subscriptions-customer-retrieve",
+  "runtime": "nodejs4.3",
+  "description": "Serverless Lambda function for project: MaaS",
+  "customName": false,
+  "customRole": false,
+  "handler": "handler.handler",
+  "timeout": 20,
+  "memorySize": 1024,
+  "authorizer": {},
+  "custom": {},
+  "endpoints": [
+    {
+      "path": "subscriptions/customer/{userId}",
+      "method": "GET",
+      "type": "AWS",
+      "authorizationType": "CUSTOM",
+      "authorizerFunction": "auth-custom-authorizer",
+      "apiKeyRequired": true,
+      "requestParameters": {
+        "integration.request.path.customerId": "method.request.path.customerId"
+      },
+      "requestTemplates": {
+        "application/json": {
+          "customerId": "$context.authorizer.principalId",
+          "customerId": "$input.params('customerId')"
+        }
+      },
+      "responses": {
+        "^400.*": {
+          "statusCode": "400"
+        },
+        "^403.*": {
+          "statusCode": "403"
+        },
+        "^404.*": {
+          "statusCode": "404"
+        },
+        "^\\d{3}.*": {
+          "statusCode": "500"
+        },
+        "default": {
+          "statusCode": "200",
+          "responseModels": {},
+          "responseTemplates": {
+            "application/json": ""
+          }
+        }
+      }
+    }
+  ],
+  "events": [],
+  "environment": "$${environment}",
+  "vpc": {
+    "securityGroupIds": [],
+    "subnetIds": []
+  }
+}

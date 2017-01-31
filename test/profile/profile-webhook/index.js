@@ -827,7 +827,10 @@ module.exports = function () {
         })
         .then(
           profile => (post = profile),
-          err => (error = err)
+          err => {
+            (error = err);
+            console.log('KONK0', err);
+          }
         )
         .finally(() => Database.cleanup());
     });
@@ -855,6 +858,30 @@ module.exports = function () {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
       expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+    });
+
+    it('paymentMethod.valid should be updated to `true`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
     });
   });
   //}}}
@@ -919,6 +946,294 @@ module.exports = function () {
       expect(pre.zipCode).to.be.defined;
       expect(post.zipCode).to.be.defined;
       expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+    });
+
+    it('paymentMethod.valid should be updated to `true`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Card Expiry Reminder {{{
+  describe('profile-webhook-card-expiry-reminder', () => {
+    const webhookContent = testEvents.positive.card_expiry_reminder;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
+        .then(profile => {
+          pre = profile;
+          return bus.call(LAMBDA, event);
+        })
+        // 3. Re-fetch the profile from the database for comparison
+        .then(data => {
+          response = data;
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the zipcode', () => {
+      expect(pre.zipCode).to.be.defined;
+      expect(post.zipCode).to.be.defined;
+      expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+    });
+
+    it('paymentMethod.valid should be updated to `valid`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(true);
+    });
+
+    it('paymentMethod.issuer should be updated to `visa`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal('visa');
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Card Expired {{{
+  describe('profile-webhook-card-expired', () => {
+    const webhookContent = testEvents.positive.card_expired;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
+        .then(profile => {
+          pre = profile;
+          return bus.call(LAMBDA, event);
+        })
+        // 3. Re-fetch the profile from the database for comparison
+        .then(data => {
+          response = data;
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the zipcode', () => {
+      expect(pre.zipCode).to.be.defined;
+      expect(post.zipCode).to.be.defined;
+      expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+    });
+
+    it('paymentMethod.valid should be updated to `false`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(false);
+    });
+
+    it('paymentMethod.issuer should be empty', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal(null);
+    });
+  });
+  //}}}
+
+  //------------------------------------------------------------------------
+  // Card Deleted {{{
+  describe('profile-webhook-card-deleted', () => {
+    const webhookContent = testEvents.positive.card_deleted;
+    const testIdentityId = extractCustomerIdentityId(webhookContent);
+
+    const event = {
+      id: CHARGEBEE_ID,
+      payload: webhookContent,
+    };
+
+    let pre = null;
+    let post = null;
+    let response = null;
+    let error = null;
+
+    before(() => {
+      return Database.init()
+        // 1. Fetch the profile from the database
+        .then(() => ProfileDAO.query().findById(testIdentityId))
+        // 2. Apply the webhook
+        .then(profile => {
+          pre = profile;
+          return bus.call(LAMBDA, event);
+        })
+        // 3. Re-fetch the profile from the database for comparison
+        .then(data => {
+          response = data;
+          return ProfileDAO.query().findById(testIdentityId);
+        })
+        .then(
+          profile => (post = profile),
+          err => (error = err)
+        )
+        .finally(() => Database.cleanup());
+    });
+
+    it('should not raise an error', () => {
+      if (error) {
+        console.log(`Caught an error during test: [${error.type}]: ${error.message}`);
+        console.log(error.stack);
+      }
+
+      expect(error).to.be.null;
+    });
+
+    it('should not return empty', () => {
+      expect(response).to.not.be.null;
+      expect(response.response).to.be.defined;
+      expect(response.response).to.equal('OK');
+    });
+
+    it('the response should NOT contain an error', () => {
+      expect(response).to.not.include.key(errors.errorMessageFieldName);
+    });
+
+    it('should NOT have updated the zipcode', () => {
+      expect(pre.zipCode).to.be.defined;
+      expect(post.zipCode).to.be.defined;
+      expect(pre.zipCode).to.equal(post.zipCode);
+    });
+
+    it('paymentMethod should be updated', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.type).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.maskedNumber).to.be.defined;
+      expect(post.paymentMethod.expiry).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+    });
+
+    it('paymentMethod.valid should be updated to `false`', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.valid).to.be.defined;
+      expect(post.paymentMethod.valid).to.equal(false);
+    });
+
+    it('paymentMethod.issuer should be empty', () => {
+      expect(pre.paymentMethod).to.be.defined;
+      expect(post.paymentMethod).to.be.defined;
+      expect(post.paymentMethod.issuer).to.be.defined;
+      expect(post.paymentMethod.issuer).to.equal(null);
     });
   });
   //}}}
