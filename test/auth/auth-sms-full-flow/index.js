@@ -4,6 +4,7 @@ const bus = require('../../../lib/service-bus/index');
 const expect = require('chai').expect;
 
 const Database = require('../../../lib/models/Database');
+const models = require('../../../lib/models');
 const Profile = require('../../../lib/business-objects/Profile');
 const Transaction = require('../../../lib/business-objects/Transaction');
 
@@ -61,10 +62,24 @@ module.exports = function () {
   describe('auth-sms-full-flow', function () { //eslint-disable-line
     this.timeout(40000);
     const PHONE = '+3584573975566';
+    const IDENTITY_ID = 'eu-west-1:d01e10fe-ba9c-4ff6-94a1-02eee7df7516';
 
     let error;
     let response1;
     let response2;
+
+    after(() => {
+      // Make sure that the profile is removed from ther database
+      // to avoid conflicts with future runs of this test
+      return Database.init()
+        .then(() => {
+          return models.Profile
+            .query()
+            .delete()
+            .where({ identityId: IDENTITY_ID });
+        })
+        .finally(() => Database.cleanup());
+    });
 
     before(() => {
       const event = {
