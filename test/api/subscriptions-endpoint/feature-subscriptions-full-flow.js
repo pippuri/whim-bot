@@ -5,6 +5,7 @@ const bus = require('../../../lib/service-bus');
 const expect = require('chai').expect;
 //const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
+const subscriptionsCustomerRetrieveSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-retrieve/response.json');
 const subscriptionsEstimateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-estimate/response.json');
 const subscriptionsOptionsSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-options/response.json');
 const subscriptionsRetrieveSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-retrieve/response.json');
@@ -16,6 +17,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   let error;
   let logged = false;
 
+  let retrieveCustomerResponse;
   let listSubscriptionOptionsResponse;
   let estimateSubscriptionUpdateResponse;
   let updateSubscriptionResponse;
@@ -89,6 +91,25 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
         err => console.error(`Rollback failed: ${err.toString()}`)
       );
       //.then(() => Database.cleanup());
+  });
+
+  it('Retrieves the existing customer', () => {
+    const event = {
+      customerId: customerId,
+    };
+
+    return bus.call('MaaS-subscriptions-customer-retrieve', event)
+      .then(
+        res => Promise.resolve(retrieveCustomerResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(retrieveCustomerResponse.customer.identityId).to.equal(customerId);
+        expect(validator.validateSync(
+          subscriptionsCustomerRetrieveSchema,
+          retrieveCustomerResponse
+        )).to.exist;
+      });
   });
 
   it('Lists the available subscription options', () => {

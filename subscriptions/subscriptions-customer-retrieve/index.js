@@ -6,7 +6,7 @@ const validator = require('../../lib/validator');
 const ValidationError = require('../../lib/validator/ValidationError');
 const utils = require('../../lib/utils');
 
-const schema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer/request.json');
+const schema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-retrieve/request.json');
 
 
 module.exports.respond = function (event, callback) {
