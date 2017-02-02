@@ -20,6 +20,19 @@ function validatePermissions(customerId, userId) {
   return Promise.resolve();
 }
 
+function formatResponse(customer, event) {
+  // Mask payment method secrets from the event
+  const maskedPayload = Object.assign({}, event.payload, { paymentMethod: 'hidden' });
+  const maskedEvent = Object.assign({}, event, { payload: maskedPayload });
+
+  return {
+    customer,
+    debug: {
+      event: maskedEvent,
+    },
+  };
+}
+
 module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
@@ -37,7 +50,7 @@ module.exports.respond = function (event, callback) {
       customer.identityId = customerId;
       return SubscriptionManager.updateCustomer(customer);
     })
-    .then(customer => ({ customer: customer, debug: { event: event } }))
+    .then(customer => formatResponse(customer, event))
     .then(results => callback(null, utils.sanitize(results)))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);

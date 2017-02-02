@@ -1,3 +1,18 @@
 {
-  "customerId": "eu-west-1:91732dd4-20c7-46e2-9072-d505d7860565"
+  "customerId": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+  "userId": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+  "payload": {
+  	"identityId": "eu-west-1:8f6cad33-1340-48ac-9dc9-5221bf107b95",
+  	"phone": "+358123456",
+  	"city": "Helsinki",
+  	"zipCode": "00100",
+  	"countryCode": "FI",
+  	"paymentMethod": {
+  	  "type": "card",
+  	  "number": "4012888888881881",
+  	  "expiryMonth": 10,
+  	  "expiryYear": 2022,
+  	  "cvv": "999"
+  	}
+  }
 }
