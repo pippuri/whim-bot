@@ -8,9 +8,26 @@
     ],
     "meta":{
       "name": "Pay per ride",
-      "synopsis": "Try out whim before you buy subscription",
+      "synopsis": "Try out different transport options and pay for journeys individually",
       "description": "Explore Whim and pay for journeys individually",
-      "image": "https://staticfiles.maas.global/package-images/plan-payperride.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-payperride.png",
+      "examples": [
+        {
+          "type": "taxi",
+          "quantity": "",
+          "description": "Unlimited public transport"
+        },
+        {
+          "type": "hsl",
+          "quantity": "",
+          "description": "HSL public transport"
+        },
+        {
+          "type": "car",
+          "quantity": "10",
+          "description": "Car rentals"
+        }
+      ]
     },
     "availability": {
       "todo": "todo"
@@ -27,7 +44,19 @@
       "name": "Light",
       "synopsis": "Starter package for occasional use",
       "description": "The Light travel package includes unlimited public transport and 1000 Whim points. You choose how to use your whims, top-up is also possible, whenever you need!",
-      "image": "https://staticfiles.maas.global/package-images/plan-light.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-light.png",
+      "examples": [
+        {
+          "type": "HSL",
+          "quantity": "unlimited",
+          "description": "Unlimited public transport HSL (internal)"
+        },
+        {
+          "type": "taxi",
+          "quantity": "2",
+          "description": "taxi trips"
+        }
+      ]
     },
     "availability": {
       "todo": "todo"
@@ -45,7 +74,24 @@
       "name": "Medium",
       "synopsis": "A package that fully caters for the needs of an urban consumer",
       "description": "The Medium travel package includes unlimited public transport and 5500 points to use for taxi rides, rental cars and Whim Car booking.",
-      "image": "https://staticfiles.maas.global/package-images/plan-medium.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-medium.png",
+      "examples": [
+        {
+          "type": "HSL",
+          "quantity": "unlimited",
+          "description": "Unlimited public transport HSL (internal)"
+        },
+        {
+          "type": "taxi",
+          "quantity": "8",
+          "description": "taxi trips"
+        },
+        {
+          "type": "car",
+          "quantity": "2",
+          "description": "days of car rental"
+        }
+      ]
     },
     "availability": {
       "todo": "todo"
@@ -62,7 +108,24 @@
       "name": "Premium",
       "synopsis": "Frequent transport user, such as a business traveller",
       "description": "The Premium travel package includes 9000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
-      "image": "https://staticfiles.maas.global/package-images/plan-premium.png"
+      "image": "https://staticfiles.maas.global/package-images/plan-premium.png",
+      "examples": [
+        {
+          "type": "HSL",
+          "quantity": "unlimited",
+          "description": "Unlimited public transport HSL (internal)"
+        },
+        {
+          "type": "taxi",
+          "quantity": "10",
+          "description": "taxi trips"
+        },
+        {
+          "type": "car",
+          "quantity": "5",
+          "description": "days of car rental"
+        }
+      ]
     },
     "availability": {
       "todo": "todo"
