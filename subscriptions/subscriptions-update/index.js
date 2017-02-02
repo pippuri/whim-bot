@@ -15,7 +15,7 @@ function validatePermissions(customerId, userId) {
   // Currently we only support the case where customer equals user. This may
   // change in the future.
   if (customerId !== userId) {
-    const message = `Access denied: User '${customerId}' has no rights to modify the subscription of ${userId}`;
+    const message = `Access denied: User '${userId}' has no rights to modify the subscription of ${customerId}`;
     return Promise.reject(new MaaSError(message, 403));
   }
 

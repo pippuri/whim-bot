@@ -1,5 +1,5 @@
 {
-  "name": "subscriptions-customer",
+  "name": "subscriptions-customer-update",
   "runtime": "nodejs4.3",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
@@ -11,8 +11,8 @@
   "custom": {},
   "endpoints": [
     {
-      "path": "subscriptions/customer/{userId}",
-      "method": "GET",
+      "path": "subscriptions/customer/{customerId}",
+      "method": "PUT",
       "type": "AWS",
       "authorizationType": "CUSTOM",
       "authorizerFunction": "auth-custom-authorizer",
@@ -22,8 +22,9 @@
       },
       "requestTemplates": {
         "application/json": {
-          "customerId": "$context.authorizer.principalId",
-          "customerId": "$input.params('customerId')"
+          "userId": "$context.authorizer.principalId",
+          "customerId": "$input.params('customerId')",
+          "payload": "$input.json('$')"
         }
       },
       "responses": {

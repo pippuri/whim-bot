@@ -8,6 +8,17 @@ const utils = require('../../lib/utils');
 
 const schema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-retrieve/request.json');
 
+function validatePermissions(customerId, userId) {
+  // Currently we only support the case where customer equals user. This may
+  // change in the future.
+  if (customerId !== userId) {
+    const message = `Access denied: User '${userId}' has no rights to modify the subscription of ${customerId}`;
+    return Promise.reject(new MaaSError(message, 403));
+  }
+
+  // Everything ok
+  return Promise.resolve();
+}
 
 module.exports.respond = function (event, callback) {
   const validationOptions = {
@@ -17,6 +28,7 @@ module.exports.respond = function (event, callback) {
 
   return validator.validate(schema, event, validationOptions)
     .then(_parsed => (parsed = _parsed))
+    .then(() => validatePermissions(parsed.customerId, parsed.userId))
     .then(() => {
       const customerId = parsed.customerId;
       return SubscriptionManager.retrieveCustomer(customerId);
