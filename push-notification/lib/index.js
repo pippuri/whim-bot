@@ -210,10 +210,12 @@ function iOSsendPushNotification(event, token, isSandBox) {
 function androidSendPushNotification(event, token) {
   let endpointArn = '';
 
+  const data = {
+    data: Object.assign(event.data, { type: event.type, message: event.message }),
+  };
+
   const gcmMessage = {
-    GCM: JSON.stringify({
-      data: Object.assign(event.data, event.type, event.message),
-    }),
+    GCM: JSON.stringify({ data }),
   };
 
   return sns.createPlatformEndpointAsync({
