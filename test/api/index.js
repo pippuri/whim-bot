@@ -7,7 +7,6 @@ describe('API', () => {
   require('./geocoding-endpoint');
   require('./itineraries-endpoint');
   require('./bookings-endpoint');
-  require('./store-endpoint');
   require('./tracking-endpoint');
   require('./trip-endpoint');
   require('./subscriptions-endpoint');
