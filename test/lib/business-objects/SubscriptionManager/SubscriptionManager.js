@@ -84,7 +84,7 @@ describe('toChargebeeAddress', () => {
     expect(cbAddress.phone).to.equal(fullContact.phone);
     expect(cbAddress.zip).to.equal(fullContact.zipCode);
     expect(cbAddress.city).to.equal(fullContact.city);
-    expect(cbAddress.country).to.equal(fullContact.countryCode);
+    expect(cbAddress.country).to.equal(fullContact.country);
   });
 });
 
@@ -101,7 +101,7 @@ describe('fromChargebeeAddress', () => {
     expect(contact.phone).to.equal(cbAddress.phone);
     expect(contact.city).to.equal(cbAddress.city);
     expect(contact.zipCode).to.equal(cbAddress.zip);
-    expect(contact.countryCode).to.equal(cbAddress.country);
+    expect(contact.country).to.equal(cbAddress.country);
   });
 });
 

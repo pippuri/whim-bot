@@ -6,7 +6,7 @@
   	"phone": "+358123456",
   	"city": "Helsinki",
   	"zipCode": "00100",
-  	"countryCode": "FI",
+  	"country": "FI",
   	"paymentMethod": {
   	  "type": "card",
   	  "number": "4012888888881881",
