@@ -55,7 +55,7 @@ function handle(payload, key, defaultResponse) {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
-        country: user.countryCode,
+        country: user.country,
         city: user.city,
         zipCode: user.zipCode,
       });*/

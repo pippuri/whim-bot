@@ -37,9 +37,9 @@ function updateUserData(event) {
   }
 
   // FIXME Currently client sends the full country (Finland), we need code (FI)
-  let countryCode;
+  let country;
   try {
-    countryCode = mapCountryToCode(payload.country);
+    country = mapCountryToCode(payload.country);
   } catch (error) {
     return Promise.reject(error);
   }
@@ -51,7 +51,7 @@ function updateUserData(event) {
     email: payload.email,
     phone: payload.phone,
     zipCode: payload.zip,
-    countryCode: countryCode,
+    country: country,
     city: payload.city,
   };
 

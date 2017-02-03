@@ -24,7 +24,7 @@ function handle(payload, key) {
         firstName: custo.firstName,
         lastName: custo.lastName,
         email: custo.email,
-        country: custo.countryCode,
+        country: custo.country,
         city: custo.city,
         zipCode: custo.zipCode,
       }, xa))

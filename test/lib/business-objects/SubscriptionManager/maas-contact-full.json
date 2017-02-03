@@ -5,7 +5,7 @@
   "address": "Ludviginkatu 6",
   "city": "Helsinki",
   "zipCode": "00100",
-  "countryCode": "FI",
+  "country": "FI",
   "phone": "+358505454202",
   "email": "tech@maas.fi",
   "paymentMethod": {

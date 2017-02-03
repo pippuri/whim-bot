@@ -35,7 +35,14 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       phone: '+358123456',
       city: 'Helsinki',
       zipCode: '00100',
-      countryCode: 'FI',
+      country: 'FI',
+      paymentMethod: {
+        type: 'card',
+        number: '4012888888881881',
+        expiryMonth: 10,
+        expiryYear: 2022,
+        cvv: '999',
+      },
     };
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
@@ -117,7 +124,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
         phone: '+358123456',
         city: 'Helsinki',
         zipCode: '00100',
-        countryCode: 'FI',
+        country: 'FI',
         paymentMethod: {
           type: 'card',
           number: '4012888888881881',
