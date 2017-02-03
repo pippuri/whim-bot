@@ -8,7 +8,6 @@ const digitransitRoutes = require('../../providers/provider-digitransit-routes')
 const hereRoutes = require('../../providers/provider-here-routes');
 const tripgoRoutes = require('../../providers/provider-tripgo-routes');
 const valopilkkuRoutes = require('../../providers/provider-valopilkku-routes');
-const storeSinglePackage = require('../../../store/store-single-package');
 const MaaSError = require('../../../lib/errors/MaaSError');
 
 const mapping = {
@@ -16,7 +15,6 @@ const mapping = {
   'MaaS-provider-here-routes': hereRoutes,
   'MaaS-provider-tripgo-routes': tripgoRoutes,
   'MaaS-provider-valopilkku-routes': valopilkkuRoutes,
-  'MaaS-store-single-package': storeSinglePackage,
 };
 
 function wrap(lambdaName, event) {
