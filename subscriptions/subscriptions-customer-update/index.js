@@ -6,7 +6,7 @@ const validator = require('../../lib/validator');
 const ValidationError = require('../../lib/validator/ValidationError');
 const utils = require('../../lib/utils');
 
-const schema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-retrieve/request.json');
+const schema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-update/request.json');
 
 function validatePermissions(customerId, userId) {
   // Currently we only support the case where customer equals user. This may
@@ -20,6 +20,19 @@ function validatePermissions(customerId, userId) {
   return Promise.resolve();
 }
 
+function formatResponse(customer, event) {
+  // Mask payment method secrets from the event
+  const maskedPayload = Object.assign({}, event.payload, { paymentMethod: 'hidden' });
+  const maskedEvent = Object.assign({}, event, { payload: maskedPayload });
+
+  return {
+    customer,
+    debug: {
+      event: maskedEvent,
+    },
+  };
+}
+
 module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
@@ -31,13 +44,17 @@ module.exports.respond = function (event, callback) {
     .then(() => validatePermissions(parsed.customerId, parsed.userId))
     .then(() => {
       const customerId = parsed.customerId;
-      return SubscriptionManager.retrieveCustomer(customerId);
+      const customer = parsed.payload;
+
+      // Force customer id to be the one we recognised
+      customer.identityId = customerId;
+      return SubscriptionManager.updateCustomer(customer);
     })
-    .then(customer => ({ customer: customer, debug: { event: event } }))
+    .then(customer => formatResponse(customer, event))
     .then(results => callback(null, utils.sanitize(results)))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+      console.warn('This event caused error:', JSON.stringify(event, null, 2));
       console.warn(_error.stack);
 
       if (_error instanceof ValidationError) {

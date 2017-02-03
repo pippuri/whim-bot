@@ -18,7 +18,8 @@
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": true,
       "requestParameters": {
-        "integration.request.path.userId": "method.request.path.userId"
+        "integration.request.path.userId": "method.request.path.userId",
+        "integration.request.querystring.replace": "method.request.querystring.replace"
       },
       "requestTemplates": {
         "application/json": {

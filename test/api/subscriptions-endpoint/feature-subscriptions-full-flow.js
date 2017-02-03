@@ -6,6 +6,7 @@ const expect = require('chai').expect;
 //const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const subscriptionsCustomerRetrieveSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-retrieve/response.json');
+const subscriptionsCustomerUpdateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-customer-update/response.json');
 const subscriptionsEstimateSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-estimate/response.json');
 const subscriptionsOptionsSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-options/response.json');
 const subscriptionsRetrieveSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptions-retrieve/response.json');
@@ -18,6 +19,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   let logged = false;
 
   let retrieveCustomerResponse;
+  let updateCustomerResponse;
   let listSubscriptionOptionsResponse;
   let estimateSubscriptionUpdateResponse;
   let updateSubscriptionResponse;
@@ -34,13 +36,6 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       city: 'Helsinki',
       zipCode: '00100',
       countryCode: 'FI',
-      paymentMethod: {
-        type: 'card',
-        number: '4012888888881881',
-        expiryMonth: 10,
-        expiryYear: 2022,
-        cvv: '999',
-      },
     };
     const testSubscription = { plan: { id: 'fi-whim-payg' } };
 
@@ -95,6 +90,7 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
 
   it('Retrieves the existing customer', () => {
     const event = {
+      userId: userId,
       customerId: customerId,
     };
 
@@ -108,6 +104,41 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
         expect(validator.validateSync(
           subscriptionsCustomerRetrieveSchema,
           retrieveCustomerResponse
+        )).to.exist;
+      });
+  });
+
+  it('Updates the customer', () => {
+    const event = {
+      userId: userId,
+      customerId: customerId,
+      payload: {
+        identityId: customerId,
+        phone: '+358123456',
+        city: 'Helsinki',
+        zipCode: '00100',
+        countryCode: 'FI',
+        paymentMethod: {
+          type: 'card',
+          number: '4012888888881881',
+          expiryMonth: 10,
+          expiryYear: 2022,
+          cvv: '999',
+        },
+      },
+    };
+
+    return bus.call('MaaS-subscriptions-customer-update', event)
+      .then(
+        res => Promise.resolve(updateCustomerResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(updateCustomerResponse.customer.identityId).to.equal(customerId);
+        expect(updateCustomerResponse.customer.paymentMethod.valid).to.equal(true);
+        expect(validator.validateSync(
+          subscriptionsCustomerUpdateSchema,
+          updateCustomerResponse
         )).to.exist;
       });
   });
