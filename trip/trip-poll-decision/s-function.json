@@ -6,7 +6,7 @@
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 180,
-  "memorySize": 1024,
+  "memorySize": 256,
   "authorizer": {},
   "custom": {},
   "endpoints": [],
