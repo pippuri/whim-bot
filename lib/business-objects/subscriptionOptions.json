@@ -15,7 +15,7 @@
         {
           "type": "taxi",
           "quantity": "",
-          "description": "Unlimited public transport"
+          "description": "Taxi paid according to usage"
         },
         {
           "type": "hsl",
@@ -24,7 +24,7 @@
         },
         {
           "type": "car",
-          "quantity": "10",
+          "quantity": "",
           "description": "Car rentals"
         }
       ]
@@ -107,7 +107,7 @@
     "meta": {
       "name": "Premium",
       "synopsis": "Frequent transport user, such as a business traveller",
-      "description": "The Premium travel package includes 9000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
+      "description": "The Premium travel package includes 10000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
       "image": "https://staticfiles.maas.global/package-images/plan-premium.png",
       "examples": [
         {
