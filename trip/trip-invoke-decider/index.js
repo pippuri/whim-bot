@@ -249,7 +249,12 @@ class Decider {
         // finish legs that were active but now gone
         if (leg.endTime < this.now) { // eslint-disable-line max-depth
           console.info(`[Decider] Finishing leg id '${leg.id}'...`);
-          return leg.finish().reflect();
+          const transaction = new Transaction(this.flow.trip.identityId);
+          return transaction.start()
+            .then(() => leg.finish(transaction))
+            .then(() => transaction.commit())
+            .catch(error => transaction.rollback().then(() => Promise.reject(error)))
+            .reflect();
         }
         console.info(`[Decider] Skipping checking ACTIVATED leg id '${leg.id}'`);
         return Promise.resolve().reflect();
