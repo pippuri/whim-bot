@@ -26,12 +26,6 @@ const yellow = s => `${ANSI_YELLOW}${s}${ANSI_RESET}`;
 const red = s => `${ANSI_RED}${s}${ANSI_RESET}`;
 const cyan = s => `${ANSI_CYAN}${s}${ANSI_RESET}`;
 
-const invalidPaymentMethod = profile => (
-  !profile.paymentMethod ||
-  !profile.paymentMethod.type ||
-  (profile.paymentMethod.type === 'unknown' &&
-   profile.paymentMethod.valid)
-);
 
 // Read command line arguments
 script.version('0.0.1')
@@ -44,8 +38,9 @@ if (!script.stage) {
   script.outputHelp();
   process.exit(1);
 } else {
-  console.log('                     Updating Profilles                     ');
-  console.log('============================================================');
+  console.log('');
+  console.log('Updating Profiles');
+  console.log('============================================================================');
   console.log('');
 }
 
@@ -66,16 +61,30 @@ let postgresProfilesSkippedNotFound = 0;
 let postgresProfilesFailed = 0;
 
 
-// Process an individual Profile, updating `paymentMethod` if necessary
+/*
+   Helper to test if a paymentMethod is invalid.
+   It's invalid by either:
+    - not existing
+    - missing the basic property `type`
+    - having the placeholder value combination of: { type: 'unknown', valid: true }
+*/
+function invalidPaymentMethod(profile) {
+  return (!profile.paymentMethod ||
+          !profile.paymentMethod.type ||
+          (profile.paymentMethod.type === 'unknown' &&
+           profile.paymentMethod.valid));
+}
+
+
+// Helper to process an individual Profile, updating `paymentMethod` if necessary
 function processProfile(profile) {
-  console.log('\n------------------------------------------------------------');
+  console.log('\n----------------------------------------------------------------------------');
   console.log('Profile: ', cyan(profile.identityId));
   postgresProfilesTotal += 1;
 
   // Warn about obvious test Profiles
   if (profile.identityId.indexOf('cafe-cafe') !== -1 ||
       profile.identityId.indexOf('dead-dead') !== -1) {
-
     console.log(yellow('WARNING Possible test profile'));
   }
 
@@ -89,7 +98,7 @@ function processProfile(profile) {
   }
 
   // paymentMethod invalid, so proceed
-  console.log('Payment method incomplete');
+  console.log('Payment method ', red('INCOMPLETE'));
   console.log(profile.paymentMethod);
   console.log('Updating...');
 
@@ -128,6 +137,7 @@ function processProfile(profile) {
 }
 
 
+// ----------------------------------------------------------------------------
 // Intitialize the database
 models.Database.init()
   // Fetch all Profiles in the database
