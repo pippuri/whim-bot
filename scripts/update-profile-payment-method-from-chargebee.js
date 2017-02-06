@@ -32,12 +32,12 @@ script.version('0.0.1')
   .description('Update postgres Profile.paymentMethod field based on Chargebee customer data')
   .option('-s, --stage [stage]', 'Choose a stage *required*')
   .option('--dry-run', 'Do not update the database, perform read-only operations')
-  .option('--force-404', 'Force 404 customers to be updated with a valid "missin" paymentMethod')
+  .option('--force-404', 'Force 404 customers to be updated with a valid "missing" paymentMethod')
   .option('--skip-test-users', 'Do not try to update profiles which are detected as test users')
   .parse(process.argv);
 
 if (!script.stage) {
-  console.log('You must specify a table');
+  console.log('You must specify a stage');
   script.outputHelp();
   process.exit(1);
 } else {
@@ -123,7 +123,7 @@ function processProfile(profile) {
 
   // Check if paymentMethod is already valid
   if (!invalidPaymentMethod(profile)) {
-    console.log('Payment method ', green('VALID'));
+    console.log('Profile.paymentMethod ', green('VALID'));
     console.log(profile.paymentMethod);
     console.log(green('SKIPPED'));
     postgresProfilesSkipped += 1;
@@ -131,7 +131,7 @@ function processProfile(profile) {
   }
 
   // paymentMethod invalid, so proceed
-  console.log('Payment method ', red('INCOMPLETE'));
+  console.log('Profile.paymentMethod ', red('INVALID'));
   console.log(profile.paymentMethod);
   console.log('Updating...');
 
@@ -145,7 +145,8 @@ function processProfile(profile) {
       // Extract the customer paymentMethod or use the default one
       // which indicates that no payment method is available
       const paymentMethod = customer.paymentMethod ? customer.paymentMethod : MISSING_PAYMENT_METHOD;
-      console.log('Updating to: ', paymentMethod);
+      console.log('Customer paymentMethod: ', customer.paymentMethod);
+      console.log('Updating Profile to: ', paymentMethod);
 
       // Update the database
       return updateProfilePaymentMethod(profile, paymentMethod, script.dryRun);
@@ -186,7 +187,7 @@ models.Database.init()
     // Print out summary of activity
     console.log('\n\n');
     console.log('Postgres profiles ', cyan('TOTAL'), '\t', postgresProfilesTotal);
-    console.log('Postgres profiles  test\t', postgresProfilesSkippedTestUser);
+    console.log('Postgres profiles  test\t\t', postgresProfilesSkippedTestUser);
     console.log('Postgres profiles  404\t\t', postgresProfilesNotFound);
     console.log('Postgres profiles  forced\t', postgresProfilesForceUpdated);
     console.log('Postgres profiles ', yellow('SKIPPED'), '\t', postgresProfilesSkipped);
