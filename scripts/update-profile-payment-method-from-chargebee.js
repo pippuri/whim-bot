@@ -31,6 +31,9 @@ const cyan = s => `${ANSI_CYAN}${s}${ANSI_RESET}`;
 script.version('0.0.1')
   .description('Update postgres Profile.paymentMethod field based on Chargebee customer data')
   .option('-s, --stage [stage]', 'Choose a stage *required*')
+  .option('--dry-run', 'Do not update the database, perform read-only operations')
+  .option('--force-404', 'Force 404 customers to be updated with a valid "missin" paymentMethod')
+  .option('--skip-test-users', 'Do not try to update profiles which are detected as test users')
   .parse(process.argv);
 
 if (!script.stage) {
@@ -55,10 +58,12 @@ for (const props in variableFile) {
 
 // Initialize some counters for keeping track of activity
 let postgresProfilesTotal = 0;
-let postgresProfilesUpdated = 0;
 let postgresProfilesSkipped = 0;
-let postgresProfilesSkippedNotFound = 0;
+let postgresProfilesNotFound = 0;
+let postgresProfilesSkippedTestUser = 0;
+let postgresProfilesForceUpdated = 0;
 let postgresProfilesFailed = 0;
+let postgresProfilesUpdated = 0;
 
 
 /*
@@ -75,6 +80,26 @@ function invalidPaymentMethod(profile) {
            profile.paymentMethod.valid));
 }
 
+// Helper function to perform the update on the database
+function updateProfilePaymentMethod(profile, paymentMethod, dryRun) {
+  // Pretend to update the databse if --dry-run is specified
+  if (dryRun) {
+    console.log(green('UPDATED (dry run)'));
+    postgresProfilesUpdated += 1;
+    return Promise.resolve();
+  }
+
+  // Otherwise, do a real update
+  return models.Profile
+    .query()
+    .patch({ paymentMethod })
+    .where('identityId', '=', profile.identityId)
+    .then(() => {
+      console.log(green('UPDATED'));
+      postgresProfilesUpdated += 1;
+    });
+}
+
 
 // Helper to process an individual Profile, updating `paymentMethod` if necessary
 function processProfile(profile) {
@@ -85,7 +110,15 @@ function processProfile(profile) {
   // Warn about obvious test Profiles
   if (profile.identityId.indexOf('cafe-cafe') !== -1 ||
       profile.identityId.indexOf('dead-dead') !== -1) {
+
     console.log(yellow('WARNING Possible test profile'));
+
+    if (script.skipTestUsers) {
+      console.log(green('SKIPPED (test user)'));
+      postgresProfilesSkippedTestUser += 1;
+      postgresProfilesSkipped += 1;
+      return Promise.resolve();
+    }
   }
 
   // Check if paymentMethod is already valid
@@ -114,24 +147,27 @@ function processProfile(profile) {
       const paymentMethod = customer.paymentMethod ? customer.paymentMethod : MISSING_PAYMENT_METHOD;
       console.log('Updating to: ', paymentMethod);
 
-      // Update the Profile
-      return models.Profile
-        .query()
-        .patch({ paymentMethod })
-        .where('identityId', '=', profile.identityId)
-        .then(() => {
-          console.log(green('UPDATED'));
-          postgresProfilesUpdated += 1;
-        });
+      // Update the database
+      return updateProfilePaymentMethod(profile, paymentMethod, script.dryRun);
     })
     .catch(err => {
-      if (err.status === 404) {
-        console.log('Unexpected error:', profile.identityId, err);
+      if (err.message.indexOf('404') === -1) {
+        console.log('Unexpected error:', profile.identityId, err.message);
         console.log(red('FAILED'));
         postgresProfilesFailed += 1;
       } else {
-        postgresProfilesSkippedNotFound += 1;
-        console.log(yellow('SKIPPED 404'));
+        postgresProfilesNotFound += 1;
+
+        // Check if we should force-update this to a missing paymentMethod
+        if (script.force404) {
+          postgresProfilesForceUpdated += 1;
+
+          return updateProfilePaymentMethod(profile, MISSING_PAYMENT_METHOD, script.dryRun);
+        }
+
+        // Otherwise, just skip this
+        console.log(yellow('SKIPPED (404)'));
+        postgresProfilesSkipped += 1;
       }
     });
 }
@@ -149,11 +185,13 @@ models.Database.init()
   .then(() => {
     // Print out summary of activity
     console.log('\n\n');
-    console.log(`Postgres profiles in total:\t${postgresProfilesTotal}`);
-    console.log(`Postgres profiles updated:\t${postgresProfilesUpdated}`);
-    console.log(`Postgres profiles skipped:\t${postgresProfilesSkipped}`);
-    console.log(`Postgres profiles 404:\t\t${postgresProfilesSkippedNotFound}`);
-    console.log(`Postgres profiles failed:\t${postgresProfilesFailed}`);
+    console.log('Postgres profiles ', cyan('TOTAL'), '\t', postgresProfilesTotal);
+    console.log('Postgres profiles  test\t', postgresProfilesSkippedTestUser);
+    console.log('Postgres profiles  404\t\t', postgresProfilesNotFound);
+    console.log('Postgres profiles  forced\t', postgresProfilesForceUpdated);
+    console.log('Postgres profiles ', yellow('SKIPPED'), '\t', postgresProfilesSkipped);
+    console.log('Postgres profiles ', red('FAILED'), '\t', postgresProfilesFailed);
+    console.log('Postgres profiles ',  green('UPDATED'), '\t', postgresProfilesUpdated);
   })
   .finally(() => models.Database.cleanup());
 
