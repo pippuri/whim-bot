@@ -43,7 +43,7 @@ class Decider {
    * Helper for generating decisions.
    */
   _decide() {
-
+    const transaction = new Transaction(this.flow.trip.identityId);
     // check did we understand the flow situation
     if (!this.flow.event && !this.flow.task) {
       console.warn('[Decider] ERROR: lost flow event & task -- aborting');
@@ -171,17 +171,29 @@ class Decider {
             return Promise.resolve();
           });
 
+      // eslint-disable-next-line
       case TripWorkFlow.TASK_CLOSE_TRIP:
         console.info(`[Decider] CLOSING TRIP WORK FLOW '${this.flow.id}'`);
+        let _itinerary;
         // fetch itinerary & end it
         this.decision.closeFlow('Decider: closing ended trip');
-        return Itinerary.retrieve(this.flow.trip.referenceId)
-          .then(itinerary => itinerary.finish())
+        return transaction.start()
+          .then(() => Itinerary.retrieve(this.flow.trip.referenceId))
+          .then(itinerary => {
+            _itinerary = itinerary;
+            return itinerary.finish(transaction);
+          })
+          .then(itinerary => transaction.commit(`Your trip to ${itinerary.toName()} has finished`).then(() => itinerary))
           .then(itinerary => this._sendPushNotification('ObjectChange', { ids: [itinerary.id], objectType: 'Itinerary' }))
           // handle unexpected errors
           .catch(err => {
+            // If failed to retrieve itinerary, transaction won't be started, therefore do not commit it.
+            if (!_itinerary) {
+              console.warn(`[Decider] Could not retrieve itinerary from referenceId ${this.flow.trip.referenceId}`);
+              return transaction.rollback().then(() => Promise.resolve());
+            }
             console.warn('[Decider] error while closing trip -- ignoring, err:', err.stack || err);
-            return Promise.resolve();
+            return transaction.commit(`Your trip to ${_itinerary.toName()} has finished`);
           });
 
       case TripWorkFlow.TASK_CANCEL_TRIP:
