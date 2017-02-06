@@ -152,24 +152,28 @@ function processProfile(profile) {
       return updateProfilePaymentMethod(profile, paymentMethod, script.dryRun);
     })
     .catch(err => {
+      // Check if it's something other than a 404
       if (err.message.indexOf('404') === -1) {
         console.log('Unexpected error:', profile.identityId, err.message);
         console.log(red('FAILED'));
         postgresProfilesFailed += 1;
-      } else {
-        postgresProfilesNotFound += 1;
-
-        // Check if we should force-update this to a missing paymentMethod
-        if (script.force404) {
-          postgresProfilesForceUpdated += 1;
-
-          return updateProfilePaymentMethod(profile, MISSING_PAYMENT_METHOD, script.dryRun);
-        }
-
-        // Otherwise, just skip this
-        console.log(yellow('SKIPPED (404)'));
-        postgresProfilesSkipped += 1;
+        return Promise.reject(err);
       }
+
+      // Otherwise it's a 404, meaning no such Chargebee customer exists
+      postgresProfilesNotFound += 1;
+
+      // Check if we should force-update this to a missing paymentMethod
+      if (script.force404) {
+        postgresProfilesForceUpdated += 1;
+        return updateProfilePaymentMethod(profile, MISSING_PAYMENT_METHOD, script.dryRun);
+      }
+
+      // Otherwise, just skip this
+      console.log(yellow('SKIPPED (404)'));
+      postgresProfilesSkipped += 1;
+
+      return Promise.resolve();
     });
 }
 
