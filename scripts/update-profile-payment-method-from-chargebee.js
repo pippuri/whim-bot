@@ -34,6 +34,7 @@ script.version('0.0.1')
   .option('--dry-run', 'Do not update the database, perform read-only operations')
   .option('--force-404', 'Force 404 customers to be updated with a valid "missing" paymentMethod')
   .option('--skip-test-users', 'Do not try to update profiles which are detected as test users')
+  .option('--loose-invalid', 'Consider {type: "unknown", valid: false } as invalid')
   .parse(process.argv);
 
 if (!script.stage) {
@@ -76,6 +77,11 @@ let postgresProfilesUpdated = 0;
     - having the placeholder value combination of: { type: 'unknown', valid: true }
 */
 function invalidPaymentMethod(profile) {
+  if (script.looseInvalid) {
+      return (!profile.paymentMethod ||
+              !profile.paymentMethod.type ||
+              !profile.paymentMethod.valid);
+  }
   return (!profile.paymentMethod ||
           !profile.paymentMethod.type ||
           (profile.paymentMethod.type === 'unknown' &&
