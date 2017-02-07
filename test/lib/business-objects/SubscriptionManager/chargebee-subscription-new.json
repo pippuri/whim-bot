@@ -1,6 +1,13 @@
 {
   "id": "eu-west-1:00000000-dead-dead-eaea-000000000000",
   "customer_id": "eu-west-1:00000000-dead-dead-eaea-000000000000",
+  "current_term_start": 1475669953,
+  "current_term_end": 1475675883,
+  "created_at": 1475669953,
+  "started_at": 1475669953,
+  "activated_at": 1475669953,
+  "cancelled_at": 1475675883,
+  "updated_at": 1475675883,
   "plan_id": "fi-whim-medium",
   "coupons": [
     { "coupon_id": "WHIM100EUR" }
