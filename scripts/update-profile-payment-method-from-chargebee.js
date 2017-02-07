@@ -58,6 +58,8 @@ for (const props in variableFile) {
 
 // Initialize some counters for keeping track of activity
 let postgresProfilesTotal = 0;
+let postgresProfilesValid = 0;
+let postgresProfilesInvalid = 0;
 let postgresProfilesSkipped = 0;
 let postgresProfilesNotFound = 0;
 let postgresProfilesSkippedTestUser = 0;
@@ -126,6 +128,7 @@ function processProfile(profile) {
     console.log('Profile.paymentMethod ', green('VALID'));
     console.log(profile.paymentMethod);
     console.log(green('SKIPPED'));
+    postgresProfilesValid += 1;
     postgresProfilesSkipped += 1;
     return Promise.resolve();
   }
@@ -134,6 +137,7 @@ function processProfile(profile) {
   console.log('Profile.paymentMethod ', red('INVALID'));
   console.log(profile.paymentMethod);
   console.log('Updating...');
+  postgresProfilesInvalid += 1;
 
   // Fetch the customer information
   const payload = {
@@ -192,6 +196,8 @@ models.Database.init()
     console.log('\n\n');
     console.log('Postgres profiles ', cyan('TOTAL'), '\t', postgresProfilesTotal);
     console.log('Postgres profiles  test\t\t', postgresProfilesSkippedTestUser);
+    console.log('Postgres profiles  valid\t', postgresProfilesValid);
+    //console.log('Postgres profiles  invalid\t', postgresProfilesInvalid);
     console.log('Postgres profiles  404\t\t', postgresProfilesNotFound);
     console.log('Postgres profiles  forced\t', postgresProfilesForceUpdated);
     console.log('Postgres profiles ', yellow('SKIPPED'), '\t', postgresProfilesSkipped);
