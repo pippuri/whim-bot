@@ -16,7 +16,7 @@ const BusinessRuleError = require('../../../lib/errors/BusinessRuleError.js');
 const HSL_TRAINS  = ['I', 'K', 'N', 'T', 'A', 'E', 'L', 'P', 'U', 'X'];
 
 const DEFAULT_MODES = 'PUBLIC_TRANSIT,TAXI,WALK';
-const PROVIDER_REQUEST_TIMEOUT_MS = 5000;
+const PROVIDER_REQUEST_TIMEOUT_MS = 10000;
 
 /*
  * In the following code the following terms are used:
