@@ -2,9 +2,6 @@
 
 const mgr = require('../../lib/subscription-manager');
 
-// The variable to store old request-promise-lite defaults (replaced in the test setup)
-let oldDefaults;
-
 describe('profile tools', () => {
   const testUserIdentity = 'eu-west-1:00000000-cafe-cafe-cafe-000000000005';
   const creditCardData = {
@@ -23,14 +20,6 @@ describe('profile tools', () => {
   };
 
   before(() => {
-    // Set the extra options for request-promise-lite in the environment
-    oldDefaults = process.env.RPL_DEFAULTS;
-    process.env.RPL_DEFAULTS = JSON.stringify(Object.assign(
-      {},
-      { 'chargebee-event-actions': 'all-disabled' },
-      JSON.parse(oldDefaults || '{}')
-    ));
-
     // Try to cleanup Chargebee identity - fetch, delete if exists (!404),
     // and then create a new one. Deletion may fail with 400 if the Profile
     // is already scheduled for deletion.
@@ -50,15 +39,6 @@ describe('profile tools', () => {
         console.log(error.stack);
         throw error;
       });
-  });
-
-  after(() => {
-    // Clear the extra options for request-promise-lite in the environment
-    if (oldDefaults) {
-      process.env.RPL_DEFAULTS = oldDefaults;
-    } else {
-      delete process.env.RPL_DEFAULTS;
-    }
   });
 
   require('./profile-payment-put/index.js')(testUserIdentity);
