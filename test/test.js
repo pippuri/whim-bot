@@ -70,6 +70,12 @@ process.env.IS_TEST_ENVIRONMENT = 'TRUE';
 // Force local lambda & dynamo usage
 process.env.USE_MOCK_LAMBDA = 'TRUE';
 
+// Force request-promise-lite defaults to disable Chargebee webhooks
+process.env.RPL_DEFAULTS = JSON.stringify(Object.assign(
+  {},
+  { 'chargebee-event-actions': 'all-disabled' }
+));
+
 // DB performance pre-setup (clear statistics) & seed data
 before(() => {
   console.log('Preparing Database for tests');
