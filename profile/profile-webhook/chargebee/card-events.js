@@ -4,7 +4,6 @@ const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const Transaction = require('../../../lib/business-objects/Transaction');
 
-
 function handle(payload, key) {
   console.info(`[Webhook][Chargebee] handleCardEvent ${payload.event_type}`);
   console.info(JSON.stringify(payload));
@@ -12,7 +11,7 @@ function handle(payload, key) {
   const content = payload.content;
   const customer = content.customer;
   const identityId = customer.id;
-  const method = customer.payment_method || {};
+  const method = customer.payment_method || SubscriptionManager.DEFAULT_PAYMENT_METHOD;
   const card = content.card || {};
   const xa = new Transaction(identityId);
 
