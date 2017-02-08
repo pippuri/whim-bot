@@ -32,7 +32,7 @@ describe('profile tools', () => {
 
         return Promise.reject(error);
       })
-      .then(mgr.updateUserCreditCard(testUserIdentity, creditCardData))
+      .then(() => mgr.updateUserCreditCard(testUserIdentity, creditCardData))
       .catch(error => {
         console.log('Caught an exception:', error.message);
         console.log(error.response.toString());
