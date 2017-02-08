@@ -8,6 +8,7 @@
     ],
     "meta":{
       "name": "Pay per ride",
+      "url": "https://whimapp.com/fi-fi/#payment",
       "synopsis": "Try out different transport options and pay for journeys individually",
       "description": "Explore Whim and pay for journeys individually",
       "image": "https://staticfiles.maas.global/package-images/plan-payperride.png",
@@ -15,7 +16,7 @@
         {
           "type": "taxi",
           "quantity": "",
-          "description": "Taxi paid according to usage"
+          "description": "Taxi"
         },
         {
           "type": "hsl",
@@ -39,22 +40,63 @@
       "id": "fi-whim-light"
     },
     "addons": [
+      {
+        "id": "fi-hsl-seutu",
+        "name": "HSL regional ticket",
+        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-lahiseutu-3",
+        "name": "HSL regional 3",
+        "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-helsinki",
+        "name": "Helsinki",
+        "section": "Internal HSL ticket valid in",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-espoo",
+        "name": "Espoo",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-vantaa",
+        "name": "Vantaa",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      }
     ],
     "meta": {
       "name": "Light",
+      "url": "https://whimapp.com/fi-fi/#payment",
       "synopsis": "Starter package for occasional use",
       "description": "The Light travel package includes unlimited public transport and 1000 Whim points. You choose how to use your whims, top-up is also possible, whenever you need!",
       "image": "https://staticfiles.maas.global/package-images/plan-light.png",
       "examples": [
         {
-          "type": "HSL",
+          "type": "hsl",
           "quantity": "unlimited",
-          "description": "Unlimited public transport HSL (internal)"
+          "description": "Public transport HSL (internal)"
         },
         {
           "type": "taxi",
           "quantity": "2",
-          "description": "taxi trips"
+          "description": "Taxi trips"
         }
       ]
     },
@@ -68,28 +110,69 @@
       "id": "fi-whim-medium"
     },
     "addons": [
+      {
+        "id": "fi-hsl-seutu",
+        "name": "HSL regional ticket",
+        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-lahiseutu-3",
+        "name": "HSL regional 3",
+        "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-helsinki",
+        "name": "Helsinki",
+        "section": "Internal HSL ticket valid in",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-espoo",
+        "name": "Espoo",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-vantaa",
+        "name": "Vantaa",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      }
     ],
     "coupons": [{ "id": "WHIM100EUR" }],
     "meta": {
       "name": "Medium",
+      "url": "https://whimapp.com/fi-fi/#payment",
       "synopsis": "A package that fully caters for the needs of an urban consumer",
       "description": "The Medium travel package includes unlimited public transport and 5500 points to use for taxi rides, rental cars and Whim Car booking.",
       "image": "https://staticfiles.maas.global/package-images/plan-medium.png",
       "examples": [
         {
-          "type": "HSL",
+          "type": "hsl",
           "quantity": "unlimited",
-          "description": "Unlimited public transport HSL (internal)"
+          "description": "Public transport HSL (internal)"
         },
         {
           "type": "taxi",
           "quantity": "8",
-          "description": "taxi trips"
+          "description": "Taxi trips"
         },
         {
           "type": "car",
           "quantity": "2",
-          "description": "days of car rental"
+          "description": "Days of car rental"
         }
       ]
     },
@@ -103,27 +186,68 @@
       "id": "fi-whim-premium"
     },
     "addons": [
+      {
+        "id": "fi-hsl-seutu",
+        "name": "HSL regional ticket",
+        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-lahiseutu-3",
+        "name": "HSL regional 3",
+        "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "section": "Suggested upgrades",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-helsinki",
+        "name": "Helsinki",
+        "section": "Internal HSL ticket valid in",
+        "groupId": "ticket-upgrade",
+        "groupType": "oneOrNoneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-espoo",
+        "name": "Espoo",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      },
+      {
+        "id": "fi-hsl-vantaa",
+        "name": "Vantaa",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
+        "recurring": true
+      }
     ],
     "meta": {
       "name": "Premium",
+      "url": "https://whimapp.com/fi-fi/#payment",
       "synopsis": "Frequent transport user, such as a business traveller",
       "description": "The Premium travel package includes 10000 Whim points to use for an extensive amount of taxi trips, rental car days, Whim Car booking. On-top of that you’ll get unlimited public transport.",
       "image": "https://staticfiles.maas.global/package-images/plan-premium.png",
       "examples": [
         {
-          "type": "HSL",
+          "type": "hsl",
           "quantity": "unlimited",
-          "description": "Unlimited public transport HSL (internal)"
+          "description": "Public transport HSL (internal)"
         },
         {
           "type": "taxi",
           "quantity": "10",
-          "description": "taxi trips"
+          "description": "Taxi trips"
         },
         {
           "type": "car",
           "quantity": "5",
-          "description": "days of car rental"
+          "description": "Days of car rental"
         }
       ]
     },
