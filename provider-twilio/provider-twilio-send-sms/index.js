@@ -4,15 +4,23 @@ const request = require('request-promise-lite');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const TWILIO_API_URL = 'https://api.twilio.com/2010-04-01';
+const NON_ALPHA_CODES = ['+90']; // list of country codes that don't support alpha
+const DEFAULT_FROM = 'Whim';
 
 /**
  * Handle an imcoming SMS message received at Twilio.
  */
 function sendSmsMessage(phone, message) {
-  //console.info('Sending SMS message:', phone, message);
+  let fromField = DEFAULT_FROM;
+
+  if (NON_ALPHA_CODES.some(code => phone.startsWith(code))) {
+    fromField = `+${process.env.TWILIO_FROM_NUMBER}`;
+  }
+  //console.info('Sending SMS message:', phone, message, 'From Field being:', fromField);
+
   return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages.json', {
     form: {
-      From: 'Whim',
+      From: fromField,
       To: phone,
       Body: message,
     },
