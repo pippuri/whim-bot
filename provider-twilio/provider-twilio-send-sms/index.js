@@ -13,13 +13,9 @@ const DEFAULT_FROM = 'Whim';
 function sendSmsMessage(phone, message) {
   let fromField = DEFAULT_FROM;
 
-  // This only works with two-digit country codes and may fail with some three-digit ones
-  // but a quick fix for Turkey, basically
-  NON_ALPHA_CODES.forEach( code => {
-    if (code === phone.substr(0, code.length)) {
-      fromField = `+${process.env.TWILIO_FROM_NUMBER}`;
-    }
-  });
+  if (NON_ALPHA_CODES.some(code => phone.startsWith(code))) {
+    fromField = `+${process.env.TWILIO_FROM_NUMBER}`;
+  }
   //console.info('Sending SMS message:', phone, message, 'From Field being:', fromField);
 
   return request.post(TWILIO_API_URL + '/Accounts/' + process.env.TWILIO_ACCOUNT_SID + '/Messages.json', {
