@@ -156,8 +156,8 @@ function processProfile(profile) {
     .then(customer => {
       // Extract the customer paymentMethod or use the default one
       // which indicates that no payment method is available
-      const paymentMethod = customer.paymentMethod ? customer.paymentMethod : MISSING_PAYMENT_METHOD;
-      console.log('Customer paymentMethod: ', customer.paymentMethod);
+      const paymentMethod = customer.customer.paymentMethod ? customer.customer.paymentMethod : MISSING_PAYMENT_METHOD;
+      console.log('Customer paymentMethod: ', customer.customer.paymentMethod);
       console.log('Updating Profile to: ', paymentMethod);
 
       // Update the database
