@@ -32,9 +32,9 @@ script.version('0.0.1')
   .description('Update postgres Profile.paymentMethod field based on Chargebee customer data')
   .option('-s, --stage [stage]', 'Choose a stage *required*')
   .option('--dry-run', 'Do not update the database, perform read-only operations')
-  .option('--force-404', 'Force 404 customers to be updated with a valid "missing" paymentMethod')
+  .option('--force-404', 'Force 404 customers to be updated with a good "missing" paymentMethod')
   .option('--skip-test-users', 'Do not try to update profiles which are detected as test users')
-  .option('--loose-invalid', 'Consider {type: "unknown", valid: false } as invalid')
+  .option('--loose-bad', 'Consider {type: "unknown", valid: false } as bad')
   .parse(process.argv);
 
 if (!script.stage) {
@@ -59,8 +59,8 @@ for (const props in variableFile) {
 
 // Initialize some counters for keeping track of activity
 let postgresProfilesTotal = 0;
-let postgresProfilesValid = 0;
-let postgresProfilesInvalid = 0;
+let postgresProfilesGood = 0;
+let postgresProfilesBad = 0;
 let postgresProfilesSkipped = 0;
 let postgresProfilesNotFound = 0;
 let postgresProfilesSkippedTestUser = 0;
@@ -70,19 +70,19 @@ let postgresProfilesUpdated = 0;
 
 
 /*
-   Helper to test if a paymentMethod is invalid.
-   It's invalid by either:
+   Helper to test if a paymentMethod is bad.
+   It's bad by either:
     - not existing
     - missing the basic property `type`
     - having the placeholder value combination of: { type: 'unknown', valid: true }
 */
-function invalidPaymentMethod(profile) {
-  if (script.looseInvalid) {
-      return (!profile.paymentMethod ||
-              !profile.paymentMethod.type ||
-              !profile.paymentMethod.valid ||
-              (profile.paymentMethod.type === 'unknown' &&
-               profile.paymentMethod.valid));
+function badPaymentMethod(profile) {
+  if (script.looseBad) {
+    return (!profile.paymentMethod ||
+            !profile.paymentMethod.type ||
+            !profile.paymentMethod.valid ||
+            (profile.paymentMethod.type === 'unknown' &&
+             profile.paymentMethod.valid));
   }
   return (!profile.paymentMethod ||
           !profile.paymentMethod.type ||
@@ -131,21 +131,21 @@ function processProfile(profile) {
     }
   }
 
-  // Check if paymentMethod is already valid
-  if (!invalidPaymentMethod(profile)) {
-    console.log('Profile.paymentMethod ', green('VALID'));
+  // Check if paymentMethod is already good
+  if (!badPaymentMethod(profile)) {
+    console.log('Profile.paymentMethod ', green('GOOD'));
     console.log(profile.paymentMethod);
     console.log(green('SKIPPED'));
-    postgresProfilesValid += 1;
+    postgresProfilesGood += 1;
     postgresProfilesSkipped += 1;
     return Promise.resolve();
   }
 
-  // paymentMethod invalid, so proceed
-  console.log('Profile.paymentMethod ', red('INVALID'));
+  // paymentMethod bad, so proceed
+  console.log('Profile.paymentMethod ', red('BAD'));
   console.log(profile.paymentMethod);
   console.log('Updating...');
-  postgresProfilesInvalid += 1;
+  postgresProfilesBad += 1;
 
   // Fetch the customer information
   const payload = {
@@ -204,8 +204,8 @@ models.Database.init()
     console.log('\n\n');
     console.log('Postgres profiles ', cyan('TOTAL'), '\t', postgresProfilesTotal);
     console.log('Postgres profiles  test\t\t', postgresProfilesSkippedTestUser);
-    console.log('Postgres profiles  valid\t', postgresProfilesValid);
-    //console.log('Postgres profiles  invalid\t', postgresProfilesInvalid);
+    console.log('Postgres profiles  good\t\t', postgresProfilesGood);
+    console.log('Postgres profiles  bad\t\t', postgresProfilesBad);
     console.log('Postgres profiles  404\t\t', postgresProfilesNotFound);
     console.log('Postgres profiles  forced\t', postgresProfilesForceUpdated);
     console.log('Postgres profiles ', yellow('SKIPPED'), '\t', postgresProfilesSkipped);
