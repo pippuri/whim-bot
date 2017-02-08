@@ -80,7 +80,9 @@ function invalidPaymentMethod(profile) {
   if (script.looseInvalid) {
       return (!profile.paymentMethod ||
               !profile.paymentMethod.type ||
-              !profile.paymentMethod.valid);
+              !profile.paymentMethod.valid ||
+              (profile.paymentMethod.type === 'unknown' &&
+               profile.paymentMethod.valid));
   }
   return (!profile.paymentMethod ||
           !profile.paymentMethod.type ||
