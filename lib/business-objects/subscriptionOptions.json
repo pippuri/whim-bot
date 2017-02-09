@@ -44,7 +44,7 @@
         "id": "fi-hsl-seutu",
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -53,7 +53,7 @@
         "id": "fi-hsl-lahiseutu-3",
         "name": "HSL regional 3",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -61,14 +61,15 @@
       {
         "id": "fi-hsl-helsinki",
         "name": "Helsinki",
-        "section": "Internal HSL ticket valid in",
-        "groupId": "ticket-upgrade",
-        "groupType": "oneOrNoneOf",
+        "groupName": "Internal HSL ticket valid in",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
         "name": "Espoo",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
@@ -76,6 +77,7 @@
       {
         "id": "fi-hsl-vantaa",
         "name": "Vantaa",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
@@ -114,7 +116,7 @@
         "id": "fi-hsl-seutu",
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -123,7 +125,7 @@
         "id": "fi-hsl-lahiseutu-3",
         "name": "HSL regional 3",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -131,14 +133,15 @@
       {
         "id": "fi-hsl-helsinki",
         "name": "Helsinki",
-        "section": "Internal HSL ticket valid in",
-        "groupId": "ticket-upgrade",
-        "groupType": "oneOrNoneOf",
+        "groupName": "Internal HSL ticket valid in",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
         "name": "Espoo",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
@@ -146,6 +149,7 @@
       {
         "id": "fi-hsl-vantaa",
         "name": "Vantaa",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
@@ -190,7 +194,7 @@
         "id": "fi-hsl-seutu",
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -199,7 +203,7 @@
         "id": "fi-hsl-lahiseutu-3",
         "name": "HSL regional 3",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
-        "section": "Suggested upgrades",
+        "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
         "recurring": true
@@ -207,14 +211,15 @@
       {
         "id": "fi-hsl-helsinki",
         "name": "Helsinki",
-        "section": "Internal HSL ticket valid in",
-        "groupId": "ticket-upgrade",
-        "groupType": "oneOrNoneOf",
+        "groupName": "Internal HSL ticket valid in",
+        "groupId": "internal-ticket",
+        "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
         "name": "Espoo",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
@@ -222,6 +227,7 @@
       {
         "id": "fi-hsl-vantaa",
         "name": "Vantaa",
+        "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
