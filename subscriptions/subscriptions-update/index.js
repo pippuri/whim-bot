@@ -91,8 +91,9 @@ module.exports.respond = function (event, callback) {
       const replace = validated.replace;
       let immediateUpdate = false;
 
-      // If your current planId is payg, update immediately
-      if (currentSubscription && currentSubscription.plan.id.includes('payg')) {
+      // If your current planId is payg or you are topping up, update immediately
+      if ((currentSubscription && currentSubscription.plan.id === SubscriptionManager.DEFAULT_SUBSCRIPTION.plan.id) ||
+          event.payload.addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
         immediateUpdate = true;
       }
 
