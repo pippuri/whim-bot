@@ -15,9 +15,10 @@ function handle(payload, key, defaultResponse) {
   const invoicedChanges = (invoice) ?
     SubscriptionManager.fromChargebeeEstimate(invoice).lineItems : [];
   let subs = SubscriptionManager.fromChargebeeSubscription(cbSubs);
-  let message;
   let resetBalance = true;
   //let user;
+
+  const xa = new Transaction(identityId);
 
   switch (payload.event_type) {
     case 'subscription_created':
@@ -25,11 +26,13 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_activated':
     case 'subscription_reactivated':
       // Reactivate the subscription by just changing to the new plan
-      message = `Subscription activated to ${JSON.stringify(subs)}`;
+      xa.message = `Subscription activated to ${subs.plan.id}`;
+      xa.meta('subscription', JSON.stringify(subs));
       break;
     case 'subscription_changed':
       // Change the subscription by changing to the new plan
-      message = `Subscription changed to ${JSON.stringify(subs)}`;
+      xa.message = `Subscription changed to ${subs.plan.id}`;
+      xa.meta('subscription', JSON.stringify(subs));
       // Reset the balance only in case the subscription change included
       // a payment of a plan (e.g. an upgrade happened)
       if (!invoicedChanges.some(i => i.type === 'plan')) {
@@ -38,13 +41,15 @@ function handle(payload, key, defaultResponse) {
       break;
     case 'subscription_renewed':
       // Renew the subscription by changing to the new plan
-      message = `Subscription renewed to ${JSON.stringify(subs)}`;
+      xa.message = `Subscription renewed to ${subs.plan.id}`;
+      xa.meta('subscription', JSON.stringify(subs));
       break;
     case 'subscription_cancelled':
     case 'subscription_deleted':
       // Cancel/delete the subscription by setting to the default plan (payg)
-      message = 'Subscription cancelled, plan changed to default; reset point balance.';
+      xa.message = 'Subscription cancelled, plan changed to default; reset point balance.';
       subs = SubscriptionManager.DEFAULT_SUBSCRIPTION;
+
       break;
     case 'subscription_shipping_address_updated':
       // Return early, because we do not change subscription - we change the profile
@@ -68,10 +73,9 @@ function handle(payload, key, defaultResponse) {
   // Note: non-recurring items are not displayed in subscription changes
   // (they can be found from invoice line items, though). For now, the
   // non-recurring items are handled in API endpoints (e.g. subscription-update)
-  const xa = new Transaction(identityId);
   return xa.start()
     .then(() => Profile.changeSubscription(identityId, subs, xa, resetBalance))
-    .then(response => xa.commit(message))
+    .then(response => xa.commit())
     .catch(error => xa.rollback().then(() => Promise.reject(error)));
 }
 
