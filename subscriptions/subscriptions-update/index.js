@@ -78,18 +78,31 @@ module.exports.respond = function (event, callback) {
       const subs = SubscriptionManager.fromSubscriptionOption(validated.payload);
       return validateLogicConflicts(subs, validated.replace);
     })
-    .then(subscription => {
+    .then(targetSubscription => {
+      return SubscriptionManager.retrieveSubscriptionByUserId(event.userId)
+        .then(currentSubscription => Promise.all([currentSubscription, targetSubscription]));
+    })
+    .then(subscriptions => {
+      const currentSubscription = subscriptions[0];
+      const targetSubscription = subscriptions[1];
+
       const customerId = validated.customerId;
       const userId = validated.userId;
       const replace = validated.replace;
+      let immediateUpdate = false;
+
+      // If your current planId is payg, update immediately
+      if (currentSubscription && currentSubscription.plan.id.includes('payg')) {
+        immediateUpdate = true;
+      }
 
       const xa = new Transaction(userId);
       return xa.start()
         .then(() => SubscriptionManager.updateSubscription(
-          subscription,
+          targetSubscription,
           customerId,
           userId,
-          true,
+          immediateUpdate,
           replace
         ))
         .catch(error => xa.rollback().then(() => Promise.reject(error)))
@@ -97,7 +110,7 @@ module.exports.respond = function (event, callback) {
           // Special case: Check if we had any top-up points that would need to
           // be updated immediately. They don't show up in updated subscription.
           const topupId = SubscriptionManager.TOPUP_ID;
-          const addons = subscription.addons || [];
+          const addons = targetSubscription.addons || [];
           const topup = addons.find(addon => addon.id === topupId);
 
           if (!topup) {
