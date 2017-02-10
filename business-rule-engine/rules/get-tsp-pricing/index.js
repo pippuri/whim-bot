@@ -43,14 +43,14 @@ function _profileHasValidZipcode(profile, zipcodeDataset) {
  * @param {Object} bookingProvider - a booking provider to test
  * @return {Boolean}
  */
-function _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) {
-  return (
-      // Provider region contain profile city data
-      bookingProvider
-        .region
-        .toLowerCase()
-        .indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0);
-}
+// function _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) {
+//   return (
+//       // Provider region contain profile city data
+//       bookingProvider
+//         .region
+//         .toLowerCase()
+//         .indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0);
+// }
 
 /**
  * Test if the given booking provider's service is included in the
@@ -70,7 +70,9 @@ function _isIncludedInSubscription(profile, bookingProvider) {
       .agencies
       .some(agency => agency === bookingProvider.agencyId) &&
     _profileHasValidZipcode(profile, zipcodeDataset) &&
-    _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) &&
+    // _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) &&
+    // NOTE below is temporary method.
+    bookingProvider.ticketName === 'Helsinki' &&
     bookingProvider.providerPrio === 1); // Give free ticket only to single region
 }
 
