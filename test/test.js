@@ -72,8 +72,10 @@ process.env.USE_MOCK_LAMBDA = 'TRUE';
 
 // Force request-promise-lite defaults to disable Chargebee webhooks
 process.env.RPL_DEFAULTS = JSON.stringify({
-  'chargebee-event-webhook': 'all-disabled',
-  'chargebee-event-emails': 'all-disabled',
+  headers: {
+    'chargebee-event-webhook': 'all-disabled',
+    'chargebee-event-emails': 'all-disabled',
+  },
 });
 
 // DB performance pre-setup (clear statistics) & seed data
