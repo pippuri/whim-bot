@@ -1,0 +1,20 @@
+[
+  {
+    "gid": 21,
+    "providerPrio": 1,
+    "active": true,
+    "providerName": "MaaS-provider-here-routes",
+    "providerType": "routes-taxi",
+    "agencyId": "HERE_TAXI",
+    "options": {},
+    "capabilities": {
+      "leaveAt": true,
+      "arriveBy": false
+    },
+    "the_geom": "0103000000010000000500000000000000A05E60C05F028F10E50B384000000000A05E60C07EC3DDF5B741494000000000406450C07EC3DDF5B741494000000000406450C05F028F10E50B384000000000A05E60C05F028F10E50B3840",
+    "region": "US",
+    "modes": [
+      "TAXI"
+    ]
+  }
+]
