@@ -184,14 +184,14 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
       });
   });
 
-  it('Creates a new Medium subscription with Helsinki regional', () => {
+  it('Creates a new Medium subscription with Helsinki regional with Seutu quantity set 0', () => {
     const pkg = listSubscriptionOptionsResponse.find(opt => {
       return opt.meta.name === 'Medium';
     });
     expect(pkg).to.exist;
     const subs = {
       plan: pkg.plan,
-      addons: [{ id: 'fi-hsl-helsinki', quantity: 1 }],
+      addons: [{ id: 'fi-hsl-helsinki', quantity: 1 }, { id: 'fi-whim-seutu', quantity: 0 }],
       coupons: pkg.coupons,
     };
 
@@ -205,6 +205,9 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
           subscriptionResponseSchema,
           createSubscriptionResponse
         )).to.exist;
+
+        // Expect fi-whim seutu to not exist
+        expect(createSubscriptionResponse.addons.length).to.equal(1);
       });
   });
 
