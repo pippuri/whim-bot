@@ -89,11 +89,12 @@ module.exports.respond = function (event, callback) {
       const customerId = validated.customerId;
       const userId = validated.userId;
       const replace = validated.replace;
+      const addons = event.payload.addons || [];
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
       if ((currentSubscription && currentSubscription.plan.id === SubscriptionManager.DEFAULT_SUBSCRIPTION.plan.id) ||
-          event.payload.addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
+          addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
         immediateUpdate = true;
       }
 
