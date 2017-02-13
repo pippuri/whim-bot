@@ -3,6 +3,7 @@
 const contactSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/contact.json');
 const expect = require('chai').expect;
 const pricingSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/pricing.json');
+const request = require('request-promise-lite');
 const SubscriptionManager = require('../../../../lib/business-objects/SubscriptionManager');
 const subscriptionSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscription.json');
 const subscriptionOptionSchema = require('maas-schemas/prebuilt/maas-backend/subscriptions/subscriptionOption.json');
@@ -133,6 +134,44 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
 
   it('Updates the customer', () => {
     return SubscriptionManager.updateCustomer(updatedCustomer)
+      .then(
+        res => Promise.resolve(updateCustomerResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          contactResponseSchema,
+          updateCustomerResponse
+        )).to.exist;
+      });
+  });
+
+  it('Updates the customer with Stripe payment method', () => {
+    // First generate a Stripe token, then use that in place of the payment method
+    const form = {
+      'card[number]': updatedCustomer.paymentMethod.number,
+      'card[exp_month]': updatedCustomer.paymentMethod.expiryMonth,
+      'card[exp_year]': updatedCustomer.paymentMethod.expiryYear,
+      'card[cvc]': updatedCustomer.paymentMethod.cvv,
+      'card[address_city]': updatedCustomer.city,
+      'card[address_zip]': updatedCustomer.zipCode,
+      'card[address_line1]': updatedCustomer.address,
+      'card[address_country]': updatedCustomer.country,
+    };
+    const auth = {
+      user: 'pk_test_h1HqcAHTiZ4ieT3dnJ6vjhLB',
+      password: '',
+    };
+
+    return request.post('https://api.stripe.com/v1/tokens', { form, auth })
+      .then(response => {
+        const json = JSON.parse(response.toString());
+        const stripedCustomer = Object.assign({}, updatedCustomer, {
+          paymentMethod: { type: 'stripe', token: json.id },
+        });
+
+        return SubscriptionManager.updateCustomer(stripedCustomer);
+      })
       .then(
         res => Promise.resolve(updateCustomerResponse = res),
         err => Promise.reject(error = err)
