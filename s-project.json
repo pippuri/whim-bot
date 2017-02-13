@@ -19,6 +19,14 @@
     "webpack": {
       "configPath": "webpack.config.js"
     },
+    "runtime": {
+      "local-node": {
+        "flags": [
+          "--harmony",
+          "--harmony-async-await"
+        ]
+      }
+    },
     "slack": {
       "token": "xoxb-55270714182-UY7cMnTgSTucKTnnzOvW4Gcl",
       "channel": "serverless",
@@ -48,7 +56,8 @@
     "serverless-meta-sync",
     "serverless-slack-plugin",
     "serverless-header-function",
-    "serverless-repl-plugin"
+    "serverless-repl-plugin",
+    "serverless-plugin-local-runtime"
   ],
   "version": "0.1.0",
   "profile": "serverless-v0.4.2",
