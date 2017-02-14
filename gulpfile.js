@@ -9,6 +9,12 @@ const gulp = require('gulp');
 const jsonlint = require('gulp-jsonlint');
 const jsonclint = require('gulp-json-lint');
 
+// Required for gulp-mocha to recognise async-await
+require('harmonize')([
+  'harmony',
+  'harmony_async-await',
+]);
+
 const jsoncFiles = ['.eslintrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
 const jsFiles = ['**/*.js', '!**/node_modules/**/*.js', '!www/**/*.js', '!_meta/**/*.js'];
