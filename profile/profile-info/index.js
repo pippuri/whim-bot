@@ -30,7 +30,7 @@ function formatResponse(profile) {
  * Export respond to Handler
  */
 module.exports.respond = (event, callback) => {
-  return Database.init()
+  Database.init()
     .then(() => retrieveProfile(event))
     .then(
       profile => Database.cleanup().then(() => formatResponse(profile)),
@@ -49,4 +49,25 @@ module.exports.respond = (event, callback) => {
 
       callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
     });
+};
+
+module.exports.respond = async (event, callback) => {
+  try {
+    await Database.init().then(() => {});
+    const profile = await retrieveProfile(event);
+    await Database.cleanup().then(() => {
+      callback(null, formatResponse(profile));
+    });
+  } catch (_error) {
+    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+    console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
+    console.warn(_error.stack);
+    if (Database._handleCount > 0) {
+      await Database.cleanup().then(() => {
+        callback(_error);
+      });
+    } else {
+      callback(_error);
+    }
+  }
 };

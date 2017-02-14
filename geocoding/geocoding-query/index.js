@@ -6,7 +6,6 @@ const utils = require('../../lib/utils');
 const validator = require('../../lib/validator');
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
-
 const schema = require('maas-schemas/prebuilt/maas-backend/geocoding/geocoding-query/request.json');
 
 function orderByDistance(features, reference) {
@@ -26,29 +25,26 @@ function orderByDistance(features, reference) {
   return sorted;
 }
 
-module.exports.respond = function (event, callback) {
+module.exports.respond = async (event, callback) => {
   // Parse and validate results
   const validationOptions = {
     coerceTypes: true,
     useDefaults: true,
     sanitize: true,
   };
-  let parsed;
 
-  return validator.validate(schema, event, validationOptions)
-  .then(_parsed => (parsed = _parsed))
-  .then(parsed => bus.call('MaaS-provider-here-geocoding', parsed.payload))
-  .then(results => {
-    // Order by distance, return at most 'count' items
+  try {
+    const { payload, count } = await validator.validate(schema, event, validationOptions);
+    const results = await bus.call('MaaS-provider-here-geocoding', payload);
     const reference = { lat: event.lat, lon: event.lon };
-    const features = orderByDistance(results.features, reference).slice(0, parsed.count);
+    const features = orderByDistance(results.features, reference).slice(0, count);
     results.features = features;
 
     // Replace the delegate query info with our own query
     results.debug = event.payload;
     callback(null, utils.sanitize(results));
-  })
-  .catch(_error => {
+
+  } catch (_error) {
     console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
     console.warn(_error.stack);
@@ -65,5 +61,6 @@ module.exports.respond = function (event, callback) {
     }
 
     callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+    return;
+  }
 };
