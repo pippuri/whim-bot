@@ -404,11 +404,10 @@ class Decider {
     return bus.call(LAMBDA_PUSH_NOTIFICATION_APPLE, notifData)
       .then(result => {
         console.info(`[Decider] Push notification to user ${this.flow.trip.identityId} sent, result:`, result);
+        return Promise.resolve();
       })
       .catch(err => {
         console.warn(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
-      })
-      .finally(() => {
         return Promise.resolve();
       });
   }

@@ -21,17 +21,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -63,19 +59,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
-
         })
         .catch(err => {
           error = err;
-
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -107,17 +97,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -151,17 +137,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -195,17 +177,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
@@ -239,17 +217,13 @@ module.exports = () => {
     let error;
     let response;
 
-    before(done => {
-      bus.call('MaaS-routes-query', event)
+    before(() => {
+      return bus.call('MaaS-routes-query', event)
         .then(res => {
           response = res;
         })
         .catch(err => {
           error = err;
-        })
-        .finally(() => {
-          done();
-          return;
         });
     });
 
