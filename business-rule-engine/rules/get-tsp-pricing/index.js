@@ -17,41 +17,6 @@ const bookingProviderRules = require('../get-booking-provider');
 const utils = require('../../../lib/utils');
 const _flatten = require('lodash/flatten');
 
-// TODO Move dataset to another place
-const zipcodeDataset = require('../../zipcode-Uusimaa.json');
-
-
-/**
- * Test if the given profile has a city with within the given zipcode set.
- *
- * @param {Object} profile - a user profile
- * @param {Object} zipcodeDataset - zipcode data to test against
- * @return {Boolean}
- */
-function _profileHasValidZipcode(profile, zipcodeDataset) {
-  return (
-    profile.zipCode && profile.city && // Profile have zipcode and city data
-    zipcodeDataset[profile.zipCode]);  // Zipcode is in the given zip code dataset
-}
-
-/**
- * Test if the given booking provider's region of operation is able to handle
- * the given profile's city.
- *
- * @param {Object} zipcodeDataset - zipcode data to reverse lookup against
- * @param {Object} profile - a user profile
- * @param {Object} bookingProvider - a booking provider to test
- * @return {Boolean}
- */
-function _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) {
-  return (
-      // Provider region contain profile city data
-      bookingProvider
-        .region
-        .toLowerCase()
-        .indexOf(zipcodeDataset['' + profile.zipCode].city.toLowerCase()) >= 0);
-}
-
 /**
  * Test if the given booking provider's service is included in the
  * given profile's subscription.
@@ -69,8 +34,8 @@ function _isIncludedInSubscription(profile, bookingProvider) {
       .subscription
       .agencies
       .some(agency => agency === bookingProvider.agencyId) &&
-    _profileHasValidZipcode(profile, zipcodeDataset) &&
-    _bookingProviderCanServiceProfile(zipcodeDataset, profile, bookingProvider) &&
+    // NOTE below is temporary method.
+    bookingProvider.ticketName === 'Helsinki' &&
     bookingProvider.providerPrio === 1); // Give free ticket only to single region
 }
 
