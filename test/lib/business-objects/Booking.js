@@ -120,5 +120,4 @@ describe('Booking', () => {
     return Database.cleanup();
   });
 
-
 });
