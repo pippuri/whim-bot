@@ -7,18 +7,23 @@ const jwt = require('jsonwebtoken');
 const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
-//const ProfileModel = require('../../lib/models/Profile');
-const Promise = require('bluebird');
+const promiseUtils = require('../../lib/utils/promise');
 const Transaction = require('../../lib/business-objects/Transaction');
-//const TransactionLog = require('../../lib/models/TransactionLog');
 
-const cognitoIdentity = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
+const ci = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
-const iot = new AWS.Iot({ region: process.env.AWS_REGION });
-
-Promise.promisifyAll(cognitoIdentity);
-Promise.promisifyAll(cognitoSync);
-Promise.promisifyAll(iot);
+const iotCallback = new AWS.Iot({ region: process.env.AWS_REGION });
+const getOpenIdTokenForDeveloperIdentityAsync = promiseUtils.promisify(ci.getOpenIdTokenForDeveloperIdentity, ci);
+const cognito = {
+  listRecordsAsync: promiseUtils.promisify(cognitoSync.listRecords, cognitoSync),
+  updateRecordsAsync: promiseUtils.promisify(cognitoSync.updateRecords, cognitoSync),
+};
+const iot = {
+  createThingAsync: promiseUtils.promisify(iotCallback.createThing, iotCallback),
+  updateThingAsync: promiseUtils.promisify(iotCallback.updateThing, iotCallback),
+  attachThingPrincipalAsync: promiseUtils.promisify(iotCallback.attachThingPrincipal, iotCallback),
+  attachPrincipalPolicyAsync: promiseUtils.promisify(iotCallback.attachPrincipalPolicy, iotCallback),
+};
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -33,7 +38,7 @@ function getCognitoDeveloperIdentity(plainPhone) {
     Logins: logins,
   };
   console.info('Getting cognito developer identity with', JSON.stringify(options, null, 2));
-  return cognitoIdentity.getOpenIdTokenForDeveloperIdentityAsync(options)
+  return getOpenIdTokenForDeveloperIdentityAsync(options)
   .then(response => {
     return {
       identityId: response.IdentityId,
@@ -48,7 +53,7 @@ function getCognitoDeveloperIdentity(plainPhone) {
 function updateCognitoProfile(identityId, profile) {
   let syncSessionToken;
   const patches = [];
-  return cognitoSync.listRecordsAsync({
+  return cognito.listRecordsAsync({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
@@ -81,7 +86,7 @@ function updateCognitoProfile(identityId, profile) {
     });
 
     if (patches.length > 0) {
-      return cognitoSync.updateRecordsAsync({
+      return cognito.updateRecordsAsync({
         IdentityPoolId: process.env.COGNITO_POOL_ID,
         IdentityId: identityId,
         DatasetName: process.env.COGNITO_PROFILE_DATASET,
@@ -125,7 +130,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
       });
     }
 
-    console.info('ERROR:', err.code, err);
+    console.warn('Error:', err.code, err);
     return Promise.reject(err);
   })
   .then(response => {
@@ -146,56 +151,8 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
   })
   .then(response => {
     console.info('AttachPrincipalPolicy response:', response);
-    return iot.listPrincipalPoliciesAsync({
-      principal: identityId,
-    });
-  })
-  .then(response => {
-    console.info('Attached policies:', response);
-    return iot.listPrincipalThingsAsync({
-      principal: identityId,
-    });
-  })
-  .then(response => {
-    console.info('Attached things:', response);
   });
 }
-
-/**
- * Synchronises transaction log with a profile balance.
- */
-/*function syncTransactionLog(profile) {
-  const identityId = profile.identityId;
-  const transaction = new Transaction(identityId);
-
-  return transaction.start()
-    .then(() => transaction.bind(TransactionLog)
-      .query()
-      .where('identityId', identityId)
-    )
-    .then(logEntries => {
-      const transactionValueSum = logEntries.reduce((prev, curr) => prev + curr.value, 0);
-
-      // If the sum of all transaction record values does not equal the user
-      // profile balance, create a log entry to synchronize the records.
-      if (transactionValueSum !== profile.balance) {
-        console.warn(`[Auth login] transaction records values sum (${transactionValueSum}) does not equal to profile balance (${profile.balance})`);
-        transaction.type = Transaction.types.BALANCE_SYNC;
-        transaction.meta(ProfileModel.tableName, identityId);
-
-        const delta = profile.balance - transactionValueSum;
-        if (delta > 0) {
-          transaction.increaseValue(delta);
-        } else {
-          transaction.decreaseValue(-delta);
-        }
-
-        return transaction.commit('Balancing user balance with transaction records');
-      }
-      return transaction.rollback();
-    })
-    .catch(error => transaction.rollback().then(() => Promise.reject(error)));
-}*/
 
 /**
  * Login using a verification code sent by SMS.
@@ -236,10 +193,6 @@ function smsLogin(phone, code) {
   .then(() => {
     // First try to fetch an existing identity
     return Profile.retrieve(identityId)
-      // There's a profile but no transaction found, create first log entry
-      // to state the beginning user balance
-      // FIXME Syncing operation removed because it is heavy & biases logs
-      //.then(profile => syncTransactionLog(profile))
       // No profile found, create one
       .catch(error => {
         // Profile not exist error code is 404, if not 404, throw forward the error
