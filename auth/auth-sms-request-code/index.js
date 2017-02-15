@@ -1,13 +1,15 @@
 'use strict';
 
-const Promise = require('bluebird');
+
+const AWS = require('aws-sdk');
 const bus = require('../../lib/service-bus');
 const errors = require('../../lib/errors');
 const lib = require('../lib');
-const AWS = require('aws-sdk');
+const promiseUtils = require('../../lib/utils/promise');
 
 AWS.config.update({ region: 'eu-west-1' });
-const S3 = Promise.promisifyAll(new AWS.S3());
+const s3 = new AWS.S3();
+const getObjectAsync = promiseUtils.promisify(s3.getObject, s3);
 
 function loadGreenlist() {
   let stage;
@@ -22,7 +24,8 @@ function loadGreenlist() {
       stage = 'dev';
       break;
   }
-  return S3.getObjectAsync({
+
+  return getObjectAsync({
     Bucket: 'maas-serverless',
     Key: `serverless/MaaS/greenlists/greenlist-${stage}.json`,
   })
