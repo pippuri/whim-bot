@@ -3,7 +3,6 @@
 const MaaSError = require('../../lib/errors/MaaSError');
 const productData = require('./product-data.json');
 const Pricing = require('../../lib/business-objects/Pricing');
-const Promise = require('bluebird');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/request.json');
 const responseSchema = require('maas-schemas/prebuilt/maas-backend/bookings/bookings-agency-products/response.json');
 const utils = require('../../lib/utils');
@@ -18,7 +17,7 @@ function getAgencyProductOptions(event) {
   }
 
   // Convert euros to points; annotate agency id.
-  return Promise.map(products, product => {
+  return Promise.all(products.map(product => {
     const cost = product.cost;
     return Pricing.convertCostToPoints(parseFloat(cost.amount), cost.currency)
       .then(points => {
@@ -29,7 +28,7 @@ function getAgencyProductOptions(event) {
         annotated.fare = points;
         return annotated;
       });
-  })
+  }))
   .then(products => {
     return {
       agencyId: event.agencyId,

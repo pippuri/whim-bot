@@ -3,7 +3,6 @@
 const Booking = require('../../lib/business-objects/Booking');
 const Database = require('../../lib/models/Database');
 const MaaSError = require('../../lib/errors/MaaSError');
-const Promise = require('bluebird');
 const Transaction  = require('../../lib/business-objects/Transaction');
 const utils = require('../../lib/utils');
 

@@ -1,7 +1,6 @@
 'use strict';
 
 const Database = require('../../lib/models/Database');
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const signatures = require('../../lib/signatures');
 const utils = require('../../lib/utils');
