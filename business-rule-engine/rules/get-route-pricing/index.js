@@ -11,7 +11,6 @@ const _sortBy = require('lodash/sortBy');
 const _sumBy = require('lodash/sumBy');
 const _uniqWith = require('lodash/uniqWith');
 const _values = require('lodash/values');
-const Promise = require('bluebird');
 const powerset = require('powerset');
 const utils = require('../../../lib/utils');
 
