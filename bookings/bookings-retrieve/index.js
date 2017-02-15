@@ -2,9 +2,11 @@
 
 const Booking = require('../../lib/business-objects/Booking');
 const Database = require('../../lib/models/Database');
+const Itinerary = require('../../lib/business-objects/Itinerary');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Promise = require('bluebird');
 const Transaction = require('../../lib/business-objects/Transaction');
+const TripEngine = require('../../lib/trip');
 const utils = require('../../lib/utils');
 
 /**
@@ -52,6 +54,7 @@ module.exports.respond = (event, callback) => {
     .then(() => {
       if (event.refresh && event.refresh === 'true' || event.refresh === true) {
         const transaction = new Transaction(event.identityId);
+        let stateBefore;
 
         // Commit the transaction but skip writing to transaction log
         // this does not have anything to do with value, but we want to prevent
@@ -59,7 +62,23 @@ module.exports.respond = (event, callback) => {
         return transaction.start()
         .then(() => Booking.retrieve(event.bookingId, transaction))
         .then(booking => booking.validateOwnership(event.identityId))
+        .then(booking => {
+          stateBefore = booking.state;
+          return Promise.resolve(booking);
+        })
         .then(booking => booking.refresh(transaction))
+        .then(booking => {
+          // If Booking state has changed, and it is part of Itinerary or Itineraries,
+          // signal corresponging TripEngine flow(s)
+          if (booking.state !== stateBefore) {
+            return Itinerary.query(booking.identityId, null, null, [], booking.id)
+              .then(itineraries => Promise.map(itineraries, itinerary => {
+                return TripEngine.checkWithItinerary(itinerary);
+              }))
+              .then(() => Promise.resolve(booking));
+          }
+          return Promise.resolve(booking);
+        })
         .then(booking => {
           return transaction.commit().then(() => Promise.resolve(booking));
         })

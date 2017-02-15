@@ -15,4 +15,5 @@ describe('business-objects', () => {
   });
 
   require('./SubscriptionManager');
+  require('./Booking');
 });

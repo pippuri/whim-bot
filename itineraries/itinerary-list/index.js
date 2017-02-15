@@ -20,6 +20,7 @@ function parseAndValidateInput(event) {
   const endTime = (utils.isEmptyValue(event.endTime)) ? null : parseInt(event.endTime, 10);
   const states = (utils.isEmptyValue(event.states)) ? [] : event.states.split(',');
   const validStates = stateMachine.getAllStates('Itinerary');
+  const bookingId = event.bookingId;
 
   if (typeof identityId === 'undefined' || identityId === '') {
     return Promise.reject(new MaaSError('Missing identityId input', 400));
@@ -53,6 +54,7 @@ function parseAndValidateInput(event) {
     startTime: startTime,
     endTime: endTime,
     states: states,
+    bookingId: bookingId,
   });
 }
 
@@ -71,7 +73,7 @@ module.exports.respond = (event, callback) => {
     Database.init(),
     parseAndValidateInput(event),
   ])
-    .spread((knex, parsed) => Itinerary.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
+    .spread((knex, parsed) => Itinerary.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states, parsed.bookingId))
     .then(
       itineraries => Database.cleanup().then(() => formatResponse(itineraries)),
       error => Database.cleanup().then(() => Promise.reject(error))
