@@ -18,7 +18,6 @@
  * @see https://developer.here.com/rest-apis/documentation/geocoder/topics/examples-reverse-geocoding.html
  * @see https://en.wikipedia.org/wiki/GeoJSON
  */
-const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 const MaaSError = require('../../../lib/errors/MaaSError');
