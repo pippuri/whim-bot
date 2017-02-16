@@ -341,16 +341,11 @@ class Decider {
    * Helper check leg reservation & act if needed
    */
   _activateLeg(leg) {
-    console.info(`[Decider] activating leg '${leg.id}' in state '${leg.state}'...`);
-
-    if (['FINISHED', 'CANCELLED', 'CANCELLED_WITH_ERRORS'].some(state => state === leg.state)) {
-      console.info('[Decider] leg already done; ignoring');
-      return Promise.resolve();
-    }
-
     const transaction = new Transaction(this.flow.trip.identityId);
     // try to activate leg
+    console.info(`[Decider] activating leg '${leg.id}'...`);
     return transaction.start()
+      .then(() => leg.refreshState()) // ensure we have latest state from DB once inside transaction
       .then(() => leg.activate(transaction, { tryReuseBooking: true }))
       .then(() => {
         // check that all OK with the booking
@@ -379,7 +374,7 @@ class Decider {
         return Promise.resolve();
       })
       .catch(err => {
-        console.warn('[Decider] Could not check leg!', err);
+        console.warn('[Decider] Could not activate leg!', err);
         console.warn(err.stack);
         return transaction.rollback()
           .then(() => Promise.reject(`error while checking leg '${leg.id}', err: ${err}`));
