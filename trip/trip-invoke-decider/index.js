@@ -60,11 +60,10 @@ class Decider {
     // get the itinerary & process the flow task
     return Itinerary.retrieve(this.flow.trip.referenceId)
       .catch(err => {
-        console.warn('[Decider] ERROR cannot retrieve the Itinerary, err:', err.stack || err);
-        console.warn(`[Decider] Aborting flow for Itinerary ${this.flow.trip.referenceId}`);
+        console.warn(`[Decider] Aborting flow for Itinerary ${this.flow.trip.referenceId} as could not retrieve Itinerary`);
         this.decision.abortFlow(`Itinerary ${this.flow.trip.referenceId} couldn't be retrieved`);
         return this._sendPushNotification('ObjectChange', { ids: [this.flow.trip.referenceId], objectType: 'Itinerary' })
-          .then(() => Promise.resolve());
+          .then(() => Promise.reject(err));
       })
       .then(itinerary => {
         if (itinerary) {
@@ -72,7 +71,13 @@ class Decider {
           return this._processTask(this.flow.task);
         }
         return Promise.resolve();
+      })
+      .catch(err => {
+        console.warn(`[Decider] ERROR while making a decision for workflowId '${this.flow.id}'`, err.stack || err);
+        console.warn(`decisionTaskCompletedParams: ${JSON.stringify(this.decision.decisionTaskCompletedParams, null, 2)}`);
+        return Promise.resolve();
       });
+
   }
 
   /**
