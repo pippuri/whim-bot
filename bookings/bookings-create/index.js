@@ -83,6 +83,7 @@ module.exports.respond = (event, callback) => {
             .then(() => Promise.resolve(paidBooking));
         });
     })
+    .catch(error => transaction.rollback().then(() => Promise.reject(error)))
     .then(booking => formatResponse(booking.toObject()))
     .then(
       response => Database.cleanup().then(() => response),
