@@ -94,8 +94,13 @@ function smsRequestCode(phone, provider) {
 }
 
 module.exports.respond = function (event, callback) {
-  const sanitizedNumber = sanitizePhoneNumber(event.phone);
-  return loadGreenlist()
+  let sanitizedNumber;
+
+  return Promise.resolve()
+    .then(() => {
+      sanitizedNumber = sanitizePhoneNumber(event.phone);
+      return loadGreenlist();
+    })
     .then(greenlist => checkGreenlist(greenlist, sanitizedNumber.replace(/[^\d]/g, '')))
     .then(() => smsRequestCode(sanitizedNumber, event.provider))
     .then(response => {
@@ -108,6 +113,7 @@ module.exports.respond = function (event, callback) {
 
       if (_error instanceof errors.MaaSError) {
         callback(_error);
+        return;
       }
 
       callback(new errors.MaaSError(`Internal server error: ${_error.toString()}`, 500));
