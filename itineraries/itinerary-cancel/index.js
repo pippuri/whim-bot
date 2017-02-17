@@ -34,11 +34,11 @@ module.exports.respond = (event, callback) => {
 
   return validateInput(event)
     .then(() => Database.init())
+    .then(() => transaction.start())
     .then(() => Itinerary.retrieve(event.itineraryId))
     .then(itinerary => itinerary.validateOwnership(event.identityId))
     .then(itinerary => {
-      return transaction.start()
-        .then(() => itinerary.cancel(transaction))
+      return itinerary.cancel(transaction)
         .then(itinerary => Trip.cancelWithItinerary(itinerary))
         .then(itineraryBO => {
           const itinerary = itineraryBO.toObject();
