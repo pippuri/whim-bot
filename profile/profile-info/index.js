@@ -26,31 +26,6 @@ function formatResponse(profile) {
   };
 }
 
-/**
- * Export respond to Handler
- */
-module.exports.respond = (event, callback) => {
-  Database.init()
-    .then(() => retrieveProfile(event))
-    .then(
-      profile => Database.cleanup().then(() => formatResponse(profile)),
-      error => Database.cleanup().then(() => Promise.reject(error))
-    )
-    .then(response => callback(null, response))
-    .catch(_error => {
-      console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
-      console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-      console.warn(_error.stack);
-
-      if (_error instanceof MaaSError) {
-        callback(_error);
-        return;
-      }
-
-      callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-    });
-};
-
 module.exports.respond = async (event, callback) => {
   try {
     await Database.init().then(() => {});
