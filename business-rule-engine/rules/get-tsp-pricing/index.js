@@ -28,15 +28,17 @@ const _flatten = require('lodash/flatten');
  * @return {Boolean}
  */
 function _isIncludedInSubscription(profile, bookingProvider) {
+  const profileAddons = profile.subscription.addons || [];
+  const profileAgencies = profile.subscription.agencies || [];
   return (
     // Agency is included in plan
-    profile
-      .subscription
-      .agencies
-      .some(agency => agency === bookingProvider.agencyId) &&
+    profileAgencies.some(agency => agency === bookingProvider.agencyId) &&
     // NOTE below is temporary method.
-    bookingProvider.ticketName === 'Helsinki' &&
-    bookingProvider.providerPrio === 1); // Give free ticket only to single region
+    // it's HSL Helsinki ticket or Seutu ticket + seutu hsl addon
+    (
+      bookingProvider.ticketName === 'Helsinki' ||
+      (bookingProvider.ticketName === 'Seutu' && profileAddons.some(addon => addon.id === 'fi-hsl-seutu'))
+    ));
 }
 
 /**

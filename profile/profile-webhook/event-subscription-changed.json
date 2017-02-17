@@ -30,7 +30,8 @@
                   "country": "FI",
                   "zip": "00110",
                   "object": "shipping_address"
-              }
+              },
+              "addons": []
           },
           "customer": {
               "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
@@ -89,4 +90,3 @@
     }
   }
 }
-
