@@ -18,6 +18,7 @@ describe('routes provider', () => {
     });
   });
 
+/*
   describe('TripGo', () => {
     const lambda = require('../../../routes/providers/provider-tripgo-routes/handler.js');
     testLeaveAt(lambda, { taxiSupport: false });
@@ -26,6 +27,7 @@ describe('routes provider', () => {
     testToUnsupported(lambda);
     test985kAfrica(lambda);
   });
+*/
 
   describe('Digitransit', () => {
     const lambda = require('../../../routes/providers/provider-digitransit-routes/handler.js');
@@ -55,5 +57,4 @@ describe('routes provider', () => {
     testToUnsupported(lambda, { skip: true });
     test985kAfrica(lambda, { skip: true });
   });
-
 });

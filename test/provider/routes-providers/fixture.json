@@ -1,10 +1,6 @@
 {
   "providers": [
     {
-      "name": "TripGo",
-      "lambda": "MaaS-provider-tripgo-routes"
-    },
-    {
       "name": "DigiTransit",
       "lambda": "MaaS-provider-digitransit-routes"
     },
