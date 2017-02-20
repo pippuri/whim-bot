@@ -23,6 +23,8 @@ function validatePermissions(customerId, userId) {
 module.exports.respond = function (event, callback) {
   const validationOptions = {
     coerceTypes: true,
+    useDefaults: true,
+    sanitize: true,
   };
   let parsed;
 
@@ -31,7 +33,9 @@ module.exports.respond = function (event, callback) {
     .then(() => validatePermissions(parsed.customerId, parsed.userId))
     .then(() => {
       const userId = parsed.userId;
-      return SubscriptionManager.retrieveSubscriptionByUserId(userId)
+      const nextPeriod = parsed.nextPeriod;
+
+      return SubscriptionManager.retrieveSubscriptionByUserId(userId, nextPeriod)
         .then(subscription => SubscriptionManager.annotateSubscription(subscription));
     })
     .then(subs => ({ subscription: subs, debug: { event: event } }))
