@@ -42,8 +42,10 @@
     "addons": [
       {
         "id": "fi-hsl-seutu",
+        "quantity": 1,
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -51,8 +53,10 @@
       },
       {
         "id": "fi-hsl-lahiseutu-3",
-        "name": "HSL regional 3",
+        "quantity": 1,
+        "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -60,15 +64,21 @@
       },
       {
         "id": "fi-hsl-helsinki",
+        "quantity": 1,
         "name": "Helsinki",
+        "description": "Helsinki internal ticket",
         "groupName": "Internal HSL ticket valid in",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
+        "quantity": 1,
         "name": "Espoo",
+        "description": "Espoo internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
@@ -76,7 +86,10 @@
       },
       {
         "id": "fi-hsl-vantaa",
+        "quantity": 1,
         "name": "Vantaa",
+        "description": "Vantaa internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
@@ -114,8 +127,10 @@
     "addons": [
       {
         "id": "fi-hsl-seutu",
+        "quantity": 1,
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -123,8 +138,10 @@
       },
       {
         "id": "fi-hsl-lahiseutu-3",
-        "name": "HSL regional 3",
+        "quantity": 1,
+        "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -132,15 +149,21 @@
       },
       {
         "id": "fi-hsl-helsinki",
+        "quantity": 1,
         "name": "Helsinki",
+        "description": "Helsinki internal ticket",
         "groupName": "Internal HSL ticket valid in",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
+        "quantity": 1,
         "name": "Espoo",
+        "description": "Espoo internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
@@ -148,7 +171,10 @@
       },
       {
         "id": "fi-hsl-vantaa",
+        "quantity": 1,
         "name": "Vantaa",
+        "description": "Vantaa internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
@@ -192,8 +218,10 @@
     "addons": [
       {
         "id": "fi-hsl-seutu",
+        "quantity": 1,
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -201,8 +229,10 @@
       },
       {
         "id": "fi-hsl-lahiseutu-3",
-        "name": "HSL regional 3",
+        "quantity": 1,
+        "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Suggested upgrades",
         "groupId": "ticket-upgrade",
         "groupType": "oneOrNoneOf",
@@ -210,15 +240,21 @@
       },
       {
         "id": "fi-hsl-helsinki",
+        "quantity": 1,
         "name": "Helsinki",
+        "description": "Helsinki internal ticket",
         "groupName": "Internal HSL ticket valid in",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
         "recurring": true
       },
       {
         "id": "fi-hsl-espoo",
+        "quantity": 1,
         "name": "Espoo",
+        "description": "Espoo internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
@@ -226,7 +262,10 @@
       },
       {
         "id": "fi-hsl-vantaa",
+        "quantity": 1,
         "name": "Vantaa",
+        "description": "Vantaa internal ticket",
+        "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Internal HSL ticket valid in",
         "groupId": "internal-ticket",
         "groupType": "oneOf",
