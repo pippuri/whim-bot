@@ -13,6 +13,7 @@ if [[ $TRAVIS_PULL_REQUEST == "false" ]];
       SERVERLESS_STAGE=test knex migrate:latest;
 
       # Auto-deploy to test
+      npm run deploy-docs;
       npm run deploy-test:all;
 
       echo "Finished running autodeployment to test stage script ..."

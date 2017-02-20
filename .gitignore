@@ -49,6 +49,9 @@ _serverless_handler__orig__.js
 # Greenlists
 _meta/greenlists
 
+# Static files
+_meta/static-files
+
 #VIM STUFF
 *.swp
 
