@@ -127,12 +127,11 @@ module.exports.respond = function (event, callback) {
         });
     })
     .then(subscription => SubscriptionManager.annotateSubscription(subscription))
-    .then(subs => ({ subscription: subs, debug: { event: event } }))
     .then(
-      results => Database.cleanup().then(() => results),
+      subs => Database.cleanup().then(() => subs),
       error => Database.cleanup().then(() => Promise.reject(error))
     )
-    .then(results => callback(null, utils.sanitize(results)))
+    .then(subs => callback(null, utils.sanitize({ subscription: subs, debug: { event: event } })))
     .catch(_error => {
       console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
       console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
