@@ -12,7 +12,6 @@ const Trip = require('../../lib/trip/Trip');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
-Promise.promisifyAll(swfClient);
 
 const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification';
 
@@ -413,7 +412,10 @@ class Decider {
       })
       .catch(err => {
         console.warn(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
+<<<<<<< 1f2b6dd48ddf2af7b49ef4ba97cb3c7b36b72df1
         return Promise.resolve();
+=======
+>>>>>>> Remove extraneous Bluebirds from trip Lambdas
       });
   }
 }

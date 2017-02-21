@@ -1,13 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const AWS = require('aws-sdk');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
-Promise.promisifyAll(swfClient);
 
 const LAMBDA_TRIP_INVOKE_DECIDER = 'MaaS-trip-invoke-decider';
 
@@ -54,6 +52,7 @@ function pollForDecisionTasks(params) {
     const flow = new TripWorkFlow();
     // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
     return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
+      .promise()
       .then(data => {
         //console.info('pollForDecisionTasks() got data:', JSON.stringify(data));
 
@@ -73,7 +72,6 @@ function pollForDecisionTasks(params) {
           });
 
         return nextPoll();
-
       })
       .catch(err => {
         console.warn('pollForDecisionTask() polling or decision error', err);

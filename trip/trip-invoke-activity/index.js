@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 const bus = require('../../lib/service-bus');
 const MaaSError = require('../../lib/errors/MaaSError.js');
