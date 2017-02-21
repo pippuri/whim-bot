@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const Profile = require('../../../lib/business-objects/Profile');
 const SubscriptionManager = require('../../../lib/business-objects/SubscriptionManager');
 const Transaction = require('../../../lib/business-objects/Transaction');

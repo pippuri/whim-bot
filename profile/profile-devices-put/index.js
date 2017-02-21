@@ -1,21 +1,19 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const MaaSError = require('../../lib/errors/MaaSError');
 const validator = require('../../lib/validator');
 const requestSchema = require('maas-schemas/prebuilt/maas-backend/profile/profile-devices-put/request.json');
 
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
-Promise.promisifyAll(cognitoSync);
 
 function saveDeviceToken(event) {
 
-  return cognitoSync.listRecordsAsync({
+  return cognitoSync.listRecords({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: event.identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
-  })
+  }).promise()
   .then(records => {
     const syncSessionToken = records.SyncSessionToken;
     const newRecord = {
@@ -64,7 +62,7 @@ function saveDeviceToken(event) {
     }
 
     console.info('Token changed, updating Cognito devices.');
-    return cognitoSync.updateRecordsAsync({
+    return cognitoSync.updateRecords({
       IdentityPoolId: process.env.COGNITO_POOL_ID,
       IdentityId: event.identityId,
       DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
