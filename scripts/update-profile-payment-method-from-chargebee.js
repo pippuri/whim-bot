@@ -213,4 +213,3 @@ models.Database.init()
     console.log('Postgres profiles ',  green('UPDATED'), '\t', postgresProfilesUpdated);
   })
   .finally(() => models.Database.cleanup());
-

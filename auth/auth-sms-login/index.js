@@ -7,7 +7,6 @@ const jwt = require('jsonwebtoken');
 const lib = require('../lib/index');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
-const promiseUtils = require('../../lib/utils/promise');
 const Transaction = require('../../lib/business-objects/Transaction');
 
 const ci = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
@@ -27,13 +26,13 @@ function getCognitoDeveloperIdentity(plainPhone) {
     Logins: logins,
   };
   console.info('Getting cognito developer identity with', JSON.stringify(options, null, 2));
-  return ci.getOpenIdTokenForDeveloperIdentity(options)
+  return ci.getOpenIdTokenForDeveloperIdentity(options).promise()
   .then(response => {
     return {
       identityId: response.IdentityId,
       cognitoToken: response.Token,
     };
-  }).promise();
+  });
 }
 
 /**

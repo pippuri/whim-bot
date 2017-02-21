@@ -132,7 +132,8 @@ const _executeProvider = (mode, params) => provider => {
   event.modes = mode;
 
   // run the queries, then validate & sanitize them
-  return lambdaWrapper.wrap(provider.providerName, event)
+  return Promise.resolve()
+    .then(() => lambdaWrapper.wrap(provider.providerName, event))
     .timeout(PROVIDER_REQUEST_TIMEOUT_MS, `Provider ${provider.providerName} timed out after ${PROVIDER_REQUEST_TIMEOUT_MS}ms`)
     .then(result => validator.validate(schema, utils.sanitize(result)))
     .then(result => {

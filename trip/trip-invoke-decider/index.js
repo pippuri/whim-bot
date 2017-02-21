@@ -88,7 +88,8 @@ class Decider {
     }
 
     // send decision to SWF
-    return swfClient.respondDecisionTaskCompletedAsync(this.decision.decisionTaskCompletedParams)
+    return swfClient.respondDecisionTaskCompleted(this.decision.decisionTaskCompletedParams)
+      .promise()
       .then(data => {
         console.info(`[Decider] done with workflowId '${this.flow.id}'`);
         return Promise.resolve({ workFlowId: this.flow.id });

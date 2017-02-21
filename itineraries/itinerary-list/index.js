@@ -72,7 +72,11 @@ module.exports.respond = (event, callback) => {
     Database.init(),
     parseAndValidateInput(event),
   ])
-    .spread((knex, parsed) => Itinerary.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states, parsed.bookingId))
+    .then(promises => {
+      const parsed = promises[1];
+      return Itinerary.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states,
+        parsed.bookingId);
+    })
     .then(
       itineraries => Database.cleanup().then(() => formatResponse(itineraries)),
       error => Database.cleanup().then(() => Promise.reject(error))

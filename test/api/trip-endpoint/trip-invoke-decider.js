@@ -57,6 +57,9 @@ module.exports = function (lambda, swfStub) {
     before(done => {
       swfStub.respondDecisionTaskCompleted = params => {
         expect(true).to.equal(false);
+        return {
+          promise: () => Promise.resolve(),
+        };
       };
       wrap(lambda).run(invalidEvent, (err, data) => {
         error = err;

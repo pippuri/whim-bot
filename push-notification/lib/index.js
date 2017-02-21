@@ -174,7 +174,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
         return Promise.reject(token);
       })
       // and try to send one more time
-      .then(response => sns.publishAsync({
+      .then(response => sns.publish({
         TargetArn: endpointArn,
         MessageStructure: 'json',
         Subject: event.subject || 'Whim',

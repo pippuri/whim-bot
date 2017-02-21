@@ -8,7 +8,7 @@ const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: proc
 /**
  * Remove active itinerary of identityId with thing sha
  * @param {UUID} identityId
- * @return {Promise} updateThingShadowAsync response
+ * @return {Promise} updateThingShadow response
  * TODO change state of the itinerary and its legs here
  */
 function destroyActiveItinerary(identityId) {

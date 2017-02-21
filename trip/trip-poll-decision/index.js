@@ -38,7 +38,7 @@ function pollForDecisionTasks(params) {
    * @return {}
    */
   function nextPoll() {
-    // current execution time (ms) > maxRunTime timeout (sec) - pollForDecisionTaskAsync timeout (sec)
+    // current execution time (ms) > maxRunTime timeout (sec) - pollForDecisionTask timeout (sec)
     const now = Date.now();
     const seconds = Math.round((now - pollingStartTime) / 1000);
     console.info(`pollForDecisionTasks() polling was started ${seconds} seconds ago`);
@@ -51,7 +51,7 @@ function pollForDecisionTasks(params) {
 
     const flow = new TripWorkFlow();
     // retrieve from SWF, this can block max 70 seconds if there are no decisions to make
-    return swfClient.pollForDecisionTaskAsync(flow.pollForDecisionTaskParams)
+    return swfClient.pollForDecisionTask(flow.pollForDecisionTaskParams)
       .promise()
       .then(data => {
         //console.info('pollForDecisionTasks() got data:', JSON.stringify(data));
