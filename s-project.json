@@ -19,9 +19,6 @@
     "webpack": {
       "configPath": "webpack.config.js"
     },
-    "client": {
-      "bucketName": "staticfiles.maas.global"
-    },
     "slack": {
       "token": "xoxb-55270714182-UY7cMnTgSTucKTnnzOvW4Gcl",
       "channel": "serverless",
@@ -49,8 +46,6 @@
     "serverless-plugin-swagger-export",
     "serverless-plugin-autoprune",
     "serverless-meta-sync",
-    "serverless-plugin-revision",
-    "serverless-client-s3",
     "serverless-slack-plugin",
     "serverless-header-function",
     "serverless-repl-plugin"
