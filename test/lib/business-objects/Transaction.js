@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const Booking = require('../../../lib/models/Booking');
 const Database = require('../../../lib/models/Database');
 const expect = require('chai').expect;

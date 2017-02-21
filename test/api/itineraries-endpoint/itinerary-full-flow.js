@@ -4,7 +4,6 @@ const expect = require('chai').expect;
 const models = require('../../../lib/models');
 const moment = require('moment-timezone');
 const Profile = require('../../../lib/business-objects/Profile');
-const Promise = require('bluebird');
 const signatures = require('../../../lib/signatures');
 const utils = require('../../../lib/utils');
 const wrap = require('lambda-wrapper').wrap;
@@ -390,7 +389,7 @@ module.exports = function (input, results) {
     // Cleanup legs with their bookings; then remove the itinerary, too
     const itineraryId = createdItinerary.id;
     //console.log(`Deleting itinerary '${itineraryId}' with ${createdItinerary.legs.length} legs`);
-    return Promise.map(createdItinerary.legs, leg => {
+    return Promise.all(createdItinerary.legs.map(leg => {
       const legId = leg.id;
       const bookingId = (leg.booking) ? leg.booking.id : null;
 
@@ -398,12 +397,9 @@ module.exports = function (input, results) {
         .then(() => {
           return ((leg.booking) ? models.Booking.query().delete().where('id', bookingId) : null);
         });
-    })
-    .then(() => {
-      return models.Itinerary.query().delete().where('id', itineraryId);
-    })
-    .finally(() => {
-      return Database.cleanup();
-    });
+    }))
+    .then(() => models.Itinerary.query().delete().where('id', itineraryId))
+    .catch(() => null)
+    .then(() => Database.cleanup());
   });
 };

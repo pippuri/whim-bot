@@ -78,7 +78,8 @@ module.exports = function () {
             .delete()
             .where({ identityId: IDENTITY_ID });
         })
-        .finally(() => Database.cleanup());
+        .catch(() => null)
+        .then(() => Database.cleanup());
     });
 
     before(() => {

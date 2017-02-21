@@ -3,7 +3,6 @@
 const expect = require('chai').expect;
 const models = require('../../../lib/models');
 const moment = require('moment-timezone');
-const Promise = require('bluebird');
 const signatures = require('../../../lib/signatures');
 const utils = require('../../../lib/utils');
 const wrap = require('lambda-wrapper').wrap;
@@ -220,7 +219,8 @@ module.exports = function (optionsLambda) {
 
           return Promise.resolve();
         })
-        .finally(() => Database.cleanup());
+        .catch(() => null)
+        .then(() => Database.cleanup());
     });
   });
 };

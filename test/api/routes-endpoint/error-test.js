@@ -23,12 +23,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -61,12 +59,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -80,7 +76,6 @@ module.exports = () => {
     it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
-
   });
 
   describe('request without "to"', () => {
@@ -99,12 +94,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -118,7 +111,6 @@ module.exports = () => {
     it('should not return a response', () => {
       expect(response).to.be.undefined;
     });
-
   });
 
   describe('request with both "leaveAt" and "arriveBy"', () => {
@@ -139,12 +131,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -179,12 +169,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -219,12 +207,10 @@ module.exports = () => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should raise an error', () => {
@@ -240,5 +226,4 @@ module.exports = () => {
       expect(response).to.be.undefined;
     });
   });
-
 };

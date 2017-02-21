@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const Promise = require('bluebird');
 const event = require('../../../trip/trip-invoke-decider/event.json');
 
 module.exports = function (lambda, swfStub) {
@@ -12,10 +11,12 @@ module.exports = function (lambda, swfStub) {
     let response;
 
     before(done => {
-      swfStub.respondDecisionTaskCompletedAsync = params => {
+      swfStub.respondDecisionTaskCompleted = params => {
         expect(params).to.have.property('taskToken').and.be.a('string');
         expect(params).to.have.property('decisions').and.be.a('array');
-        return Promise.resolve();
+        return {
+          promise: () => Promise.resolve(),
+        };
       };
       wrap(lambda).run(event, (err, data) => {
         error = err;
@@ -30,7 +31,7 @@ module.exports = function (lambda, swfStub) {
     });
 
     after(done => {
-      swfStub.respondDecisionTaskCompletedAsync = undefined;
+      swfStub.respondDecisionTaskCompleted = undefined;
       done();
     });
 
@@ -54,7 +55,7 @@ module.exports = function (lambda, swfStub) {
     };
 
     before(done => {
-      swfStub.respondDecisionTaskCompletedAsync = params => {
+      swfStub.respondDecisionTaskCompleted = params => {
         expect(true).to.equal(false);
       };
       wrap(lambda).run(invalidEvent, (err, data) => {
@@ -70,11 +71,9 @@ module.exports = function (lambda, swfStub) {
     });
 
     after(done => {
-      swfStub.respondDecisionTaskCompletedAsync = undefined;
+      swfStub.respondDecisionTaskCompleted = undefined;
       done();
     });
 
   });
-
-
 };

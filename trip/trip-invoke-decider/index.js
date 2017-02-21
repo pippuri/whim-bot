@@ -412,10 +412,6 @@ class Decider {
       })
       .catch(err => {
         console.warn(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
-<<<<<<< 1f2b6dd48ddf2af7b49ef4ba97cb3c7b36b72df1
-        return Promise.resolve();
-=======
->>>>>>> Remove extraneous Bluebirds from trip Lambdas
       });
   }
 }

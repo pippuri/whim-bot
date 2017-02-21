@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const Promise = require('bluebird');
 
 module.exports = function (lambda, swfStub) {
 
