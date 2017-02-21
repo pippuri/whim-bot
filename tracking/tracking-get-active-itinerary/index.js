@@ -1,11 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const AWS = require('aws-sdk');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 /**
  * Return active itinerary data from thing shadow
@@ -14,9 +12,9 @@ Promise.promisifyAll(iotData);
  */
 function getActiveItinerary(identityId) {
   const thingName = identityId.replace(/:/, '-');
-  return iotData.getThingShadowAsync({
+  return iotData.getThingShadow({
     thingName: thingName,
-  })
+  }).promise()
   .then(response => {
     const payload = JSON.parse(response.payload);
     if (payload && payload.state && payload.state.reported && payload.state.reported.itinerary && payload.state.reported.itinerary.state) {

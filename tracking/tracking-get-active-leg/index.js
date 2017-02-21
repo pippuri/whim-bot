@@ -1,11 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const MaaSError = require('../../lib/errors/MaaSError');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 /**
  * Return the activeLeg Id related to this identityId
@@ -15,9 +13,9 @@ Promise.promisifyAll(iotData);
  */
 function getActiveLegId(identityId) {
   const thingName = identityId.replace(/:/, '-');
-  return iotData.getThingShadowAsync({
+  return iotData.getThingShadow({
     thingName,
-  })
+  }).promise()
   .then(response => {
     const payload = JSON.parse(response.payload);
     console.info(payload.state.reported.location.legId);
