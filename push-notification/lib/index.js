@@ -1,12 +1,10 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
+const Promise = require('bluebird');
+
 const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const sns = new AWS.SNS({ region: process.env.AWS_REGION });
-
-Promise.promisifyAll(sns);
-Promise.promisifyAll(cognitoSync);
 
 const APNS_ARN = process.env.APNS_ARN;
 const APNS_ARN_SANDBOX = process.env.APNS_ARN_SANDBOX;
@@ -19,11 +17,12 @@ const GCM_ARN = process.env.GCM_ARN;
  */
 function fetchUserDevices(identityId) {
 
-  return cognitoSync.listRecordsAsync({
+  return Promise.resolve()
+  .then(() => cognitoSync.listRecords({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
-  });
+  }).promise());
 }
 
 /**
@@ -55,20 +54,21 @@ function removeOldPushTokens(identityId, recordSet, tokens, syncSessionToken) {
       return JSON.parse(record.Value).lastSuccess && Date.now() - JSON.parse(record.Value).lastSuccess > 7 * 60 * 60 * 1000;
     });
 
-  return cognitoSync.updateRecordsAsync({
-    IdentityPoolId: process.env.COGNITO_POOL_ID,
-    IdentityId: identityId,
-    DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
-    SyncSessionToken: syncSessionToken,
-    RecordPatches: oldTokens.map(token => {
-      const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
-      return {
-        Op: 'remove',
-        Key: record.Key,
-        SyncCount: record.SyncCount,
-      };
-    }),
-  })
+  return Promise.resolve()
+    .then(() => cognitoSync.updateRecords({
+      IdentityPoolId: process.env.COGNITO_POOL_ID,
+      IdentityId: identityId,
+      DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
+      SyncSessionToken: syncSessionToken,
+      RecordPatches: oldTokens.map(token => {
+        const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
+        return {
+          Op: 'remove',
+          Key: record.Key,
+          SyncCount: record.SyncCount,
+        };
+      }),
+    }).promise())
   .then(() => Promise.resolve('Old tokens removed'))
   .catch(error => {
     console.warn('[Push notification] Error removing old push tokens: ' + error.message);
@@ -87,27 +87,27 @@ function removeOldPushTokens(identityId, recordSet, tokens, syncSessionToken) {
  * @return {Promise} response
  */
 function updateWorkingTokens(identityId, recordSet, tokens, syncSessionToken) {
-  return cognitoSync.updateRecordsAsync({
-    IdentityPoolId: process.env.COGNITO_POOL_ID,
-    IdentityId: identityId,
-    DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
-    SyncSessionToken: syncSessionToken,
-    RecordPatches: tokens.map(token => {
-      const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
-      const value = JSON.parse(record.Value);
-      value.lastSuccess = Date.now();
-      return {
-        Op: 'replace',
-        Key: record.Key,
-        Value: JSON.stringify(value),
-        SyncCount: record.SyncCount,
-      };
-    }),
-  })
-  .then(() => Promise.resolve('Working tokens updated'))
+  return Promise.resolve()
+    .then(() => cognitoSync.updateRecords({
+      IdentityPoolId: process.env.COGNITO_POOL_ID,
+      IdentityId: identityId,
+      DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
+      SyncSessionToken: syncSessionToken,
+      RecordPatches: tokens.map(token => {
+        const record = recordSet.find(record => JSON.parse(record.Value).devicePushToken === token);
+        const value = JSON.parse(record.Value);
+        value.lastSuccess = Date.now();
+        return {
+          Op: 'replace',
+          Key: record.Key,
+          Value: JSON.stringify(value),
+          SyncCount: record.SyncCount,
+        };
+      }),
+    }).promise())
+  .then(() => 'Working tokens updated')
   .catch(error => {
     console.warn('[Push notification] Error updating working push tokens: ' + error.message, '... ignoring');
-    return Promise.resolve();
   });
 }
 
@@ -134,10 +134,11 @@ function iOSsendPushNotification(event, token, isSandBox) {
     },
   };
 
-  return sns.createPlatformEndpointAsync({
+  return Promise.resolve()
+  .then(() => sns.createPlatformEndpoint({
     Token: token,
     PlatformApplicationArn: isSandBox === true ? APNS_ARN_SANDBOX : APNS_ARN,
-  })
+  }).promise())
   .catch(error => {
     console.warn(`Platform endpoint creation FAILED via '${APNSKey}' for '${token}'`);
     console.warn(error.stack);
@@ -145,14 +146,14 @@ function iOSsendPushNotification(event, token, isSandBox) {
   })
   .then(response => (endpointArn = response.EndpointArn))
   // we have end-point, try to publish to that specific endpoint
-  .then(() => sns.publishAsync({
+  .then(() => sns.publish({
     TargetArn: endpointArn,
     MessageStructure: 'json',
     Subject: event.subject || 'Whim',
     Message: JSON.stringify({
       [APNSKey]: JSON.stringify(apnMessage),
     }),
-  }))
+  }).promise())
   // in case of endpoint is disabled, perform re-enabling and try once again
   .catch(error => {
     if (error.name !== 'EndpointDisabled' || !endpointArn) {
@@ -166,7 +167,7 @@ function iOSsendPushNotification(event, token, isSandBox) {
       },
       EndpointArn: endpointArn,
     };
-    return sns.setEndpointAttributesAsync(params)
+    return sns.setEndpointAttributes(params).promise()
       .catch(error => {
         console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
         console.warn(error.stack);
@@ -180,14 +181,14 @@ function iOSsendPushNotification(event, token, isSandBox) {
         Message: JSON.stringify({
           [APNSKey]: JSON.stringify(apnMessage),
         }),
-      }))
+      }).promise())
       // Clean up endpointArn from Amazon
       // and ignore error
       .then(() => {
         console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
-        return sns.deleteEndpointAsync({
+        return sns.deleteEndpoint({
           EndpointArn: endpointArn,
-        })
+        }).promise()
         .catch(error => Promise.resolve(error));
       });
   })
@@ -218,10 +219,11 @@ function androidSendPushNotification(event, token) {
     GCM: JSON.stringify({ data }),
   };
 
-  return sns.createPlatformEndpointAsync({
+  return Promise.resolve()
+  .then(() => sns.createPlatformEndpoint({
     Token: token,
     PlatformApplicationArn: GCM_ARN,
-  })
+  }).promise())
   .catch(error => {
     console.warn(`Platform endpoint creation FAILED via 'GCM' for '${token}: ${error.message}'`);
     console.warn(error.stack);
@@ -229,12 +231,12 @@ function androidSendPushNotification(event, token) {
   })
   .then(response => (endpointArn = response.EndpointArn))
   // we have end-point, try to publish to that specific endpoint
-  .then(() => sns.publishAsync({
+  .then(() => sns.publish({
     TargetArn: endpointArn,
     MessageStructure: 'json',
     Subject: event.subject || 'Whim',
     Message: JSON.stringify(gcmMessage),
-  }))
+  }).promise())
   .catch(error => {
     if (error.name !== 'EndpointDisabled' || !endpointArn) {
       return Promise.reject(token);
@@ -246,26 +248,26 @@ function androidSendPushNotification(event, token) {
       },
       EndpointArn: endpointArn,
     };
-    return sns.setEndpointAttributesAsync(params)
+    return sns.setEndpointAttributes(params).promise()
       .catch(error => {
         console.warn(`FAILED to re-enable endpoint for '${endpointArn}: ${error.message}'`);
         console.warn(error.stack);
         return Promise.reject(token);
       })
       // and try to send one more time
-      .then(response => sns.publishAsync({
+      .then(response => sns.publish({
         TargetArn: endpointArn,
         MessageStructure: 'json',
         Subject: event.subject || 'Whim',
         Message: JSON.stringify(gcmMessage),
-      }))
+      }).promise())
       // Clean up endpointArn from Amazon
       // and ignore error
       .then(() => {
         console.info(`[Push Notification] Cleaning endpoint ARN ${endpointArn}`);
-        return sns.deleteEndpointAsync({
+        return sns.deleteEndpoint({
           EndpointArn: endpointArn,
-        })
+        }).promise()
         .catch(error => Promise.resolve(error));
       });
   })
