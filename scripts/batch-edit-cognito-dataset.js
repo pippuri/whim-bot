@@ -1,14 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const Templates = (new (require('serverless'))()).classes.Templates;
 const cognitoSync = new AWS.CognitoSync({ region: 'eu-west-1' });
 const cognitoIdentity = new AWS.CognitoIdentity({ region: 'eu-west-1' });
-const sns = new AWS.SNS({ region: 'eu-west-1' });
-Promise.promisifyAll(sns);
-Promise.promisifyAll(cognitoSync);
-Promise.promisifyAll(cognitoIdentity);
 
 /**************************************************************************************
  *
@@ -34,7 +29,7 @@ function loadEnvironment(stage) {
 }
 
 function updateCognitoDeviceFormat(identityId, recordSet, syncSessionToken) {
-  return cognitoSync.updateRecordsAsync({
+  return cognitoSync.updateRecords({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
@@ -57,7 +52,7 @@ function updateCognitoDeviceFormat(identityId, recordSet, syncSessionToken) {
         SyncCount: item ? item.SyncCount : 0,
       };
     }),
-  });
+  }).promise();
 }
 
 let NextToken1;
@@ -65,20 +60,20 @@ let records = [];
 let NextToken2;
 
 function fetchDeviceDataset(identityId) {
-  return cognitoSync.listRecordsAsync({
+  return cognitoSync.listRecords({
     DatasetName: process.env.COGNITO_USER_DEVICES_DATASET,
     IdentityId: identityId,
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     NextToken: NextToken1 || undefined,
-  });
+  }).promise();
 }
 
 function fetchAllIdentityFromPool() {
-  return cognitoIdentity.listIdentitiesAsync({
+  return cognitoIdentity.listIdentities({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     MaxResults: 60,
     NextToken: NextToken2 || undefined,
-  })
+  }).promise()
   .then(response => {
     records = records.concat(response.Identities);
     if (response.NextToken) {

@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
 const moment = require('moment-timezone');

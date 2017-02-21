@@ -3,7 +3,6 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const Promise = require('bluebird');
 const moment = require('moment-timezone');
 const utils = require('../../../lib/utils');
 
@@ -221,7 +220,8 @@ module.exports = function () {
       if (createResponse && createResponse.booking.id) {
         return Promise.resolve()
         .then(() => models.Booking.query().delete().where('id', createResponse.booking.id))
-        .finally(() => Database.cleanup());
+        .catch(() => null)
+        .then(() => Database.cleanup());
       }
 
       return Database.cleanup();

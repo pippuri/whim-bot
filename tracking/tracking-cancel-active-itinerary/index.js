@@ -1,22 +1,20 @@
 'use strict';
 
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const AWS = require('aws-sdk');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 /**
  * Remove active itinerary of identityId with thing sha
  * @param {UUID} identityId
- * @return {Promise} updateThingShadowAsync response
+ * @return {Promise} updateThingShadow response
  * TODO change state of the itinerary and its legs here
  */
 function destroyActiveItinerary(identityId) {
   const thingName = identityId.replace(/:/, '-');
 
-  return iotData.updateThingShadowAsync({
+  return iotData.updateThingShadow({
     thingName: thingName,
     payload: JSON.stringify({
       state: {
@@ -25,7 +23,7 @@ function destroyActiveItinerary(identityId) {
         },
       },
     }),
-  });
+  }).promise();
 }
 
 module.exports.respond = function (event, callback) {

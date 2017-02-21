@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 const MaaSError = require('../../../lib/errors/MaaSError.js');

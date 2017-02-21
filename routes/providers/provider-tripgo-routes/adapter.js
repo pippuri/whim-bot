@@ -3,7 +3,6 @@
 /**
  * Routing results adapter from TripGo to MaaS. Returns promise for JSON object.
  */
-const Promise = require('bluebird');
 
 function convertMode(mode) {
   return mode ? mode.toUpperCase() : undefined;

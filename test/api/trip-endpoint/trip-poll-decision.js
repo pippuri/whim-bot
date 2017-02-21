@@ -2,7 +2,6 @@
 
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;
-const Promise = require('bluebird');
 
 module.exports = function (lambda, swfStub) {
 
@@ -15,8 +14,10 @@ module.exports = function (lambda, swfStub) {
     };
 
     before(done => {
-      swfStub.pollForDecisionTaskAsync = params => {
-        return Promise.resolve();
+      swfStub.pollForDecisionTask = params => {
+        return {
+          promise: () => Promise.resolve(),
+        };
       };
       wrap(lambda).run(invalidEvent, (err, data) => {
         error = err;
@@ -32,7 +33,7 @@ module.exports = function (lambda, swfStub) {
     });
 
     after(done => {
-      swfStub.pollForDecisionTaskAsync = undefined;
+      swfStub.pollForDecisionTask = undefined;
       done();
     });
 
@@ -47,8 +48,10 @@ module.exports = function (lambda, swfStub) {
     };
 
     before(done => {
-      swfStub.pollForDecisionTaskAsync = params => {
-        return Promise.resolve();
+      swfStub.pollForDecisionTask = params => {
+        return {
+          promise: () => Promise.resolve(),
+        };
       };
       wrap(lambda).run(invalidEvent, (err, data) => {
         error = err;
@@ -64,7 +67,7 @@ module.exports = function (lambda, swfStub) {
     });
 
     after(done => {
-      swfStub.pollForDecisionTaskAsync = undefined;
+      swfStub.pollForDecisionTask = undefined;
       done();
     });
 
@@ -79,15 +82,19 @@ module.exports = function (lambda, swfStub) {
     };
 
     before(done => {
-      swfStub.pollForDecisionTaskAsync = params => {
-        return Promise
-          .delay(2000)
-          .then(() => {
-            return Promise.resolve({
-              startedEventId: 0,
-              previousStartedEventId: 0,
-            });
-          });
+      swfStub.pollForDecisionTask = params => {
+        return {
+          promise: () => {
+            return Promise
+              .delay(2000)
+              .then(() => {
+                return Promise.resolve({
+                  startedEventId: 0,
+                  previousStartedEventId: 0,
+                });
+              });
+          },
+        };
       };
       wrap(lambda).run(validEvent, (err, data) => {
         error = err;
@@ -102,7 +109,7 @@ module.exports = function (lambda, swfStub) {
     });
 
     after(done => {
-      swfStub.pollForDecisionTaskAsync = undefined;
+      swfStub.pollForDecisionTask = undefined;
       done();
     });
 

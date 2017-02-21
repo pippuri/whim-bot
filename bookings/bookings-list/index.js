@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const utils = require('../../lib/utils');
 const models = require('../../lib/models');
@@ -71,7 +70,10 @@ module.exports.respond = (event, callback) => {
     Database.init(),
     parseAndValidateInput(event),
   ])
-    .spread((knex, parsed) => Booking.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states))
+    .then(promises => {
+      const parsed = promises[1];
+      return Booking.query(parsed.identityId, parsed.startTime, parsed.endTime, parsed.states);
+    })
     .then(
       bookings => Database.cleanup().then(() => formatResponse(bookings)),
       error => Database.cleanup().then(() => Promise.reject(error))

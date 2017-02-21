@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const SubscriptionManager = require('../../lib/business-objects/SubscriptionManager');
 const MaaSError = require('../../lib/errors/MaaSError');
 

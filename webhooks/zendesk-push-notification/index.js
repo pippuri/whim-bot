@@ -12,8 +12,6 @@ const responseSchema = require('maas-schemas/prebuilt/maas-backend/webhooks/zend
 const MaaSError = require('../../lib/errors/MaaSError');
 const ValidationError = require('../../lib/validator/ValidationError');
 
-Promise.promisifyAll(sns);
-
 function forwardPushNotification(event) {
 
   // Helper for creating Apple Push Notification Service (APNS) endpoint
@@ -47,15 +45,16 @@ function forwardPushNotification(event) {
       params.PlatformApplicationArn = ARN;
     }
 
-    return sns.createPlatformEndpointAsync(params)
-      .then(response => sns.publishAsync({
+    return Promise.resolve()
+      .then(() => sns.createPlatformEndpoint(params).promise())
+      .then(response => sns.publish({
         TargetArn: response.EndpointArn,
         MessageStructure: 'json',
         Subject: subject,
         Message: JSON.stringify({
           [APNSKey]: JSON.stringify(apnMessage),
         }),
-      }))
+      }).promise())
       .then(response => {
         return Promise.resolve(`Zendesk push notification has been sent via '${APNSKey}', response: ${JSON.stringify(response)}`);
       })

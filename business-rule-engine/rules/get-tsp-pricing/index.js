@@ -11,8 +11,6 @@
  *      - to {Object} end of the leg (not used)
  *      - userProfile {Object}
  */
-
-const Promise = require('bluebird');
 const bookingProviderRules = require('../get-booking-provider');
 const utils = require('../../../lib/utils');
 const _flatten = require('lodash/flatten');
@@ -113,7 +111,7 @@ function getOptions(params, profile) {
  * @return {Promise} - a promise which resolves to a list of suitable booking providers
  */
 function getOptionsBatch(paramsList, profile) {
-  return Promise.map(paramsList, params => getOptions(params, profile))
+  return Promise.all(paramsList.map(params => getOptions(params, profile)))
       .then(results => Object.freeze(_flatten(results)));
 }
 

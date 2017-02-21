@@ -12,7 +12,6 @@ const Trip = require('../../lib/trip/Trip');
 const TripWorkFlow = require('../../lib/trip/TripWorkFlow');
 
 const swfClient = new AWS.SWF({ region: process.env.AWS_REGION });
-Promise.promisifyAll(swfClient);
 
 const LAMBDA_PUSH_NOTIFICATION_APPLE = 'MaaS-push-notification';
 
@@ -89,7 +88,8 @@ class Decider {
     }
 
     // send decision to SWF
-    return swfClient.respondDecisionTaskCompletedAsync(this.decision.decisionTaskCompletedParams)
+    return swfClient.respondDecisionTaskCompleted(this.decision.decisionTaskCompletedParams)
+      .promise()
       .then(data => {
         console.info(`[Decider] done with workflowId '${this.flow.id}'`);
         return Promise.resolve({ workFlowId: this.flow.id });
@@ -413,7 +413,6 @@ class Decider {
       })
       .catch(err => {
         console.warn(`[Decider] Error: Failed to send push notification to user ${this.flow.trip.identityId}, err:`, err);
-        return Promise.resolve();
       });
   }
 }

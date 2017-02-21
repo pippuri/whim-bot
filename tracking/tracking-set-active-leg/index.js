@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const AWS = require('aws-sdk');
 const stateMachine = require('../../lib/states/index').StateMachine;
 const models = require('../../lib/models/index');
@@ -8,7 +7,6 @@ const MaaSError = require('../../lib/errors/MaaSError');
 const Database = models.Database;
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 /**
  * Return active itinerary data from thing shadow
@@ -17,9 +15,9 @@ Promise.promisifyAll(iotData);
  */
 function getActiveItinerary(identityId) {
   const thingName = identityId.replace(/:/, '-');
-  return iotData.getThingShadowAsync({
+  return iotData.getThingShadow({
     thingName: thingName,
-  });
+  }).promise();
 }
 
 /**
@@ -82,13 +80,14 @@ function setActiveLeg(identityId, itinerary, leg) {
       return Promise.all([
         stateMachine.changeState('Leg', oldLeg.id, oldLeg.state, 'ACTIVATED'),
         models.Leg.query().update({ state: 'ACTIVATED' }).where('id', leg.id),
-        iotData.updateThingShadowAsync({
+        iotData.updateThingShadow({
           thingName: thingName,
           payload: payload,
-        }),
+        }).promise(),
       ]);
     })
-    .spread((changedState, newLeg, iotResponse) => {
+    .then(promises => {
+      const iotResponse = promises[2];
       console.info('iotResponse', iotResponse);
       return iotResponse;
     });
@@ -99,7 +98,7 @@ module.exports.respond = function (event, callback) {
     Database.init(),
     validateInput(event),
   ])
-    .spread((knex, validation) => getActiveItinerary(event.identityId))
+    .then(() => getActiveItinerary(event.identityId))
     .then(itinerary => setActiveLeg(event.identityId, itinerary, event.leg))
     .then(
       response => Database.cleanup().then(() => response),

@@ -2,7 +2,6 @@
 
 const MaaSError = require('../../lib/errors/MaaSError');
 const Pricing = require('../../lib/business-objects/Pricing');
-const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
 const tmp = require('./tmp');
 const TSPFactory = require('../../lib/tsp/TransportServiceAdapterFactory');
@@ -128,7 +127,7 @@ function getAgencyProductOptions(event) {
     }
 
     // Convert euros to points; annotate agency id.
-    return Promise.map(response.options, option => {
+    return Promise.all(response.options.map(option => {
       const cost = option.cost;
       return Pricing.convertCostToPoints(cost.amount, cost.currency)
         .then(points => {
@@ -138,7 +137,7 @@ function getAgencyProductOptions(event) {
           annotated.fare = { amount: points, currency: 'POINT' };
           return annotated;
         });
-    });
+    }));
   });
 }
 

@@ -1,7 +1,6 @@
 'use strict';
 
 const AWS = require('aws-sdk');
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const models = require('../../lib/models');
 const stateMachine = require('../../lib/states/index').StateMachine;
@@ -9,7 +8,6 @@ const Database = models.Database;
 const bus = require('../../lib/service-bus/index.js');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 /**
  * Validate event input
@@ -124,13 +122,15 @@ function setActiveItinerary(identityId, itineraryData) {
         models.Itinerary.query()
           .patchAndFetchById(itineraryData.id, { state: 'ACTIVATED' })
           .eager('[legs]'),
-        iotData.updateThingShadowAsync({
+        iotData.updateThingShadow({
           thingName: thingName,
           payload: payload,
-        }),
+        }).promise(),
       ]);
     })
-    .spread((changedState, updatedItinerary, iotResponse) => {
+    .then(promises => {
+      const updatedItinerary = promises[1];
+
       if (!updatedItinerary) {
         const message = `Itinerary ${itineraryData.id} update failed`;
         return Promise.reject(new MaaSError(message, 500));

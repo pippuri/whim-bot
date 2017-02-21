@@ -57,7 +57,7 @@ module.exports = function () {
                 res => (response = res),
                 err => (error = err)
               )
-              .finally(() => models.Booking.query().deleteById(booking.id));
+              .then(() => models.Booking.query().deleteById(booking.id));
           });
 
           it('should succeed without error', () => {
@@ -117,7 +117,7 @@ module.exports = function () {
                 res => (response = res),
                 err => (error = err)
               )
-              .finally(() => models.Booking.query().deleteById(booking.id));
+              .then(() => models.Booking.query().deleteById(booking.id));
           });
 
           it('should return an error, without any response', () => {

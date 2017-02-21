@@ -33,17 +33,19 @@ describe('utility Trip', () => {
     before(done => {
 
       // define stub in case SWF is mocked
-      swfStub.startWorkflowExecutionAsync = params => {
+      swfStub.startWorkflowExecution = params => {
         expect(params).to.have.property('domain').and.be.a('string');
         expect(params).to.have.property('taskList').and.be.a('object');
         expect(params).to.have.property('workflowType').and.be.a('object');
         expect(params).to.have.property('lambdaRole').and.be.a('string');
         expect(params).to.have.property('taskList').and.be.a('object');
         expect(params).to.have.property('workflowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
-        return Promise.resolve({
-          runId: 'dummy',
-          workFlowId: params.workflowId,
-        });
+        return {
+          promise: () => Promise.resolve({
+            runId: 'dummy',
+            workFlowId: params.workflowId,
+          }),
+        };
       };
 
       Trip.create({
@@ -70,7 +72,7 @@ describe('utility Trip', () => {
     });
 
     after(done => {
-      swfStub.startWorkflowExecutionAsync = undefined;
+      swfStub.startWorkflowExecution = undefined;
       done();
     });
 
@@ -80,13 +82,15 @@ describe('utility Trip', () => {
 
     before(done => {
 
-      swfStub.signalWorkflowExecutionAsync = params => {
+      swfStub.signalWorkflowExecution = params => {
         expect(params).to.have.property('domain').and.be.a('string');
         expect(params).to.have.property('workflowId').and.be.a('string').and.to.equal('Itinerary.288bf020-3c62-11e6-b3ee-8d653248757f');
         expect(params).to.have.property('signalName').and.be.a('string');
-        return Promise.resolve({
-          foo: 'bar',
-        });
+        return {
+          promise: () => Promise.resolve({
+            foo: 'bar',
+          }),
+        };
       };
 
       Trip.cancel({
@@ -110,7 +114,7 @@ describe('utility Trip', () => {
     });
 
     after(done => {
-      swfStub.signalWorkflowExecutionAsync = undefined;
+      swfStub.signalWorkflowExecution = undefined;
       done();
     });
 

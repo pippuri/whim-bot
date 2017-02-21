@@ -52,7 +52,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -116,7 +116,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -180,7 +180,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -249,7 +249,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -318,7 +318,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -387,7 +387,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -456,7 +456,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -530,7 +530,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -606,7 +606,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -681,7 +681,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -755,7 +755,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -832,7 +832,7 @@ module.exports = function () {
             console.log('KONK0', err);
           }
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -920,7 +920,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -1008,7 +1008,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -1096,7 +1096,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {
@@ -1184,7 +1184,7 @@ module.exports = function () {
           profile => (post = profile),
           err => (error = err)
         )
-        .finally(() => Database.cleanup());
+        .then(() => Database.cleanup());
     });
 
     it('should not raise an error', () => {

@@ -2,7 +2,6 @@
 
 // Module to wrap the routes provider lambda wrapper into biz engine to decrease execution time
 // Reason: Lambda call through bus are costly.
-const Promise = require('bluebird');
 
 const digitransitRoutes = require('../../providers/provider-digitransit-routes');
 const hereRoutes = require('../../providers/provider-here-routes');

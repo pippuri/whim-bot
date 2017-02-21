@@ -1,11 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
 const MaaSError = require('../../lib/errors/MaaSError');
 const AWS = require('aws-sdk');
 
 const iotData = new AWS.IotData({ region: process.env.AWS_REGION, endpoint: process.env.IOT_ENDPOINT });
-Promise.promisifyAll(iotData);
 
 function updateUserLocation(identityId, lat, lon, timestamp, legId) {
 
@@ -23,15 +21,15 @@ function updateUserLocation(identityId, lat, lon, timestamp, legId) {
     },
   });
 
-  return iotData.updateThingShadowAsync({
+  return iotData.updateThingShadow({
     thingName: thingName,
     payload: payload,
-  });
+  }).promise();
 }
 
 module.exports.respond = function (event, callback) {
   return Promise.resolve()
-    .then(() => updateUserLocation(event.identityId, event.lat, event.lon, event.timestamp, event.legId))
+  .then(() => updateUserLocation(event.identityId, event.lat, event.lon, event.timestamp, event.legId))
   .then(response => {
     callback(null, response);
   })

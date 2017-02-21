@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const util = require('util');
 const lib = require('../lib');

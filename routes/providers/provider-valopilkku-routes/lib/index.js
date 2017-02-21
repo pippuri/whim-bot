@@ -1,11 +1,9 @@
 'use strict';
 
-const Promise = require('bluebird');
 const MaaSError = require('../../../../lib/errors/MaaSError.js');
 const HERERoutesProvider = require('../../provider-here-routes/handler.js');
 
 const GEOMETRY_QUERY_MODE = 'TAXI';
-
 
 function selectOptions(original) {
   /*[XXX: this is in place to handle multiple result options,

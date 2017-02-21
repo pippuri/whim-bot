@@ -1,6 +1,5 @@
 'use strict';
 
-const Promise = require('bluebird');
 const flatten = require('lodash/flatten');
 const expect = require('chai').expect;
 const wrap = require('lambda-wrapper').wrap;

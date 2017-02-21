@@ -2,7 +2,6 @@
 
 const Database = require('../lib/models/index').Database;
 const Profile = require('../lib/business-objects/Profile');
-const Promise = require('bluebird');
 const schema = require('maas-schemas/prebuilt/maas-backend/business-rule-engine/request.json');
 const validator = require('../lib/validator');
 const MaaSError = require('../lib/errors/MaaSError');

@@ -12,20 +12,14 @@ module.exports = function () {
 
     const params = ['TAXI', 'PUBLIC_TRANSIT', 'BICYCLE', 'WALK'];
 
-    before(done => {
-      Database.init()
+    before(() => {
+      return Database.init()
         .then(() => routesProviders.getRoutesProvidersByModesList(params))
-        .then(res => {
-          response = res;
-          done();
-        })
-        .catch(err => {
-          error = err;
-          done();
-        })
-        .finally(() => {
-          Database.cleanup();
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        )
+        .then(() => Database.cleanup());
     });
 
     it('should not return any error', () => {

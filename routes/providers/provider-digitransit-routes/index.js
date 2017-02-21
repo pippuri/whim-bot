@@ -8,7 +8,6 @@
  * @see https://digitransit.fi/en/developers/services-and-apis/1-routing-api/itinerary-planning/
  */
 
-const Promise = require('bluebird');
 const request = require('request-promise-lite');
 const adapter = require('./adapter');
 const MaaSError = require('../../../lib/errors/MaaSError');

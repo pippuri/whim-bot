@@ -137,12 +137,10 @@ module.exports = options => {
 
     before(() => {
       return bus.call('MaaS-routes-query', event)
-        .then(res => {
-          response = res;
-        })
-        .catch(err => {
-          error = err;
-        });
+        .then(
+          res => (response = res),
+          err => (error = err)
+        );
     });
 
     it('should succeed without errors', () => {

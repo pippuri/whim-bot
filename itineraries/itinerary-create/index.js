@@ -4,7 +4,6 @@ const Database = require('../../lib/models/Database');
 const Itinerary = require('../../lib/business-objects/Itinerary');
 const MaaSError = require('../../lib/errors/MaaSError.js');
 const models = require('../../lib/models/index');
-const Promise = require('bluebird');
 const signatures = require('../../lib/signatures');
 const Transaction = require('../../lib/business-objects/Transaction');
 const TripEngine = require('../../lib/trip');

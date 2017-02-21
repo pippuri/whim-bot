@@ -1,11 +1,11 @@
 'use strict';
 
-const Promise = require('bluebird');
 const lib = require('./lib');
-const validator = require('../lib/validator');
-const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/request.json');
 const MaaSError = require('../lib/errors/MaaSError');
+const requestSchema = require('maas-schemas/prebuilt/maas-backend/push-notification/request.json');
+const Promise = require('bluebird');
 const ValidationError = require('../lib/validator/ValidationError');
+const validator = require('../lib/validator');
 const _uniqWith = require('lodash/uniqWith');
 const _isEqual = require('lodash/isEqual');
 
