@@ -24,6 +24,9 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
   let estimateSubscriptionUpdateResponse;
   let updateSubscriptionResponse;
   let retrieveSubscriptionResponse;
+  let updateSubscriptionResponse2;
+  let retrieveSubscriptionResponse2;
+  let retrieveFutureSubscriptionResponse;
 
   const customerId = 'eu-west-1:00000000-cafe-cafe-cafe-000000000027';
   const userId = customerId;
@@ -293,5 +296,97 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
         const newBalance = profile.balance;
         expect(newBalance - oldBalance).to.equal(points);
       });*/
+  });
+
+  it('Replaces the Medium subscription with a scheduled change to plain Light', () => {
+    const event = {
+      customerId: customerId,
+      userId: userId,
+      payload: {
+        plan: { id: 'fi-whim-light' },
+        addons: [],
+      },
+      replace: true,
+    };
+
+    return bus.call('MaaS-subscriptions-update', event)
+      .then(
+        res => Promise.resolve(updateSubscriptionResponse2 = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionsUpdateSchema,
+          updateSubscriptionResponse2
+        )).to.exist;
+      });
+  });
+
+  it('Response should match the current plan and add-ons', () => {
+    const retSubs = retrieveSubscriptionResponse.subscription;
+    const upSubs = updateSubscriptionResponse2.subscription;
+
+    expect(retSubs.plan.id).to.equal(upSubs.plan.id);
+    upSubs.addons.forEach(addon => {
+      expect(retSubs.addons.find(a => a.id === addon.id)).to.exist;
+    });
+  });
+
+  it('Retrieves the current subscription', () => {
+    const event = {
+      customerId: customerId,
+      userId: userId,
+    };
+
+    return bus.call('MaaS-subscriptions-retrieve', event)
+      .then(
+        res => Promise.resolve(retrieveSubscriptionResponse2 = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionsRetrieveSchema,
+          retrieveSubscriptionResponse2
+        )).to.exist;
+      });
+  });
+
+  it('Should match the current plan & add-ons with scheduled changes flag', () => {
+    const retSubs = retrieveSubscriptionResponse.subscription;
+    const retSubs2 = retrieveSubscriptionResponse2.subscription;
+
+    expect(retSubs2.plan.id).to.equal(retSubs.plan.id);
+    retSubs.addons.forEach(addon => {
+      expect(retSubs2.addons.find(a => a.id === addon.id)).to.exist;
+    });
+
+    expect(retSubs2.terms.scheduledChanges).to.equal(true);
+  });
+
+  it('Retrieves the future subscription', () => {
+    const event = {
+      customerId: customerId,
+      userId: userId,
+      nextPeriod: true,
+    };
+
+    return bus.call('MaaS-subscriptions-retrieve', event)
+      .then(
+        res => Promise.resolve(retrieveFutureSubscriptionResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          subscriptionsRetrieveSchema,
+          retrieveFutureSubscriptionResponse
+        )).to.exist;
+      });
+  });
+
+  it('Should match the future subscription plan', () => {
+    const retFutureSubs = retrieveFutureSubscriptionResponse.subscription;
+
+    expect(retFutureSubs.plan.id).to.equal('fi-whim-light');
+    expect(retFutureSubs.addons.length).to.equal(0);
   });
 });

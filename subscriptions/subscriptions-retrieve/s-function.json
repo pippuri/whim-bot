@@ -18,12 +18,14 @@
       "authorizerFunction": "auth-custom-authorizer",
       "apiKeyRequired": true,
       "requestParameters": {
-        "integration.request.path.userId": "method.request.path.userId"
+        "integration.request.path.userId": "method.request.path.userId",
+        "integration.request.querystring.nextPeriod": "method.request.querystring.nextPeriod"
       },
       "requestTemplates": {
         "application/json": {
           "customerId": "$context.authorizer.principalId",
-          "userId": "$input.params('userId')"
+          "userId": "$input.params('userId')",
+          "nextPeriod": "$input.params('nextPeriod')"
         }
       },
       "responses": {
