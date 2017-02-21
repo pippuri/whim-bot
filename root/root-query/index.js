@@ -3,29 +3,32 @@
 const MaaSError = require('../../lib/errors/MaaSError');
 
 // Respond with a API version info at root
-function getApiVersion() {
-  return Promise.resolve({
-    region: process.env.AWS_REGION,
-    stage: process.env.SERVERLESS_STAGE,
-    time: Date.now(),
+async function getApiVersion() {
+  const response = await new Promise(resolve => {
+    resolve({
+      region: process.env.AWS_REGION,
+      stage: process.env.SERVERLESS_STAGE,
+      time: Date.now(),
+    });
   });
+  return response;
 }
 
-module.exports.respond = function (event, callback) {
-  getApiVersion()
-  .then(response => {
+module.exports.respond = async function (event, callback) {
+  try {
+    const response = await getApiVersion();
     callback(null, response);
-  })
-  .catch(_error => {
-    console.warn(`Caught an error: ${_error.message}, ${JSON.stringify(_error, null, 2)}`);
+  } catch (error) {
+    console.warn(`Caught an error: ${error.message}, ${JSON.stringify(error, null, 2)}`);
     console.warn('This event caused error: ' + JSON.stringify(event, null, 2));
-    console.warn(_error.stack);
+    console.warn(error.stack);
 
-    if (_error instanceof MaaSError) {
-      callback(_error);
+    // Uncaught, unexpected error
+    if (error instanceof MaaSError) {
+      callback(error);
       return;
     }
 
-    callback(new MaaSError(`Internal server error: ${_error.toString()}`, 500));
-  });
+    callback(new MaaSError(`Internal server error: ${error.toString()}`, 500));
+  }
 };

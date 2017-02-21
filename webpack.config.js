@@ -3,6 +3,7 @@
 const webpack = require('webpack');
 
 module.exports = {
+  entry: ['babel-polyfill'],
   target: 'node',
   externals: [
     'aws-sdk',
@@ -15,6 +16,7 @@ module.exports = {
   },
   module: {
     loaders: [
+      { test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.ts$|\.md$|\.jst$|\.def$/, loader: 'ignore-loader' },
     ],

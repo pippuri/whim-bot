@@ -1,12 +1,12 @@
 {
   "name": "root-query",
-  "runtime": "nodejs4.3",
+  "runtime": "local-node",
   "description": "Serverless Lambda function for project: MaaS",
   "customName": false,
   "customRole": false,
   "handler": "handler.handler",
   "timeout": 10,
-  "memorySize": 1024,
+  "memorySize": 128,
   "authorizer": {},
   "custom": {},
   "endpoints": [
