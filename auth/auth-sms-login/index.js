@@ -11,19 +11,8 @@ const promiseUtils = require('../../lib/utils/promise');
 const Transaction = require('../../lib/business-objects/Transaction');
 
 const ci = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
-const cognitoSync = new AWS.CognitoSync({ region: process.env.AWS_REGION });
-const iotCallback = new AWS.Iot({ region: process.env.AWS_REGION });
-const getOpenIdTokenForDeveloperIdentityAsync = promiseUtils.promisify(ci.getOpenIdTokenForDeveloperIdentity, ci);
-const cognito = {
-  listRecordsAsync: promiseUtils.promisify(cognitoSync.listRecords, cognitoSync),
-  updateRecordsAsync: promiseUtils.promisify(cognitoSync.updateRecords, cognitoSync),
-};
-const iot = {
-  createThingAsync: promiseUtils.promisify(iotCallback.createThing, iotCallback),
-  updateThingAsync: promiseUtils.promisify(iotCallback.updateThing, iotCallback),
-  attachThingPrincipalAsync: promiseUtils.promisify(iotCallback.attachThingPrincipal, iotCallback),
-  attachPrincipalPolicyAsync: promiseUtils.promisify(iotCallback.attachPrincipalPolicy, iotCallback),
-};
+const cognito = new AWS.CognitoSync({ region: process.env.AWS_REGION });
+const iot = new AWS.Iot({ region: process.env.AWS_REGION });
 
 /**
  * Create or retrieve Amazon Cognito identity.
@@ -38,13 +27,13 @@ function getCognitoDeveloperIdentity(plainPhone) {
     Logins: logins,
   };
   console.info('Getting cognito developer identity with', JSON.stringify(options, null, 2));
-  return getOpenIdTokenForDeveloperIdentityAsync(options)
+  return ci.getOpenIdTokenForDeveloperIdentity(options)
   .then(response => {
     return {
       identityId: response.IdentityId,
       cognitoToken: response.Token,
     };
-  });
+  }).promise();
 }
 
 /**
@@ -53,11 +42,11 @@ function getCognitoDeveloperIdentity(plainPhone) {
 function updateCognitoProfile(identityId, profile) {
   let syncSessionToken;
   const patches = [];
-  return cognito.listRecordsAsync({
+  return cognito.listRecords({
     IdentityPoolId: process.env.COGNITO_POOL_ID,
     IdentityId: identityId,
     DatasetName: process.env.COGNITO_PROFILE_DATASET,
-  })
+  }).promise()
   .then(response => {
     syncSessionToken = response.SyncSessionToken;
     const oldRecords = {};
@@ -86,13 +75,13 @@ function updateCognitoProfile(identityId, profile) {
     });
 
     if (patches.length > 0) {
-      return cognito.updateRecordsAsync({
+      return cognito.updateRecords({
         IdentityPoolId: process.env.COGNITO_POOL_ID,
         IdentityId: identityId,
         DatasetName: process.env.COGNITO_PROFILE_DATASET,
         SyncSessionToken: syncSessionToken,
         RecordPatches: patches,
-      });
+      }).promise();
     }
 
     return Promise.resolve();
@@ -105,7 +94,7 @@ function updateCognitoProfile(identityId, profile) {
 function createUserThing(identityId, plainPhone, isSimulationUser) {
   const thingName = identityId.replace(/:/, '-');
   console.info('Creating user thing', identityId, thingName);
-  return iot.createThingAsync({
+  return iot.createThing({
     thingName: thingName,
     attributePayload: {
       attributes: {
@@ -114,11 +103,11 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
         type: isSimulationUser ? 'simulation' : 'user',
       },
     },
-  })
+  }).promise()
   .then(null, err => {
     // Ignore already exists errors
     if (err.code === 'ResourceAlreadyExistsException') {
-      return iot.updateThingAsync({
+      return iot.updateThing({
         thingName: thingName,
         attributePayload: {
           attributes: {
@@ -127,7 +116,7 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
             type: isSimulationUser ? 'simulation' : 'user',
           },
         },
-      });
+      }).promise();
     }
 
     console.warn('Error:', err.code, err);
@@ -135,19 +124,19 @@ function createUserThing(identityId, plainPhone, isSimulationUser) {
   })
   .then(response => {
     // Attach the cognito identity to the thing
-    return iot.attachThingPrincipalAsync({
+    return iot.attachThingPrincipal({
       principal: identityId,
       thingName: thingName,
-    });
+    }).promise();
   })
   .then(response => {
     console.info('AttachThingPrincipal response:', response);
 
     // Attach the cognito policy to the default policy
-    return iot.attachPrincipalPolicyAsync({
+    return iot.attachPrincipalPolicy({
       policyName: 'DefaultCognitoPolicy',
       principal: identityId,
-    });
+    }).promise();
   })
   .then(response => {
     console.info('AttachPrincipalPolicy response:', response);
