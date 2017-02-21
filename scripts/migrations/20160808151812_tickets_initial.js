@@ -24,7 +24,7 @@ exports.up = function (knex, Promise) {
           {
             partnerId: 'HSL',
             domainId: 'HSL',
-            partnerKey: process.env.INITIAL_HSL_TICKET_PASS,
+            partnerKey: 'not-used',
           },
           {
             partnerId: 'MAAS',
