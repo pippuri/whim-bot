@@ -3,7 +3,6 @@
 /**
  * Routing results adapter from Digitransit to MaaS. Returns promise for JSON object.
  */
-const Promise = require('bluebird');
 const utils = require('../../../lib/utils');
 const WAITING_THRESHOLD = 60; // If there's this number of seconds between 2 legs, inject a waiting leg
 
