@@ -2,8 +2,11 @@
 
 const chalk = require('chalk');
 const exec = require('child_process').exec;
+const loadEnvironment = require('./load-environment').loadEnvironment;
 
-const STAGE = process.env.SERVERLESS_STAGE || 'dev';
+loadEnvironment();
+
+const STAGE = process.env.SERVERLESS_STAGE;
 const stageVars = Object.keys(require(`../_meta/variables/s-variables-${STAGE}.json`));
 let stageVarsInUse = [];
 
