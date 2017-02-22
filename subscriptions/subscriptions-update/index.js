@@ -69,31 +69,26 @@ module.exports.respond = function (event, callback) {
     sanitize: true,
   };
   let validated;
+  let targetSubscription;
 
   return Database.init()
     .then(() => validator.validate(schema, event, validationOptions))
     .then(_validated => (validated = _validated))
     .then(() => validatePermissions(validated.customerId, validated.userId))
     .then(() => {
-      const subs = SubscriptionManager.fromSubscriptionOption(validated.payload);
-      return validateLogicConflicts(subs, validated.replace);
+      targetSubscription = SubscriptionManager.fromSubscriptionOption(validated.payload);
+      return validateLogicConflicts(targetSubscription, validated.replace);
     })
-    .then(targetSubscription => {
-      return SubscriptionManager.retrieveSubscriptionByUserId(event.userId)
-        .then(currentSubscription => Promise.all([currentSubscription, targetSubscription]));
-    })
-    .then(subscriptions => {
-      const currentSubscription = subscriptions[0];
-      const targetSubscription = subscriptions[1];
-
+    .then(() => SubscriptionManager.retrieveSubscriptionByUserId(validated.userId))
+    .then(currentSubscription => {
       const customerId = validated.customerId;
       const userId = validated.userId;
       const replace = validated.replace;
-      const addons = event.payload.addons || [];
+      const addons = validated.payload.addons || [];
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
-      if ((currentSubscription && currentSubscription.plan.id === SubscriptionManager.DEFAULT_SUBSCRIPTION.plan.id) ||
+      if (currentSubscription.plan.id === SubscriptionManager.DEFAULT_PLAN_ID ||
           addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
         immediateUpdate = true;
       }
