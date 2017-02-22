@@ -1,6 +1,7 @@
 'use strict';
 
 const webpack = require('webpack');
+const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
   target: 'node',
@@ -38,21 +39,7 @@ module.exports = {
     // chunk merging strategy
     new webpack.optimize.AggressiveMergingPlugin(),
 
-    // UglifyJS
-    // new webpack.optimize.UglifyJsPlugin({
-    //   mangle: true,
-    //   compress: {
-    //     warnings: true, // Suppress uglification warnings
-    //     pure_getters: true,
-    //     unsafe: true,
-    //     unsafe_comps: true,
-    //     screw_ie8: true,
-    //   },
-    //   output: {
-    //     comments: false,
-    //   },
-    //   test: /\.js$/i,
-    //   exclude: [/\.min\.js$/gi], // skip pre-minified libs
-    // })
+    // Babili babel minification
+    new BabiliPlugin({ comments: false }),
   ],
 };
