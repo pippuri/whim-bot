@@ -3,7 +3,6 @@
 const webpack = require('webpack');
 
 module.exports = {
-  entry: ['babel-polyfill'],
   target: 'node',
   externals: [
     'aws-sdk',
@@ -16,15 +15,18 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+      },
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.ts$|\.md$|\.jst$|\.def$/, loader: 'ignore-loader' },
     ],
   },
   plugins: [
-
     new webpack.IgnorePlugin(/(regenerator|nodent|js-beautify)$/), // Unnecessary AJV deps
-    new webpack.IgnorePlugin(/(mockLambda\.js|mockDynamo\.js)$/), // Our internal shims
+    new webpack.IgnorePlugin(/(mockLambda\.js)$/), // Our internal shims
     new webpack.IgnorePlugin(/(commander|liftoff)/), // Unnecessary UI deps
 
     // Assign the module and chunk ids by occurrence count
