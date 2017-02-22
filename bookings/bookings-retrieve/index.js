@@ -71,9 +71,9 @@ module.exports.respond = (event, callback) => {
           // signal corresponging TripEngine flow(s)
           if (booking.state !== stateBefore) {
             return Itinerary.query(booking.identityId, null, null, [], booking.id)
-              .then(itineraries => Promise.map(itineraries, itinerary => {
+              .then(itineraries => Promise.all(itineraries.map(itinerary => {
                 return TripEngine.checkWithItinerary(itinerary);
-              }))
+              })))
               .then(() => Promise.resolve(booking));
           }
           return Promise.resolve(booking);
