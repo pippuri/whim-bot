@@ -26,17 +26,27 @@ module.exports.respond = function (event, callback) {
     useDefaults: true,
     sanitize: true,
   };
-  let parsed;
+  let validated;
 
   return validator.validate(schema, event, validationOptions)
-    .then(_parsed => (parsed = _parsed))
-    .then(() => validatePermissions(parsed.customerId, parsed.userId))
-    .then(() => {
-      const subscription = SubscriptionManager.fromSubscriptionOption(parsed.payload);
-      const customerId = parsed.customerId;
-      const userId = parsed.userId;
-      const replace = parsed.replace;
-      return SubscriptionManager.estimateSubscriptionUpdate(subscription, customerId, userId, true, replace);
+    .then(_validated => (validated = _validated))
+    .then(() => validatePermissions(validated.customerId, validated.userId))
+    .then(() => SubscriptionManager.retrieveSubscriptionByUserId(validated.userId))
+    .then(currentSubscription => {
+      const targetSubscription = SubscriptionManager.fromSubscriptionOption(validated.payload);
+      const customerId = validated.customerId;
+      const userId = validated.userId;
+      const replace = validated.replace;
+      const addons = validated.payload.addons || [];
+      let immediateUpdate = false;
+
+      // If your current planId is payg or you are topping up, update immediately
+      if (currentSubscription.plan.id === SubscriptionManager.DEFAULT_PLAN_ID ||
+          addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
+        immediateUpdate = true;
+      }
+
+      return SubscriptionManager.estimateSubscriptionUpdate(targetSubscription, customerId, userId, immediateUpdate, replace);
     })
     .then(subs => ({ estimate: subs, debug: { event: event } }))
     .then(results => callback(null, utils.sanitize(results)))
