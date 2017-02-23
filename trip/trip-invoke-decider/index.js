@@ -331,14 +331,14 @@ class Decider {
         if (destination) {
           message = `Your trip to ${destination} is about to start`;
         }
-        if (legs[0].isTransport()) {
-          message += ` - ${legs[0].mode.toLowerCase()} arrives soon`;
-        } else if (legs[1] && legs[1].isTransport()) {
+        if (legs[1] && legs[1].isTransport()) {
           if (legs[0].isWalking()) {
             message += ` - leave for the ${legs[1].mode.toLowerCase()} now`;
           } else if (legs[0].isWaiting()) {
             message += ` - wait for the ${legs[1].mode.toLowerCase()}`;
           }
+        } else if (legs[0].isTransport()) {
+          message += ` - requesting ${legs[0].mode.toLowerCase()}`;
         }
         return this._sendPushNotification('TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' }, message);
       });
