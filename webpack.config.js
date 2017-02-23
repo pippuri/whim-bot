@@ -1,9 +1,9 @@
 'use strict';
 
 const webpack = require('webpack');
+const BabiliPlugin = require('babili-webpack-plugin');
 
 module.exports = {
-  entry: ['babel-polyfill'],
   target: 'node',
   externals: [
     'aws-sdk',
@@ -16,15 +16,18 @@ module.exports = {
   },
   module: {
     loaders: [
-      { test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /node_modules/,
+      },
       { test: /\.json$/, loader: 'json-loader' },
       { test: /\.ts$|\.md$|\.jst$|\.def$/, loader: 'ignore-loader' },
     ],
   },
   plugins: [
-
     new webpack.IgnorePlugin(/(regenerator|nodent|js-beautify)$/), // Unnecessary AJV deps
-    new webpack.IgnorePlugin(/(mockLambda\.js|mockDynamo\.js)$/), // Our internal shims
+    new webpack.IgnorePlugin(/(mockLambda\.js)$/), // Our internal shims
     new webpack.IgnorePlugin(/(commander|liftoff)/), // Unnecessary UI deps
 
     // Assign the module and chunk ids by occurrence count
@@ -36,21 +39,7 @@ module.exports = {
     // chunk merging strategy
     new webpack.optimize.AggressiveMergingPlugin(),
 
-    // UglifyJS
-    // new webpack.optimize.UglifyJsPlugin({
-    //   mangle: true,
-    //   compress: {
-    //     warnings: true, // Suppress uglification warnings
-    //     pure_getters: true,
-    //     unsafe: true,
-    //     unsafe_comps: true,
-    //     screw_ie8: true,
-    //   },
-    //   output: {
-    //     comments: false,
-    //   },
-    //   test: /\.js$/i,
-    //   exclude: [/\.min\.js$/gi], // skip pre-minified libs
-    // })
+    // Babili babel minification
+    new BabiliPlugin({ comments: false }),
   ],
 };
