@@ -75,7 +75,7 @@ function saveDeviceToken(event) {
           SyncCount: oldRecord ? oldRecord.SyncCount : 0,
         },
       ],
-    })
+    }).promise()
     .then(() => device);
   });
 }
