@@ -127,6 +127,7 @@
     "webpack": "^1.13.2"
   },
   "scripts": {
+    "check-var": "node ./scripts/check-env-vars.js",
     "test": "node ./scripts/check-env-vars.js && gulp test",
     "build:docs": "gulp build:swagger && sls swagger export > www/apidocs.maas.global/api/maas-api.json",
     "deploy:docs": "aws s3 cp --recursive --cache-control max-age=300 --acl public-read www/apidocs.maas.global/ s3://apidocs.maas.global/",
