@@ -327,16 +327,18 @@ class Decider {
         let message = 'Your trip is about to start';
         // dig out bit information to form more informal message
         const legs = itinerary.legs;
-        const destination = itinerary.toName();
+        const destination = itinerary.shortToName();
         if (destination) {
           message = `Your trip to ${destination} is about to start`;
         }
-        if (legs[0] && legs[1] && legs[1].isTransport()) {
+        if (legs[1] && legs[1].isTransport()) {
           if (legs[0].isWalking()) {
             message += ` - leave for the ${legs[1].mode.toLowerCase()} now`;
           } else if (legs[0].isWaiting()) {
             message += ` - wait for the ${legs[1].mode.toLowerCase()}`;
           }
+        } else if (legs[0].isTransport()) {
+          message += ` - requesting ${legs[0].mode.toLowerCase()}`;
         }
         return this._sendPushNotification('TripActivate', { ids: [itinerary.id], objectType: 'Itinerary' }, message);
       });
