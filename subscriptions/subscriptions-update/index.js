@@ -106,13 +106,15 @@ module.exports.respond = function (event, callback) {
         .then(updated => {
           // Special case: Check if we had any top-up points that would need to
           // be updated immediately. They don't show up in updated subscription.
-          const topupId = SubscriptionManager.TOPUP_ID;
           const addons = targetSubscription.addons || [];
-          const topup = addons.find(addon => addon.id === topupId);
+          const topup = addons.find(addon => addon.id === SubscriptionManager.TOPUP_ID);
 
           if (!topup) {
-            return xa.commit('Issue subscription change')
-              .then(() => updated);
+            xa.message = targetSubscription.plan ?
+              `Issue subscription change to ${targetSubscription.plan.id}` :
+              'Issue subscription details (addons) change';
+            xa.meta('subscription', targetSubscription);
+            return xa.commit().then(() => updated);
           }
 
           const points = topup.quantity;

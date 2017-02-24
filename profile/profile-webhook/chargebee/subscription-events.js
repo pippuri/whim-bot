@@ -18,6 +18,8 @@ function handle(payload, key, defaultResponse) {
   //let user;
 
   const xa = new Transaction(identityId);
+  // An operation, potentially resulting from switch-case.
+  let operation;
 
   switch (payload.event_type) {
     case 'subscription_created':
@@ -26,29 +28,36 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_reactivated':
       // Reactivate the subscription by just changing to the new plan
       xa.message = `Subscription activated to ${subs.plan.id}`;
-      xa.meta('subscription', JSON.stringify(subs));
+      operation = Promise.resolve();
       break;
     case 'subscription_changed':
-      // Change the subscription by changing to the new plan
-      xa.message = `Subscription changed to ${subs.plan.id}`;
-      xa.meta('subscription', JSON.stringify(subs));
-      // Reset the balance only in case the subscription change included
-      // a payment of a plan (e.g. an upgrade happened)
-      if (!invoicedChanges.some(i => i.type === 'plan')) {
-        resetBalance = false;
+      // Handle false change notification (Chargebee bug): Top-up purchases
+      // send webhook, and we should not react to them
+      if (invoicedChanges.some(i => i.id === 'fi-whim-top-up')) {
+        return Promise.resolve();
       }
+
+      // Change the subscription by changing to the new plan
+      xa.message = 'Subscription changed (unknown changes)';
+
+      // Reset the balance only in case we switched from a plan to another
+      operation =  Profile.retrieve(identityId)
+        .then(profile => {
+          xa.message = `Subscription changed to ${subs.plan.id}`;
+          resetBalance = !(subs.plan.id === profile.subscription.planId);
+        });
       break;
     case 'subscription_renewed':
       // Renew the subscription by changing to the new plan
       xa.message = `Subscription renewed to ${subs.plan.id}`;
-      xa.meta('subscription', JSON.stringify(subs));
+      operation = Promise.resolve();
       break;
     case 'subscription_cancelled':
     case 'subscription_deleted':
       // Cancel/delete the subscription by setting to the default plan (payg)
       xa.message = 'Subscription cancelled, plan changed to default; reset point balance.';
       subs = SubscriptionManager.DEFAULT_SUBSCRIPTION;
-
+      operation = Promise.resolve();
       break;
     case 'subscription_shipping_address_updated':
       // Return early, because we do not change subscription - we change the profile
@@ -72,7 +81,9 @@ function handle(payload, key, defaultResponse) {
   // Note: non-recurring items are not displayed in subscription changes
   // (they can be found from invoice line items, though). For now, the
   // non-recurring items are handled in API endpoints (e.g. subscription-update)
+  xa.meta('subscription', subs);
   return xa.start()
+    .then(() => operation)
     .then(() => Profile.changeSubscription(identityId, subs, xa, resetBalance))
     .then(response => xa.commit())
     .catch(error => xa.rollback().then(() => Promise.reject(error)));

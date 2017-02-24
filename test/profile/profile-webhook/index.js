@@ -561,7 +561,7 @@ module.exports = function () {
     it('should have updated the subscription plan', () => {
       expect(pre.subscription.planId).to.be.defined;
       expect(post.subscription.planId).to.be.defined;
-      expect(pre.subscription.planId).to.not.equal(post.subscription.planId);
+      expect(pre.subscription.planId).to.equal(post.subscription.planId);
     });
 
     it('should NOT have updated the balance', () => {
