@@ -652,7 +652,7 @@
           "subscription": {
               "id": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
               "customer_id": "eu-west-1:00000000-cafe-cafe-cafe-000000000024",
-              "plan_id": "fi-whim-light",
+              "plan_id": "fi-whim-medium",
               "plan_quantity": 1,
               "status": "active",
               "current_term_start": 1468946774,
