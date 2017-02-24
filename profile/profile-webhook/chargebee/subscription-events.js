@@ -28,7 +28,6 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_reactivated':
       // Reactivate the subscription by just changing to the new plan
       xa.message = `Subscription activated to ${subs.plan.id}`;
-      xa.meta('subscription', JSON.stringify(subs));
       operation = Promise.resolve();
       break;
     case 'subscription_changed':
@@ -40,7 +39,6 @@ function handle(payload, key, defaultResponse) {
 
       // Change the subscription by changing to the new plan
       xa.message = 'Subscription changed (unknown changes)';
-      xa.meta('subscription', JSON.stringify(subs));
 
       // Reset the balance only in case we switched from a plan to another
       operation =  Profile.retrieve(identityId)
@@ -52,7 +50,6 @@ function handle(payload, key, defaultResponse) {
     case 'subscription_renewed':
       // Renew the subscription by changing to the new plan
       xa.message = `Subscription renewed to ${subs.plan.id}`;
-      xa.meta('subscription', JSON.stringify(subs));
       operation = Promise.resolve();
       break;
     case 'subscription_cancelled':
@@ -84,6 +81,7 @@ function handle(payload, key, defaultResponse) {
   // Note: non-recurring items are not displayed in subscription changes
   // (they can be found from invoice line items, though). For now, the
   // non-recurring items are handled in API endpoints (e.g. subscription-update)
+  xa.meta('subscription', subs);
   return xa.start()
     .then(() => operation)
     .then(() => Profile.changeSubscription(identityId, subs, xa, resetBalance))
