@@ -29,6 +29,12 @@ function handle(payload, key, defaultResponse) {
       xa.meta('subscription', JSON.stringify(subs));
       break;
     case 'subscription_changed':
+      // Handle false change notification (Chargebee bug): Top-up purchases
+      // send webhook, and we should not react to them
+      if (invoicedChanges.some(i => i.id === 'fi-whim-top-up')) {
+        return Promise.resolve();
+      }
+
       // Change the subscription by changing to the new plan
       xa.message = `Subscription changed to ${subs.plan.id}`;
       xa.meta('subscription', JSON.stringify(subs));
