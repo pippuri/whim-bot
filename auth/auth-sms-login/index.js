@@ -13,6 +13,53 @@ const ci = new AWS.CognitoIdentity({ region: process.env.AWS_REGION });
 const cognito = new AWS.CognitoSync({ region: process.env.AWS_REGION });
 const iot = new AWS.Iot({ region: process.env.AWS_REGION });
 
+AWS.config.update({ region: 'eu-west-1' });
+const s3 = new AWS.S3();
+
+//let startingBalancesCache;
+function getStartingBalancesCache() {
+  // Cache disabled for now
+  /*if (startingBalancesCache) {
+    return Promise.resolve(startingBalancesCache);
+  }*/
+
+  return s3.getObject({
+    Bucket: 'maas-serverless',
+    Key: 'serverless/MaaS/greenlists/starting-balances.json',
+  }).promise()
+  .then(result => Promise.resolve(JSON.parse(new Buffer(result.Body).toString('ascii'))));
+  //.then(balances => (startingBalancesCache = balances));
+}
+
+/**
+ * Issues a conditional discount for the profile (given that the user is in the 300p list)
+ */
+function issueConditionalDiscount(identityId, phone, transaction) {
+  return getStartingBalancesCache()
+    .then(balances => {
+      const strippedPhone = phone.replace('+', '');
+      const points = balances[strippedPhone];
+
+      if (points) {
+        console.info(`Add ${points} starting balance to ${identityId}`);
+        const discountXA = new Transaction(identityId);
+        discountXA.type = Transaction.types.BALANCE_SET;
+        discountXA.value = points;
+
+        return discountXA.start()
+          .then(() => Profile.update(identityId, { balance: points }, discountXA))
+          .then(
+            profile => discountXA.commit(`Issued ${points} sign-up bonus`),
+            error => discountXA.rollback().then(() => {
+              console.warn(`Error: Sign-up bonus failed for ${identityId}: ${error.message}`);
+              console.warn(error.stack);
+            })
+          );
+      }
+      return Promise.resolve();
+    });
+}
+
 /**
  * Create or retrieve Amazon Cognito identity.
  */
@@ -194,7 +241,8 @@ function smsLogin(phone, code) {
           .then(
             profile => transaction.commit('Profile created'),
             error => transaction.rollback().then(() => Promise.reject(error))
-          );
+          )
+          .then(() => issueConditionalDiscount(identityId, phone));
       });
   })
   .then(() => {
