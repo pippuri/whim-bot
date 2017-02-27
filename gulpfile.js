@@ -9,12 +9,6 @@ const gulp = require('gulp');
 const jsonlint = require('gulp-jsonlint');
 const jsonclint = require('gulp-json-lint');
 
-// Required for gulp-mocha to recognise async-await
-require('harmonize')([
-  'harmony',
-  'harmony_async-await',
-]);
-
 const jsoncFiles = ['.eslintrc']; // json with comments
 const jsonFiles = ['**/*.json', '!**/node_modules/**/*.json', '!www/**/*.json', '!_meta/**/*.json'];
 const jsFiles = ['**/*.js', '!**/node_modules/**/*.js', '!www/**/*.js', '!_meta/**/*.js'];
@@ -68,8 +62,18 @@ gulp.task('copy:json-schemas', () => {
 });*/
 
 gulp.task('mocha'/*, ['pre-mocha']*/, () => {
+  const options = {
+    timeout: 20000,
+  };
+
+  if (process.env.BABEL) {
+    options.compilers = process.env.BABEL ? require('babel-core/register') : undefined;
+  } else {
+    require('harmonize')(['harmony', 'harmony_async-await']);
+  }
+
   return gulp.src('test/test.js', { read: false })
-    .pipe(gmocha({ timeout: 20000 }));
+    .pipe(gmocha(options));
     //.on('error', gutil.log);
     //.pipe(istanbul.writeReports())
     // Skip thresholds until we have more coverage
