@@ -12,7 +12,8 @@ before_install:
 
 install:
 # Use update instead of npm install, so that we can benefit from local module cache
-- npm update --quiet --no-optional --depth=0
+# - npm update --quiet --no-optional --depth=0
+- npm install
 
 before_script:
 - export AWS_PROFILE=travis
