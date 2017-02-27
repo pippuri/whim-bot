@@ -66,10 +66,10 @@ gulp.task('mocha'/*, ['pre-mocha']*/, () => {
     timeout: 20000,
   };
 
-  if (process.env.BABEL) {
-    options.compilers = process.env.BABEL ? require('babel-core/register') : undefined;
-  } else {
+  if (process.env.NO_BABEL) {
     require('harmonize')(['harmony', 'harmony_async-await']);
+  } else {
+    options.compilers = require('babel-core/register');
   }
 
   return gulp.src('test/test.js', { read: false })

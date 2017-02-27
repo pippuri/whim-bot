@@ -101,6 +101,7 @@
     "gulp-mocha": "^3.0.1",
     "gulp-sequence": "^0.4.5",
     "gulp-util": "^3.0.7",
+    "harmonize": "^2.0.0",
     "ignore-loader": "^0.1.2",
     "json-loader": "^0.5.4",
     "lambda-wrapper": "^0.1.0",
@@ -128,7 +129,6 @@
   "scripts": {
     "check-var": "node ./scripts/check-env-vars.js",
     "test": "node ./scripts/check-env-vars.js && gulp test",
-    "test-babel": "node ./scripts/check-env-vars.js && BABEL=true gulp test",
     "build:docs": "gulp build:swagger && sls swagger export > www/apidocs.maas.global/api/maas-api.json",
     "deploy:docs": "aws s3 cp --recursive --cache-control max-age=300 --acl public-read www/apidocs.maas.global/ s3://apidocs.maas.global/",
     "deploy:greenlist:dev": "aws s3 cp _meta/greenlists/greenlist-dev.json s3://maas-serverless/serverless/MaaS/greenlists/greenlist-dev.json",
