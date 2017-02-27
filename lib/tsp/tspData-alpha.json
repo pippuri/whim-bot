@@ -61,5 +61,18 @@
       "reserve": "bookings/",
       "query": "bookings/options/"
     }
+  },
+  "SilverRail": {
+    "id": "SilverRail",
+    "baseUrl": "https://tsp.alpha.maas.global/silverrail/",
+    "headers": {
+      "X-Api-Key": "GqVXcKumHX8QDof22hdaE2YflFn1OpTd9TrJoPJf"
+    },
+    "endpoints": {
+      "reserve": "bookings/",
+      "retrieve": "bookings/",
+      "cancel": "bookings/",
+      "query": "bookings/options/"
+    }
   }
 }
