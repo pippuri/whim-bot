@@ -82,14 +82,14 @@
       "image": "https://staticfiles.maas.global/package-images/plan-light.png",
       "examples": [
         {
-          "type": "hsl",
-          "quantity": "unlimited",
-          "description": "Public transport HSL (internal)"
-        },
-        {
           "type": "taxi",
           "quantity": "2",
           "description": "Taxi trips"
+        },
+        {
+          "type": "hsl",
+          "quantity": "unlimited",
+          "description": "Public transport HSL (internal)"
         }
       ]
     },
@@ -146,14 +146,14 @@
       "image": "https://staticfiles.maas.global/package-images/plan-medium.png",
       "examples": [
         {
-          "type": "hsl",
-          "quantity": "unlimited",
-          "description": "Public transport HSL (internal)"
-        },
-        {
           "type": "taxi",
           "quantity": "8",
           "description": "Taxi trips"
+        },
+        {
+          "type": "hsl",
+          "quantity": "unlimited",
+          "description": "Public transport HSL (internal)"
         },
         {
           "type": "car",
@@ -214,14 +214,14 @@
       "image": "https://staticfiles.maas.global/package-images/plan-premium.png",
       "examples": [
         {
-          "type": "hsl",
-          "quantity": "unlimited",
-          "description": "Public transport HSL (internal)"
-        },
-        {
           "type": "taxi",
           "quantity": "10",
           "description": "Taxi trips"
+        },
+        {
+          "type": "hsl",
+          "quantity": "unlimited",
+          "description": "Public transport HSL (internal)"
         },
         {
           "type": "car",
