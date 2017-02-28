@@ -8,6 +8,7 @@ cache:
 
 before_install:
 - if [[ -n $TRAVIS_TAG ]]; then echo "Detect travis tag build, exit" && exit 0; fi # Exit if it is a Tag Build
+- if [[ `npm -v` != 3.9.6* ]]; then npm i -g npm@3.9.6; fi
 - npm --version
 
 install:

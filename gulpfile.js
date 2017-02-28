@@ -69,7 +69,7 @@ gulp.task('mocha'/*, ['pre-mocha']*/, () => {
   if (process.env.NO_BABEL) {
     require('harmonize')(['harmony', 'harmony_async-await']);
   } else {
-    options.compilers = require('babel-core/register');
+    options.compilers = require('babel-register');
   }
 
   return gulp.src('test/test.js', { read: false })
