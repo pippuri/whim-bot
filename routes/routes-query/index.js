@@ -62,9 +62,9 @@ function signResponse(response) {
 }
 
 function _constructQuery(payload) {
-  // If not leaveAt, search for routes starting 2 mins from now
+  // If not leaveAt, search for routes starting now
   if (!payload.leaveAt && !payload.arriveBy) {
-    payload.leaveAt = Date.now() + 2 * 60 * 1000;
+    payload.leaveAt = Date.now();
   }
 
   const query = {
