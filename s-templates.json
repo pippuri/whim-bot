@@ -1,5 +1,6 @@
 {
   "environment": {
+    "MAAS_API_VERSION": "${MAAS_API_VERSION}",
     "SERVERLESS_STAGE": "${stage}",
     "SERVERLESS_IAM_ROLE_ARN_LAMBDA": "${iamRoleArnLambda}",
     "AWS_REGION": "${AWS_REGION}",

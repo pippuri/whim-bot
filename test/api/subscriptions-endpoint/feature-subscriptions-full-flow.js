@@ -218,6 +218,9 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
         plan: { id: 'fi-whim-medium' },
         addons: [{ id: 'fi-hsl-helsinki', quantity: 1 }],
       },
+      headers: {
+        Accept: 'application/json; version=1.0.0',
+      },
       replace: true,
     };
 
@@ -271,6 +274,9 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       payload: {
         addons: [{ id: 'fi-whim-top-up', quantity: 500 }],
       },
+      headers: {
+        Accept: 'application/json; version=1.0.0',
+      },
       replace: false,
     };
 
@@ -305,6 +311,9 @@ describe('subscriptions-full-flow', function () { // eslint-disable-line
       payload: {
         plan: { id: 'fi-whim-light' },
         addons: [],
+      },
+      headers: {
+        Accept: 'application/json; version=1.0.0',
       },
       replace: true,
     };

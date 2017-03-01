@@ -1,6 +1,7 @@
 'use strict';
 
 const Database = require('../../lib/models/Database');
+const headers = require('../../lib/headers');
 const MaaSError = require('../../lib/errors/MaaSError');
 const Profile = require('../../lib/business-objects/Profile');
 const Transaction = require('../../lib/business-objects/Transaction');
@@ -74,6 +75,7 @@ module.exports.respond = function (event, callback) {
   return Database.init()
     .then(() => validator.validate(schema, event, validationOptions))
     .then(_validated => (validated = _validated))
+    .then(() => headers.validateVersion(validated.headers.Accept))
     .then(() => validatePermissions(validated.customerId, validated.userId))
     .then(() => {
       targetSubscription = SubscriptionManager.fromSubscriptionOption(validated.payload);
