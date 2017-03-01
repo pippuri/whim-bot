@@ -23,10 +23,10 @@
         "recurring": true,
         "price_type": "tax_inclusive",
         "sub_total": 39900,
-        "total": 34900,
+        "total": 39900,
         "credits_applied": 0,
         "amount_paid": 0,
-        "amount_due": 34900,
+        "amount_due": 39900,
         "object": "invoice_estimate",
         "line_items": [
             {
