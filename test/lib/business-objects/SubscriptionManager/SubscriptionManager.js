@@ -65,8 +65,7 @@ describe('fromChargebeeSubscription', () => {
   it('Converts to a valid MaaS subscription with just an addon', () => {
     const maasSubscription = SubscriptionManager.fromChargebeeSubscription(cbAddonSubscription);
 
-    expect(validator.validateSync(susbscriptionSchema, maasSubscription)).to.be.an.object;
-
+    expect(validator.validateSync(subscriptionSchema, maasSubscription)).to.be.an.object;
     expect(maasSubscription.plan).to.not.exist;
     expect(maasSubscription.addons[0].id).to.equal(cbAddonSubscription.addons[0].id);
     expect(maasSubscription.coupons).to.not.exist;
