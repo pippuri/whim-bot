@@ -9,7 +9,7 @@ const subscriptionSchema = require('maas-schemas/prebuilt/maas-backend/subscript
 const validator = require('../../../../lib/validator');
 
 const newSubscriptionSchema = subscriptionSchema.definitions.newSubscription;
-const fullContactSchema = contactSchema.definitions.fullContact;
+const contactResponseSchema = contactSchema.definitions.contactResponse;
 
 const testUserIdentity = 'eu-west-1:00000000-dead-dead-eaea-000000000000';
 const customerId = testUserIdentity;
@@ -65,7 +65,7 @@ describe('fromChargebeeSubscription', () => {
   it('Converts to a valid MaaS subscription with just an addon', () => {
     const maasSubscription = SubscriptionManager.fromChargebeeSubscription(cbAddonSubscription);
 
-    expect(validator.validateSync(subscriptionSchema, maasSubscription)).to.be.an.object;
+    expect(validator.validateSync(susbscriptionSchema, maasSubscription)).to.be.an.object;
 
     expect(maasSubscription.plan).to.not.exist;
     expect(maasSubscription.addons[0].id).to.equal(cbAddonSubscription.addons[0].id);
@@ -92,8 +92,7 @@ describe('fromChargebeeAddress', () => {
   it('Converts from a Chargebee address to a valid customer & payment method', () => {
     const contact = SubscriptionManager.fromChargebeeAddress(cbAddress, userId, cbPaymentMethod);
 
-    expect(validator.validate(fullContactSchema, contact)).to.be.an.object;
-
+    expect(validator.validateSync(contactResponseSchema, contact)).to.be.an.object;
     expect(contact.identityId).to.equal(userId);
     expect(contact.firstName).to.equal(cbAddress.first_name);
     expect(contact.lastName).to.equal(cbAddress.last_name);
@@ -110,7 +109,7 @@ describe('fromChargebeeEstimate', () => {
     const pricing = SubscriptionManager.fromChargebeeEstimate(cbEstimate);
     const lineItemTotal = pricing.lineItems.reduce((sum, i) => sum + i.quantity * i.unitPrice.amount, 0);
 
-    expect(validator.validate(pricingSchema, pricing)).to.be.an.object;
+    expect(validator.validateSync(pricingSchema, pricing)).to.be.an.object;
     expect(lineItemTotal).to.equal(pricing.total.amount);
   });
 });
