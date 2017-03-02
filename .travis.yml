@@ -1,6 +1,6 @@
 language: node_js
 node_js:
-- 7.5
+- 4.3.2
 cache:
   directories:
   - node_modules
@@ -8,11 +8,13 @@ cache:
 
 before_install:
 - if [[ -n $TRAVIS_TAG ]]; then echo "Detect travis tag build, exit" && exit 0; fi # Exit if it is a Tag Build
+- if [[ `npm -v` != 3.9.6* ]]; then npm i -g npm@3.9.6; fi
 - npm --version
 
 install:
 # Use update instead of npm install, so that we can benefit from local module cache
-- npm update --quiet --no-optional --depth=0
+# - npm update --quiet --no-optional --depth=0
+- npm install
 
 before_script:
 - export AWS_PROFILE=travis
