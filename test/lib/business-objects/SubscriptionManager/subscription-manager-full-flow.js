@@ -12,6 +12,10 @@ const validator = require('../../../../lib/validator');
 const newCustomer = require('./maas-contact-new.json');
 const updatedCustomer = require('./maas-contact-full.json');
 const addonSubscription = require('./maas-subscription-addon.json');
+const forgedPrice = { price: 0.01, unit: 'EUR' };
+const forgedSubscription = Object.assign({}, addonSubscription, {
+  addons: addonSubscription.addons.map(addon => Object.assign({}, addon, forgedPrice)),
+});
 
 const subscriptionResponseSchema = subscriptionSchema.definitions.subscriptionResponse;
 const contactResponseSchema = contactSchema.definitions.contactResponse;
@@ -28,6 +32,7 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
   let createSubscriptionResponse;
   let retrieveSubscriptionResponse;
   let estimateSubscriptionUpdateResponse;
+  let forgedSubscriptionUpdateResponse;
   let retrieveSubscriptionsResponse;
   let updateSubscriptionResponse;
   let deleteSubscriptionResponse;
@@ -256,6 +261,24 @@ describe('SubscriptionManager-full-flow', function () { // eslint-disable-line
         )).to.exist;
       });
   });
+
+  it('Disregards the faked, user-supplied unit prices', () => {
+    return SubscriptionManager.estimateSubscriptionUpdate(forgedSubscription, customerId, userId, true, false)
+      .then(
+        res => Promise.resolve(forgedSubscriptionUpdateResponse = res),
+        err => Promise.reject(error = err)
+      )
+      .then(() => {
+        expect(validator.validateSync(
+          pricingSchema,
+          forgedSubscriptionUpdateResponse
+        )).to.exist;
+
+        expect(forgedSubscriptionUpdateResponse.total.amount)
+          .to.equal(estimateSubscriptionUpdateResponse.total.amount);
+      });
+  });
+
 
   it('Updates the subscription', () => {
     return SubscriptionManager.updateSubscription(addonSubscription, customerId, userId, true, false)

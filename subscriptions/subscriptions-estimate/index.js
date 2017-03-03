@@ -38,6 +38,8 @@ module.exports.respond = function (event, callback) {
       const userId = validated.userId;
       const replace = validated.replace;
       const addons = validated.payload.addons || [];
+      // The plan to use as a reference to annotate the subscription prices for
+      const planId = targetSubscription.plan ? targetSubscription.plan.id : currentSubscription.plan.id;
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
@@ -46,7 +48,9 @@ module.exports.respond = function (event, callback) {
         immediateUpdate = true;
       }
 
-      return SubscriptionManager.estimateSubscriptionUpdate(targetSubscription, customerId, userId, immediateUpdate, replace);
+      // Use the special prices from target subscription if available
+      return SubscriptionManager.annotateSubscriptionWithPrices(targetSubscription, planId)
+        .then(annotated => SubscriptionManager.estimateSubscriptionUpdate(annotated, customerId, userId, immediateUpdate, replace));
     })
     .then(subs => ({ estimate: subs, debug: { event: event } }))
     .then(results => callback(null, utils.sanitize(results)))

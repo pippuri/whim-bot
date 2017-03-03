@@ -43,6 +43,10 @@
       {
         "id": "fi-hsl-helsinki",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 0,
+          "currency": "EUR"
+        },
         "name": "HSL Helsinki internal",
         "groupName": "Public transportation",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -54,6 +58,10 @@
       {
         "id": "fi-hsl-seutu",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 55,
+          "currency": "EUR"
+        },
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -65,6 +73,10 @@
       {
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 100,
+          "currency": "EUR"
+        },
         "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -106,6 +118,10 @@
       {
         "id": "fi-hsl-helsinki",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 0,
+          "currency": "EUR"
+        },
         "name": "HSL Helsinki internal",
         "groupName": "Public transportation",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -117,6 +133,10 @@
       {
         "id": "fi-hsl-seutu",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 55,
+          "currency": "EUR"
+        },
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -128,6 +148,10 @@
       {
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 100,
+          "currency": "EUR"
+        },
         "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -175,6 +199,10 @@
       {
         "id": "fi-hsl-helsinki",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 0,
+          "currency": "EUR"
+        },
         "name": "HSL Helsinki internal",
         "groupName": "Public transportation",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -186,6 +214,10 @@
       {
         "id": "fi-hsl-seutu",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 55,
+          "currency": "EUR"
+        },
         "name": "HSL regional ticket",
         "description": "Travel between Helsinki, Espoo and Vantaa.",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
@@ -197,6 +229,10 @@
       {
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
+        "unitPrice": {
+          "amount": 100,
+          "currency": "EUR"
+        },
         "name": "HSL region three-zone",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
