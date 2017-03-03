@@ -18,6 +18,7 @@ const userId = testUserIdentity;
 // MaaS Subscriptions
 const newSubscription = require('./maas-subscription-new.json');
 const addonSubscription = require('./maas-subscription-addon.json');
+const unitPricedSubscription = require('./maas-subscription-unit-priced.json');
 
 // Note: Chargebee subscriptions are not exactly the same with requests
 // and responses (request: coupons_ids: <id>, response: coupons: {id: <id>})
@@ -48,6 +49,24 @@ describe('toChargebeeSubscription', () => {
     expect(cbSubscription.plan_id).to.not.exist;
     expect(cbSubscription.coupon_ids).to.not.exist;
     expect(cbSubscription.addons[0].id).to.equal(addonSubscription.addons[0].id);
+  });
+
+  it('Converts to a valid Chargebee subscription with forced unit prices', () => {
+    const cbSubscription = SubscriptionManager.toChargebeeSubscription(unitPricedSubscription, userId, customerId);
+
+    expect(cbSubscription.plan_unit_price).to.equal(100 * unitPricedSubscription.plan.price.amount);
+    expect(cbSubscription.addons[0].unit_price).to.equal(100 * unitPricedSubscription.addons[0].unitPrice.amount);
+  });
+
+  it('Fails with mixed currency unit prices', () => {
+    const mixedCurrencyPrices = Object.assign(
+      {},
+      unitPricedSubscription,
+      { plan: { id: unitPricedSubscription.plan.id, price: { amount: 100, unit: 'GBP' } } },
+    );
+    const fn = () => SubscriptionManager.toChargebeeSubscription(mixedCurrencyPrices, userId, customerId);
+
+    expect(fn).to.throw(TypeError);
   });
 });
 

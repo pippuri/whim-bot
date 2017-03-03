@@ -87,6 +87,7 @@ module.exports.respond = function (event, callback) {
       const userId = validated.userId;
       const replace = validated.replace;
       const addons = validated.payload.addons || [];
+      const planId = targetSubscription.plan ? targetSubscription.plan.id : currentSubscription.plan.id;
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
@@ -97,8 +98,9 @@ module.exports.respond = function (event, callback) {
 
       const xa = new Transaction(userId);
       return xa.start()
-        .then(() => SubscriptionManager.updateSubscription(
-          targetSubscription,
+        .then(() => SubscriptionManager.annotateSubscriptionWithPrices(targetSubscription, planId))
+        .then(annotated => SubscriptionManager.updateSubscription(
+          annotated,
           customerId,
           userId,
           immediateUpdate,

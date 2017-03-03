@@ -1,0 +1,19 @@
+{
+  "plan": {
+    "id": "fi-whim-medium",
+    "price": {
+      "amount": 100,
+      "unit": "EUR"
+    }
+  },
+  "addons": [
+    {
+      "id": "fi-hsl-seutu",
+      "quantity": 1,
+      "unitPrice": {
+        "amount": 100,
+        "unit": "EUR"
+      }
+    }
+  ]
+}
