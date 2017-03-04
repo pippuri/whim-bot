@@ -85,14 +85,16 @@ module.exports.respond = function (event, callback) {
     .then(currentSubscription => {
       const customerId = validated.customerId;
       const userId = validated.userId;
-      const replace = validated.replace;
       const addons = validated.payload.addons || [];
+      const isTopUp = addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID);
       const planId = targetSubscription.plan ? targetSubscription.plan.id : currentSubscription.plan.id;
+
+      // Top-ups should never replace the existing subscription
+      const replace = (isTopUp) ? false : validated.replace;
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
-      if (currentSubscription.plan.id === SubscriptionManager.DEFAULT_PLAN_ID ||
-          addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID)) {
+      if (currentSubscription.plan.id === SubscriptionManager.DEFAULT_PLAN_ID || isTopUp) {
         immediateUpdate = true;
       }
 
