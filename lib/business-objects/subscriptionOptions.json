@@ -63,7 +63,7 @@
           "currency": "EUR"
         },
         "name": "HSL regional ticket",
-        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "description": "Helsinki, Espoo, Kauniainen and Vantaa",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Public transportation",
         "groupId": "hsl-addon-choice",
@@ -74,10 +74,10 @@
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
         "unitPrice": {
-          "amount": 100,
+          "amount": 105,
           "currency": "EUR"
         },
-        "name": "HSL region three-zone",
+        "name": "HSL region 3 ticket",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Public transportation",
@@ -138,7 +138,7 @@
           "currency": "EUR"
         },
         "name": "HSL regional ticket",
-        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "description": "Helsinki, Espoo, Kauniainen and Vantaa",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Public transportation",
         "groupId": "hsl-addon-choice",
@@ -149,10 +149,10 @@
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
         "unitPrice": {
-          "amount": 100,
+          "amount": 105,
           "currency": "EUR"
         },
-        "name": "HSL region three-zone",
+        "name": "HSL region 3 ticket",
         "description": "Helsinki, Espoo, Kauniainen, Vantaa, Kerava, Sipoo, Kirkkonummi",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Public transportation",
@@ -219,7 +219,7 @@
           "currency": "EUR"
         },
         "name": "HSL regional ticket",
-        "description": "Travel between Helsinki, Espoo and Vantaa.",
+        "description": "Helsinki, Espoo, Kauniainen and Vantaa.",
         "icon": "https://staticfiles.maas.global/logos/addons/hsl_addon.png",
         "groupName": "Public transportation",
         "groupId": "hsl-addon-choice",
@@ -230,7 +230,7 @@
         "id": "fi-hsl-lahiseutu-3",
         "quantity": 1,
         "unitPrice": {
-          "amount": 100,
+          "amount": 105,
           "currency": "EUR"
         },
         "name": "HSL region three-zone",
