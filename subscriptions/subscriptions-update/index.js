@@ -71,6 +71,8 @@ module.exports.respond = function (event, callback) {
   };
   let validated;
   let targetSubscription;
+  let isTopUp;
+  let replace;
 
   return Database.init()
     .then(() => validator.validate(schema, event, validationOptions))
@@ -78,19 +80,20 @@ module.exports.respond = function (event, callback) {
     .then(() => headers.validateVersion(validated.headers.Accept))
     .then(() => validatePermissions(validated.customerId, validated.userId))
     .then(() => {
+      const addons = validated.payload.addons || [];
+
+      isTopUp = addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID);
       targetSubscription = SubscriptionManager.fromSubscriptionOption(validated.payload);
-      return validateLogicConflicts(targetSubscription, validated.replace);
+      // Top-ups should never replace the existing subscription
+      replace = (isTopUp) ? false : validated.replace;
+
+      return validateLogicConflicts(targetSubscription, replace);
     })
     .then(() => SubscriptionManager.retrieveSubscriptionByUserId(validated.userId))
     .then(currentSubscription => {
       const customerId = validated.customerId;
       const userId = validated.userId;
-      const addons = validated.payload.addons || [];
-      const isTopUp = addons.some(addon => addon.id === SubscriptionManager.TOPUP_ID);
       const planId = targetSubscription.plan ? targetSubscription.plan.id : currentSubscription.plan.id;
-
-      // Top-ups should never replace the existing subscription
-      const replace = (isTopUp) ? false : validated.replace;
       let immediateUpdate = false;
 
       // If your current planId is payg or you are topping up, update immediately
