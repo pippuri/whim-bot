@@ -42,17 +42,10 @@ const fetchProfileFavorites = token => {
   return new Promise( (resolve, reject) => {
     return requests.favorites(token)
       .then( (res) => {
-      console.log('Got favorites', res);
-      const arr = {};
-      for (const item of res.profile.favoriteLocations) {
-        arr[item.name] = {
-          latitude: item.lat,
-          longitude: item.lon,
-          name: item.name
-        };
-      }
-      return resolve(arr);
-    });
+      console.log('Got profile', res);
+      return resolve(res.profile);
+    })
+    .catch( err => reject(err));
   });
 }
 
@@ -394,9 +387,19 @@ bot.dialog('/location', [
         return session.beginDialog('/destination', fromLocation);
     }
     fetchProfileFavorites(session.userData.user.id_token)
-      .then( favorites => {
-        console.log('Profile info', favorites);
-        session.beginDialog('/destination', favorites);
+      .then( profile => {
+        const arr = {};
+        for (const item of profile.favoriteLocations) {
+          arr[item.name] = {
+            latitude: item.lat,
+            longitude: item.lon,
+            name: item.name
+          };
+        }
+        session.userData.balance = profile.balance;
+        session.userData.favorites = arr;
+        console.log('Profile info', arr);
+        session.beginDialog('/destination', arr);
       })
       .catch( err => {
         console.log('Error fetching profile', err);
@@ -423,14 +426,18 @@ bot.dialog('/location', [
           const topItin = session.dialogData.ptPlan;
           console.log('Itinerary', topItin);
           const choices = {};
-          if (topItin) {
+          if (topItin && (topItin.fare.points <= session.userData.balance)) {
             choices['Public Transport'] = {};
             session.send(`Public Transport ${topItin.fare.points}p, ${utils.calcDuration(topItin)}`);
+          } else {
+            return session.endDialog(`No Public Transit routes found - your points balance of ${session.userData.balance} may be too low for booking this trip`);
           }
-          if (session.dialogData.taxiPlan) {
+          if (session.dialogData.taxiPlan && 
+              (session.dialogData.taxiPlan.fare.points <= session.userData.balance)) {
             choices['TAXI'] = {};
             session.send(`Or TAXI ${session.dialogData.taxiPlan.fare.points}p, ${utils.calcDuration(session.dialogData.taxiPlan)}`);
           }
+          
           choices.Cancel = {};
           builder.Prompts.choice(
             session,
