@@ -470,7 +470,7 @@ bot.dialog('/location', [
             let error = 'Error booking your trip';
             if (err.response && err.response.errorMessage) {
               const ind = err.response.errorMessage.lastIndexOf('Error:');
-              error = `Error with booking: ${err.response.errorMessage.slice(ind + 10)}`;
+              error = `Error with booking${err.response.errorMessage.slice(ind + 10)}`;
             }
             return session.endDialog(error);
         });
