@@ -466,8 +466,13 @@ bot.dialog('/location', [
           //return session.endDialog('Your ride is booked - check your <a href="whimapp://open">Whim-app!</a>');
         })
         .catch( err => {
-            console.log('ERROR booking trip', err, err.stack);
-            return session.endDialog('Error booking your trip');
+            console.log('ERROR booking trip', JSON.stringify(err), err.stack);
+            let error = 'Error booking your trip';
+            if (err.response && err.response.errorMessage) {
+              const ind = err.response.errorMessage.lastIndexOf('Error:');
+              error = `Error with booking: ${err.response.errorMessage.slice(ind + 10)}`;
+            }
+            return session.endDialog(error);
         });
       }
     } 
@@ -479,12 +484,18 @@ bot.dialog('/location', [
 bot.dialog('/destination', [
   function (session, choices) {
     session.dialogData.choices = choices;
-    if (choices.toLocation) {
+    if (choices && choices.toLocation) {
       console.log('destination had toLocation', choices.toLocation);
       return session.endDialogWithResult({
         response: choices.toLocation
       });
     }
+    if (!choices || Object.keys(choices).length === 0) {
+      choices = {
+        Cancel: {}
+      }
+    }
+   
     builder.Prompts.choice(
       session,
       'Choose or send location to set the destination',
@@ -496,7 +507,9 @@ bot.dialog('/destination', [
   },
   function (session, results) {
     console.log('Destination response', results);
-    if (results.response && results.response.entity) {
+    if (results.response && results.response.entity === 'Cancel') {
+      return session.endConversation('Ok, starting over');
+    }    if (results.response && results.response.entity) {
       var choices = session.dialogData.choices;
       session.endDialogWithResult({
         response: choices[results.response.entity]

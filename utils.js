@@ -25,11 +25,13 @@ const filterTaxi = (itineraries) => {
 const filterPT = (itineraries) => {
   let ret = undefined;
   console.log('TODO: filterPT for the best match/score!!');
-  for (const item of itineraries) {
-    if (!ret && item.fare.points !== null) {
-      ret = item;
+  ret = _.find(itineraries, item => { 
+    if (item.fare.points === null) { return false; }
+    for (const leg of item.legs) {
+      if (leg.mode === 'TAXI') return false;
     }
-  }
+    return true;
+  });
   return ret;
 }
 
